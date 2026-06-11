@@ -43,7 +43,6 @@ const {
   fuzzyMatchXccdfTitle,
   bestFuzzyMatchXccdfTitle,
   extractCspPathWords,
-  splitPascalCase,
   stripCspCategoryPrefix,
 } = xccdfModule;
 
@@ -70,7 +69,6 @@ const stats = {
 const fuzzyMatches = [];
 
 for (const r of resources) {
-  const type = String(r.type ?? '');
   const name = String(r.name ?? '');
   const inner = r.properties?.resource ?? {};
   const innerProps = inner.properties ?? {};

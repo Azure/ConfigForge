@@ -26,7 +26,7 @@
  */
 
 import { readFile, readdir, stat } from 'node:fs/promises';
-import { join, basename } from 'node:path';
+import { join } from 'node:path';
 
 /** Discovery cache keyed by dataDir+fingerprint to avoid re-parsing JSON on every status() call. */
 const azurePolicyDiscoveryCache = new Map<string, { fingerprint: string; catalogs: AzurePolicyCisCatalog[] }>();

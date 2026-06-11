@@ -8,7 +8,6 @@ import {
   linuxPathTokens,
   linuxPathsOverlap,
   polarityFromText,
-  tokenPolarity,
   splitPascalCase,
   type LinuxResourceTokens,
 } from './xccdf-parser';

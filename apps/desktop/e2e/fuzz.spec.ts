@@ -76,10 +76,6 @@ function randInt(max: number): number {
   return Math.floor(rand() * max);
 }
 
-function pick<T>(arr: readonly T[]): T {
-  return arr[randInt(arr.length)];
-}
-
 /** Random byte as hex pair for percent-encoding. */
 function randByte(): string {
   const n = randInt(256);
