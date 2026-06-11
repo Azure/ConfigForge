@@ -18,7 +18,7 @@ CLI state, so you can flip into Deploy-capable mode whenever the CLI lands.
 
 - **Repository**: https://github.com/microsoft/osconfig
 - **CLI docs**: https://github.com/microsoft/osconfig/tree/main/docs/cli
-- **Targeted version**: `oscfg 1.3.9-preview11` (ConfigForge v0.3.48)
+- **Targeted version**: `oscfg 1.3.9-preview13` (ConfigForge v0.3.48)
 
 Older or newer `oscfg` releases may work but are not tested. The health probe
 in ConfigForge (footer pill + Settings) reports the resolved CLI version
