@@ -1,0 +1,24 @@
+# Build output
+dist/
+out/
+
+# Electron-builder output
+release/
+
+# Native + bundled binaries (live in repo root resources/)
+**/oscfg.exe
+**/oscfg
+**/oscfg_event.dll
+
+# IDE / OS
+.DS_Store
+Thumbs.db
+
+# Local env
+.env
+.env.local
+
+# Throwaway smoke harnesses (write-then-delete in scripts)
+.smoke-harness.cjs
+.spike-harness.cjs
+.phase*-smoke.cjs

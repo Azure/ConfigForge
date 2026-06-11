@@ -1,0 +1,91 @@
+{
+  "buttons": {
+    "refresh": "Refresh",
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "retry": "Retry",
+    "dismiss": "Dismiss",
+    "download": "Download",
+    "restart-to-install": "Restart to install"
+  },
+  "status": {
+    "loading": "Loading…",
+    "saving": "Saving…",
+    "saved": "Saved",
+    "error": "Error",
+    "success": "Success",
+    "starting": "Starting…",
+    "restarting": "Restarting…",
+    "rechecking": "Rechecking…",
+    "verifying": "Verifying…"
+  },
+  "a11y": {
+    "toggle-sidebar": "Toggle sidebar",
+    "breadcrumb": "Breadcrumb",
+    "dismiss": "Dismiss",
+    "cli-not-installed-install": "OSConfig CLI not installed. Click to install."
+  },
+  "features": {
+    "deploy": "Deploy"
+  },
+  "footer": {
+    "osconfig-version-next": "OSConfig Gen 2",
+    "app-version": "ConfigForge v{{version}}"
+  },
+  "health": {
+    "admin-default-hint": "Restart from an elevated shell.",
+    "admin-required": "{{version}}, admin required",
+    "cannot-reach-ipc": "Cannot reach IPC",
+    "cli-ready": "OSConfig CLI ready",
+    "editor-mode-cli-not-installed": "Editor mode, CLI not installed",
+    "install-hint": "Install OSConfig to deploy and audit on this machine.",
+    "version-mismatch-detail": "{{version}}, expected {{expectedVersion}}",
+    "version-mismatch-hint": "ConfigForge was validated against {{expectedVersion}}. The installed CLI may produce unexpected errors during deploy or audit. Upgrade OSConfig if you hit issues."
+  },
+  "update": {
+    "available-title": "Update available",
+    "available-body": "ConfigForge v{{version}} is ready to download.",
+    "downloading-title": "Downloading update…",
+    "ready-title": "Update ready",
+    "ready-body": "v{{version}} downloaded. Restart to install.",
+    "check-failed-title": "Update check failed"
+  },
+  "components": {
+    "conflictDetector": {
+      "extracted": {
+        "text1": "Need at least 2 manifests to detect conflicts.",
+        "text2": "Cross-Manifest Conflict Detection",
+        "text3": "Checking",
+        "text4": "manifests for conflicting settings",
+        "text5": "Re-check",
+        "text6": "Analyzing manifests for conflicts…",
+        "text7": "No conflicts detected across registered manifests",
+        "text8": "Conflict:"
+      }
+    },
+    "recentRationale": {
+      "extracted": {
+        "text1": "Loading…",
+        "text2": "No rationale captured yet for this resource.",
+        "text3": "skipped",
+        "text4": "unknown",
+        "text5": "(no reason: skipped by author)",
+        "text6": "(no reason)",
+        "text7": "View all →",
+        "text8": "Show recent rationale",
+        "text9": "Hide recent rationale",
+        "text10": "Recent rationale",
+        "text11": "Loading…",
+        "text12": "No rationale captured yet.",
+        "text13": "skipped",
+        "text14": "unknown",
+        "text15": "(no reason: skipped by author)",
+        "text16": "(no reason)",
+        "text17": "View all →"
+      }
+    }
+  }
+}

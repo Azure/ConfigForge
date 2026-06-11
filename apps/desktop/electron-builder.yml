@@ -1,0 +1,163 @@
+## electron-builder configuration.
+#
+# Wiring:
+#   - v0.2.0+ does NOT bundle the OSConfig CLI binary. Users install
+#     `oscfg` separately (see INSTALL.md). This avoids redistributing
+#     a Microsoft-owned native binary and unblocks the OSS release.
+#   - extraResources still copies the public asset tree (Microsoft-
+#     authored OSConfig baselines) under <process.resourcesPath>/
+#     public-assets/ at install time.
+#   - asarUnpack pulls pdfkit out of the asar so its AFM font files
+#     (data files inside the package dir) are accessible at runtime.
+#     pdfkit reads them via fs.readFileSync(__dirname + ...) which
+#     fails when packed into asar.
+#   - public/_baselines/ stays inside the asar — those are JSON/YAML
+#     files that read fine from inside the packed asar.
+#
+# Phase 8 will layer in Authenticode signing (Windows) + auto-updater.
+
+appId: community.configforge
+productName: ConfigForge
+# `executableName` is what filesystem-y things use (install path,
+# package name, spec filename, binary filename). MUST be lowercase
+# no-space because RPM rejects package names with spaces (the
+# rpmbuild step in v0.1.0's first 3 release.yml runs failed
+# silently with exit 1 because the spec file path was literally
+# `SPECS/ConfigForge.spec` and rpmbuild's parser choked).
+# `productName` stays as the friendly display name shown in
+# menus / taskbar / About dialog.
+executableName: configforge
+copyright: Copyright (c) ConfigForge contributors
+
+directories:
+  output: release/${version}
+  buildResources: build
+
+files:
+  - dist/**/*
+  - package.json
+  # Exclude sourcemaps and TS declaration files from the asar — they
+  # bloat the bundle and (because workspace deps symlink outside this
+  # package) trip electron-builder's "must be under app dir" guard.
+  - '!**/*.map'
+  - '!**/*.d.ts'
+  # @configforge/core is a workspace symlink that points outside this
+  # package. Its compiled output is already inlined into dist/electron/
+  # by esbuild, so we don't need the symlinked node_modules entry at
+  # runtime. Excluding it avoids electron-builder walking the symlink
+  # and tripping the "must be under app dir" guard.
+  - '!node_modules/@configforge/**'
+
+asar: true
+
+# pdfkit ships AFM font metric files inside its package dir and reads
+# them with fs.readFileSync at runtime. asar-packed paths don't support
+# direct fs.readFileSync, so unpack pdfkit into app.asar.unpacked/.
+asarUnpack:
+  - 'node_modules/pdfkit/**/*'
+
+# Bundle the public asset tree under a known subdirectory of
+# process.resourcesPath. The Electron runtime path strategy reads
+# from <process.resourcesPath>/public-assets/ in production; in dev
+# the strategy falls back to <repo>/public/.
+#
+# NOTE: The bundled OSConfig CLI binary is intentionally NOT shipped
+# from this app (v0.2.0+). Users install `oscfg` separately — see
+# INSTALL.md. The legacy `oscfg-resources/` extraResources entry
+# was removed so the installer carries no Microsoft-owned binary.
+extraResources:
+  - from: ../../public
+    to: public-assets
+    filter:
+      - '_baselines/**/*.osc.yaml'
+      - '_baselines/**/*.csv'
+      - '_baselines/cis/_data/**/*'
+
+# `fpm` is per-target, not under linux:. It's a valid prop on
+# the rpm/deb option blocks. Override electron-builder's default
+
+win:
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: zip
+      arch: [x64]
+  artifactName: ConfigForge-Setup-${version}-${arch}.${ext}
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: ConfigForge
+
+linux:
+  # All four Linux targets now build cleanly. The previous v0.1.0
+  # rpm failures were caused by the productName "ConfigForge"
+  # (with a space) propagating through to fpm's `--name` arg, which
+  # rpmbuild then used as the spec filename. RPM rejects package
+  # names with spaces.
+  #
+  # Investigation (after the executableName attempt failed):
+  # electron-builder 25.1.8's executableName ONLY controls the
+  # binary filename inside the package — it does NOT propagate to
+  # fpm's `--name` arg (the package name + spec filename). That
+  # arg is hard-derived from productName via productFilename.
+  # productFilename has no per-platform override either.
+  #
+  # Workaround: append `--name configforge` via the fpm
+  # pass-through array. fpm uses the LAST `--name` flag it sees
+  # (standard fpm convention), so this overrides electron-builder's
+  # default. Effects on each target:
+  #   - rpm: spec filename becomes `configforge.spec` (FIXES
+  #     the rpmbuild failure)
+  #   - deb: package name in the control file becomes
+  #     `configforge` (more correct than "ConfigForge"
+  #     — Debian package names are required to be lowercase
+  #     no-space; deb just didn't strict-validate before)
+  #   - AppImage / tar.gz: don't use fpm so unaffected
+  # The install path stays `/opt/ConfigForge` (with space)
+  # because productFilename still controls that. RPM does allow
+  # paths-with-spaces inside package contents — only the
+  # package/spec name itself has to be clean.
+  target:
+    - target: tar.gz
+      arch: [x64]
+    - target: AppImage
+      arch: [x64]
+    - target: deb
+      arch: [x64]
+    - target: rpm
+      arch: [x64]
+  maintainer: ConfigForge contributors <noreply@github.com>
+  category: Development
+  artifactName: configforge-${version}-${arch}.${ext}
+  synopsis: Cross-platform OSConfig security baseline authoring tool
+  description: |
+    ConfigForge is an open-source desktop tool for authoring,
+    validating, deploying, auditing, and exporting OSConfig security
+    baseline manifests on Windows and Linux.
+
+# `fpm` is per-target, not under linux:. It's a valid prop on
+# the rpm/deb option blocks. Override electron-builder's default
+# `--name 'ConfigForge'` (with space) to a clean lowercase
+# no-space form. fpm uses the LAST `--name` flag it sees.
+rpm:
+  fpm:
+    - --name
+    - configforge
+deb:
+  fpm:
+    - --name
+    - configforge
+
+publish:
+  provider: github
+  owner: ABMFST
+  repo: ConfigForge
+  # `releaseType: draft` keeps releases hidden until a human clicks
+  # Publish in the GitHub UI. release.yml uploads to the draft;
+  # publishing is the deliberate gate.
+  releaseType: draft
+

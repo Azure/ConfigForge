@@ -1,0 +1,178 @@
+{
+  "actions": {
+    "auditPack": "Audit Pack",
+    "auditPackTitle": "Generate auditor-ready PDF / Markdown deliverable",
+    "back": "Zurück",
+    "docs": "Docs",
+    "duplicate": "Duplicate",
+    "duplicateTitle": "Duplicate this Manifest",
+    "edit": "Bearbeiten",
+    "export": "Exportieren",
+    "generateDocsTitle": "Generate documentation",
+    "history": "Verlauf",
+    "leaveUnsavedConfirm": "You have unspeichernd changes to \"{{name}}\". Leave anyway and discard them?",
+    "noRevertTitle": "Nein previous bereitstellen to revert",
+    "remove": "Entfernen",
+    "removeConfirm": "Entfernen Manifest \"{{name}}\"? This action cannicht be undone.",
+    "revert": "Revert",
+    "revertConfirm": "Revert Manifest \"{{name}}\"?\n\nIf a pre-bereitstellen snapshot exists, Ihre prior Einstellungen will be re-applied to this device. If keine snapshot exists, OSConfig enforcement of this Manifest will be entfernend and the Manifest will be unregistered. Either way, this Manifest will keine longer be actively enforced on this device.",
+    "revertTitle": "Undo the last bereitstellenment of this Manifest from this device. If a pre-bereitstellen snapshot exists, prior Einstellungen are re-applied; otherwise OSConfig enforcement is entfernend."
+  },
+  "compliance": {
+    "emptyDescription": "Lokalisierter Text: Ausführen Audit durchführen or Enforce to check this baseline against the device.",
+    "emptyTitle": "Nein compliance data yet.",
+    "sectionTitle": "Konformität Status"
+  },
+  "content": {
+    "editorView": "Bearbeitenor",
+    "mofEditUnsupported": "Bearbeitening is nicht supported in MOF format",
+    "mofReadOnly": "MOF is read-only",
+    "sectionTitle": "Manifest Content",
+    "unsavedFormatChanges": "You have unspeichernd changes in {{format}}. Switching tabs preserves them; speichern vorher navigating away.",
+    "visualBuilderView": "Visual Builder"
+  },
+  "cspTroubleshooting": {
+    "declaredConfig": "CSP (Configuration Service Provider) ResQuellen need the Declared Configuration infrastructure",
+    "engineRegistered": "Lokalisierter Text: To use CSP ResQuellen, ensure the OSConfig engine service is properly registered",
+    "registryWorks": "Registry ResQuellen (Microsoft.Windows/Registry) work without hinzufügenitional setup",
+    "title": "CSP ResQuellen Require Hinzufügenitional Setup",
+    "tryMetadata": "Try: <code>Get-OSConfigMetadata</code> to verify the engine is working"
+  },
+  "deploy": {
+    "auditDescription": "Check compliance only",
+    "confirm": "Lokalisierter Text: Bereitstellen Manifest \"{{name}}\" in {{mode}} mode to this device?",
+    "enforceDescription": "Anwenden Einstellungen to device",
+    "enforceRiskConfirm": "WARNING: Enforce will APPLY Einstellungen to this device.\n\nThis action may change Windows or Linux security policy in ways that can break login, networking, RDP, or installiert software, and recovery may require a local Administratoristrator or boot media.\n\nProceed at Ihre own risk. This action may break Ihre machine.\n\nFortfahren with enforce?",
+    "mixedPlatform": "This Manifest mixes Windows and Linux ResQuelle Typs. Split it into per-Plattform Manifeste vorher bereitstellening.",
+    "mode": {
+      "audit": "Audit (compliance check only)",
+      "enforce": "Enforce (apply Einstellungen)"
+    }
+  },
+  "deployResult": {
+    "compliant": "Compliant",
+    "couldNotRead": "Could nicht read",
+    "couldNotReadTitle": "ResQuellen the CLI could nicht read (provider nicht supported, transport Fehler, or unsupported Pfad). These are NOT counted as non-compliant. The device may tatsächlichly be in the desired state.",
+    "deployedAt": "Bereitstellened at {{time}}",
+    "host": "Host",
+    "nonCompliant": "Neinn-compliant",
+    "viewResources": "View {{count}} ResQuellen",
+    "warning": "Warnung"
+  },
+  "docs": {
+    "copied": "Kopiert",
+    "copy": "Kopieren",
+    "downloadMarkdown": "Herunterladen .md",
+    "errorMarkdown": "# Fehler\n\n{{message}}",
+    "title": "Generated Documentation"
+  },
+  "errors": {
+    "deleteFailed": "Löschen fehlgeschlagen",
+    "deployFailed": "Bereitstellen fehlgeschlagen",
+    "duplicateFailed": "Fehlgeschlagen to duplicate Manifest",
+    "exportFailed": "Exportieren fehlgeschlagen",
+    "generateDocsFailed": "Fehlgeschlagen to generate documentation",
+    "loadFormatFailed": "Fehlgeschlagen to load {{format}} format",
+    "loadManifestFailed": "Fehlgeschlagen to load Manifest",
+    "revertFailed": "Revert fehlgeschlagen",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "unknown": "Unbekannt Fehler"
+  },
+  "export": {
+    "documentation": "Documentation (.md)",
+    "formats": {
+      "azurePolicy": "Azure Policy (.json)",
+      "csv": "CSV (.csv)",
+      "json": "JSON (.json)",
+      "mof": "MOF (.mof)",
+      "yaml": "YAML (.osc.yaml)"
+    }
+  },
+  "features": {
+    "audit": "Audit durchführen",
+    "deploy": "Bereitstellen"
+  },
+  "formatErrors": {
+    "formatLoadFailed": "# Fehlgeschlagen to load {{format}} ({{message}})",
+    "jsonLoadFailed": "// Fehlgeschlagen to load JSON ({{message}})"
+  },
+  "header": {
+    "source": "Quelle: {{source}}"
+  },
+  "messages": {
+    "reverted": "Manifest reverted",
+    "saveSuccess": "Manifest \"{{name}}\" speichernd Erfolgfully",
+    "savedWithWarning": "Speichernd with Warnung: {{warning}}"
+  },
+  "platform": {
+    "crossPlatform": "⚙️ Cross-Plattform",
+    "linux": "🐧 Linux",
+    "test": "🔒 Test",
+    "windows": "🪟 Windows"
+  },
+  "rationale": {
+    "backToManifest": "Zurück to Manifest",
+    "downloadCsv": "Herunterladen CSV",
+    "downloadCsvTitle": "Herunterladen all rationale entries as CSV",
+    "emptyDescription": "Öffnen the Editor, change a Wert, and click Speichern. The “Why?” prompt captures rationale for every change.",
+    "emptyTitle": "Nein rationale captured yet.",
+    "filterCount": "{{visible}} of {{total}}",
+    "filterPlaceholder": "Filtern by ResQuelle, author, or reason text…",
+    "loadErrorTitle": "Could nicht load rationale log",
+    "loading": "Loading rationale log…",
+    "logDescription": "Every change captured by the “Why?” prompt in the Editor. Chronological, cross-ResQuelle. Audit durchführenor-grade.",
+    "logTitle": "Rationale Log:",
+    "noFilterMatches": "Nein entries match the aktuell filtern.",
+    "noReasonSkipped": "(keine reason: skipped by author)",
+    "showSkipped": "Show skipped entries",
+    "skippedBadge": "Skipped",
+    "stats": {
+      "skipped": "Überspringenped",
+      "total": "Total entries",
+      "withRationale": "With rationale"
+    },
+    "table": {
+      "author": "Author",
+      "reason": "Reason",
+      "resource": "Ressource",
+      "timestamp": "Timestamp"
+    },
+    "unknownAuthor": "Unbekannt"
+  },
+  "resourceDetails": {
+    "desiredValue": "Desired Wert",
+    "path": "Path",
+    "property": "Property",
+    "reason": "Reason",
+    "value": "Wert"
+  },
+  "resourceEdit": {
+    "cancelAria": "Abbrechen and discard changes",
+    "title": "Bearbeiten ResQuelle"
+  },
+  "tables": {
+    "reason": "Reason",
+    "resource": "Ressource",
+    "resources": "Ressourcen",
+    "showAllResources": "Show all {{count}} ResQuellen",
+    "showingFirst": "(anzeigening first {{count}})",
+    "showingFirstForPerformance": "(anzeigening first {{count}} for performance)",
+    "status": "Status",
+    "type": "Typ"
+  },
+  "tabs": {
+    "json": "JSON",
+    "mof": "MOF",
+    "yaml": "YAML"
+  },
+  "visual": {
+    "addResource": "Hinzufügen ResQuelle",
+    "currentResources": "Aktuell ResQuellen ({{count}})",
+    "groupCount": "Group · {{count}}",
+    "noResources": "Nein ResQuellen in Manifest.",
+    "parseError": "Could nicht parse Manifest YAML. Switch to Bearbeitenor anzeigen to fix syntax Fehlers.",
+    "resourceFallback": "ResQuelle {{index}}",
+    "unknown": "Unbekannt",
+    "usePicker": "Lokalisierter Text: Use the picker to hinzufügen ResQuellen."
+  }
+}

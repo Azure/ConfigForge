@@ -1,0 +1,55 @@
+{
+  "breadcrumbs": {
+    "history": "Historial"
+  },
+  "errors": {
+    "deleteFailed": "Eliminar con error",
+    "historyLoadFailed": "Error to load historial",
+    "restoreFailed": "Restore con error",
+    "restorePreviewLoadFailed": "Error to load restore prever",
+    "snapshotLoadFailed": "Error to load snapshot",
+    "snapshotNotFound": "Snapshot no found",
+    "restoreRecoverySuffix": " (su previous state was guardard as an auto-snapshot antes the con error restore)"
+  },
+  "header": {
+    "back": "Atrás",
+    "sectionTitle": "Versión Historial",
+    "summary_one": "{{manifestName}}: {{count}} snapshot",
+    "summary_other": "{{manifestName}}: {{count}} snapshots"
+  },
+  "empty": {
+    "sectionTitle": "No historial recorded for this manifiesto",
+    "sectionDescription": "Texto localizado: Snapshots are guardard automatically when usted register or realizar the manifiesto."
+  },
+  "timeline": {
+    "byAuthor": "By {{author}}",
+    "rationaleTitle": "Comment entered at guardar time",
+    "selectPrompt": "Seleccionar a snapshot to ver or comparar"
+  },
+  "actions": {
+    "view": "View",
+    "compareCurrent": "Comparar with Real",
+    "restoreSnapshot": "Restore snapshot",
+    "restoreDeploys": "Restore (re-implementars to devices)"
+  },
+  "confirm": {
+    "deleteSnapshot": "Eliminar snapshot from {{time}}?"
+  },
+  "restore": {
+    "buttonLoading": "Restoring…",
+    "closeAria": "Cerrar",
+    "diffAfterRestore": "Después Restore",
+    "diffCurrent": "Actual",
+    "noCurrent": "No real registered manifiesto was found, so sin auto-snapshot will be creard. Restore will register the snapshot content as a nuevo manifiesto.",
+    "snapshotFrom": "Snapshot from {{time}}",
+    "title": "Restore manifiesto from snapshot",
+    "warning": "The real manifiesto will be auto-snapshotted antes restore so usted can roll back. Re-registering may re-implementar the desired state to managed devices."
+  },
+  "diff": {
+    "compareTitle": "Comparar with Real",
+    "compareSubtitle": "Snapshot ({{time}}) vs Real",
+    "current": "Actual",
+    "snapshot": "Snapshot",
+    "snapshotContent": "Snapshot Content"
+  }
+}

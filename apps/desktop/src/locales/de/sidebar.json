@@ -1,0 +1,11 @@
+{
+  "nav": {
+    "home": "Dashboard",
+    "manifests": "Manifeste",
+    "validation": "Validierung",
+    "library": "Bibliothek",
+    "diff": "Vergleich",
+    "cis-mapping": "CIS-Zuordnung",
+    "settings": "Einstellungen"
+  }
+}

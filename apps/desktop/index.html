@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'self' cfs-blob:; font-src 'self' data:; frame-src 'self' cfs-blob:; object-src 'self' cfs-blob:;" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ConfigForge</title>
+    <style>
+      /*
+       * v0.1.14 boot splash — visible BEFORE React hydrates so the user
+       * sees a branded loading state instead of a blank dark window.
+       *
+       * v0.1.5 originally nested the splash inside #root and let React
+       * wipe it on first render. On modern machines that's a race the
+       * splash always lost: the renderer hits `ready-to-show` (first
+       * paint), Electron starts a ~150-200ms window-appear animation,
+       * and by the time the user can actually see the window React has
+       * already mounted and replaced the splash. Net effect: a black
+       * flash, no perceived loading screen.
+       *
+       * v0.1.14 fix: the splash now lives as a SIBLING of #root with a
+       * higher z-index and an opacity transition. main.tsx removes it
+       * explicitly via class toggle after React's first commit AND a
+       * minimum-visible window has elapsed (see MIN_SPLASH_VISIBLE_MS
+       * in main.tsx). This makes the splash visible for the full
+       * window-appear animation regardless of how fast React mounts.
+       *
+       * Colors track the OS theme via prefers-color-scheme so we don't
+       * flash a wrong background while React/FluentProvider are
+       * mounting. Defaults to light; dark override applies on dark
+       * systems. The numbers match foundation.css `#FAFAFA` / `#1F1F1F`
+       * fallback canvas tokens exactly so there's zero color shift
+       * when the splash is replaced.
+       */
+      html, body { margin: 0; padding: 0; height: 100%; }
+      body {
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI Variable',
+          'Segoe UI', system-ui, sans-serif;
+        background: #FAFAFA;
+        color: #1F1F1F;
+        overflow: hidden;
+      }
+      #cfs-boot-splash {
+        position: fixed;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 18px;
+        background: inherit;
+        color: inherit;
+        z-index: 9999;
+        opacity: 1;
+        transition: opacity 220ms ease-out;
+      }
+      #cfs-boot-splash.cfs-hide {
+        opacity: 0;
+        pointer-events: none;
+      }
+      #cfs-boot-splash .cfs-mark {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+      }
+      #cfs-boot-splash .cfs-mark svg.shield { color: #3B82F6; }
+      #cfs-boot-splash .cfs-mark svg.gear {
+        position: absolute;
+        right: -4px;
+        bottom: -4px;
+        color: #60A5FA;
+      }
+      #cfs-boot-splash .cfs-name {
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      #cfs-boot-splash .cfs-loading {
+        display: inline-flex;
+        align-items: center;
+        gap: 9px;
+        font-size: 12px;
+        color: #71717A;
+      }
+      #cfs-boot-splash .cfs-spinner {
+        width: 13px;
+        height: 13px;
+        border: 2px solid currentColor;
+        border-top-color: #3B82F6;
+        border-radius: 50%;
+        opacity: 0.35;
+        animation: cfs-spin 0.85s linear infinite;
+      }
+      @keyframes cfs-spin {
+        from { transform: rotate(0deg); }
+        to   { transform: rotate(360deg); }
+      }
+      @media (prefers-color-scheme: dark) {
+        body { background: #1F1F1F; color: #FAFAFA; }
+        #cfs-boot-splash .cfs-loading { color: #A1A1AA; }
+      }
+      /*
+       * Reduced-motion users get a static spinner. Standard a11y
+       * requirement — we don't want the splash to be the thing that
+       * triggers vestibular discomfort.
+       */
+      @media (prefers-reduced-motion: reduce) {
+        #cfs-boot-splash .cfs-spinner { animation: none; }
+        #cfs-boot-splash { transition: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cfs-boot-splash" role="status" aria-live="polite" aria-label="Loading ConfigForge">
+      <div class="cfs-mark">
+        <!--
+          Inline shield + gear SVG, matching the ShieldFilled +
+          SettingsFilled FluentUI icons used by the in-app
+          Sidebar.tsx logo. Sizing/positioning preserves the same
+          visual weight as the live app header so the transition
+          from splash → React feels continuous.
+        -->
+        <svg class="shield" width="44" height="44" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9.72 2.08a.5.5 0 0 1 .56 0c1.94 1.3 4.03 2.1 6.3 2.43A.5.5 0 0 1 17 5v4.5c0 3.9-2.3 6.73-6.82 8.47a.5.5 0 0 1-.36 0C5.31 16.23 3 13.39 3 9.5V5a.5.5 0 0 1 .42-.49c2.27-.34 4.36-1.13 6.3-2.43Z"/>
+        </svg>
+        <svg class="gear" width="20" height="20" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
+          <path d="M8.65 3.21A1.5 1.5 0 0 1 10 2.5h.5a1.5 1.5 0 0 1 1.35.71l.5.84.95-.04a1.5 1.5 0 0 1 1.31.62l.29.41a1.5 1.5 0 0 1 .25 1.4l-.32.92.65.7a1.5 1.5 0 0 1 .4 1.36l-.1.49a1.5 1.5 0 0 1-.84 1.07l-.86.41-.05.95a1.5 1.5 0 0 1-.71 1.21l-.43.25a1.5 1.5 0 0 1-1.4.07l-.89-.39-.7.65a1.5 1.5 0 0 1-1.4.39l-.49-.13a1.5 1.5 0 0 1-1.05-.93l-.34-.89-.94-.13a1.5 1.5 0 0 1-1.16-.83l-.22-.45a1.5 1.5 0 0 1 0-1.32l.41-.86-.55-.78a1.5 1.5 0 0 1-.18-1.4l.18-.46a1.5 1.5 0 0 1 1-.92l.92-.27.18-.94a1.5 1.5 0 0 1 .96-1.13Z"/>
+        </svg>
+      </div>
+      <div class="cfs-name">ConfigForge</div>
+      <div class="cfs-loading">
+        <span class="cfs-spinner" aria-hidden="true"></span>
+        <span>Loading…</span>
+      </div>
+    </div>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

@@ -1,0 +1,27 @@
+[book]
+title = "ConfigForge"
+authors = ["ConfigForge contributors"]
+description = "Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines."
+language = "en"
+multilingual = false
+src = "src"
+
+[output.html]
+default-theme = "light"
+preferred-dark-theme = "navy"
+git-repository-url = "https://github.com/ABMFST/ConfigForge"
+edit-url-template = "https://github.com/ABMFST/ConfigForge/edit/main/docs/{path}"
+site-url = "/ConfigForge/"
+additional-css = ["theme/css/custom.css"]
+additional-js = ["mermaid.min.js", "mermaid-init.js"]
+
+[output.html.search]
+enable = true
+limit-results = 30
+
+[output.html.fold]
+enable = true
+level = 1
+
+[preprocessor.mermaid]
+command = "mdbook-mermaid"

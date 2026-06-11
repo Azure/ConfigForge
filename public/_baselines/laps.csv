@@ -1,0 +1,11 @@
+Name,Registry Key,Registry Value,Registry Value Type,Expected Value,Description
+BackupDirectory,"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS",BackupDirectory,Dword,Equals(1),"Backup directory for LAPS passwords (1=Azure AD, 2=Active Directory)"
+PasswordComplexity,"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS",PasswordComplexity,Dword,Equals(4),"Password complexity (4=Large+Small letters+Numbers+Special characters)"
+PasswordLength,"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS",PasswordLength,Dword,Equals(14),Minimum password length for managed accounts
+PasswordAgeDays,"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS",PasswordAgeDays,Dword,Equals(30),Maximum password age in days before automatic rotation
+PostAuthenticationActions,"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS",PostAuthenticationActions,Dword,Equals(3),"Post-authentication actions (3=Reset password, logoff, and restart managed account)"
+PostAuthenticationResetDelay,"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS",PostAuthenticationResetDelay,Dword,Equals(24),Delay in hours before post-authentication password reset
+ADPasswordEncryptionEnabled,"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS",ADPasswordEncryptionEnabled,Dword,Equals(1),Enable encryption of LAPS passwords stored in Active Directory
+ADBackupDSRMPassword,"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS",ADBackupDSRMPassword,Dword,Equals(0),Backup DSRM password to Active Directory (0=Disabled)
+AutomaticAccountManagementEnabled,"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS",AutomaticAccountManagementEnabled,Dword,Equals(1),Enable automatic management of the local administrator account
+AutomaticAccountManagementRandomizePassword,"HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS",AutomaticAccountManagementRandomizePassword,Dword,Equals(1),Randomize password for automatically managed accounts

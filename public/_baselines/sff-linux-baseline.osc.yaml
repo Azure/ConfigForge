@@ -1,0 +1,539 @@
+$schema: https://aka.ms/osc/schemas/prerelease/manifest.json
+resources:
+  - name: Disable USB Storage
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/modprobe.d/usb-storage.conf
+            content: |
+              install usb-storage /bin/true
+        - type: Linux/KernelModule
+          properties:
+            name: usb-storage
+            loaded: false
+  - name: Ensure Avahi Server is not enabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/systemd/system/multi-user.target.wants/avahi-daemon.service
+            exists: false
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/systemd/system/sockets.target.wants/avahi-daemon.socket
+            exists: false
+  - name: Ensure bogus ICMP responses are ignored
+    type: Microsoft.OSConfig/FileLine
+    properties:
+      path: /etc/sysctl.d/99-sysctl.conf
+      find: ^\s*(net\.ipv4\.icmp_ignore_bogus_error_responses).*$
+      replace: net.ipv4.icmp_ignore_bogus_error_responses = 1
+      append: true
+  - name: Ensure broadcast ICMP requests are ignored
+    type: Microsoft.OSConfig/FileLine
+    properties:
+      path: /etc/sysctl.d/99-sysctl.conf
+      find: ^\s*(net\.ipv4\.icmp_echo_ignore_broadcasts).*$
+      replace: net.ipv4.icmp_echo_ignore_broadcasts = 1
+      append: true
+  - name: Ensure core dumps are restricted
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/security/limits.conf
+            find: ^\s*(\*\s+hard\s+core).*$
+            replace: "* hard core 0"
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(fs\.suid_dumpable).*$
+            replace: fs.suid_dumpable = 0
+            append: true
+  - name: Ensure DCCP is disabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/modprobe.d/dccp.conf
+            content: |
+              install dccp /bin/true
+        - type: Linux/KernelModule
+          properties:
+            name: dccp
+            loaded: false
+  - name: Ensure default group for the root account is GID 0
+    type: Linux/User
+    properties:
+      gid: 0
+      name: root
+  - name: Ensure default umask for all users is configured
+    type: Microsoft.OSConfig/FileLine
+    properties:
+      path: /etc/login.defs
+      find: ^\s*(UMASK).*$
+      replace: UMASK 077
+      ignoreCase: true
+  - name: Ensure ICMP redirects are not accepted
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.all\.accept_redirects).*$
+            replace: net.ipv4.conf.all.accept_redirects = 0
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.default\.accept_redirects).*$
+            replace: net.ipv4.conf.default.accept_redirects = 0
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv6\.conf\.all\.accept_redirects).*$
+            replace: net.ipv6.conf.all.accept_redirects = 0
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv6\.conf\.default\.accept_redirects).*$
+            replace: net.ipv6.conf.default.accept_redirects = 0
+            append: true
+  - name: Ensure local login warning banner is configured properly
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/issue
+            find: '\\m'
+            replace: ""
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/issue
+            find: '\\r'
+            replace: ""
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/issue
+            find: '\\s'
+            replace: ""
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/issue
+            find: '\\v'
+            replace: ""
+  - name: Ensure mail transfer agent is configured for local-only mode
+    type: Microsoft.OSConfig/FileLine
+    properties:
+      path: /etc/postfix/main.cf
+      find: ^\s*(inet_interfaces).*$
+      replace: inet_interfaces localhost
+      append: true
+  - name: Ensure mounting of cramfs filesystems is disabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/modprobe.d/cramfs.conf
+            content: |
+              install cramfs /bin/true
+        - type: Linux/KernelModule
+          properties:
+            name: cramfs
+            loaded: false
+  - name: Ensure mounting of freevxfs filesystems is disabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/modprobe.d/freevxfs.conf
+            content: |
+              install freevxfs /bin/true
+        - type: Linux/KernelModule
+          properties:
+            name: freevxfs
+            loaded: false
+  - name: Ensure mounting of hfs filesystems is disabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/modprobe.d/hfs.conf
+            content: |
+              install hfs /bin/true
+        - type: Linux/KernelModule
+          properties:
+            name: hfs
+            loaded: false
+  - name: Ensure mounting of hfsplus filesystems is disabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/modprobe.d/hfsplus.conf
+            content: |
+              install hfsplus /bin/true
+        - type: Linux/KernelModule
+          properties:
+            name: hfsplus
+            loaded: false
+  - name: Ensure mounting of jffs2 filesystems is disabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/modprobe.d/jffs2.conf
+            content: |
+              install jffs2 /bin/true
+        - type: Linux/KernelModule
+          properties:
+            name: jffs2
+            loaded: false
+  - name: Ensure packet redirect sending is disabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.all\.send_redirects).*$
+            replace: net.ipv4.conf.all.send_redirects = 0
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.default\.send_redirects).*$
+            replace: net.ipv4.conf.default.send_redirects = 0
+            append: true
+  - name: Ensure password creation requirements are configured
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/security/pwquality.conf
+            find: ^\s*(retry).*$
+            replace: retry = 3
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/security/pwquality.conf
+            find: ^\s*(minlen).*$
+            replace: minlen = 14
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/security/pwquality.conf
+            find: ^\s*(minclass).*$
+            replace: minclass = 4
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/security/pwquality.conf
+            find: ^\s*(dcredit).*$
+            replace: dcredit = -1
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/security/pwquality.conf
+            find: ^\s*(ucredit).*$
+            replace: ucredit = -1
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/security/pwquality.conf
+            find: ^\s*(ocredit).*$
+            replace: ocredit = -1
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/security/pwquality.conf
+            find: ^\s*(lcredit).*$
+            replace: lcredit = -1
+            append: true
+  - name: Ensure password expiration is 365 days or less
+    type: Microsoft.OSConfig/FileLine
+    properties:
+      path: /etc/login.defs
+      find: ^\s*(PASS_MAX_DAYS).*$
+      replace: PASS_MAX_DAYS 365
+      ignoreCase: true
+  - name: Ensure password hashing algorithm is SHA-512 and reuse is limited
+    type: Microsoft.OSConfig/FileLine
+    properties:
+      path: /etc/pam.d/system-auth
+      find: ^\s*(password\s+required\s+.*pam_unix\.so).*$
+      replace: password required /lib/security/pam_unix.so sha512 shadow remember=5 retry=3
+      append: true
+  - name: Ensure permissions on /boot/grub2/grub.cfg are configured
+    type: Linux/FilePermission
+    properties:
+      path: /boot/grub2/grub.cfg
+      owner: root
+      group: root
+      mode: "0400"
+  - name: Ensure permissions on /boot/grub2/grubenv
+    type: Linux/FilePermission
+    properties:
+      path: /boot/grub2/grubenv
+      owner: root
+      group: root
+      mode: "0400"
+  - name: Ensure permissions on /etc/anacrontab are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/anacrontab
+      owner: root
+      group: root
+      mode: "0600"
+  - name: Ensure permissions on /etc/cron.d are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/cron.d
+      owner: root
+      group: root
+      mode: "0700"
+  - name: Ensure permissions on /etc/cron.daily are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/cron.daily
+      owner: root
+      group: root
+      mode: "0700"
+  - name: Ensure permissions on /etc/cron.hourly are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/cron.hourly
+      owner: root
+      group: root
+      mode: "0700"
+  - name: Ensure permissions on /etc/cron.monthly are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/cron.monthly
+      owner: root
+      group: root
+      mode: "0700"
+  - name: Ensure permissions on /etc/cron.weekly are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/cron.weekly
+      owner: root
+      group: root
+      mode: "0700"
+  - name: Ensure permissions on /etc/group are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/group
+      owner: root
+      group: root
+      mode: "0644"
+  - name: Ensure permissions on /etc/gshadow- are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/gshadow-
+      owner: root
+      group: root
+      mode: "0400"
+  - name: Ensure permissions on /etc/issue are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/issue
+      owner: root
+      group: root
+      mode: "0644"
+  - name: Ensure permissions on /etc/issue.net are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/issue.net
+      owner: root
+      group: root
+      mode: "0644"
+  - name: Ensure permissions on /etc/passwd are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/passwd
+      owner: root
+      group: root
+      mode: "0644"
+  - name: Ensure permissions on /etc/rsyslog.conf are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/rsyslog.conf
+      mode: "0640"
+    dependsOn:
+      - Ensure rsyslog log files are owned by the adm group
+  - name: Ensure permissions on /etc/shadow* are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/shadow*
+      owner: root
+      group: root
+      mode: "0400"
+  - name: Ensure permissions on /etc/syslog-ng/syslog-ng.conf are configured
+    type: Linux/FilePermission
+    properties:
+      path: /etc/syslog-ng/syslog-ng.conf
+      mode: "0640"
+  - name: Ensure permissions on /home/* are configured
+    type: Linux/FilePermission
+    properties:
+      path: /home/*
+      mode: "0750"
+  - name: Ensure RDS is disabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/modprobe.d/rds.conf
+            content: |
+              install rds /bin/true
+        - type: Linux/KernelModule
+          properties:
+            name: rds
+            loaded: false
+  - name: Ensure remote login warning banner is configured properly
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/issue.net
+            find: '\\m'
+            replace: ""
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/issue.net
+            find: '\\r'
+            replace: ""
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/issue.net
+            find: '\\s'
+            replace: ""
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/issue.net
+            find: '\\v'
+            replace: ""
+  - name: Ensure Reverse Path Filtering is enabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.all\.rp_filter).*$
+            replace: net.ipv4.conf.all.rp_filter = 2
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.default\.rp_filter).*$
+            replace: net.ipv4.conf.default.rp_filter = 2
+            append: true
+  - name: Ensure rsyslog log files are owned by the adm group
+    type: Microsoft.OSConfig/FileLine
+    properties:
+      path: /etc/rsyslog.conf
+      find: ^\s*(\$FileGroup).*$
+      replace: $FileGroup adm
+      append: true
+  - name: "Ensure SCTP is disabled "
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/modprobe.d/sctp.conf
+            content: |
+              install sctp /bin/true
+        - type: Linux/KernelModule
+          properties:
+            name: sctp
+            loaded: false
+  - name: Ensure secure ICMP redirects are not accepted
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.all\.secure_redirects).*$
+            replace: net.ipv4.conf.all.secure_redirects = 0
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.default\.secure_redirects).*$
+            replace: net.ipv4.conf.default.secure_redirects = 0
+            append: true
+  - name: Ensure source routed packets are not accepted
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.default\.accept_source_route).*$
+            replace: net.ipv4.conf.default.accept_source_route = 0
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv6\.conf\.default\.accept_source_route).*$
+            replace: net.ipv6.conf.default.accept_source_route = 0
+            append: true
+  - name: Ensure suspicious packets are logged
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.all\.log_martians).*$
+            replace: net.ipv4.conf.all.log_martians = 1
+            append: true
+        - type: Microsoft.OSConfig/FileLine
+          properties:
+            path: /etc/sysctl.d/99-sysctl.conf
+            find: ^\s*(net\.ipv4\.conf\.default\.log_martians).*$
+            replace: net.ipv4.conf.default.log_martians = 1
+            append: true
+  - name: Ensure TCP SYN Cookies is enabled
+    type: Microsoft.OSConfig/FileLine
+    properties:
+      path: /etc/sysctl.d/99-sysctl.conf
+      find: ^\s*(net\.ipv4\.tcp_syncookies).*$
+      replace: net.ipv4.tcp_syncookies = 1
+      append: true
+  - name: Ensure TIPC is disabled
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - type: Microsoft.OSConfig/File
+          properties:
+            path: /etc/modprobe.d/tipc.conf
+            content: |
+              install tipc /bin/true
+        - type: Linux/KernelModule
+          properties:
+            name: tipc
+            loaded: false
+

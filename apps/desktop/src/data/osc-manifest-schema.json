@@ -1,0 +1,135 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$defs": {
+    "resource": {
+      "type": "object",
+      "allOf": [
+        { "properties": { "name": { "type": "string" } } },
+        {
+          "oneOf": [
+            { "$ref": "#/$defs/accpol" },
+            { "$ref": "#/$defs/auditpol" },
+            { "$ref": "#/$defs/csp" },
+            { "$ref": "#/$defs/registry" },
+            { "$ref": "#/$defs/userrights" }
+          ]
+        }
+      ]
+    },
+    "accpol": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "Microsoft.Windows/AccountPolicy" },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "enum": ["MinimumPasswordAge","MaximumPasswordAge","MinimumPasswordLength","PasswordHistoryLength","EnforcePasswordComplexity","EnablePasswordReversibleEncryption","AdministratorAccountName","GuestAccountName","EnableAdministratorAccount","EnableGuestAccount","LockoutThreshold","LockoutDuration","LockoutReset","EnableAnonymousNameTranslation"]
+            },
+            "value": true
+          },
+          "required": ["name"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "auditpol": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "Microsoft.Windows/AuditPolicy" },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "subcategory": { "type": "string" },
+            "value": { "type": "integer", "enum": [0,1,2,3] }
+          },
+          "required": ["subcategory"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "csp": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "Microsoft.Windows/CSP" },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": { "type": "string" },
+            "path": {
+              "oneOf": [
+                { "type": "string" },
+                { "type": "object", "properties": { "get": { "type": "string" }, "set": { "type": "string" } }, "required": ["get","set"] }
+              ]
+            },
+            "type": { "enum": ["string","integer","boolean","array"] },
+            "value": {}
+          },
+          "required": ["path","type"],
+          "additionalProperties": false
+        }
+      }
+    },
+    "registry": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "Microsoft.Windows/Registry" },
+        "properties": {
+          "type": "object",
+          "allOf": [
+            {
+              "properties": {
+                "keyPath": { "type": "string" },
+                "valueName": { "type": "string" }
+              }
+            },
+            {
+              "oneOf": [
+                { "properties": { "valueType": { "enum": ["String","ExpandString","Binary","REG_SZ","REG_EXPAND_SZ","REG_BINARY"] }, "value": { "type": "string" } } },
+                { "properties": { "valueType": { "enum": ["Dword","QWord","REG_DWORD","REG_QWORD"] }, "value": { "type": "integer" } } },
+                { "properties": { "valueType": { "enum": ["MultiString","REG_MULTI_SZ"] }, "value": { "type": "array", "items": { "type": "string" } } } }
+              ]
+            }
+          ],
+          "required": ["keyPath","valueName","valueType"]
+        }
+      }
+    },
+    "userrights": {
+      "type": "object",
+      "properties": {
+        "type": { "const": "Microsoft.Windows/UserRightsAssignment" },
+        "properties": {
+          "type": "object",
+          "properties": {
+            "name": {
+              "type": "string",
+              "enum": ["SeAssignPrimaryTokenPrivilege","SeAuditPrivilege","SeBackupPrivilege","SeBatchLogonRight","SeChangeNotifyPrivilege","SeCreateGlobalPrivilege","SeCreatePagefilePrivilege","SeCreatePermanentPrivilege","SeCreateSymbolicLinkPrivilege","SeCreateTokenPrivilege","SeDebugPrivilege","SeDelegateSessionUserImpersonatePrivilege","SeDenyBatchLogonRight","SeDenyInteractiveLogonRight","SeDenyNetworkLogonRight","SeDenyRemoteInteractiveLogonRight","SeDenyServiceLogonRight","SeEnableDelegationPrivilege","SeImpersonatePrivilege","SeIncreaseBasePriorityPrivilege","SeIncreaseQuotaPrivilege","SeIncreaseWorkingSetPrivilege","SeInteractiveLogonRight","SeLoadDriverPrivilege","SeLockMemoryPrivilege","SeMachineAccountPrivilege","SeManageVolumePrivilege","SeNetworkLogonRight","SeProfileSingleProcessPrivilege","SeRelabelPrivilege","SeRemoteInteractiveLogonRight","SeRemoteShutdownPrivilege","SeRestorePrivilege","SeSecurityPrivilege","SeServiceLogonRight","SeShutdownPrivilege","SeSyncAgentPrivilege","SeSystemEnvironmentPrivilege","SeSystemProfilePrivilege","SeSystemtimePrivilege","SeTakeOwnershipPrivilege","SeTcbPrivilege","SeTimeZonePrivilege","SeTrustedCredManAccessPrivilege","SeUndockPrivilege"]
+            },
+            "value": { "type": "array", "items": { "type": "string" } }
+          },
+          "required": ["name"],
+          "additionalProperties": false
+        }
+      }
+    }
+  },
+  "type": "object",
+  "properties": {
+    "resources": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          {
+            "oneOf": [
+              { "$ref": "#/$defs/resource" }
+            ],
+            "required": ["type","properties"]
+          }
+        ]
+      }
+    }
+  },
+  "required": ["resources"]
+}

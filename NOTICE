@@ -1,0 +1,74 @@
+ConfigForge
+Copyright (c) 2025-2026 Amir Bredy
+
+Licensed under the MIT License. See the LICENSE file at the repo root.
+
+================================================================================
+Project status
+================================================================================
+
+ConfigForge is a Microsoft community open-source project. ConfigForge is NOT an officially supported Microsoft
+product. Use at your own risk; do not rely on it for production workloads.
+
+
+================================================================================
+Trademarks
+================================================================================
+
+The following are trademarks or registered trademarks of Microsoft Corporation
+in the United States and/or other countries:
+
+  - Microsoft
+  - Windows, Windows Server
+  - Azure, Azure Local, Azure Stack
+  - OSConfig
+  - PowerShell, Hyper-V
+
+References to these trademarks in this software, its documentation, or its
+user interface are used solely to identify Microsoft products with which
+ConfigForge interoperates.
+
+Any use of Microsoft trademarks by users of ConfigForge must comply
+with Microsoft's Trademark and Brand Guidelines, available at:
+https://www.microsoft.com/en-us/legal/intellectualproperty/trademarks
+
+Modified versions of this software must not use any Microsoft trademark in a
+way that could cause confusion about the source or sponsorship of the modified
+version.
+
+
+================================================================================
+Required external tooling (NOT bundled with this software)
+================================================================================
+
+ConfigForge integrates with the Microsoft OSConfig CLI (`oscfg`) for
+deploying and auditing security baseline manifests on Windows and Linux. As of
+v0.2.0, the `oscfg` binary is NOT bundled with this software and is NOT
+redistributed by this project. Users install OSConfig separately from its
+upstream source:
+
+  https://github.com/microsoft/osconfig
+
+See INSTALL.md at the repo root for platform-by-platform install steps.
+
+The OSConfig CLI is owned, licensed, and maintained by Microsoft Corporation.
+Refer to the upstream OSConfig repository for its license and trademark terms.
+
+
+================================================================================
+Third-party software
+================================================================================
+
+ConfigForge uses a number of open-source libraries at build and runtime.
+A summary of the most prominent runtime dependencies, with their licenses and
+upstream URLs, is provided in THIRDPARTYNOTICES.md at the repo root. Full
+license texts for each dependency ship inside the installed application bundle
+under each package's own copy in `node_modules/<package>/`.
+
+
+================================================================================
+Reporting issues
+================================================================================
+
+Security vulnerabilities: see SECURITY.md.
+Bug reports / feature requests: GitHub Issues at the repository URL.

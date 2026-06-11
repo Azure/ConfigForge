@@ -1,0 +1,59 @@
+{
+  "name": "@configforge/core",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Platform-neutral core for ConfigForge. Holds manifest, history, audit-pack, oscfg wrapper, etc. Can be consumed by Electron main process, Next.js routes, vitest, or future CLI hosts.",
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./runtime/paths": {
+      "types": "./src/runtime/paths.ts",
+      "default": "./dist/runtime/paths.js"
+    },
+    "./runtime": {
+      "types": "./src/runtime/index.ts",
+      "default": "./dist/runtime/index.js"
+    },
+    "./handlers": {
+      "types": "./src/handlers/index.ts",
+      "default": "./dist/handlers/index.js"
+    },
+    "./oscfg": {
+      "types": "./src/oscfg/index.ts",
+      "default": "./dist/oscfg/index.js"
+    },
+    "./history": {
+      "types": "./src/history/index.ts",
+      "default": "./dist/history/index.js"
+    },
+    "./system": {
+      "types": "./src/system/index.ts",
+      "default": "./dist/system/index.js"
+    },
+    "./*": {
+      "types": "./src/*",
+      "default": "./dist/*"
+    }
+  },
+  "dependencies": {
+    "fast-xml-parser": "^5.8.0",
+    "js-yaml": "^4.1.0",
+    "pdfkit": "^0.18.0",
+    "react": "^18.3.1",
+    "zustand": "^5.0.2"
+  },
+  "devDependencies": {
+    "@types/js-yaml": "^4.0.9",
+    "@types/pdfkit": "^0.17.6",
+    "@types/react": "^18.3.18"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "lint": "echo 'core lints via root tsconfig (no separate eslint yet)'",
+    "test": "echo 'core tests run via root vitest until Phase 0.5 is complete'"
+  }
+}

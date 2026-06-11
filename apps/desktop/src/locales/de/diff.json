@@ -1,0 +1,190 @@
+{
+  "page": {
+    "title": "Vergleichen Manifeste",
+    "description": "Side-by-side comparison of Manifest configurations"
+  },
+  "pageError": {
+    "dismiss": "Dismiss",
+    "dismissTitle": "Dismiss"
+  },
+  "info": {
+    "oneManifest": "You have 1 Manifest registered. To vergleichen two registered Manifeste, register a second one first, or switch either side to <strong>Paste / Hochladen</strong> mode below to paste YAML directly."
+  },
+  "errors": {
+    "analyzeFailed": "Fehlgeschlagen to analyze Vergleich",
+    "loadManifestsFailed": "Fehlgeschlagen to load Manifeste",
+    "loadManifestsTimeout": "Loading Manifeste timed out. The background list call is taking longer than 10s — try Aktualisieren, or restart the app if it persists.",
+    "network": "Network Fehler"
+  },
+  "tabs": {
+    "pairwise": "Pairwise",
+    "matrix": "Matrix (N-way)",
+    "cisDiff": "CIS Vergleich"
+  },
+  "pairwise": {
+    "before": "Vorher",
+    "after": "Nachher",
+    "modes": {
+      "pasteUpload": "Paste / Hochladen",
+      "fromManifest": "From Manifest"
+    },
+    "select": {
+      "loading": "Wird geladen…",
+      "noManifests": "Nein Manifeste registered",
+      "selectManifest": "Auswählen a Manifest…"
+    },
+    "loadingManifest": "Loading Manifest…",
+    "empty": {
+      "selectManifest": "Auswählen a Manifest above",
+      "uploadOrPaste": "Hochladen a Datei or paste Manifest text"
+    },
+    "uploadFile": "Hochladen Datei",
+    "compareDisabledTitle": "Auswählen a Manifest on both sides to enable Vergleichen",
+    "compareButton": "Vergleichen"
+  },
+  "stats": {
+    "title": "Vergleich Stats:",
+    "units": {
+      "resources": "ResQuellen",
+      "lines": "Lines"
+    },
+    "added": "{{count}} {{unit}} hinzufügened",
+    "removed": "{{count}} {{unit}} entfernend",
+    "changed": "{{count}} {{unit}} geändert"
+  },
+  "viewer": {
+    "before": "Vorher",
+    "after": "Nachher",
+    "beforeNormalized": "Vorher (normalized)",
+    "afterNormalized": "Nachher (normalized)"
+  },
+  "changelog": {
+    "downloadTitle": "Herunterladen a Markdown changelog of the Vergleich above",
+    "downloadButton": "Herunterladen Changelog (.md)"
+  },
+  "ai": {
+    "analyzing": "Analyzing configuration changes…",
+    "title": "Intelligent Vergleich Insights",
+    "subtitle": "Heuristic, locally-computed Zusammenfassung of configuration changes",
+    "showWork": "Show Ihre work",
+    "inputFingerprint": "Input-fingerprint",
+    "sources": "Quelles",
+    "citationCoverage": "Citation-coverage",
+    "none": "(none)",
+    "confidence": "Confidence {{value}}",
+    "risk": {
+      "low": "Niedrig Risk",
+      "medium": "Mittel Risk",
+      "high": "Hoch Risk"
+    },
+    "sourcesTitle": "Quelles",
+    "coverage": "{{percent}}% coverage",
+    "noSourcesAdvisory": "Nein Quelles cited. Advisory only.",
+    "lowConfidence": "Niedrig confidence. Verify vorher applying.",
+    "noSourcesCited": "Nein Quelles cited.",
+    "citationCoverageValue": "Citation coverage {{percent}}%."
+  },
+  "matrixSummary": {
+    "totalChanges": "{{count}} ResQuelle {{changeWord}} detected",
+    "change_one": "Change",
+    "change_other": "Changes",
+    "added": "{{count}} hinzufügened",
+    "removed": "{{count}} entfernend",
+    "changed": "{{count}} with Wert change"
+  },
+  "resourceChanges": {
+    "sectionTitle": "ResQuelle Changes",
+    "changed": "Geändert (Wert Vergleichers)",
+    "added": "Hinzugefügt (only in Nachher)",
+    "removed": "Entfernt (only in Vorher)",
+    "identical": "Identical (same Wert in both)",
+    "beforeLabel": "Vorher:",
+    "afterLabel": "Nachher:"
+  },
+  "matrix": {
+    "sectionTitle": "Pick 2–10 baselines to vergleichen",
+    "sectionDescription": "Each row in the resulting matrix is a setting; each column is a baseline. Cells are color-coded green (identical), red (Vergleichers), or yellow (only-in).",
+    "noManifests": "Nein Manifeste registered.",
+    "compareButton": "Vergleichen ({{count}})",
+    "downloadExcel": "Herunterladen Excel",
+    "filterPlaceholder": "Filtern Einstellungen…",
+    "statusFilter": {
+      "all": "Alle Statuses",
+      "identical": "Identical only",
+      "differs": "Vergleichers only",
+      "partial": "Partial only"
+    },
+    "showing": "Showing {{filtered}} of {{total}} rows",
+    "stats": {
+      "rows": "{{count}} rows",
+      "identical": "{{count}} identical",
+      "differs": "{{count}} Vergleicher",
+      "partial": "{{count}} partial"
+    },
+    "table": {
+      "setting": "Setting",
+      "type": "Typ",
+      "noSettings": "Nein Einstellungen match Ihre filtern."
+    }
+  },
+  "cis": {
+    "labels": {
+      "manifest": "Manifest",
+      "benchmark": "CIS benchmark to score against",
+      "autoHint": "(auto-picked from Manifest Plattform if blank)"
+    },
+    "options": {
+      "chooseManifest": "Choose a Manifest...",
+      "autoPick": "Auto-pick by Plattform",
+      "fullCis": "[Full CIS]",
+      "azurePolicy": "[Azure Policy]",
+      "rules": "{{count}} rules"
+    },
+    "compareButton": "Vergleichen against CIS",
+    "compareLoading": "Comparing...",
+    "loading": "Scoring {{manifest}} against CIS...",
+    "complianceAgainst": "CIS compliance against {{name}} v{{version}}",
+    "rulesCovered": "{{covered}} of {{total}} CIS rules covered",
+    "secondary": "Secondary anzeigen: {{matched}} of {{total}} Manifest ResQuellen matched a CIS rule.",
+    "noBenchmark": "Nein CIS benchmark verfügbar. Drop a CIS Datei into the CIS Mapping Ordner and try again.",
+    "filters": {
+      "all": "Alle ResQuellen ({{count}})",
+      "covered": "Covered in Manifest ({{count}})",
+      "missing": "Missing from CIS ({{count}})"
+    },
+    "placeholders": {
+      "missing": "Filtern by CIS rule title or section...",
+      "resources": "Filtern by ResQuelle or rule Name..."
+    },
+    "table": {
+      "section": "Section",
+      "missingRule": "CIS Rule (fehlend from Manifest)",
+      "recommendedValue": "Recommended Wert",
+      "notSpecified": "(nicht specified)",
+      "status": "Status",
+      "resource": "Ressource",
+      "type": "Typ",
+      "cisRule": "CIS Rule",
+      "source": "Quelle"
+    },
+    "empty": {
+      "noMissingMatch": "Nein fehlend CIS rules match Ihre filtern.",
+      "nothingMissing": "Neinthing fehlend! Alle CIS rules are covered.",
+      "noResults": "Keine Ergebnisse.",
+      "noResourceMatch": "Nein ResQuellen match Ihre filtern.",
+      "pickManifest": "Pick a Manifest and click <strong>Vergleichen against CIS</strong> to see Ihre compliance score",
+      "description": "Shows how much of the CIS benchmark Ihre Manifest covers, plus the rules still fehlend"
+    },
+    "sort": {
+      "unmappedFirst": "Click to sortieren: unmapped first",
+      "mappedFirst": "Click to sortieren: mapped first",
+      "clear": "Click to leeren sortieren",
+      "aria": "Sortieren by Status"
+    },
+    "aria": {
+      "mapped": "Mapped to CIS rule",
+      "notMapped": "Neint mapped to any CIS rule"
+    },
+    "noCisRule": "Nein CIS rule"
+  }
+}

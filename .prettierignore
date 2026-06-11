@@ -1,0 +1,37 @@
+# Generated artifacts and platform-specific output that prettier
+# should never reformat.
+node_modules/
+dist/
+build/
+out/
+.cache/
+coverage/
+
+# Lockfiles, snapshots, and tool-managed data.
+package-lock.json
+npm-shrinkwrap.json
+*.tsbuildinfo
+*.lock
+*.lockb
+
+# Data and content files that have their own canonical formatting.
+**/data/**/*.json
+**/schemas/**/*.json
+**/baselines/**/*.json
+**/baselines/**/*.yaml
+**/resources/**/*.json
+**/resources/**/*.yaml
+**/resources/**/*.yml
+**/snapshots/**
+
+# Generated docs/SBOM/release artifacts.
+apps/desktop/release/
+docs-site/book/
+sbom-*.cdx.json
+
+# Binary / fixture content.
+**/*.png
+**/*.ico
+**/*.icns
+**/*.pfx
+**/*.cer

@@ -1,0 +1,190 @@
+{
+  "page": {
+    "title": "Comparar Manifiestos",
+    "description": "Side-by-side comparison of manifiesto configurations"
+  },
+  "pageError": {
+    "dismiss": "Dismiss",
+    "dismissTitle": "Dismiss"
+  },
+  "info": {
+    "oneManifest": "You have 1 manifiesto registered. To comparar two registered manifiestos, register a second one first, or switch either side to <strong>Paste / Cargar</strong> mode below to paste YAML directly."
+  },
+  "errors": {
+    "analyzeFailed": "Error to analyze diferencias",
+    "loadManifestsFailed": "Error to load manifiestos",
+    "loadManifestsTimeout": "Loading manifiestos timed out. The background list call is taking longer than 10s — try Realizar, or restart the app if it persists.",
+    "network": "Network error"
+  },
+  "tabs": {
+    "pairwise": "Pairwise",
+    "matrix": "Matrix (N-way)",
+    "cisDiff": "CIS Diferencias"
+  },
+  "pairwise": {
+    "before": "Antes",
+    "after": "Después",
+    "modes": {
+      "pasteUpload": "Paste / Cargar",
+      "fromManifest": "From Manifiesto"
+    },
+    "select": {
+      "loading": "Cargando…",
+      "noManifests": "No manifiestos registered",
+      "selectManifest": "Seleccionar a manifiesto…"
+    },
+    "loadingManifest": "Loading manifiesto…",
+    "empty": {
+      "selectManifest": "Seleccionar a manifiesto above",
+      "uploadOrPaste": "Cargar a archivo or paste manifiesto text"
+    },
+    "uploadFile": "Cargar archivo",
+    "compareDisabledTitle": "Seleccionar a manifiesto on both sides to enable Comparar",
+    "compareButton": "Comparar"
+  },
+  "stats": {
+    "title": "Diferencias Stats:",
+    "units": {
+      "resources": "Recursos",
+      "lines": "Lines"
+    },
+    "added": "{{count}} {{unit}} agregared",
+    "removed": "{{count}} {{unit}} quitard",
+    "changed": "{{count}} {{unit}} cambiado"
+  },
+  "viewer": {
+    "before": "Antes",
+    "after": "Después",
+    "beforeNormalized": "Antes (normalized)",
+    "afterNormalized": "Después (normalized)"
+  },
+  "changelog": {
+    "downloadTitle": "Descargar a Markdown changelog of the diferencias above",
+    "downloadButton": "Descargar Changelog (.md)"
+  },
+  "ai": {
+    "analyzing": "Analyzing configuration changes…",
+    "title": "Intelligent Diferencias Insights",
+    "subtitle": "Heuristic, locally-computed resumen of configuration changes",
+    "showWork": "Show su work",
+    "inputFingerprint": "Input-fingerprint",
+    "sources": "Origens",
+    "citationCoverage": "Citation-coverage",
+    "none": "(none)",
+    "confidence": "Confidence {{value}}",
+    "risk": {
+      "low": "Baja Risk",
+      "medium": "Media Risk",
+      "high": "Alta Risk"
+    },
+    "sourcesTitle": "Origens",
+    "coverage": "{{percent}}% coverage",
+    "noSourcesAdvisory": "No origens cited. Advisory only.",
+    "lowConfidence": "Baja confidence. Verify antes applying.",
+    "noSourcesCited": "No origens cited.",
+    "citationCoverageValue": "Citation coverage {{percent}}%."
+  },
+  "matrixSummary": {
+    "totalChanges": "{{count}} recurso {{changeWord}} detected",
+    "change_one": "Change",
+    "change_other": "Changes",
+    "added": "{{count}} agregared",
+    "removed": "{{count}} quitard",
+    "changed": "{{count}} with valor change"
+  },
+  "resourceChanges": {
+    "sectionTitle": "Recurso Changes",
+    "changed": "Cambiado (valor diferenciasers)",
+    "added": "Agregado (only in Después)",
+    "removed": "Quitado (only in Antes)",
+    "identical": "Identical (same valor in both)",
+    "beforeLabel": "Antes:",
+    "afterLabel": "Después:"
+  },
+  "matrix": {
+    "sectionTitle": "Pick 2–10 baselines to comparar",
+    "sectionDescription": "Each row in the resulting matrix is a setting; each column is a baseline. Cells are color-coded green (identical), red (diferenciasers), or yellow (only-in).",
+    "noManifests": "No manifiestos registered.",
+    "compareButton": "Comparar ({{count}})",
+    "downloadExcel": "Descargar Excel",
+    "filterPlaceholder": "Filtrar configuración…",
+    "statusFilter": {
+      "all": "Todo estadoes",
+      "identical": "Identical only",
+      "differs": "Diferenciasers only",
+      "partial": "Partial only"
+    },
+    "showing": "Showing {{filtered}} of {{total}} rows",
+    "stats": {
+      "rows": "{{count}} rows",
+      "identical": "{{count}} identical",
+      "differs": "{{count}} diferenciaser",
+      "partial": "{{count}} partial"
+    },
+    "table": {
+      "setting": "Setting",
+      "type": "Tipo",
+      "noSettings": "No configuración match su filtrar."
+    }
+  },
+  "cis": {
+    "labels": {
+      "manifest": "Manifiesto",
+      "benchmark": "CIS benchmark to score against",
+      "autoHint": "(auto-picked from manifiesto plataforma if blank)"
+    },
+    "options": {
+      "chooseManifest": "Choose a manifiesto...",
+      "autoPick": "Auto-pick by plataforma",
+      "fullCis": "[Full CIS]",
+      "azurePolicy": "[Azure Policy]",
+      "rules": "{{count}} rules"
+    },
+    "compareButton": "Comparar against CIS",
+    "compareLoading": "Comparing...",
+    "loading": "Scoring {{manifest}} against CIS...",
+    "complianceAgainst": "CIS compliance against {{name}} v{{version}}",
+    "rulesCovered": "{{covered}} of {{total}} CIS rules covered",
+    "secondary": "Secondary ver: {{matched}} of {{total}} manifiesto recursos matched a CIS rule.",
+    "noBenchmark": "No CIS benchmark disponible. Drop a CIS archivo into the CIS Mapping carpeta and try again.",
+    "filters": {
+      "all": "Todo recursos ({{count}})",
+      "covered": "Covered in manifiesto ({{count}})",
+      "missing": "Missing from CIS ({{count}})"
+    },
+    "placeholders": {
+      "missing": "Filtrar by CIS rule title or section...",
+      "resources": "Filtrar by recurso or rule nombre..."
+    },
+    "table": {
+      "section": "Section",
+      "missingRule": "CIS Rule (faltante from manifiesto)",
+      "recommendedValue": "Recommended valor",
+      "notSpecified": "(no specified)",
+      "status": "Estado",
+      "resource": "Recurso",
+      "type": "Tipo",
+      "cisRule": "CIS Rule",
+      "source": "Origen"
+    },
+    "empty": {
+      "noMissingMatch": "No faltante CIS rules match su filtrar.",
+      "nothingMissing": "Nothing faltante! Todo CIS rules are covered.",
+      "noResults": "Sin resultados.",
+      "noResourceMatch": "No recursos match su filtrar.",
+      "pickManifest": "Pick a manifiesto and click <strong>Comparar against CIS</strong> to see su compliance score",
+      "description": "Shows how much of the CIS benchmark su manifiesto covers, plus the rules still faltante"
+    },
+    "sort": {
+      "unmappedFirst": "Click to ordenar: unmapped first",
+      "mappedFirst": "Click to ordenar: mapped first",
+      "clear": "Click to borrar ordenar",
+      "aria": "Ordenar by estado"
+    },
+    "aria": {
+      "mapped": "Mapped to CIS rule",
+      "notMapped": "Not mapped to any CIS rule"
+    },
+    "noCisRule": "No CIS rule"
+  }
+}

@@ -1,0 +1,91 @@
+{
+  "buttons": {
+    "refresh": "Actualizar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "close": "Cerrar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "retry": "Reintentar",
+    "dismiss": "Descartar",
+    "download": "Descargar",
+    "restart-to-install": "Reiniciar para instalar"
+  },
+  "status": {
+    "loading": "Cargando…",
+    "saving": "Guardando…",
+    "saved": "Guardado",
+    "error": "Error",
+    "success": "Éxito",
+    "starting": "Iniciando…",
+    "restarting": "Reiniciando…",
+    "rechecking": "Volviendo a comprobar…",
+    "verifying": "Comprobando…"
+  },
+  "a11y": {
+    "toggle-sidebar": "Alternar barra lateral",
+    "breadcrumb": "Ruta de navegación",
+    "dismiss": "Descartar",
+    "cli-not-installed-install": "La CLI de OSConfig no está instalada. Haga clic para instalarla."
+  },
+  "features": {
+    "deploy": "Implementar"
+  },
+  "footer": {
+    "osconfig-version-next": "OSConfig Gen 2",
+    "app-version": "ConfigForge v{{version}}"
+  },
+  "health": {
+    "admin-default-hint": "Reinicie desde un shell con elevación.",
+    "admin-required": "{{version}}, administrador requerido",
+    "cannot-reach-ipc": "No se puede alcanzar IPC",
+    "cli-ready": "CLI de OSConfig lista",
+    "editor-mode-cli-not-installed": "Modo editor, CLI no instalada",
+    "install-hint": "Instale OSConfig para implementar y auditar en este equipo.",
+    "version-mismatch-detail": "{{version}}, esperado {{expectedVersion}}",
+    "version-mismatch-hint": "ConfigForge se validó con {{expectedVersion}}. La CLI instalada puede producir errores inesperados durante la implementación o la auditoría. Actualice OSConfig si encuentra problemas."
+  },
+  "update": {
+    "available-title": "Actualización disponible",
+    "available-body": "ConfigForge v{{version}} está lista para descargar.",
+    "downloading-title": "Descargando actualización…",
+    "ready-title": "Actualización lista",
+    "ready-body": "Se descargó v{{version}}. Reinicie para instalarla.",
+    "check-failed-title": "Error al buscar actualizaciones"
+  },
+  "components": {
+    "conflictDetector": {
+      "extracted": {
+        "text1": "Need at least 2 manifiestos to detect conflicts.",
+        "text2": "Cross-Manifiesto Conflict Detection",
+        "text3": "Checking",
+        "text4": "Manifiestos for conflicting configuración",
+        "text5": "Re-check",
+        "text6": "Analyzing manifiestos for conflicts…",
+        "text7": "No conflicts detected across registered manifiestos",
+        "text8": "Conflict:"
+      }
+    },
+    "recentRationale": {
+      "extracted": {
+        "text1": "Cargando…",
+        "text2": "No rationale captured yet for this recurso.",
+        "text3": "Skipped",
+        "text4": "Desconocido",
+        "text5": "(sin reason: skipped by author)",
+        "text6": "(sin reason)",
+        "text7": "View all →",
+        "text8": "Show recent rationale",
+        "text9": "Hide recent rationale",
+        "text10": "Recent rationale",
+        "text11": "Cargando…",
+        "text12": "No rationale captured yet.",
+        "text13": "Skipped",
+        "text14": "Desconocido",
+        "text15": "(sin reason: skipped by author)",
+        "text16": "(sin reason)",
+        "text17": "View all →"
+      }
+    }
+  }
+}

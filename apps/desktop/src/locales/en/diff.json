@@ -1,0 +1,190 @@
+{
+  "page": {
+    "title": "Compare Manifests",
+    "description": "Side-by-side comparison of manifest configurations"
+  },
+  "pageError": {
+    "dismiss": "dismiss",
+    "dismissTitle": "Dismiss"
+  },
+  "info": {
+    "oneManifest": "You have 1 manifest registered. To compare two registered manifests, register a second one first, or switch either side to <strong>Paste / Upload</strong> mode below to paste YAML directly."
+  },
+  "errors": {
+    "analyzeFailed": "Failed to analyze diff",
+    "loadManifestsFailed": "Failed to load manifests",
+    "loadManifestsTimeout": "Loading manifests timed out. The background list call is taking longer than 10s — try Refresh, or restart the app if it persists.",
+    "network": "Network error"
+  },
+  "tabs": {
+    "pairwise": "Pairwise",
+    "matrix": "Matrix (N-way)",
+    "cisDiff": "CIS Diff"
+  },
+  "pairwise": {
+    "before": "Before",
+    "after": "After",
+    "modes": {
+      "pasteUpload": "Paste / Upload",
+      "fromManifest": "From Manifest"
+    },
+    "select": {
+      "loading": "Loading…",
+      "noManifests": "No manifests registered",
+      "selectManifest": "Select a manifest…"
+    },
+    "loadingManifest": "Loading manifest…",
+    "empty": {
+      "selectManifest": "Select a manifest above",
+      "uploadOrPaste": "Upload a file or paste manifest text"
+    },
+    "uploadFile": "Upload file",
+    "compareDisabledTitle": "Select a manifest on both sides to enable Compare",
+    "compareButton": "Compare"
+  },
+  "stats": {
+    "title": "Diff Stats:",
+    "units": {
+      "resources": "resources",
+      "lines": "lines"
+    },
+    "added": "{{count}} {{unit}} added",
+    "removed": "{{count}} {{unit}} removed",
+    "changed": "{{count}} {{unit}} changed"
+  },
+  "viewer": {
+    "before": "Before",
+    "after": "After",
+    "beforeNormalized": "Before (normalized)",
+    "afterNormalized": "After (normalized)"
+  },
+  "changelog": {
+    "downloadTitle": "Download a Markdown changelog of the diff above",
+    "downloadButton": "Download Changelog (.md)"
+  },
+  "ai": {
+    "analyzing": "Analyzing configuration changes…",
+    "title": "Intelligent Diff Insights",
+    "subtitle": "Heuristic, locally-computed summary of configuration changes",
+    "showWork": "Show your work",
+    "inputFingerprint": "input-fingerprint",
+    "sources": "sources",
+    "citationCoverage": "citation-coverage",
+    "none": "(none)",
+    "confidence": "confidence {{value}}",
+    "risk": {
+      "low": "Low Risk",
+      "medium": "Medium Risk",
+      "high": "High Risk"
+    },
+    "sourcesTitle": "Sources",
+    "coverage": "{{percent}}% coverage",
+    "noSourcesAdvisory": "No sources cited. Advisory only.",
+    "lowConfidence": "Low confidence. Verify before applying.",
+    "noSourcesCited": "No sources cited.",
+    "citationCoverageValue": "Citation coverage {{percent}}%."
+  },
+  "matrixSummary": {
+    "totalChanges": "{{count}} resource {{changeWord}} detected",
+    "change_one": "change",
+    "change_other": "changes",
+    "added": "{{count}} added",
+    "removed": "{{count}} removed",
+    "changed": "{{count}} with value change"
+  },
+  "resourceChanges": {
+    "sectionTitle": "Resource Changes",
+    "changed": "Changed (value differs)",
+    "added": "Added (only in After)",
+    "removed": "Removed (only in Before)",
+    "identical": "Identical (same value in both)",
+    "beforeLabel": "before:",
+    "afterLabel": "after:"
+  },
+  "matrix": {
+    "sectionTitle": "Pick 2–10 baselines to compare",
+    "sectionDescription": "Each row in the resulting matrix is a setting; each column is a baseline. Cells are color-coded green (identical), red (differs), or yellow (only-in).",
+    "noManifests": "No manifests registered.",
+    "compareButton": "Compare ({{count}})",
+    "downloadExcel": "Download Excel",
+    "filterPlaceholder": "Filter settings…",
+    "statusFilter": {
+      "all": "All statuses",
+      "identical": "Identical only",
+      "differs": "Differs only",
+      "partial": "Partial only"
+    },
+    "showing": "Showing {{filtered}} of {{total}} rows",
+    "stats": {
+      "rows": "{{count}} rows",
+      "identical": "{{count}} identical",
+      "differs": "{{count}} differ",
+      "partial": "{{count}} partial"
+    },
+    "table": {
+      "setting": "Setting",
+      "type": "Type",
+      "noSettings": "No settings match your filter."
+    }
+  },
+  "cis": {
+    "labels": {
+      "manifest": "Manifest",
+      "benchmark": "CIS benchmark to score against",
+      "autoHint": "(auto-picked from manifest platform if blank)"
+    },
+    "options": {
+      "chooseManifest": "Choose a manifest...",
+      "autoPick": "Auto-pick by platform",
+      "fullCis": "[Full CIS]",
+      "azurePolicy": "[Azure Policy]",
+      "rules": "{{count}} rules"
+    },
+    "compareButton": "Compare against CIS",
+    "compareLoading": "Comparing...",
+    "loading": "Scoring {{manifest}} against CIS...",
+    "complianceAgainst": "CIS compliance against {{name}} v{{version}}",
+    "rulesCovered": "{{covered}} of {{total}} CIS rules covered",
+    "secondary": "Secondary view: {{matched}} of {{total}} manifest resources matched a CIS rule.",
+    "noBenchmark": "No CIS benchmark available. Drop a CIS file into the CIS Mapping folder and try again.",
+    "filters": {
+      "all": "All resources ({{count}})",
+      "covered": "Covered in manifest ({{count}})",
+      "missing": "Missing from CIS ({{count}})"
+    },
+    "placeholders": {
+      "missing": "Filter by CIS rule title or section...",
+      "resources": "Filter by resource or rule name..."
+    },
+    "table": {
+      "section": "Section",
+      "missingRule": "CIS Rule (missing from manifest)",
+      "recommendedValue": "Recommended value",
+      "notSpecified": "(not specified)",
+      "status": "Status",
+      "resource": "Resource",
+      "type": "Type",
+      "cisRule": "CIS Rule",
+      "source": "Source"
+    },
+    "empty": {
+      "noMissingMatch": "No missing CIS rules match your filter.",
+      "nothingMissing": "Nothing missing! All CIS rules are covered.",
+      "noResults": "No results.",
+      "noResourceMatch": "No resources match your filter.",
+      "pickManifest": "Pick a manifest and click <strong>Compare against CIS</strong> to see your compliance score",
+      "description": "Shows how much of the CIS benchmark your manifest covers, plus the rules still missing"
+    },
+    "sort": {
+      "unmappedFirst": "Click to sort: unmapped first",
+      "mappedFirst": "Click to sort: mapped first",
+      "clear": "Click to clear sort",
+      "aria": "Sort by status"
+    },
+    "aria": {
+      "mapped": "Mapped to CIS rule",
+      "notMapped": "Not mapped to any CIS rule"
+    },
+    "noCisRule": "No CIS rule"
+  }
+}

@@ -1,0 +1,20 @@
+# .gitattributes for ConfigForge
+#
+# Default: let git auto-detect text vs binary. Override when needed.
+
+* text=auto
+
+# v0.2.0+: shell scripts must keep LF line endings even on Windows checkouts.
+# Without this, scripts/verify-no-cli-binary.sh (called by release.yml) blows
+# up with "set: pipefail: invalid option name" on Linux runners because the
+# shebang and set lines come through with trailing CR. See CHANGELOG.md
+# Phase F notes.
+*.sh                                text eol=lf
+scripts/**                          text eol=lf
+
+# Legacy bundled CLI binaries — historical entries from v0.1.x, kept for the
+# rare case a contributor drops a dev-only oscfg.exe / oscfg into the
+# convenience drop dir under resources/oscfg/. Never shipped to users.
+resources/oscfg/win32-x64/oscfg.exe binary
+resources/oscfg/win32-x64/*.pdb     binary
+resources/oscfg/linux-x64/oscfg     binary

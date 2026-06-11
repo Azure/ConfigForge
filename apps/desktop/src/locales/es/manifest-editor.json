@@ -1,0 +1,178 @@
+{
+  "actions": {
+    "auditPack": "Audit Pack",
+    "auditPackTitle": "Generate auditor-ready PDF / Markdown deliverable",
+    "back": "Atrás",
+    "docs": "Docs",
+    "duplicate": "Duplicate",
+    "duplicateTitle": "Duplicate this manifiesto",
+    "edit": "Editar",
+    "export": "Exportar",
+    "generateDocsTitle": "Generate documentation",
+    "history": "Historial",
+    "leaveUnsavedConfirm": "You have unguardard changes to \"{{name}}\". Leave anyway and discard them?",
+    "noRevertTitle": "No previous implementar to revert",
+    "remove": "Quitar",
+    "removeConfirm": "Quitar manifiesto \"{{name}}\"? This action canno be undone.",
+    "revert": "Revert",
+    "revertConfirm": "Revert manifiesto \"{{name}}\"?\n\nIf a pre-implementar snapshot exists, su prior configuración will be re-applied to this device. If sin snapshot exists, OSConfig enforcement of this manifiesto will be quitard and the manifiesto will be unregistered. Either way, this manifiesto will sin longer be actively enforced on this device.",
+    "revertTitle": "Undo the last implementarment of this manifiesto from this device. If a pre-implementar snapshot exists, prior configuración are re-applied; otherwise OSConfig enforcement is quitard."
+  },
+  "compliance": {
+    "emptyDescription": "Texto localizado: Ejecutar Auditar or Enforce to check this baseline against the device.",
+    "emptyTitle": "No compliance data yet.",
+    "sectionTitle": "Cumplimiento Estado"
+  },
+  "content": {
+    "editorView": "Editaror",
+    "mofEditUnsupported": "Editaring is no supported in MOF format",
+    "mofReadOnly": "MOF is read-only",
+    "sectionTitle": "Manifiesto Content",
+    "unsavedFormatChanges": "You have unguardard changes in {{format}}. Switching tabs preserves them; guardar antes navigating away.",
+    "visualBuilderView": "Visual Builder"
+  },
+  "cspTroubleshooting": {
+    "declaredConfig": "CSP (Configuration Service Provider) recursos need the Declared Configuration infrastructure",
+    "engineRegistered": "Texto localizado: To use CSP recursos, ensure the OSConfig engine service is properly registered",
+    "registryWorks": "Registry recursos (Microsoft.Windows/Registry) work without agregaritional setup",
+    "title": "CSP Recursos Require Agregaritional Setup",
+    "tryMetadata": "Try: <code>Get-OSConfigMetadata</code> to verify the engine is working"
+  },
+  "deploy": {
+    "auditDescription": "Check compliance only",
+    "confirm": "Texto localizado: Implementar manifiesto \"{{name}}\" in {{mode}} mode to this device?",
+    "enforceDescription": "Aplicar configuración to device",
+    "enforceRiskConfirm": "WARNING: Enforce will APPLY configuración to this device.\n\nThis action may change Windows or Linux security policy in ways that can break login, networking, RDP, or instalado software, and recovery may require a local administradoristrator or boot media.\n\nProceed at su own risk. This action may break su machine.\n\nContinuar with enforce?",
+    "mixedPlatform": "This manifiesto mixes Windows and Linux recurso tipos. Split it into per-plataforma manifiestos antes implementaring.",
+    "mode": {
+      "audit": "Audit (compliance check only)",
+      "enforce": "Enforce (apply configuración)"
+    }
+  },
+  "deployResult": {
+    "compliant": "Compliant",
+    "couldNotRead": "Could no read",
+    "couldNotReadTitle": "Recursos the CLI could no read (provider no supported, transport error, or unsupported ruta). These are NOT counted as non-compliant. The device may really be in the desired state.",
+    "deployedAt": "Implementared at {{time}}",
+    "host": "Host",
+    "nonCompliant": "Non-compliant",
+    "viewResources": "View {{count}} recursos",
+    "warning": "Advertencia"
+  },
+  "docs": {
+    "copied": "Copiado",
+    "copy": "Copiar",
+    "downloadMarkdown": "Descargar .md",
+    "errorMarkdown": "# Error\n\n{{message}}",
+    "title": "Generated Documentation"
+  },
+  "errors": {
+    "deleteFailed": "Eliminar con error",
+    "deployFailed": "Implementar con error",
+    "duplicateFailed": "Error to duplicate manifiesto",
+    "exportFailed": "Exportar con error",
+    "generateDocsFailed": "Error to generate documentation",
+    "loadFormatFailed": "Error to load {{format}} format",
+    "loadManifestFailed": "Error to load manifiesto",
+    "revertFailed": "Revert con error",
+    "saveFailed": "Guardar con error",
+    "unknown": "Desconocido error"
+  },
+  "export": {
+    "documentation": "Documentation (.md)",
+    "formats": {
+      "azurePolicy": "Azure Policy (.json)",
+      "csv": "CSV (.csv)",
+      "json": "JSON (.json)",
+      "mof": "MOF (.mof)",
+      "yaml": "YAML (.osc.yaml)"
+    }
+  },
+  "features": {
+    "audit": "Auditar",
+    "deploy": "Implementar"
+  },
+  "formatErrors": {
+    "formatLoadFailed": "# Error to load {{format}} ({{message}})",
+    "jsonLoadFailed": "// Error to load JSON ({{message}})"
+  },
+  "header": {
+    "source": "Origen: {{source}}"
+  },
+  "messages": {
+    "reverted": "Manifiesto reverted",
+    "saveSuccess": "Manifiesto \"{{name}}\" guardard correctofully",
+    "savedWithWarning": "Guardard with advertencia: {{warning}}"
+  },
+  "platform": {
+    "crossPlatform": "⚙️ Cross-plataforma",
+    "linux": "🐧 Linux",
+    "test": "🔒 Test",
+    "windows": "🪟 Windows"
+  },
+  "rationale": {
+    "backToManifest": "Atrás to manifiesto",
+    "downloadCsv": "Descargar CSV",
+    "downloadCsvTitle": "Descargar all rationale entries as CSV",
+    "emptyDescription": "Abrir the editor, change a valor, and click Guardar. The “Why?” prompt captures rationale for every change.",
+    "emptyTitle": "No rationale captured yet.",
+    "filterCount": "{{visible}} of {{total}}",
+    "filterPlaceholder": "Filtrar by recurso, author, or reason text…",
+    "loadErrorTitle": "Could no load rationale log",
+    "loading": "Loading rationale log…",
+    "logDescription": "Every change captured by the “Why?” prompt in the editor. Chronological, cross-recurso. Auditaror-grade.",
+    "logTitle": "Rationale Log:",
+    "noFilterMatches": "No entries match the real filtrar.",
+    "noReasonSkipped": "(sin reason: skipped by author)",
+    "showSkipped": "Show skipped entries",
+    "skippedBadge": "Skipped",
+    "stats": {
+      "skipped": "Omitirped",
+      "total": "Total entries",
+      "withRationale": "With rationale"
+    },
+    "table": {
+      "author": "Author",
+      "reason": "Reason",
+      "resource": "Recurso",
+      "timestamp": "Timestamp"
+    },
+    "unknownAuthor": "Desconocido"
+  },
+  "resourceDetails": {
+    "desiredValue": "Desired Valor",
+    "path": "Path",
+    "property": "Property",
+    "reason": "Reason",
+    "value": "Valor"
+  },
+  "resourceEdit": {
+    "cancelAria": "Cancelar and discard changes",
+    "title": "Editar recurso"
+  },
+  "tables": {
+    "reason": "Reason",
+    "resource": "Recurso",
+    "resources": "Recursos",
+    "showAllResources": "Show all {{count}} recursos",
+    "showingFirst": "(mostraring first {{count}})",
+    "showingFirstForPerformance": "(mostraring first {{count}} for performance)",
+    "status": "Estado",
+    "type": "Tipo"
+  },
+  "tabs": {
+    "json": "JSON",
+    "mof": "MOF",
+    "yaml": "YAML"
+  },
+  "visual": {
+    "addResource": "Agregar Recurso",
+    "currentResources": "Real Recursos ({{count}})",
+    "groupCount": "Group · {{count}}",
+    "noResources": "No recursos in manifiesto.",
+    "parseError": "Could no parse manifiesto YAML. Switch to Editaror ver to fix syntax errors.",
+    "resourceFallback": "Recurso {{index}}",
+    "unknown": "Desconocido",
+    "usePicker": "Texto localizado: Use the picker to agregar recursos."
+  }
+}

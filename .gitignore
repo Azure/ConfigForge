@@ -1,0 +1,83 @@
+node_modules/
+.next/
+*.log
+
+# Build output
+out/
+build/
+dist/
+
+# Phase 8 exception: apps/desktop/build/ holds electron-builder
+# resource files (icon.ico, icon.png, etc.) that DO need to be
+# committed — without them the installer build fails. Cert files
+# inside this dir are still ignored by the explicit rules below.
+!apps/desktop/build/
+!apps/desktop/build/**
+
+# Local env
+.env*.local
+.env.local
+
+# Editor / OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# TS incremental build info
+*.tsbuildinfo
+next-env.d.ts
+
+# Probe evidence logs from scripts/*.ps1
+smoke-test.log
+discovery.log
+types-probe.log
+/*.log
+
+# CIS Benchmark content is licensed by CIS and not redistributable.
+# Block ANY CIS-derived data file from being committed accidentally.
+# See public/_baselines/cis/README.md for how users can drop their own
+# legally-licensed copies in for local development.
+.cis-source/
+public/_baselines/cis/_data/
+public/_baselines/cis/cis-ws*.osc.yaml
+public/_baselines/cis/cis-ws*.osc.yml
+
+# mdBook build output (PR29)
+docs/book/
+# mdbook-mermaid asset files (staged into docs/ at build time)
+docs/mermaid.min.js
+docs/mermaid-init.js
+
+# vercel-labs skills (local AI helpers, not source)
+.skills/
+
+# scratch files used for crafting commit messages
+.commit-msg.tmp
+
+# Phase 7 — Playwright artifacts
+# test-results/ is per-run output; playwright-report/ is the HTML
+# reporter output; .last-run.json is the test runner cache.
+test-results/
+playwright-report/
+.last-run.json
+
+# Phase 8 — packaging artifacts
+# release/ is electron-builder's output dir (per electron-builder.yml)
+# Cert files MUST NOT be committed — they're generated locally per dev
+# via apps/desktop/scripts/generate-dev-cert.ps1
+apps/desktop/release/
+apps/desktop/build/dev-cert.pfx
+apps/desktop/build/dev-cert.cer
+apps/desktop/build/*.pem
+*.pfx
+*.p12
+
+
+# Local debug artifacts (never commit)
+_bug_frames/
+_*.png
+_test_*.js
+
+# CIS XCCDF/OVAL benchmark files (licensed, do not commit)
+public/_baselines/cis/_data/CIS_*.xml

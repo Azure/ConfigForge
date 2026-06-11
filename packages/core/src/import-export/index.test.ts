@@ -1,0 +1,338 @@
+// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License.
+
+/**
+ * PR17: hardening tests for parseSecurityDefinition.
+ *
+ * The function previously called `JSON.parse` directly and let the raw
+ * SyntaxError bubble up to the API route. PR17 wraps the call so the
+ * caller gets a stable, descriptive `Error("Invalid JSON in security
+ * definition: …")` and can return a 400 with a useful message instead
+ * of a generic 500.
+ */
+import { describe, expect, it } from 'vitest';
+import { parseSecurityDefinition } from './index';
+
+describe('parseSecurityDefinition (PR17 hardening)', () => {
+  it('throws a descriptive Error on malformed JSON', () => {
+    expect(() => parseSecurityDefinition('{not json')).toThrowError(
+      /Invalid JSON in security definition/i,
+    );
+  });
+
+  it('throws when document is a JSON primitive (string)', () => {
+    expect(() => parseSecurityDefinition('"just a string"')).toThrowError(
+      /document must be an object/i,
+    );
+  });
+
+  it('throws when document is null', () => {
+    expect(() => parseSecurityDefinition('null')).toThrowError(
+      /document must be an object/i,
+    );
+  });
+
+  it('does not throw on otherwise empty but valid object', () => {
+    const out = parseSecurityDefinition('{}');
+    expect(out.name).toBe('Unknown');
+    expect(out.settings).toEqual([]);
+  });
+
+  it('tolerates non-array `Settings` field without crashing', () => {
+    // Pre-fix this happened to work, but the shape-safety needs a regression
+    // test so future edits don't reintroduce a crash on weird payloads.
+    const out = parseSecurityDefinition('{"Name":"X","Settings":"not-an-array"}');
+    expect(out.name).toBe('X');
+    expect(out.settings).toEqual([]);
+  });
+});
+
+// ── exportToAzurePolicy structural shape (2026-05-19 LAPS-aligned rewrite) ──
+//
+// Previous emitter wrote a stub policy that was missing every field
+// Azure actually needs to deploy / audit a guest configuration:
+// requiredProviders, contentType/contentUri/contentHash in metadata,
+// configurationParameter mapping (both the metadata object form AND
+// the deployment-template array form), per-setting ARM parameters,
+// parameterHash existenceCondition, dual VM+Arc deployment resources,
+// versions[]. These tests lock the new structural contract — it
+// mirrors a real Microsoft-shipped GC baseline (LAPSCustomPolicy.Json)
+// so the emitted JSON can be deployed via the Azure Policy REST API.
+import { exportToAzurePolicy } from './index';
+
+describe('exportToAzurePolicy structural shape', () => {
+  const lapsResources = [
+    {
+      name: 'PasswordBackup',
+      type: 'Microsoft.OSConfig/Test',
+      properties: {
+        resource: {
+          type: 'Microsoft.Windows/Registry',
+          properties: {
+            keyPath: 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\LAPS',
+            valueName: 'BackupDirectory',
+            valueType: 'Dword',
+            value: 1,
+          },
+        },
+      },
+      compliance: { equals: 1 },
+    },
+    {
+      name: 'PasswordLength',
+      type: 'Microsoft.OSConfig/Test',
+      properties: {
+        resource: {
+          type: 'Microsoft.Windows/Registry',
+          properties: {
+            keyPath: 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\LAPS',
+            valueName: 'PasswordLength',
+            valueType: 'Dword',
+            value: 15,
+          },
+        },
+      },
+      compliance: { equals: 15 },
+    },
+  ];
+
+  function policyOf(resources: unknown, options?: Parameters<typeof exportToAzurePolicy>[2]) {
+    return JSON.parse(exportToAzurePolicy('TestPolicy', resources, options)) as {
+      properties: {
+        metadata: {
+          requiredProviders: string[];
+          guestConfiguration: {
+            name: string;
+            version: string;
+            contentType: string;
+            contentUri: string;
+            contentHash: string;
+            configurationParameter: Record<string, string>;
+          };
+        };
+        parameters: Record<string, { type: string; defaultValue?: string; allowedValues?: string[] }>;
+        policyRule: {
+          if: { anyOf: unknown[] };
+          then: {
+            details: {
+              name: string;
+              existenceCondition: { allOf: Array<{ field: string; equals: string }> };
+              roleDefinitionIds?: string[];
+              deployment?: {
+                properties: {
+                  template: {
+                    parameters: Record<string, unknown>;
+                    resources: Array<{
+                      condition: string;
+                      type: string;
+                      properties: {
+                        guestConfiguration: {
+                          configurationParameter: Array<{ name: string; value: string }>;
+                        };
+                      };
+                    }>;
+                  };
+                };
+              };
+            };
+          };
+        };
+        versions: string[];
+      };
+    };
+  }
+
+  it('emits the required GuestConfiguration metadata shape', () => {
+    const p = policyOf(lapsResources, { effect: 'DeployIfNotExists' });
+    expect(p.properties.metadata.requiredProviders).toEqual(['Microsoft.GuestConfiguration']);
+    expect(p.properties.metadata.guestConfiguration.contentType).toBe('Custom');
+    // We intentionally leave contentUri / contentHash as placeholders
+    // so the operator must replace them with their actual MOF .zip URL
+    // and SHA256 hash. Shipping a default URL would silently deploy a
+    // bogus package.
+    expect(p.properties.metadata.guestConfiguration.contentUri).toBe('REPLACE_WITH_YOUR_MOF_PACKAGE_URI');
+    expect(p.properties.metadata.guestConfiguration.contentHash).toBe('REPLACE_WITH_SHA256_OF_PACKAGE_ZIP');
+  });
+
+  it('emits one ARM parameter per manifest setting + scaffolding params', () => {
+    const p = policyOf(lapsResources);
+    const paramNames = Object.keys(p.properties.parameters);
+    // Scaffolding always present.
+    expect(paramNames).toContain('IncludeArcMachines');
+    expect(paramNames).toContain('effect');
+    // One per resource.
+    expect(paramNames).toContain('PasswordBackup');
+    expect(paramNames).toContain('PasswordLength');
+    // ARM parameters default to the manifest's current value.
+    expect(p.properties.parameters.PasswordBackup.defaultValue).toBe('1');
+    expect(p.properties.parameters.PasswordLength.defaultValue).toBe('15');
+  });
+
+  it('IncludeArcMachines defaults to "false" so the policy ships Azure-only by default', () => {
+    const p = policyOf(lapsResources);
+    expect(p.properties.parameters.IncludeArcMachines.defaultValue).toBe('false');
+    expect(p.properties.parameters.IncludeArcMachines.allowedValues).toEqual(['true', 'false']);
+  });
+
+  it('configurationParameter (metadata) maps ARM names to MOF parameter names', () => {
+    const p = policyOf(lapsResources);
+    const cp = p.properties.metadata.guestConfiguration.configurationParameter;
+    expect(cp.PasswordBackup).toBe('PasswordBackup;Value');
+    expect(cp.PasswordLength).toBe('PasswordLength;Value');
+    expect(Object.keys(cp)).toHaveLength(2);
+  });
+
+  it('existenceCondition checks both complianceStatus AND parameterHash', () => {
+    const p = policyOf(lapsResources);
+    const cond = p.properties.policyRule.then.details.existenceCondition;
+    expect(cond.allOf).toHaveLength(2);
+    const fields = cond.allOf.map((c) => c.field);
+    expect(fields).toContain(
+      'Microsoft.GuestConfiguration/guestConfigurationAssignments/complianceStatus',
+    );
+    expect(fields).toContain(
+      'Microsoft.GuestConfiguration/guestConfigurationAssignments/parameterHash',
+    );
+    const hashClause = cond.allOf.find((c) =>
+      c.field.includes('parameterHash'),
+    );
+    // Hash expression references every setting's ARM parameter so any
+    // drift triggers reassignment.
+    expect(hashClause!.equals).toContain("parameters('PasswordBackup')");
+    expect(hashClause!.equals).toContain("parameters('PasswordLength')");
+    expect(hashClause!.equals).toContain('PasswordBackup;Value');
+  });
+
+  it('emits assignment name with uniqueString() so multiple policy assignments coexist', () => {
+    const p = policyOf(lapsResources);
+    const name = p.properties.policyRule.then.details.name;
+    expect(name).toMatch(/^\[concat\('TestPolicy\$pid', uniqueString/);
+  });
+
+  it('deployment template has TWO resources (VM + Arc) gated by condition', () => {
+    const p = policyOf(lapsResources, { effect: 'DeployIfNotExists' });
+    const resources = p.properties.policyRule.then.details.deployment!.properties.template.resources;
+    expect(resources).toHaveLength(2);
+    const vm = resources.find((r) => r.type.startsWith('Microsoft.Compute/'));
+    const arc = resources.find((r) => r.type.startsWith('Microsoft.HybridCompute/'));
+    expect(vm).toBeDefined();
+    expect(arc).toBeDefined();
+    expect(vm!.condition).toContain('Microsoft.Compute/virtualMachines');
+    expect(arc!.condition).toContain('Microsoft.HybridCompute/machines');
+  });
+
+  it('deployment-template configurationParameter is an ARRAY of {name, value} per setting', () => {
+    const p = policyOf(lapsResources, { effect: 'DeployIfNotExists' });
+    const vm = p.properties.policyRule.then.details.deployment!.properties.template.resources.find(
+      (r) => r.type.startsWith('Microsoft.Compute/'),
+    )!;
+    const cp = vm.properties.guestConfiguration.configurationParameter;
+    expect(cp).toHaveLength(2);
+    expect(cp[0]).toEqual({
+      name: 'PasswordBackup;Value',
+      value: "[parameters('PasswordBackup')]",
+    });
+    expect(cp[1]).toEqual({
+      name: 'PasswordLength;Value',
+      value: "[parameters('PasswordLength')]",
+    });
+  });
+
+  it('AINE (audit-only) effect omits deployment and roleDefinitionIds', () => {
+    const p = policyOf(lapsResources, { effect: 'AuditIfNotExists' });
+    expect(p.properties.policyRule.then.details.deployment).toBeUndefined();
+    expect(p.properties.policyRule.then.details.roleDefinitionIds).toBeUndefined();
+    // existenceCondition still applies for AINE so drift detection works.
+    expect(p.properties.policyRule.then.details.existenceCondition.allOf).toHaveLength(2);
+  });
+
+  it('emits a versions[] array so Azure Policy can track policy revisions', () => {
+    const p = policyOf(lapsResources, { version: '2.1.0' });
+    expect(p.properties.versions).toEqual(['2.1.0']);
+    expect(p.properties.metadata.version).toBe('2.1.0');
+    expect(p.properties.metadata.guestConfiguration.version).toBe('2.1.0');
+  });
+
+  it('handles an empty manifest (no resources) gracefully', () => {
+    const p = policyOf([]);
+    // Scaffolding params still present.
+    expect(Object.keys(p.properties.parameters)).toEqual(['IncludeArcMachines', 'effect']);
+    // configurationParameter is an empty object, not undefined.
+    expect(p.properties.metadata.guestConfiguration.configurationParameter).toEqual({});
+    // parameterHash still defined (base64 of empty string).
+    const hashClause = p.properties.policyRule.then.details.existenceCondition.allOf.find(
+      (c) => c.field.includes('parameterHash'),
+    );
+    expect(hashClause).toBeDefined();
+  });
+
+  it('unwraps Test wrappers to read inner Registry properties (compliance.equals first)', () => {
+    // Mirrors the LAPS pattern: Microsoft.OSConfig/Test wrapping
+    // Microsoft.Windows/Registry. Default value should come from
+    // compliance.equals when present, not from properties.resource.value.
+    const wrapped = [
+      {
+        name: 'TestedSetting',
+        type: 'Microsoft.OSConfig/Test',
+        properties: {
+          resource: {
+            type: 'Microsoft.Windows/Registry',
+            properties: { keyPath: 'HKLM:\\X', valueName: 'Y', value: { dword: 99 } },
+          },
+        },
+        compliance: { equals: 7 }, // wins over the inner value
+      },
+    ];
+    const p = policyOf(wrapped);
+    expect(p.properties.parameters.TestedSetting.defaultValue).toBe('7');
+  });
+});
+
+// ── exportToMof: Machine Configuration module binding (v0.3.67) ──
+//
+// Regression guard for the Export → MOF → New-GuestConfigurationPackage flow.
+// The emitted MOF must reference the real `Microsoft.OSConfig` PSGallery module
+// (NOT the bare `OSConfig`, which fails to resolve) and must NOT pin a
+// `ModuleVersion`, so the packaging cmdlet binds to whatever Microsoft.OSConfig
+// (1.2.0+) the customer has installed. Verified end-to-end against
+// GuestConfiguration 4.11.0 + Microsoft.OSConfig 1.3.11.
+import { exportToMof } from './index';
+
+describe('exportToMof — Machine Configuration module binding', () => {
+  const resources = [
+    {
+      name: 'PasswordBackup',
+      type: 'Microsoft.OSConfig/Test',
+      properties: {
+        resource: {
+          type: 'Microsoft.Windows/Registry',
+          properties: { keyPath: 'HKLM:\\SOFTWARE\\X', valueName: 'BackupDirectory', valueType: 'Dword', value: 1 },
+        },
+        schema: { const: 2 },
+      },
+    },
+  ];
+
+  it('references the real Microsoft.OSConfig module so New-GuestConfigurationPackage can resolve it', () => {
+    const mof = exportToMof('LapsBaseline', resources);
+    expect(mof).toContain('ModuleName = "Microsoft.OSConfig";');
+  });
+
+  it('does NOT emit the bare "OSConfig" module name (the pre-fix value that failed packaging)', () => {
+    const mof = exportToMof('LapsBaseline', resources);
+    expect(mof).not.toContain('ModuleName = "OSConfig";');
+  });
+
+  it('omits ModuleVersion so packaging binds to any installed Microsoft.OSConfig (no exact-version pin)', () => {
+    const mof = exportToMof('LapsBaseline', resources);
+    expect(mof).not.toMatch(/ModuleVersion\s*=/);
+  });
+
+  it('still emits the OSConfig DSC resource class and the configuration footer', () => {
+    const mof = exportToMof('LapsBaseline', resources);
+    expect(mof).toContain('instance of OSConfig as $OSConfig0ref');
+    expect(mof).toContain('instance of OMI_ConfigurationDocument');
+    // The inner Registry resource survived unwrapping into the MOF Properties.
+    expect(mof).toContain('BackupDirectory');
+  });
+});

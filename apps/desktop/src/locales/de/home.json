@@ -1,0 +1,91 @@
+{
+  "page": {
+    "title": "Dashboard",
+    "description": "OSConfig Gen 2 security baseline management"
+  },
+  "interrupted": {
+    "title": "A bereitstellen of “{{name}}” may have been interrupted",
+    "description": "Your device may be in a partially-applied state{{startedAt}}. Ausführen an audit to check aktuell compliance, or revert to the pre-bereitstellen snapshot.",
+    "startedAt": " (started {{time}})",
+    "actions": {
+      "auditCompliance": "Audit durchführen compliance",
+      "openManifest": "Öffnen Manifest",
+      "handled": "I’ve handled it"
+    }
+  },
+  "editorMode": {
+    "aria": "Bearbeitenor mode hero",
+    "sectionTitle": "You’re in Bearbeitenor mode",
+    "sectionDescription": "ConfigForge is fully usable for authoring, Vergleich, vergleichen, and export. Bereitstellen / Audit durchführen / Revert against this device require OSConfig installiert locally. Install it any time and click Erneut prüfen on the footer pill.",
+    "actions": {
+      "browseLibrary": "Durchsuchen the baseline Bibliothek",
+      "installOsconfig": "Install OSConfig",
+      "hide": "Hide for now"
+    },
+    "installAria": "Öffnen OSConfig install instructions in Ihre default browser"
+  },
+  "firstRun": {
+    "aria": "Get started",
+    "sectionTitle": "Get started: register Ihre first Manifest",
+    "sectionDescription": "ConfigForge works against OSConfig Manifeste. Durchsuchen the bundled baseline Bibliothek (WS2019/2022/2025 server roles, Defender, LAPS) for ready-to-use content, or register Ihre own YAML.",
+    "actions": {
+      "browseLibrary": "Durchsuchen the baseline Bibliothek",
+      "registerOwn": "Register Ihre own"
+    }
+  },
+  "systemHealth": {
+    "sectionTitle": "System Integrität",
+    "sectionDescription": "OSConfig module & environment Status",
+    "labels": {
+      "osconfig": "OSConfig",
+      "admin": "Admin",
+      "serverType": "Server Typ",
+      "osVersion": "OS Version"
+    },
+    "values": {
+      "oscfgUnknown": "Oscfg unbekannt",
+      "notInstalled": "Nicht installiert",
+      "elevated": "Elevated",
+      "standard": "Standard",
+      "unknown": "Unbekannt"
+    }
+  },
+  "stats": {
+    "registeredManifests": "Registered Manifeste"
+  },
+  "validation": {
+    "label": "Validation",
+    "subtitle": "Überprüfen Manifeste & check export readiness",
+    "cta": "Ausführen check"
+  },
+  "quickActions": {
+    "sectionTitle": "Quick Aktionen",
+    "newManifest": "New Manifest",
+    "browseLibrary": "Durchsuchen Bibliothek",
+    "compareManifests": "Vergleichen Manifeste"
+  },
+  "recentActivity": {
+    "sectionTitle": "Recent Activity",
+    "emptyTitle": "Nein recent activity recorded",
+    "emptyDescription": "Activity will appear here as Sie manage Manifeste and baselines.",
+    "fallback": "{{type}} '{{name}}'",
+    "types": {
+      "registered": "Registered",
+      "deployed": "Bereitstellened",
+      "deployed-audit": "Bereitstellened-audit",
+      "deployed-enforce": "Bereitstellened-enforce",
+      "reverted": "Reverted"
+    },
+    "relative": {
+      "justNow": "Just now",
+      "minute_one": "{{count}} minute ago",
+      "minute_other": "{{count}} minutes ago",
+      "hour_one": "{{count}} hour ago",
+      "hour_other": "{{count}} hours ago",
+      "day_one": "{{count}} day ago",
+      "day_other": "{{count}} days ago",
+      "month_one": "{{count}} month ago",
+      "month_other": "{{count}} months ago"
+    }
+  }
+}

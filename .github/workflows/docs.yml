@@ -1,0 +1,111 @@
+name: docs
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+      - 'README.md'
+  pull_request:
+    paths:
+      - 'docs/**'
+      - '.github/workflows/docs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# CF-SEC-009 — pin both the mdbook-mermaid version AND the SHA256 of
+# the prebuilt tarball. The previous workflow streamed the tarball
+# straight into `tar -xz` with no integrity check; a compromised GitHub
+# release asset or transit MITM could have executed arbitrary code in
+# the docs build job. Keep both jobs in sync via these env vars.
+env:
+  MDBOOK_MERMAID_VERSION: '0.14.0'
+  MDBOOK_MERMAID_TARBALL: 'mdbook-mermaid-v0.14.0-x86_64-unknown-linux-gnu.tar.gz'
+  MDBOOK_MERMAID_SHA256: '37364965fb190cf9929d93c930c6b6c69b2fed05f7658ea2d312882ed59c645e'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mdBook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: '0.4.40'
+
+      - name: Install mdbook-mermaid (verified)
+        run: |
+          set -euo pipefail
+          URL="https://github.com/badboy/mdbook-mermaid/releases/download/v${MDBOOK_MERMAID_VERSION}/${MDBOOK_MERMAID_TARBALL}"
+          curl -sSfL "$URL" -o "$MDBOOK_MERMAID_TARBALL"
+          echo "${MDBOOK_MERMAID_SHA256}  ${MDBOOK_MERMAID_TARBALL}" | sha256sum -c -
+          tar -xzf "$MDBOOK_MERMAID_TARBALL"
+          chmod +x mdbook-mermaid
+          rm -f "$MDBOOK_MERMAID_TARBALL"
+          echo "$PWD" >> "$GITHUB_PATH"
+
+      - name: Stage mermaid assets
+        run: |
+          cd docs
+          mdbook-mermaid install .
+
+      - name: Lint markdown
+        uses: DavidAnson/markdownlint-cli2-action@v18
+        with:
+          globs: 'docs/src/**/*.md'
+
+      - name: Build book
+        run: cd docs && mdbook build
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: book
+          path: docs/book
+          retention-days: 7
+
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install mdBook
+        uses: peaceiris/actions-mdbook@v2
+        with:
+          mdbook-version: '0.4.40'
+
+      - name: Install mdbook-mermaid (verified)
+        run: |
+          set -euo pipefail
+          URL="https://github.com/badboy/mdbook-mermaid/releases/download/v${MDBOOK_MERMAID_VERSION}/${MDBOOK_MERMAID_TARBALL}"
+          curl -sSfL "$URL" -o "$MDBOOK_MERMAID_TARBALL"
+          echo "${MDBOOK_MERMAID_SHA256}  ${MDBOOK_MERMAID_TARBALL}" | sha256sum -c -
+          tar -xzf "$MDBOOK_MERMAID_TARBALL"
+          chmod +x mdbook-mermaid
+          rm -f "$MDBOOK_MERMAID_TARBALL"
+          echo "$PWD" >> "$GITHUB_PATH"
+
+      - name: Stage mermaid assets
+        run: |
+          cd docs
+          mdbook-mermaid install .
+
+      - name: Build book
+        run: cd docs && mdbook build
+
+      - name: Deploy to gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs/book
+          publish_branch: gh-pages
+          force_orphan: true
+          commit_message: 'docs: deploy ${{ github.sha }}'

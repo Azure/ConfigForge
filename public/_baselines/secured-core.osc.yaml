@@ -1,0 +1,40 @@
+$schema: https://aka.ms/osc/schemas/prerelease/document.json
+resources:
+  - name: ConfigureSystemGuardLaunch
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/DeviceGuard/ConfigureSystemGuardLaunch
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: EnableVirtualizationBasedSecurity
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/DeviceGuard/EnableVirtualizationBasedSecurity
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: HypervisorEnforcedCodeIntegrity
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/VirtualizationBasedTechnology/HypervisorEnforcedCodeIntegrity
+          type: integer
+          value: 2
+      schema:
+        minimum: 1
+        maximum: 2
