@@ -77,7 +77,7 @@ test('Diff "Select manifest" stays clickable and operable after rapid editor chu
   // (find) before each dispose to stress the orphan-prone path — this is the
   // rapid manifests/edit/CIS↔Diff navigation the freeze was reported under.
   for (let i = 0; i < 5; i++) {
-    await nav('CIS Mapping');
+    await nav('Industry Benchmark Mapping');
     await nav('Manifests');
     await nav('Diff');
     const editor = win.locator('.monaco-editor').first();
