@@ -1,6 +1,6 @@
 {
   "extracted": {
-    "text1": "CIS Mapping",
+    "text1": "Asignación de referencias del sector",
     "text2": "Cross-reference su OSConfig recursos against CIS Benchmark rules. Drop su CIS archivos into the carpeta below and the editor will mostrar matching rules as usted navigate the YAML.",
     "text3": "Once CIS data is loaded, a",
     "text4": "CIS",
