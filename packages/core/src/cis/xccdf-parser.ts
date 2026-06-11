@@ -102,10 +102,14 @@ function normalizeHive(hive: string): string {
 }
 
 function normalizeKey(key: string): string {
-  return key
-    .replace(/^\\+/, '')
-    .replace(/\\+$/, '')
-    .replace(/\\{2,}/g, '\\');
+  // Strip leading/trailing backslashes by index (not anchored-quantifier
+  // regexes like /\\+$/, which trigger js/polynomial-redos), then collapse
+  // internal runs of backslashes to a single one.
+  let start = 0;
+  let end = key.length;
+  while (start < end && key[start] === '\\') start++;
+  while (end > start && key[end - 1] === '\\') end--;
+  return key.slice(start, end).replace(/\\{2,}/g, '\\');
 }
 
 export function canonicalRegistryPath(
@@ -187,7 +191,7 @@ const TITLE_STOPWORDS = new Set([
 export function splitPascalCase(s: string): string[] {
   if (!s) return [];
   return s
-    .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2')
+    .replace(/([A-Z])([A-Z][a-z])/g, '$1 $2')
     .replace(/([a-z\d])([A-Z])/g, '$1 $2')
     .replace(/[^A-Za-z0-9\s]/g, ' ')
     .toLowerCase()

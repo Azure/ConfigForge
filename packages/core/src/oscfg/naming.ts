@@ -12,12 +12,15 @@ const SLUG_MAX_LEN = 96;
 export function sanitizeNamespace(input: string): string {
   if (!input) return '';
   const trimmed = input.trim();
-  // Replace any char outside [A-Za-z0-9._-] with '-'
-  const slug = trimmed
-    .replace(/[^A-Za-z0-9._-]+/g, '-')
-    .replace(/^-+|-+$/g, '')
-    .slice(0, SLUG_MAX_LEN);
-  return slug;
+  // Replace any char outside [A-Za-z0-9._-] with '-', then strip leading/
+  // trailing '-'. The strip is done by index rather than an anchored-quantifier
+  // regex (e.g. /^-+|-+$/) to avoid js/polynomial-redos backtracking.
+  const collapsed = trimmed.replace(/[^A-Za-z0-9._-]+/g, '-');
+  let start = 0;
+  let end = collapsed.length;
+  while (start < end && collapsed[start] === '-') start++;
+  while (end > start && collapsed[end - 1] === '-') end--;
+  return collapsed.slice(start, end).slice(0, SLUG_MAX_LEN);
 }
 
 export function isValidNamespace(input: string): boolean {

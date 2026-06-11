@@ -123,7 +123,7 @@ function detectJsonImportShape(doc: Record<string, unknown>): JsonImportShape {
   // CSV→YAML→JSON-wrapped baseline packages use. Before this change,
   // the empty top-level `resources: []` made these files silently
   // import as 0-resource manifests.
-  if (source && /(^|\n)\s*resources\s*:/.test(source)) {
+  if (source && /(?:^|\n)[ \t]*resources[ \t]*:/.test(source)) {
     return { kind: 'embeddedSource', source };
   }
 

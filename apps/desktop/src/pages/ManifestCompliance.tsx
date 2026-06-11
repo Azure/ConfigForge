@@ -603,8 +603,8 @@ function renderMarkdown(data: ComplianceResponse): string {
   for (const row of r.perRule) {
     const my = row.myValue === undefined ? "" : "`" + JSON.stringify(row.myValue) + "`";
     const exp = row.expected === undefined ? "" : "`" + JSON.stringify(row.expected) + "`";
-    const gpo = row.gpoPath ? row.gpoPath.replace(/\|/g, "\\|") : "";
-    const name = row.ruleName.replace(/\|/g, "\\|");
+    const gpo = row.gpoPath ? row.gpoPath.replace(/\\/g, "\\\\").replace(/\|/g, "\\|") : "";
+    const name = row.ruleName.replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
     out.push(`| ${row.status} | ${row.severity} | ${name} | ${gpo} | ${my} | ${exp} |`);
   }
   if (r.extras.length > 0) {
