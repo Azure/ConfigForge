@@ -1,6 +1,6 @@
 {
   "extracted": {
-    "text1": "CIS Mapping",
+    "text1": "Industry Benchmark Mapping",
     "text2": "Cross-reference your OSConfig resources against CIS Benchmark rules. Drop your CIS files into the folder below and the editor will show matching rules as you navigate the YAML.",
     "text3": "Once CIS data is loaded, a",
     "text4": "CIS",
