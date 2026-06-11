@@ -295,8 +295,8 @@ export function reportToMarkdown(
   for (const r of report.perRule) {
     const my = r.myValue === undefined ? '' : '`' + JSON.stringify(r.myValue) + '`';
     const exp = r.expected === undefined ? '' : '`' + JSON.stringify(r.expected) + '`';
-    const gpo = r.gpoPath ? r.gpoPath.replace(/\|/g, '\\|') : '';
-    const name = r.ruleName.replace(/\|/g, '\\|');
+    const gpo = r.gpoPath ? r.gpoPath.replace(/\\/g, '\\\\').replace(/\|/g, '\\|') : '';
+    const name = r.ruleName.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
     out.push(`| ${r.status} | ${r.severity} | ${name} | ${gpo} | ${my} | ${exp} |`);
   }
 

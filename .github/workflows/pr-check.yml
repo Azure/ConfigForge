@@ -28,6 +28,11 @@ concurrency:
   group: pr-check-${{ github.workflow }}-${{ github.head_ref || github.ref }}
   cancel-in-progress: true
 
+# Least-privilege default token: these jobs only read the repo (lint, test,
+# build, e2e). No job writes contents, issues, or PRs.
+permissions:
+  contents: read
+
 # Reproducible toolchain across all jobs.
 env:
   NODE_VERSION: '22'
