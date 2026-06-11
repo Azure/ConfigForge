@@ -749,7 +749,7 @@ export function detectConflicts(
     if (v === undefined || v === null) return '∅';
     if (typeof v === 'string' && v === '') return '∅';
     if (Array.isArray(v) && v.length === 0) return '∅';
-    if (typeof v === 'object' && v !== null && !Array.isArray(v) && Object.keys(v as Record<string, unknown>).length === 0) {
+    if (typeof v === 'object' && !Array.isArray(v) && Object.keys(v as Record<string, unknown>).length === 0) {
       return '∅';
     }
     // For arrays of values (User Rights SIDs etc.) the underlying

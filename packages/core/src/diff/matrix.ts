@@ -377,14 +377,6 @@ export function extractNameWords(name: string): Set<string> {
   return new Set(tokens.filter((t) => !NAME_TOKEN_STOPWORDS.has(t)));
 }
 
-/** Jaccard similarity over two word sets. 0 if either is empty. */
-function jaccard(a: Set<string>, b: Set<string>): number {
-  if (a.size === 0 || b.size === 0) return 0;
-  let intersection = 0;
-  for (const w of a) if (b.has(w)) intersection++;
-  return intersection / (a.size + b.size - intersection);
-}
-
 /**
  * Types known to encode the same logical Windows security settings
  * across baseline versions. Restricting cross-type merge to this set
