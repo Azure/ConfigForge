@@ -68,7 +68,7 @@ The Diff page includes a **CIS Diff** tab that scores any manifest against any u
 
 ```powershell
 # Requires Node 22 LTS (see .nvmrc): `nvm use` if you have nvm.
-git clone https://github.com/ABMFST/ConfigForge.git
+git clone https://github.com/Azure/ConfigForge.git
 cd ConfigForge
 git checkout main                 # Windows + Linux full build (default)
 # OR
