@@ -43,6 +43,8 @@
     "vitest": "^4.1.5"
   },
   "overrides": {
-    "dompurify": "$dompurify"
+    "dompurify": "$dompurify",
+    "tmp": "^0.2.7",
+    "shell-quote": "^1.8.4"
   }
 }
