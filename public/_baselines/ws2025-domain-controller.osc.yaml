@@ -1,0 +1,4138 @@
+$schema: https://aka.ms/osc/schemas/prerelease/document.json
+resources:
+  - name: AfdDisableAddressSharing
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Afd\Parameters
+          valueName: DisableAddressSharing
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AllowAnonymousSIDOrNameTranslation
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_AllowAnonymousSIDOrNameTranslation
+          type: integer
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: AllowCustomSSPAPIntoLSASS
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          valueName: AllowCustomSSPsAPs
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: AllowedToFormatAndEjectRemovableMedia
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Devices_AllowedToFormatAndEjectRemovableMedia
+          type: string
+          value: '0'
+      schema: {}
+  - name: AllowICMPRedirectsToOverrideOSPFGeneratedRoutes
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
+          valueName: EnableICMPRedirect
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: AllowLocalSystemNULLSessionFallback
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_AllowLocalSystemNULLSessionFallback
+          type: integer
+          value: 0
+      schema: {}
+  - name: AllowLocalSystemToUseComputerIdentityForNTLM
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_AllowLocalSystemToUseComputerIdentityForNTLM
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AllowPKU2UAuthenticationAllowOnlineID
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\pku2u
+          valueName: AllowOnlineID
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AllowSystemToBeShutDownWithoutHavingToLogOn
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Shutdown_AllowSystemToBeShutDownWithoutHavingToLogOn
+          type: integer
+          value: 0
+      schema: {}
+  - name: AllowTheComputerToIgnoreNetBIOSNameReleaseRequestsExceptFromWINSServers
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NetBT\Parameters
+          valueName: NoNameReleaseOnDemand
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AllowUIAccessApplicationsToPromptForElevation
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_AllowUIAccessApplicationsToPromptForElevation
+          type: integer
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: AmountOfIdleTimeRequiredBeforeSuspendingSession
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkServer_AmountOfIdleTimeRequiredBeforeSuspendingSession
+          type: integer
+          value: 15
+      schema:
+        minimum: 1
+        maximum: 15
+  - name: ApplicationIdentityStartupType
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\AppIDSvc
+          valueName: Start
+          valueType: Dword
+          value: 2
+      schema:
+        oneOf:
+          - const: 2
+          - type: 'null'
+  - name: ApplicationManagementMSIAllowUserControlOverInstall
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/ApplicationManagement/MSIAllowUserControlOverInstall
+          type: integer
+          value: 0
+      schema: {}
+  - name: ApplicationManagementMSIAlwaysInstallWithElevatedPrivileges
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/ApplicationManagement/MSIAlwaysInstallWithElevatedPrivileges
+          type: integer
+          value: 0
+      schema: {}
+  - name: AppRuntimeAllowMicrosoftAccountsToBeOptional
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: MSAOptional
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuditAccountLockout
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditAccountLockout
+          type: integer
+          value: 2
+      schema:
+        enum:
+          - 2
+          - 3
+  - name: AuditAuthenticationPolicyChange
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditAuthenticationPolicyChange
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditAuthorizationPolicyChange
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditAuthorizationPolicyChange
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditBackupAndRestorePrivilege
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Audit_AuditTheUseOfBackupAndRestoreprivilege
+          type: string
+          value: MDA=
+      schema:
+        oneOf:
+          - const: MDA=
+          - type: 'null'
+  - name: AuditClientDoesNotSupportEncryption
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanServer
+          valueName: AuditClientDoesNotSupportEncryption
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuditClientDoesNotSupportSigning
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanServer
+          valueName: AuditClientDoesNotSupportSigning
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuditComputerAccountManagement
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditComputerAccountManagement
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditCredentialValidation
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogon_AuditCredentialValidation
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditDetailedFileShare
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditDetailedFileShare
+          type: integer
+          value: 2
+      schema:
+        enum:
+          - 2
+          - 3
+  - name: AuditDirectoryServiceAccess
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceAccess
+          type: integer
+          value: 2
+      schema:
+        enum:
+          - 2
+          - 3
+  - name: AuditDirectoryServiceChanges
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceChanges
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditDirectoryServiceReplication
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceReplication
+          type: integer
+          value: 0
+      schema:
+        minimum: 0
+  - name: AuditDistributionGroupManagement
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditDistributionGroupManagement
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditFileShare
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditFileShare
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditGroupMembership
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditGroupMembership
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditInsecureGuestLogon
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanServer
+          valueName: AuditInsecureGuestLogon
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuditIPsecDriver
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditIPsecDriver
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditKerberosAuthenticationService
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogon_AuditKerberosAuthenticationService
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditKerberosServiceTicketOperations
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogon_AuditKerberosServiceTicketOperations
+          type: integer
+          value: 2
+      schema:
+        oneOf:
+          - const: 2
+          - type: 'null'
+  - name: AuditLogoff
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditLogoff
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditLogon
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditLogon
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditMPSSVCRuleLevelPolicyChange
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditMPSSVCRuleLevelPolicyChange
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditOtherAccountManagementEvents
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditOtherAccountManagementEvents
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditOtherLogonLogoffEvents
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditOtherLogonLogoffEvents
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditOtherObjectAccessEvents
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditOtherObjectAccessEvents
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditOtherPolicyChangeEvents
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditOtherPolicyChangeEvents
+          type: integer
+          value: 2
+      schema:
+        enum:
+          - 2
+          - 3
+  - name: AuditOtherSystemEvents
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditOtherSystemEvents
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditPnPExternalDevice
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/DetailedTracking_AuditPNPActivity
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuditPolicyChange
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditPolicyChange
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuditProcessCreatedOrStarted
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/DetailedTracking_AuditProcessCreation
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuditRemovableStorage
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditRemovableStorage
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditSecurityGroupManagement
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditSecurityGroupManagement
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditSecurityStateChange
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditSecurityStateChange
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditSecuritySystemExtension
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditSecuritySystemExtension
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditSensitivePrivilegeUse
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/PrivilegeUse_AuditSensitivePrivilegeUse
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditServerDoesNotSupportEncryption
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation
+          valueName: AuditServerDoesNotSupportEncryption
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuditServerDoesNotSupportSigning
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation
+          valueName: AuditServerDoesNotSupportSigning
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuditSettingsIncludeCmdLine
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit
+          valueName: ProcessCreationIncludeCmdLine_Enabled
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuditSpecialLogon
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditSpecialLogon
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: AuditSystemIntegrity
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditSystemIntegrity
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AuditUserAccountManagement
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditUserAccountManagement
+          type: integer
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: AutoplayDisallowAutoplayForNonVolumeDevices
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer
+          valueName: NoAutoplayfornonVolume
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AutoplaySetDefaultAutoRunBehavior
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
+          valueName: NoAutorun
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AutoplayTurnOffAutoPlay
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
+          valueName: NoDriveTypeAutoRun
+          valueType: Dword
+          value: 255
+      schema:
+        oneOf:
+          - const: 255
+          - type: 'null'
+  - name: BehaviorOfTheElevationPromptForAdministrators
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_BehaviorOfTheElevationPromptForAdministrators
+          type: integer
+          value: 2
+      schema:
+        minimum: 1
+        maximum: 2
+  - name: BehaviorOfTheElevationPromptForStandardUsers
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_BehaviorOfTheElevationPromptForStandardUsers
+          type: integer
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: BlockConsumerMicrosoftAccounts
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\MicrosoftAccount
+          valueName: DisableUserAuth
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: BlockNetbiosDiscovery
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Netlogon\Parameters
+          valueName: BlockNetbiosDiscovery
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: BlockNTLM
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation
+          valueName: BlockNTLM
+          valueType: Dword
+          value: 0
+      schema:
+        minimum: 0
+        maximum: 1
+  - name: BlockNTLMServerExceptionList
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation
+          valueName: BlockNTLMServerExceptionList
+          valueType: Dword
+          value: []
+      schema: {}
+  - name: ClearVirtualMemoryPageFile
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Shutdown_ClearVirtualMemoryPageFile
+          type: integer
+      schema:
+        const: 0
+  - name: ConfigureDNSClientNETBIOS
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient
+          valueName: EnableNetbios
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: ConfigureKernelShadowStacksLaunch
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard
+          valueName: ConfigureKernelShadowStacksLaunch
+          valueType: Dword
+          value: 2
+      schema:
+        minimum: 1
+        maximum: 2
+  - name: ConfigureSMBV1ClientDriver
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\MrxSmb10
+          valueName: Start
+          valueType: Dword
+          value: 4
+      schema:
+        oneOf:
+          - const: 4
+          - type: 'null'
+  - name: ConfigureSMBV1Server
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          valueName: SMB1
+          valueType: Dword
+          value: 0
+      schema: {}
+  - name: ConnectivityDisableDownloadingOfPrintDriversOverHTTP
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers
+          valueName: DisableWebPnPDownload
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: ConnectivityProhibitInstallationAndConfigurationOfNetworkBridge
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Network Connections
+          valueName: NC_AllowNetBridge_NLA
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: CredentialProvidersAllowPINLogon
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          valueName: AllowDomainPINLogon
+          valueType: Dword
+          value: 0
+      schema: {}
+  - name: CredentialsDelegationRemoteHostAllowsDelegationOfNonExportableCredentials
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CredentialsDelegation
+          valueName: AllowProtectedCreds
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: CredentialsUIDisablePasswordReveal
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CredUI
+          valueName: DisablePasswordReveal
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: CredentialsUIEnumerateAdministrators
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\CredUI
+          valueName: EnumerateAdministrators
+          valueType: Dword
+          value: 0
+      schema: {}
+  - name: CredSspAllowEncryptionOracle
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\CredSSP\Parameters
+          valueName: AllowEncryptionOracle
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: CryptographyAllowedKerberosEncryptionTypes
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters
+          valueName: SupportedEncryptionTypes
+          valueType: Dword
+          value: 2147483640
+      schema:
+        enum:
+          - 2147483624
+          - 2147483632
+          - 2147483640
+  - name: CryptographyEccCurve
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Cryptography\Configuration\SSL\00010002
+          valueName: EccCurves
+          valueType: Dword
+          value:
+            - NistP256
+            - NistP384
+      schema: {}
+  - name: CryptographyForceStrongKeyProtection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Cryptography/ConfigureSystemCryptographyForceStrongKeyProtection
+          type: integer
+          value: 2
+      schema:
+        oneOf:
+          - const: 2
+          - type: 'null'
+  - name: CryptographySSLCipherSuites
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Cryptography\Configuration\SSL\00010002
+          valueName: Functions
+          valueType: Dword
+          value:
+            - TLS_AES_128_GCM_SHA256
+            - TLS_AES_256_GCM_SHA384
+            - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
+            - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
+            - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+            - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+            - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256
+            - TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
+            - TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
+            - TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
+      schema: {}
+  - name: DetectApplicationInstallationsAndPromptForElevation
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_DetectApplicationInstallationsAndPromptForElevation
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DeviceGuardRequireMicrosoftSignedBootChain
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\DeviceGuard
+          valueName: RequireMicrosoftSignedBootChain
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DeviceGuardRequirePlatformSecurityFeatures
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/DeviceGuard/RequirePlatformSecurityFeatures
+          type: integer
+          value: 1
+      schema:
+        enum:
+          - 1
+          - 3
+  - name: DeviceGuardRequireUEFIMemoryAttributesTable
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DeviceGuard
+          valueName: HVCIMATRequired
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DeviceInstallationPreventDeviceMetadataFromNetwork
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Device Metadata
+          valueName: PreventDeviceMetadataFromNetwork
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DeviceLockAccountLockoutPolicy
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/DeviceLock/AccountLockoutPolicy
+          type: string
+          value: AccountLockoutDuration:15, AccountLockoutThreshold:3, ResetAccountLockoutCounterAfter:15
+      schema: {}
+  - name: DeviceLockClearTextPassword
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/DeviceLock/ClearTextPassword
+          type: integer
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: DeviceLockMaximumPasswordAge
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/DeviceLock/MaximumPasswordAge
+          type: integer
+          value: 42
+      schema:
+        minimum: 1
+        maximum: 60
+  - name: DeviceLockMinimumPasswordAge
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/DeviceLock/MinimumPasswordAge
+          type: integer
+          value: 1
+      schema:
+        minimum: 1
+  - name: DeviceLockPasswordComplexity
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/DeviceLock/PasswordComplexity
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DeviceLockPasswordHistorySize
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/DeviceLock/PasswordHistorySize
+          type: integer
+          value: 24
+      schema:
+        oneOf:
+          - const: 24
+          - type: 'null'
+  - name: DeviceLockPreventEnablingLockScreenCamera
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Personalization
+          valueName: NoLockScreenCamera
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DeviceLockPreventLockScreenSlideShow
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Personalization
+          valueName: NoLockScreenSlideshow
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DigitallyEncryptOrSignSecureChannelDataAlways
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_DigitallyEncryptOrSignSecureChannelDataAlways
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DigitallyEncryptSecureChannelDataWhenPossible
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_DigitallyEncryptSecureChannelDataWhenPossible
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DigitallySignCommunicationsAlwaysClient
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkClient_DigitallySignCommunicationsAlways
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DigitallySignCommunicationsAlwaysServer
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkServer_DigitallySignCommunicationsAlways
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DigitallySignCommunicationsIfClientAgrees
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkServer_DigitallySignCommunicationsIfClientAgrees
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DigitallySignCommunicationsIfServerAgrees
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkClient_DigitallySignCommunicationsIfServerAgrees
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DigitallySignSecureChannelDataWhenPossible
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_DigitallySignSecureChannelDataWhenPossible
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DisableLocalAccountPasswordChanges
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_DisableMachineAccountPasswordChanges
+          type: integer
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: DisableSMBv1Client
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation
+          valueName: DependOnService
+          valueType: Dword
+          value:
+            - Bowser
+            - MRxSmb20
+            - NSI
+      schema: {}
+  - name: DisconnectClientsWhenLogonHoursExpire
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkServer_DisconnectClientsWhenLogonHoursExpire
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DmaGuardDeviceEnumerationPolicy
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/DmaGuard/DeviceEnumerationPolicy
+          type: integer
+          value: 0
+      schema:
+        enum:
+          - 0
+          - 1
+  - name: DnsClientTurn_Off_Multicast
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient
+          valueName: EnableMulticast
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: DODownloadMode
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DeliveryOptimization
+          valueName: DODownloadMode
+          valueType: Dword
+          value: 2
+      schema:
+        enum:
+          - 0
+          - 1
+          - 2
+          - 99
+          - 100
+  - name: DoNotAllowAnonymousEnumerationOfSAMAccounts
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_DoNotAllowAnonymousEnumerationOfSAMAccounts
+          type: integer
+          value: 1
+      schema: {}
+  - name: DoNotAllowAnonymousEnumerationOfSamAccountsAndShares
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_DoNotAllowAnonymousEnumerationOfSamAccountsAndShares
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DoNotDisplayLastSignedIn
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/InteractiveLogon_DoNotDisplayLastSignedIn
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: DoNotRequireCTRLALTDEL
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/InteractiveLogon_DoNotRequireCTRLALTDEL
+          type: integer
+          value: 0
+      schema: {}
+  - name: EnableAuthRateLimiter
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanServer
+          valueName: EnableAuthRateLimiter
+          valueType: Dword
+          value: 1
+      schema: {}
+  - name: EnableAuthRateLimiterTimeout
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          valueName: InvalidAuthenticationDelayTimeInMs
+          valueType: Dword
+          value: 2000
+      schema:
+        minimum: 2000
+        maximum: 5000
+  - name: EnabledNTPClient
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\W32Time\TimeProviders\NtpClient
+          valueName: Enabled
+          valueType: Dword
+      schema:
+        const: 0
+  - name: EnableGuestAccountStatus
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_EnableGuestAccountStatus
+          type: integer
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: EnableMailslotsLanmanServer
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Browser
+          valueName: EnableMailslots
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: EnableMailslotsLanmanWorkstation
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider
+          valueName: EnableMailslots
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: EnableStructuredExceptionHandlingOverwriteProtection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\kernel
+          valueName: DisableExceptionChainValidation
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: EncryptNTFSPagingFile
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Policies
+          valueName: NtfsEncryptPagingFile
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: EventLogChannelSecurityLogRetention
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Security
+          valueName: Retention
+          valueType: String
+          value: '0'
+      schema: {}
+  - name: EventLogChannelSetupLogMaxSize
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Setup
+          valueName: MaxSize
+          valueType: Dword
+          value: 32768
+      schema:
+        minimum: 32768
+  - name: EventLogChannelSetupLogRetention
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Setup
+          valueName: Retention
+          valueType: String
+          value: '0'
+      schema: {}
+  - name: EventLogChannelSystemLogRetention
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\System
+          valueName: Retention
+          valueType: String
+          value: '0'
+      schema: {}
+  - name: EventLogPercentageThresholdSecurityEventLogMaximumSizeReached
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Eventlog\Security
+          valueName: WarningLevel
+          valueType: Dword
+          value: 90
+      schema:
+        minimum: 50
+        maximum: 90
+  - name: EventLogServiceControlEventLogBehavior
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Application
+          valueName: Retention
+          valueType: String
+          value: '0'
+      schema: {}
+  - name: EventLogServiceSpecifyMaximumFileSizeApplicationLog
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Application
+          valueName: MaxSize
+          valueType: Dword
+          value: 32768
+      schema:
+        minimum: 32768
+  - name: EventLogServiceSpecifyMaximumFileSizeSecurityLog
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Security
+          valueName: MaxSize
+          valueType: Dword
+          value: 196608
+      schema:
+        minimum: 196608
+  - name: EventLogServiceSpecifyMaximumFileSizeSystemLog
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\System
+          valueName: MaxSize
+          valueType: Dword
+          value: 32768
+      schema:
+        minimum: 32768
+  - name: ExperienceAllowWindowsConsumerFeatures
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Experience/AllowWindowsConsumerFeatures
+          type: integer
+          value: 1
+      schema: {}
+  - name: ExperienceDisableConsumerAccountStateContent
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Experience/DisableConsumerAccountStateContent
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: ExperienceDoNotShowFeedbackNotifications
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DataCollection
+          valueName: DoNotShowFeedbackNotifications
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FileExplorerTurnOffHeapTerminationOnCorruption
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer
+          valueName: NoHeapTerminationOnCorruption
+          valueType: Dword
+          value: 0
+      schema: {}
+  - name: FirewallDomainProfileApplyLocalConnectionSecurityRules
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          valueName: AllowLocalIPsecPolicyMerge
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallDomainProfileApplyLocalFirewallRules
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          valueName: AllowLocalPolicyMerge
+          valueType: Dword
+          value: 1
+      schema: {}
+  - name: FirewallDomainProfileDisplayNotification
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          valueName: DisableNotifications
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallDomainProfileInboundConnection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          valueName: DefaultInboundAction
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallDomainProfileLogDroppedPackets
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
+          valueName: LogDroppedPackets
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallDomainProfileLogFileMaxSize
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
+          valueName: LogFileSize
+          valueType: Dword
+          value: 16384
+      schema:
+        minimum: 16384
+  - name: FirewallDomainProfileLogFileName
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
+          valueName: LogFilePath
+          valueType: String
+          value: '%SystemRoot%\System32\logfiles\firewall\domainfw.log'
+      schema:
+        pattern: .log
+  - name: FirewallDomainProfileLogSuccessfulConnections
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
+          valueName: LogSuccessfulConnections
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallDomainProfileOutboundConnection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          valueName: DefaultOutboundAction
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: FirewallDomainProfileState
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          valueName: EnableFirewall
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallDomainProfileUnicastResponse
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          valueName: DisableUnicastResponsesToMulticastBroadcast
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: FirewallPrivateProfileApplyLocalConnectionSecurityRules
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          valueName: AllowLocalIPsecPolicyMerge
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPrivateProfileApplyLocalFirewallRules
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          valueName: AllowLocalPolicyMerge
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPrivateProfileDisplayNotification
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          valueName: DisableNotifications
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPrivateProfileInboundConnection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          valueName: DefaultInboundAction
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPrivateProfileLogDroppedPackets
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
+          valueName: LogDroppedPackets
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPrivateProfileLogFileMaxSize
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
+          valueName: LogFileSize
+          valueType: Dword
+          value: 16384
+      schema:
+        minimum: 16384
+  - name: FirewallPrivateProfileLogFileName
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
+          valueName: LogFilePath
+          valueType: String
+          value: '%SystemRoot%\System32\logfiles\firewall\privatefw.log'
+      schema:
+        pattern: .log
+  - name: FirewallPrivateProfileLogSuccessfulConnections
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
+          valueName: LogSuccessfulConnections
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPrivateProfileOutboundConnection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          valueName: DefaultOutboundAction
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: FirewallPrivateProfileState
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          valueName: EnableFirewall
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPrivateProfileUnicastResponse
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          valueName: DisableUnicastResponsesToMulticastBroadcast
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: FirewallPublicProfileApplyLocalConnectionSecurityRules
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          valueName: AllowLocalIPsecPolicyMerge
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPublicProfileApplyLocalFirewallRules
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          valueName: AllowLocalPolicyMerge
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPublicProfileDisplayNotification
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          valueName: DisableNotifications
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPublicProfileInboundConnection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          valueName: DefaultInboundAction
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPublicProfileLogDroppedPackets
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
+          valueName: LogDroppedPackets
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPublicProfileLogFileMaxSize
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
+          valueName: LogFileSize
+          valueType: Dword
+          value: 16384
+      schema:
+        minimum: 16384
+  - name: FirewallPublicProfileLogFileName
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
+          valueName: LogFilePath
+          valueType: String
+          value: '%SystemRoot%\System32\logfiles\firewall\publicfw.log'
+      schema:
+        pattern: .log
+  - name: FirewallPublicProfileLogSuccessfulConnections
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
+          valueName: LogSuccessfulConnections
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPublicProfileOutboundConnection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          valueName: DefaultOutboundAction
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: FirewallPublicProfileState
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          valueName: EnableFirewall
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: FirewallPublicProfileUnicastResponse
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          valueName: DisableUnicastResponsesToMulticastBroadcast
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: ForceAuditPolicySubcategorySettingsToOverrideAuditPolicyCategorySettings
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Audit_ForceAuditPolicySubcategorySettingsToOverrideAuditPolicyCategorySettings
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: GroupPolicyDisableBackgroundPolicy
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: DisableBkGndGroupPolicy
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: GroupPolicyEnableCDP
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          valueName: EnableCdp
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: GroupPolicyNoBackgroundPolicy
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2}
+          valueName: NoBackgroundPolicy
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: GroupPolicyNoGPOListChanges
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2}
+          valueName: NoGPOListChanges
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: ICMNC_ExitOnISP
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Internet Connection Wizard
+          valueName: ExitOnMSICW
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: ImpersonateClient
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ImpersonateClient
+          type: array
+          value:
+            - '*S-1-5-32-544'
+            - '*S-1-5-6'
+            - '*S-1-5-19'
+            - '*S-1-5-20'
+      schema: {}
+  - name: IPSourceRoutingProtectionLevel
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
+          valueName: DisableIPSourceRouting
+          valueType: Dword
+          value: 2
+      schema:
+        oneOf:
+          - const: 2
+          - type: 'null'
+  - name: IPv6SourceRoutingProtectionLevel
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip6\Parameters
+          valueName: DisableIPSourceRouting
+          valueType: Dword
+          value: 2
+      schema:
+        oneOf:
+          - const: 2
+          - type: 'null'
+  - name: KDCHashAlgorithms
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\KDC\Parameters
+          valueName: PKINITHashAlgorithmConfigurationEnabled
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: KDCHashAlgorithmsSHA1
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\KDC\Parameters
+          valueName: PKINITSHA1
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: KDCHashAlgorithmsSHA256
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\KDC\Parameters
+          valueName: PKINITSHA256
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: KDCHashAlgorithmsSHA384
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\KDC\Parameters
+          valueName: PKINITSHA384
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: KDCHashAlgorithmsSHA512
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\KDC\Parameters
+          valueName: PKINITSHA512
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: KerberosHashAlgorithms
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters
+          valueName: PKINITHashAlgorithmConfigurationEnabled
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: KerberosHashAlgorithmsSHA1
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters
+          valueName: PKINITSHA1
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: KerberosHashAlgorithmsSHA256
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters
+          valueName: PKINITSHA256
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: KerberosHashAlgorithmsSHA384
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters
+          valueName: PKINITSHA384
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: KerberosHashAlgorithmsSHA512
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters
+          valueName: PKINITSHA512
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: LANManagerAuthenticationLevel
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_LANManagerAuthenticationLevel
+          type: integer
+          value: 5
+      schema:
+        oneOf:
+          - const: 5
+          - type: 'null'
+  - name: LanmanWorkstationEnableInsecureGuestLogons
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LanmanWorkstation/EnableInsecureGuestLogons
+          type: integer
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: LDAPClientSigningRequirements
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_LDAPClientSigningRequirements
+          type: integer
+          value: 1
+      schema:
+        minimum: 1
+        maximum: 2
+  - name: LDAPServerChannelBindingTokenRequirements
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NTDS\Parameters
+          valueName: LdapEnforceChannelBinding
+          valueType: Dword
+          value: 2
+      schema:
+        oneOf:
+          - const: 2
+          - type: 'null'
+  - name: LDAPServerLDAPServerIntegritySigningRequirementsEnforcement
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NTDS\Parameters
+          valueName: LDAPServerEnforceIntegrity
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: LetEveryonePermissionsApplyToAnonymousUsers
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_LetEveryonePermissionsApplyToAnonymousUsers
+          type: integer
+          value: 0
+      schema: {}
+  - name: LimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_LimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly
+          type: integer
+          value: 1
+      schema: {}
+  - name: LogonBlockUserFromShowingAccountDetailsOnSignin
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          valueName: BlockUserFromShowingAccountDetailsOnSignin
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: LogonDontEnumerateConnectedUsers
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          valueName: DontEnumerateConnectedUsers
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: LSAPPLProtection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          valueName: RunAsPPL
+          valueType: Dword
+          value: 2
+      schema:
+        minimum: 1
+        maximum: 2
+  - name: MachineInactivityLimit
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/InteractiveLogon_MachineInactivityLimit
+          type: integer
+          value: 900
+      schema:
+        minimum: 1
+        maximum: 900
+  - name: MaximumMachineAccountPasswordAge
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_MaximumMachineAccountPasswordAge
+          type: integer
+          value: 30
+      schema:
+        oneOf:
+          - const: 30
+          - type: 'null'
+  - name: MessageTextUserLogon
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: LegalNoticeText
+          valueType: String
+          value: >-
+            This system is for authorized use only. Unauthorized access is prohibited and may be subject to criminal and
+            civil penalties. By logging in, you acknowledge and consent to monitoring and recording for security and
+            administrative purposes. If such monitoring reveals evidence of unauthorized activity, it may be provided to
+            appropriate authorities
+      schema: {}
+  - name: MessageTextUserLogonTitle
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: LegalNoticeCaption
+          valueType: String
+          value: 'Notice to Users: Authorized Access Only'
+      schema: {}
+  - name: MinimumSessionSecurityForNTLMSSPBasedClients
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_MinimumSessionSecurityForNTLMSSPBasedClients
+          type: integer
+          value: 537395200
+      schema:
+        oneOf:
+          - const: 537395200
+          - type: 'null'
+  - name: MinimumSessionSecurityForNTLMSSPBasedServers
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_MinimumSessionSecurityForNTLMSSPBasedServers
+          type: integer
+          value: 537395200
+      schema:
+        oneOf:
+          - const: 537395200
+          - type: 'null'
+  - name: MinimumSMBClientVersion
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation
+          valueName: MinSmb2Dialect
+          valueType: Dword
+          value: 768
+      schema:
+        enum:
+          - 768
+          - 770
+          - 785
+  - name: MinimumSMBServerVersion
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanServer
+          valueName: MinSmb2Dialect
+          valueType: Dword
+          value: 768
+      schema:
+        enum:
+          - 768
+          - 770
+          - 785
+  - name: MitigationOptionsFontBlocking
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\MitigationOptions
+          valueName: MitigationOptions_FontBocking
+          valueType: String
+          value: '1000000000000'
+      schema:
+        oneOf:
+          - const: '1000000000000'
+          - type: 'null'
+  - name: NetBTNodeTypeConfiguration
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NetBT\Parameters
+          valueName: NodeType
+          valueType: Dword
+          value: 2
+      schema:
+        oneOf:
+          - const: 2
+          - type: 'null'
+  - name: NetworkConnectionsNC_ShowSharedAccessUI
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Network Connections
+          valueName: NC_ShowSharedAccessUI
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: NetworkProviderHardenedPathsNETLOGON
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths
+          valueName: \\*\NETLOGON
+          valueType: Dword
+          value:
+            - RequireMutualAuthentication=1
+            - RequireIntegrity=1
+      schema: {}
+  - name: NetworkProviderHardenedPathsSYSVOL
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths
+          valueName: \\*\SYSVOL
+          valueType: Dword
+          value:
+            - RequireMutualAuthentication=1
+            - RequireIntegrity=1
+      schema: {}
+  - name: NetworkSecurityForceLogoffWhenLogonHoursExpire
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_ForceLogoffWhenLogonHoursExpire
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: OnlyElevateUIAccessApplicationsThatAreInstalledInSecureLocations
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_OnlyElevateUIAccessApplicationsThatAreInstalledInSecureLocations
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: OverrideMinimumEnabledDTLSVersionClient
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Cryptography/OverrideMinimumEnabledDTLSVersionClient
+          type: string
+          value: '1.2'
+      schema:
+        oneOf:
+          - const: '1.2'
+          - type: 'null'
+  - name: OverrideMinimumEnabledDTLSVersionServer
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Cryptography/OverrideMinimumEnabledDTLSVersionServer
+          type: string
+          value: '1.2'
+      schema:
+        oneOf:
+          - const: '1.2'
+          - type: 'null'
+  - name: OverrideMinimumEnabledTLSVersionClient
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Cryptography/OverrideMinimumEnabledTLSVersionClient
+          type: string
+          value: '1.2'
+      schema: {}
+  - name: OverrideMinimumEnabledTLSVersionServer
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Cryptography/OverrideMinimumEnabledTLSVersionServer
+          type: string
+          value: '1.2'
+      schema: {}
+  - name: PowerShellExecutionPolicyEnableTranscripting
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription
+          valueName: EnableTranscripting
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: PreventUsersFromInstallingPrinterDriversWhenConnectingToSharedPrinters
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Devices_PreventUsersFromInstallingPrinterDriversWhenConnectingToSharedPrinters
+          type: integer
+          value: 1
+      schema: {}
+  - name: PrintersRestrictDriverInstallationToAdministrators
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers\PointAndPrint
+          valueName: RestrictDriverInstallationToAdministrators
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: PrivacyAllowInputPersonalization
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/Privacy/AllowInputPersonalization
+          type: integer
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: PromptUserToChangePasswordBeforeExpiration
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/InteractiveLogon_PromptUserToChangePasswordBeforeExpiration
+          type: integer
+          value: 14
+      schema:
+        minimum: 5
+        maximum: 14
+  - name: RDPPortNumber
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp
+          valueName: PortNumber
+          valueType: Dword
+          value: 3389
+      schema:
+        oneOf:
+          - const: 3389
+          - type: 'null'
+  - name: RecoveryConsoleAllowFloppyCopyAndAllDrives
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/RecoveryConsole_AllowFloppyCopyAndAccessToAllDrivesAndAllFolders
+          type: integer
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: RefuseMachineAccountPasswordChanged
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          valueName: RefusePasswordChange
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: RemoteAssistanceSolicitedRemoteAssistance
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          valueName: fAllowToGetHelp
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: RemoteAssistanceUnsolicitedRemoteAssistance
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          valueName: fAllowUnsolicited
+          valueType: Dword
+          value: 0
+      schema: {}
+  - name: RemoteDesktopServicesClientConnectionEncryptionLevel
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          valueName: MinEncryptionLevel
+          valueType: Dword
+          value: 3
+      schema:
+        minimum: 3
+        maximum: 4
+  - name: RemoteDesktopServicesDoNotAllowDriveRedirection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          valueName: fDisableCdm
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: RemoteDesktopServicesDoNotAllowPasswordSaving
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          valueName: DisablePasswordSaving
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: RemoteDesktopServicesPromptForPasswordUponConnection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          valueName: fPromptForPassword
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: RemoteDesktopServicesRequireSecureRPCCommunication
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          valueName: fEncryptRPCTraffic
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: RemotelyAccessibleRegistryPaths
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_RemotelyAccessibleRegistryPaths
+          type: array
+          value:
+            - System\CurrentControlSet\Control\ProductOptions
+            - System\CurrentControlSet\Control\Server Applications
+            - Software\Microsoft\Windows NT\CurrentVersion
+      schema: {}
+  - name: RemotelyAccessibleRegistryPathsAndSubpaths
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_RemotelyAccessibleRegistryPathsAndSubpaths
+          type: array
+          value:
+            - System\CurrentControlSet\Control\Print\Printers
+            - System\CurrentControlSet\Services\Eventlog
+            - Software\Microsoft\OLAP Server
+            - Software\Microsoft\Windows NT\CurrentVersion\Print
+            - Software\Microsoft\Windows NT\CurrentVersion\Windows
+            - System\CurrentControlSet\Control\ContentIndex
+            - System\CurrentControlSet\Control\Terminal Server
+            - System\CurrentControlSet\Control\Terminal Server\UserConfig
+            - System\CurrentControlSet\Control\Terminal Server\DefaultUserConfiguration
+            - Software\Microsoft\Windows NT\CurrentVersion\Perflib
+            - System\CurrentControlSet\Services\SysmonLog
+      schema: {}
+  - name: RemoteManagementAllowBasicAuthentication_Client
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client
+          valueName: AllowBasic
+          valueType: Dword
+          value: 0
+      schema: {}
+  - name: RemoteManagementAllowBasicAuthentication_Service
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service
+          valueName: AllowBasic
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: RemoteManagementAllowRemoteServerManagement
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service
+          valueName: AllowAutoConfig
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: RemoteManagementAllowRemoteServerManagement_IPv4Filter
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service
+          valueName: IPv4Filter
+          valueType: String
+          value: '*'
+      schema:
+        oneOf:
+          - const: '*'
+          - type: 'null'
+  - name: RemoteManagementAllowRemoteServerManagement_IPv6Filter
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service
+          valueName: IPv6Filter
+          valueType: String
+          value: '*'
+      schema:
+        oneOf:
+          - const: '*'
+          - type: 'null'
+  - name: RemoteManagementAllowUnencryptedTraffic_Client
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client
+          valueName: AllowUnencryptedTraffic
+          valueType: Dword
+          value: 0
+      schema: {}
+  - name: RemoteManagementAllowUnencryptedTraffic_Service
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service
+          valueName: AllowUnencryptedTraffic
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: RemoteManagementDisallowDigestAuthentication
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client
+          valueName: AllowDigest
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: RemoteManagementDisallowStoringOfRunAsCredentials
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service
+          valueName: DisableRunAs
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: RenameAdministratorAccount
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_RenameAdministratorAccount
+          type: string
+      schema: {}
+  - name: RenameGuestAccount
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_RenameGuestAccount
+          type: string
+      schema: {}
+  - name: RequireCaseInsensitivityForNonWindowsSubsystems
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/SystemObjects_RequireCaseInsensitivityForNonWindowsSubsystems
+          type: integer
+          value: 1
+      schema: {}
+  - name: RequireEncryption
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation
+          valueName: RequireEncryption
+          valueType: Dword
+          value: 0
+      schema:
+        minimum: 0
+        maximum: 1
+  - name: RequireStrongSessionKey
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_RequireStrongSessionKey
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: RestrictAnonymousAccessToNamedPipesAndShares
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_RestrictAnonymousAccessToNamedPipesAndShares
+          type: integer
+          value: 1
+      schema: {}
+  - name: RSSDisableEnclosureDownload
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Feeds
+          valueName: DisableEnclosureDownload
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: RunAllAdministratorsInAdminApprovalMode
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_RunAllAdministratorsInAdminApprovalMode
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: SafeDllSearchMode
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager
+          valueName: SafeDllSearchMode
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: SAMRPCPasswordChangePolicy
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\SAM
+          valueName: SamrChangeUserPasswordApiPolicy
+          valueType: Dword
+          value: 2
+      schema:
+        oneOf:
+          - const: 2
+          - type: 'null'
+  - name: SearchAllowIndexingEncryptedStoresOrItems
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Search
+          valueName: AllowIndexingEncryptedStoresOrItems
+          valueType: Dword
+          value: 0
+      schema: {}
+  - name: SendUnencryptedPasswordToThirdPartySMBServers
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkClient_SendUnencryptedPasswordToThirdPartySMBServers
+          type: integer
+          value: 0
+      schema: {}
+  - name: ServerSPNTargetNameValidationLevel
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkServer_ServerSPNTargetNameValidationLevel
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: SharesThatCanBeAccessedAnonymously
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_SharesThatCanBeAccessedAnonymously
+          type: array
+          value: []
+      schema: {}
+  - name: SharingAndSecurityModelForLocalAccounts
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_SharingAndSecurityModelForLocalAccounts
+          type: integer
+          value: 0
+      schema: {}
+  - name: ShellDataExecutionPrevention
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer
+          valueName: NoDataExecutionPrevention
+          valueType: Dword
+          value: 0
+      schema: {}
+  - name: ShutdownSystemImmediatelyIfUnableToLogSecurityAudits
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Audit_ShutdownSystemImmediatelyIfUnableToLogSecurityAudits
+          type: integer
+          value: 0
+      schema: {}
+  - name: SmartCardRemovalBehavior
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/InteractiveLogon_SmartCardRemovalBehavior
+          type: string
+          value: '1'
+      schema:
+        const: 1
+  - name: SmartScreenEnableSmartScreenInShell
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          valueName: EnableSmartScreen
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: SmartScreenPreventOverrideForFilesInShell
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          valueName: ShellSmartScreenLevel
+          valueType: String
+          value: Block
+      schema:
+        oneOf:
+          - const: Block
+          - type: 'null'
+  - name: StrengthenDefaultPermissionsOfInternalSystemObjects
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/SystemObjects_StrengthenDefaultPermissionsOfInternalSystemObjects
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: SwitchToTheSecureDesktopWhenPromptingForElevation
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_SwitchToTheSecureDesktopWhenPromptingForElevation
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: SystemAllowTelemetry
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DataCollection
+          valueName: AllowTelemetry
+          valueType: Dword
+          value: 1
+      schema:
+        minimum: 0
+        maximum: 1
+  - name: SystemBootStartDriverInitialization
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Policies\EarlyLaunch
+          valueName: DriverLoadPolicy
+          valueType: Dword
+          value: 3
+      schema: {}
+  - name: SystemEnableSoftwareRestrictionPolicies
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Safer\CodeIdentifiers
+          valueName: AuthenticodeEnabled
+          valueType: Dword
+      schema:
+        const: 0
+  - name: SystemMinimizeInternetConnections
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WcmSvc\GroupPolicy
+          valueName: fMinimizeConnections
+          valueType: Dword
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: SystemWindowsSearchService
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Wsearch
+          valueName: Start
+          valueType: Dword
+          value: 4
+      schema:
+        oneOf:
+          - const: 4
+          - type: 'null'
+  - name: TerminalServerTS_TEMP_DELETE
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          valueName: DeleteTempDirsOnExit
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: TerminalServerTS_TEMP_PER_SESSION
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          valueName: PerSessionTempDir
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: TerminalServerTS_USER_AUTHENTICATION_POLICY
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          valueName: UserAuthentication
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: TurnOff_Windows_Error_Reporting
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\AppCompat
+          valueName: DisableInventory
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: TurnOffPrintingOverHTTP
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers
+          valueName: DisableHTTPPrinting
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: UseAdminApprovalMode
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_UseAdminApprovalMode
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: UserRightsAccessCredentialManagerAsTrustedCaller
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/AccessCredentialManagerAsTrustedCaller
+          type: array
+          value: []
+      schema: {}
+  - name: UserRightsAccessFromNetwork
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/AccessFromNetwork
+          type: array
+          value:
+            - '*S-1-5-11'
+            - '*S-1-5-32-544'
+            - '*S-1-5-9'
+      schema: {}
+  - name: UserRightsActAsPartOfTheOperatingSystem
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ActAsPartOfTheOperatingSystem
+          type: array
+          value: []
+      schema: {}
+  - name: UserRightsAdjustMemoryQuotasForProcess
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/AdjustMemoryQuotasForProcess
+          type: array
+          value:
+            - '*S-1-5-32-544'
+            - '*S-1-5-19'
+            - '*S-1-5-20'
+      schema: {}
+  - name: UserRightsAllowLocalLogOn
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/AllowLocalLogOn
+          type: array
+          value:
+            - '*S-1-5-32-544'
+            - '*S-1-5-9'
+      schema: {}
+  - name: UserRightsAllowLogOnThroughRemoteDesktop
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/AllowLogOnThroughRemoteDesktop
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsBackupFilesAndDirectories
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/BackupFilesAndDirectories
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsChangeSystemTime
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ChangeSystemTime
+          type: array
+          value:
+            - '*S-1-5-32-544'
+            - '*S-1-5-32-549'
+            - '*S-1-5-19'
+      schema: {}
+  - name: UserRightsChangeTimeZone
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ChangeTimeZone
+          type: array
+          value:
+            - '*S-1-5-32-544'
+            - '*S-1-5-19'
+      schema: {}
+  - name: UserRightsCreateGlobalObjects
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/CreateGlobalObjects
+          type: array
+          value:
+            - '*S-1-5-32-544'
+            - '*S-1-5-6'
+            - '*S-1-5-19'
+            - '*S-1-5-20'
+      schema: {}
+  - name: UserRightsCreatePageFile
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/CreatePageFile
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsCreatePermanentSharedObjects
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/CreatePermanentSharedObjects
+          type: array
+          value: []
+      schema: {}
+  - name: UserRightsCreateSymbolicLinks
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/CreateSymbolicLinks
+          type: array
+          value:
+            - '*S-1-5-32-544'
+            - '*S-1-5-83-0'
+      schema: {}
+  - name: UserRightsCreateToken
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/CreateToken
+          type: array
+          value: []
+      schema: {}
+  - name: UserRightsDebugPrograms
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/DebugPrograms
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsDenyAccessFromNetwork
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyAccessFromNetwork
+          type: array
+          value:
+            - '*S-1-5-32-546'
+      schema: {}
+  - name: UserRightsDenyLocalLogOn
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyLocalLogOn
+          type: array
+          value:
+            - '*S-1-5-32-546'
+      schema: {}
+  - name: UserRightsDenyLogOnAsBatchJob
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyLogOnAsBatchJob
+          type: array
+          value:
+            - '*S-1-5-32-546'
+      schema: {}
+  - name: UserRightsDenyLogOnAsService
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyLogOnAsService
+          type: array
+          value:
+            - '*S-1-5-32-546'
+      schema: {}
+  - name: UserRightsDenyRemoteDesktopServicesLogOn
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyRemoteDesktopServicesLogOn
+          type: array
+          value:
+            - '*S-1-5-32-546'
+      schema: {}
+  - name: UserRightsEnableDelegation
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/EnableDelegation
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsGenerateSecurityAudits
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/GenerateSecurityAudits
+          type: array
+          value:
+            - '*S-1-5-19'
+            - '*S-1-5-20'
+            - '*S-1-5-82-3006700770-424185619-1745488364-794895919-4004696415'
+      schema: {}
+  - name: UserRightsIncreaseSchedulingPriority
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/IncreaseSchedulingPriority
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsLoadUnloadDeviceDrivers
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/LoadUnloadDeviceDrivers
+          type: array
+          value:
+            - '*S-1-5-32-544'
+            - '*S-1-5-32-550'
+      schema: {}
+  - name: UserRightsLockMemory
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/LockMemory
+          type: array
+          value: []
+      schema: {}
+  - name: UserRightsManageAuditingAndSecurityLog
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ManageAuditingAndSecurityLog
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsManageVolume
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ManageVolume
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsModifyFirmwareEnvironment
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ModifyFirmwareEnvironment
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsModifyObjectLabel
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ModifyObjectLabel
+          type: array
+          value: []
+      schema: {}
+  - name: UserRightsProfileSingleProcess
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ProfileSingleProcess
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsProfileSystemPerformance
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ProfileSystemPerformance
+          type: array
+          value:
+            - '*S-1-5-32-544'
+            - '*S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420'
+      schema: {}
+  - name: UserRightsRemoteShutdown
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/RemoteShutdown
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsReplaceProcessLevelToken
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ReplaceProcessLevelToken
+          type: array
+          value:
+            - '*S-1-5-19'
+            - '*S-1-5-20'
+      schema: {}
+  - name: UserRightsRestoreFilesAndDirectories
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/RestoreFilesAndDirectories
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsShutDownTheSystem
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ShutDownTheSystem
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: UserRightsTakeOwnership
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/TakeOwnership
+          type: array
+          value:
+            - '*S-1-5-32-544'
+      schema: {}
+  - name: VirtualizeFileAndRegistryWriteFailuresToPerUserLocations
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: >-
+            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_VirtualizeFileAndRegistryWriteFailuresToPerUserLocations
+          type: integer
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: WindowsExplorerShellProtocolProtectedModeTitle_2
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
+          valueName: PreXPSP2ShellProtocolBehavior
+          valueType: Dword
+          value: 0
+      schema: {}
+  - name: WindowsHelloAntiSpoofing
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Biometrics\FacialFeatures
+          valueName: EnhancedAntiSpoofing
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: WindowsLogonAllowAutomaticRestartSignOn
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: DisableAutomaticRestartSignOn
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: WindowsLogonConfigAutomaticRestartSignOn
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: AutomaticRestartSignOnConfig
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: WindowsLogonDisableLockScreenAppNotifications
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          valueName: DisableLockScreenAppNotifications
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: WindowsLogonDontDisplayNetworkSelectionUI
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          valueName: DontDisplayNetworkSelectionUI
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: WindowsPowerShellTurnOnPowerShellScriptBlockLogging
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging
+          valueName: EnableScriptBlockLogging
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: WinVerityTrustSignatureValidationVulnerabilityMitigation1
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Cryptography\Wintrust\Config
+          valueName: EnableCertPaddingCheck
+          valueType: String
+          value: '1'
+      schema:
+        const: 1
+  - name: WinVerityTrustSignatureValidationVulnerabilityMitigation2
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Wow6432Node\Microsoft\Cryptography\Wintrust\Config
+          valueName: EnableCertPaddingCheck
+          valueType: String
+          value: '1'
+      schema:
+        const: 1

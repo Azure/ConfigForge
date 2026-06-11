@@ -1,0 +1,91 @@
+{
+  "page": {
+    "title": "Dashboard",
+    "description": "OSConfig Gen 2 security baseline management"
+  },
+  "interrupted": {
+    "title": "A implementar of “{{name}}” may have been interrupted",
+    "description": "Your device may be in a partially-applied state{{startedAt}}. Ejecutar an audit to check real compliance, or revert to the pre-implementar snapshot.",
+    "startedAt": " (started {{time}})",
+    "actions": {
+      "auditCompliance": "Auditar compliance",
+      "openManifest": "Abrir manifiesto",
+      "handled": "I’ve handled it"
+    }
+  },
+  "editorMode": {
+    "aria": "Editaror mode hero",
+    "sectionTitle": "You’re in Editaror mode",
+    "sectionDescription": "ConfigForge is fully usable for authoring, diferencias, comparar, and export. Implementar / Auditar / Revert against this device require OSConfig instalado locally. Install it any time and click Volver a comprobar on the footer pill.",
+    "actions": {
+      "browseLibrary": "Examinar the baseline biblioteca",
+      "installOsconfig": "Install OSConfig",
+      "hide": "Hide for now"
+    },
+    "installAria": "Abrir OSConfig install instructions in su default browser"
+  },
+  "firstRun": {
+    "aria": "Get started",
+    "sectionTitle": "Get started: register su first manifiesto",
+    "sectionDescription": "ConfigForge works against OSConfig manifiestos. Examinar the bundled baseline biblioteca (WS2019/2022/2025 server roles, Defender, LAPS) for ready-to-use content, or register su own YAML.",
+    "actions": {
+      "browseLibrary": "Examinar the baseline biblioteca",
+      "registerOwn": "Register su own"
+    }
+  },
+  "systemHealth": {
+    "sectionTitle": "System Estado",
+    "sectionDescription": "OSConfig module & environment estado",
+    "labels": {
+      "osconfig": "OSConfig",
+      "admin": "Admin",
+      "serverType": "Server Tipo",
+      "osVersion": "OS Versión"
+    },
+    "values": {
+      "oscfgUnknown": "Oscfg desconocido",
+      "notInstalled": "No instalado",
+      "elevated": "Elevated",
+      "standard": "Standard",
+      "unknown": "Desconocido"
+    }
+  },
+  "stats": {
+    "registeredManifests": "Registered Manifiestos"
+  },
+  "validation": {
+    "label": "Validation",
+    "subtitle": "Validar manifiestos & check export readiness",
+    "cta": "Ejecutar check"
+  },
+  "quickActions": {
+    "sectionTitle": "Quick Acciones",
+    "newManifest": "New Manifiesto",
+    "browseLibrary": "Examinar Biblioteca",
+    "compareManifests": "Comparar Manifiestos"
+  },
+  "recentActivity": {
+    "sectionTitle": "Recent Activity",
+    "emptyTitle": "No recent activity recorded",
+    "emptyDescription": "Activity will appear here as usted manage manifiestos and baselines.",
+    "fallback": "{{type}} '{{name}}'",
+    "types": {
+      "registered": "Registered",
+      "deployed": "Implementared",
+      "deployed-audit": "Implementared-audit",
+      "deployed-enforce": "Implementared-enforce",
+      "reverted": "Reverted"
+    },
+    "relative": {
+      "justNow": "Just now",
+      "minute_one": "{{count}} minute ago",
+      "minute_other": "{{count}} minutes ago",
+      "hour_one": "{{count}} hour ago",
+      "hour_other": "{{count}} hours ago",
+      "day_one": "{{count}} day ago",
+      "day_other": "{{count}} days ago",
+      "month_one": "{{count}} month ago",
+      "month_other": "{{count}} months ago"
+    }
+  }
+}

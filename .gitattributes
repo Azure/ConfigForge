@@ -1,0 +1,4 @@
+# Bundled oscfg CLI binaries — tracked verbatim, never normalized.
+resources/oscfg/win32-x64/oscfg.exe binary
+resources/oscfg/win32-x64/*.pdb     binary
+resources/oscfg/linux-x64/oscfg     binary

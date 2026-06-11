@@ -1,0 +1,91 @@
+{
+  "buttons": {
+    "refresh": "Actualiser",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "delete": "Supprimer",
+    "confirm": "Confirmer",
+    "retry": "Réessayer",
+    "dismiss": "Ignorer",
+    "download": "Télécharger",
+    "restart-to-install": "Redémarrer pour installer"
+  },
+  "status": {
+    "loading": "Chargement…",
+    "saving": "Enregistrement…",
+    "saved": "Enregistré",
+    "error": "Erreur",
+    "success": "Succès",
+    "starting": "Démarrage…",
+    "restarting": "Redémarrage…",
+    "rechecking": "Nouvelle vérification…",
+    "verifying": "Vérification…"
+  },
+  "a11y": {
+    "toggle-sidebar": "Afficher ou masquer le volet de navigation",
+    "breadcrumb": "Fil d’Ariane",
+    "dismiss": "Ignorer",
+    "cli-not-installed-install": "CLI OSConfig non installé. Cliquez pour l’installer."
+  },
+  "features": {
+    "deploy": "Déployer"
+  },
+  "footer": {
+    "osconfig-version-next": "OSConfig Gen 2",
+    "app-version": "ConfigForge v{{version}}"
+  },
+  "health": {
+    "admin-default-hint": "Redémarrez depuis un shell avec élévation.",
+    "admin-required": "{{version}}, administrateur requis",
+    "cannot-reach-ipc": "Impossible de joindre IPC",
+    "cli-ready": "CLI OSConfig prêt",
+    "editor-mode-cli-not-installed": "Mode éditeur, CLI non installé",
+    "install-hint": "Installez OSConfig pour déployer et auditer sur cette machine.",
+    "version-mismatch-detail": "{{version}}, attendu {{expectedVersion}}",
+    "version-mismatch-hint": "ConfigForge a été validé avec {{expectedVersion}}. Le CLI installé peut produire des erreurs inattendues pendant le déploiement ou l’audit. Mettez OSConfig à niveau si vous rencontrez des problèmes."
+  },
+  "update": {
+    "available-title": "Mise à jour disponible",
+    "available-body": "ConfigForge v{{version}} est prêt à être téléchargé.",
+    "downloading-title": "Téléchargement de la mise à jour…",
+    "ready-title": "Mise à jour prête",
+    "ready-body": "v{{version}} a été téléchargée. Redémarrez pour l’installer.",
+    "check-failed-title": "Échec de la vérification des mises à jour"
+  },
+  "components": {
+    "conflictDetector": {
+      "extracted": {
+        "text1": "Need at least 2 manifestees to detect conflicts.",
+        "text2": "Cross-Manifeste Conflict Detection",
+        "text3": "Checking",
+        "text4": "Manifestees for conflicting paramètres",
+        "text5": "Re-check",
+        "text6": "Analyzing manifestees for conflicts…",
+        "text7": "Non conflicts detected across registered manifestees",
+        "text8": "Conflict:"
+      }
+    },
+    "recentRationale": {
+      "extracted": {
+        "text1": "Chargement…",
+        "text2": "Non rationale captured yet for this ressource.",
+        "text3": "Skipped",
+        "text4": "Inconnu",
+        "text5": "(aucun reason: skipped by author)",
+        "text6": "(aucun reason)",
+        "text7": "View all →",
+        "text8": "Show recent rationale",
+        "text9": "Hide recent rationale",
+        "text10": "Recent rationale",
+        "text11": "Chargement…",
+        "text12": "Non rationale captured yet.",
+        "text13": "Skipped",
+        "text14": "Inconnu",
+        "text15": "(aucun reason: skipped by author)",
+        "text16": "(aucun reason)",
+        "text17": "View all →"
+      }
+    }
+  }
+}

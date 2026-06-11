@@ -1,0 +1,86 @@
+{
+  "about": {
+    "backendCliInstalled": "Backend: oscfg CLI ({{version}})",
+    "backendCliMissing": "Backend: oscfg CLI (install separately, see INSTALL.md)",
+    "authorFlavor": "Build flavor: author. Manifest editing, library, compliance comparison, and audit-pack PDF only. Use the Windows or Linux build to deploy to a device.",
+    "docsLabel": "Docs:",
+    "docsLinkLabel": "OSConfig Gen 2 Core Concepts",
+    "resetWelcomeButton": "Reset first-run experience",
+    "sectionDescription": "Security baseline authoring tool built on OSConfig Gen 2",
+    "sectionTitle": "About ConfigForge"
+  },
+  "history": {
+    "retentionDescriptionAfterEnv": "overrides this when set.",
+    "retentionDescriptionBeforeEnv": "How many history entries per manifest before older ones are pruned. Range: 5-1000. The env var",
+    "retentionLabel": "Manifest version snapshots to keep",
+    "saveFailed": "Save failed",
+    "sectionTitle": "History & Retention",
+    "validationRange": "Must be between 5 and 1000."
+  },
+  "language": {
+    "sectionTitle": "Language",
+    "sectionDescription": "Choose the language used throughout the app. Technical content (manifests, OSConfig output, CIS rule text) stays in English.",
+    "options": {
+      "system": "System (auto-detect)",
+      "en": "English",
+      "fr": "Français",
+      "de": "Deutsch",
+      "es": "Español"
+    }
+  },
+  "messages": {
+    "alreadyElevated": "Already running as administrator.",
+    "elevationFailed": "Failed to start elevation.",
+    "elevationLaunching": "Relaunching with administrator privileges. This window will close shortly.",
+    "elevationUnavailable": "Elevation not available.",
+    "osconfigDetected": "OSConfig detected: {{version}}.",
+    "osconfigStillMissing": "OSConfig still not detected. Install OSConfig, then click Recheck.",
+    "recheckFailed": "Recheck failed.",
+    "welcomeReset": "First-run experience reset. The Welcome dialog will appear next time you open ConfigForge.",
+    "welcomeResetFailed": "Could not reset first-run experience."
+  },
+  "page": {
+    "description": "System health and OSConfig engine status",
+    "descriptionAuthor": "System information",
+    "title": "Settings"
+  },
+  "systemHealth": {
+    "elevation": {
+      "description": "Auditing and applying baselines require admin rights to read and write protected registry values, CSP policies, and system configuration. Click below to trigger the OS elevation prompt. If you accept, this window closes and a new elevated instance opens; if you cancel, this window stays running and you can try again.",
+      "promptPolkit": "You'll see a polkit prompt. Accept it to continue.",
+      "promptUac": "You'll see a UAC prompt. Accept it to continue.",
+      "restartAsAdministrator": "Restart as Administrator",
+      "title": "Some operations need administrator privileges"
+    },
+    "install": {
+      "description": "ConfigForge's editor, library, and diff/compare features work without the CLI. Install OSConfig to enable Deploy, Audit, and Revert against this machine.",
+      "recheckButton": "Recheck",
+      "title": "Install OSConfig to deploy and audit on this device"
+    },
+    "labels": {
+      "administratorPrivileges": "Administrator Privileges",
+      "osVersion": "OS Version",
+      "osconfigModule": "OSConfig Module",
+      "serverType": "Server Type"
+    },
+    "resolvedAt": "Resolved at:",
+    "sectionTitle": "System Health",
+    "informationTitle": "System Information",
+    "values": {
+      "notElevated": "Not elevated",
+      "notInstalled": "Not installed",
+      "runningAsAdmin": "Running as admin",
+      "unknown": "Unknown"
+    }
+  },
+  "theme": {
+    "label": "Theme",
+    "options": {
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    },
+    "sectionDescription": "Choose Light, Dark, or System (follows your OS).",
+    "sectionTitle": "Appearance"
+  }
+}

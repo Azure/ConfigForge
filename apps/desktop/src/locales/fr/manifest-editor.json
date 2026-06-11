@@ -1,0 +1,178 @@
+{
+  "actions": {
+    "auditPack": "Audit Pack",
+    "auditPackTitle": "Generate auditor-ready PDF / Markdown deliverable",
+    "back": "Retour",
+    "docs": "Docs",
+    "duplicate": "Duplicate",
+    "duplicateTitle": "Duplicate this manifeste",
+    "edit": "Modifier",
+    "export": "Exporter",
+    "generateDocsTitle": "Generate documentation",
+    "history": "Historique",
+    "leaveUnsavedConfirm": "You have unenregistrerd changes to \"{{name}}\". Leave anyway and discard them?",
+    "noRevertTitle": "Non previous déployer to revert",
+    "remove": "Supprimer",
+    "removeConfirm": "Supprimer manifeste \"{{name}}\"? This action cannon be undone.",
+    "revert": "Revert",
+    "revertConfirm": "Revert manifeste \"{{name}}\"?\n\nIf a pre-déployer snapshot exists, votre prior paramètres will be re-applied to this device. If aucun snapshot exists, OSConfig enforcement of this manifeste will be supprimerd and the manifeste will be unregistered. Either way, this manifeste will aucun longer be actively enforced on this device.",
+    "revertTitle": "Undo the last déployerment of this manifeste from this device. If a pre-déployer snapshot exists, prior paramètres are re-applied; otherwise OSConfig enforcement is supprimerd."
+  },
+  "compliance": {
+    "emptyDescription": "Texte localisé : Exécuter Auditer or Enforce to check this baseline against the device.",
+    "emptyTitle": "Non compliance data yet.",
+    "sectionTitle": "Conformité État"
+  },
+  "content": {
+    "editorView": "Modifieror",
+    "mofEditUnsupported": "Modifiering is non supported in MOF format",
+    "mofReadOnly": "MOF is read-only",
+    "sectionTitle": "Contenu du manifeste",
+    "unsavedFormatChanges": "You have unenregistrerd changes in {{format}}. Switching tabs preserves them; enregistrer avant navigating away.",
+    "visualBuilderView": "Visual Builder"
+  },
+  "cspTroubleshooting": {
+    "declaredConfig": "CSP (Configuration Service Provider) ressources need the Declared Configuration infrastructure",
+    "engineRegistered": "Texte localisé : To use CSP ressources, ensure the OSConfig engine service is properly registered",
+    "registryWorks": "Registry ressources (Microsoft.Windows/Registry) work without ajouteritional setup",
+    "title": "CSP Ressources Require Ajouteritional Setup",
+    "tryMetadata": "Try: <code>Get-OSConfigMetadata</code> to verify the engine is working"
+  },
+  "deploy": {
+    "auditDescription": "Check compliance only",
+    "confirm": "Texte localisé : Déployer manifeste \"{{name}}\" in {{mode}} mode to this device?",
+    "enforceDescription": "Appliquer paramètres to device",
+    "enforceRiskConfirm": "WARNING: Enforce will APPLY paramètres to this device.\n\nThis action may change Windows or Linux security policy in ways that can break login, networking, RDP, or installé software, and recovery may require a local administrateuristrator or boot media.\n\nProceed at votre own risk. This action may break votre machine.\n\nContinuer with enforce?",
+    "mixedPlatform": "This manifeste mixes Windows and Linux ressource types. Split it into per-plateforme manifestees avant déployering.",
+    "mode": {
+      "audit": "Audit (compliance check only)",
+      "enforce": "Enforce (apply paramètres)"
+    }
+  },
+  "deployResult": {
+    "compliant": "Compliant",
+    "couldNotRead": "Could non read",
+    "couldNotReadTitle": "Ressources the CLI could non read (provider non supported, transport erreur, or unsupported chemin). These are NOT counted as non-compliant. The device may réelly be in the desired state.",
+    "deployedAt": "Déployered at {{time}}",
+    "host": "Host",
+    "nonCompliant": "Nonn-compliant",
+    "viewResources": "View {{count}} ressources",
+    "warning": "Avertissement"
+  },
+  "docs": {
+    "copied": "Copié",
+    "copy": "Copier",
+    "downloadMarkdown": "Télécharger .md",
+    "errorMarkdown": "# Erreur\n\n{{message}}",
+    "title": "Generated Documentation"
+  },
+  "errors": {
+    "deleteFailed": "Supprimer échoué",
+    "deployFailed": "Déployer échoué",
+    "duplicateFailed": "Échec to duplicate manifeste",
+    "exportFailed": "Exporter échoué",
+    "generateDocsFailed": "Échec to generate documentation",
+    "loadFormatFailed": "Échec to load {{format}} format",
+    "loadManifestFailed": "Échec to load manifeste",
+    "revertFailed": "Revert échoué",
+    "saveFailed": "Enregistrer échoué",
+    "unknown": "Inconnu erreur"
+  },
+  "export": {
+    "documentation": "Documentation (.md)",
+    "formats": {
+      "azurePolicy": "Azure Policy (.json)",
+      "csv": "CSV (.csv)",
+      "json": "JSON (.json)",
+      "mof": "MOF (.mof)",
+      "yaml": "YAML (.osc.yaml)"
+    }
+  },
+  "features": {
+    "audit": "Auditer",
+    "deploy": "Déployer"
+  },
+  "formatErrors": {
+    "formatLoadFailed": "# Échec to load {{format}} ({{message}})",
+    "jsonLoadFailed": "// Échec to load JSON ({{message}})"
+  },
+  "header": {
+    "source": "Source: {{source}}"
+  },
+  "messages": {
+    "reverted": "Manifeste reverted",
+    "saveSuccess": "Manifeste \"{{name}}\" enregistrerd réussitefully",
+    "savedWithWarning": "Enregistrerd with avertissement: {{warning}}"
+  },
+  "platform": {
+    "crossPlatform": "⚙️ Cross-plateforme",
+    "linux": "🐧 Linux",
+    "test": "🔒 Test",
+    "windows": "🪟 Windows"
+  },
+  "rationale": {
+    "backToManifest": "Retour to manifeste",
+    "downloadCsv": "Télécharger CSV",
+    "downloadCsvTitle": "Télécharger all rationale entries as CSV",
+    "emptyDescription": "Ouvrir the éditeur, change a valeur, and click Enregistrer. The “Why?” prompt captures rationale for every change.",
+    "emptyTitle": "Non rationale captured yet.",
+    "filterCount": "{{visible}} of {{total}}",
+    "filterPlaceholder": "Filtrer by ressource, author, or reason text…",
+    "loadErrorTitle": "Could non load rationale log",
+    "loading": "Loading rationale log…",
+    "logDescription": "Every change captured by the “Why?” prompt in the éditeur. Chronological, cross-ressource. Auditeror-grade.",
+    "logTitle": "Rationale Log:",
+    "noFilterMatches": "Non entries match the actuel filtrer.",
+    "noReasonSkipped": "(aucun reason: skipped by author)",
+    "showSkipped": "Show skipped entries",
+    "skippedBadge": "Skipped",
+    "stats": {
+      "skipped": "Ignorerped",
+      "total": "Total entries",
+      "withRationale": "With rationale"
+    },
+    "table": {
+      "author": "Author",
+      "reason": "Reason",
+      "resource": "Ressource",
+      "timestamp": "Timestamp"
+    },
+    "unknownAuthor": "Inconnu"
+  },
+  "resourceDetails": {
+    "desiredValue": "Desired Valeur",
+    "path": "Path",
+    "property": "Property",
+    "reason": "Reason",
+    "value": "Valeur"
+  },
+  "resourceEdit": {
+    "cancelAria": "Annuler and discard changes",
+    "title": "Modifier ressource"
+  },
+  "tables": {
+    "reason": "Reason",
+    "resource": "Ressource",
+    "resources": "Ressources",
+    "showAllResources": "Show all {{count}} ressources",
+    "showingFirst": "(affichering first {{count}})",
+    "showingFirstForPerformance": "(affichering first {{count}} for performance)",
+    "status": "État",
+    "type": "Type"
+  },
+  "tabs": {
+    "json": "JSON",
+    "mof": "MOF",
+    "yaml": "YAML"
+  },
+  "visual": {
+    "addResource": "Ajouter Ressource",
+    "currentResources": "Actuel Ressources ({{count}})",
+    "groupCount": "Group · {{count}}",
+    "noResources": "Non ressources in manifeste.",
+    "parseError": "Could non parse manifeste YAML. Switch to Modifieror afficher to fix syntax erreurs.",
+    "resourceFallback": "Ressource {{index}}",
+    "unknown": "Inconnu",
+    "usePicker": "Texte localisé : Use the picker to ajouter ressources."
+  }
+}

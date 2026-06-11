@@ -1,0 +1,22 @@
+{
+  "cli-required": {
+    "title": "OSConfig CLI erforderlich",
+    "install-link-label": "OSConfig installieren",
+    "install-link-aria": "OSConfig-Installationsanweisungen im Standardbrowser öffnen",
+    "install-link-suffix": ", wodurch die Upstream-Installationsanweisungen im Standardbrowser geöffnet werden.",
+    "still-missing": "Weiterhin nicht erkannt. Installieren Sie OSConfig, und klicken Sie erneut auf Erneut prüfen.",
+    "continue-editor": "Im Editor-Modus fortfahren",
+    "installed-recheck": "Ich habe es installiert, erneut prüfen",
+    "body": "<feature>{{feature}}</feature> erfordert, dass die OSConfig CLI auf diesem Gerät installiert ist. Editor, Bibliothek und Diff-/Vergleichswerkzeuge von ConfigForge funktionieren ohne sie, aber Bereitstellung oder Audit auf einem echten Gerät benötigen OSConfig."
+  },
+  "notFound": {
+    "extracted": {
+      "text1": "404: Nicht gefunden",
+      "text2": "Diese Seite wurde nicht gefunden",
+      "text3": "Die Route",
+      "text4": "existiert in ConfigForge nicht. Sie wurde möglicherweise verschoben oder hat nie existiert.",
+      "text5": "Zurück zum Dashboard",
+      "text6": "Zurück"
+    }
+  }
+}

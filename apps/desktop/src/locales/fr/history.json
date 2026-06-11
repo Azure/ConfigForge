@@ -1,0 +1,55 @@
+{
+  "breadcrumbs": {
+    "history": "Historique"
+  },
+  "errors": {
+    "deleteFailed": "Supprimer échoué",
+    "historyLoadFailed": "Échec to load historique",
+    "restoreFailed": "Restore échoué",
+    "restorePreviewLoadFailed": "Échec to load restore preafficher",
+    "snapshotLoadFailed": "Échec to load snapshot",
+    "snapshotNotFound": "Snapshot non found",
+    "restoreRecoverySuffix": " (votre previous state was enregistrerd as an auto-snapshot avant the échoué restore)"
+  },
+  "header": {
+    "back": "Retour",
+    "sectionTitle": "Version Historique",
+    "summary_one": "{{manifestName}}: {{count}} snapshot",
+    "summary_other": "{{manifestName}}: {{count}} snapshots"
+  },
+  "empty": {
+    "sectionTitle": "Non historique recorded for this manifeste",
+    "sectionDescription": "Snapshots are enregistrerd automatically when vous register or mettre à jour the manifeste."
+  },
+  "timeline": {
+    "byAuthor": "By {{author}}",
+    "rationaleTitle": "Comment entered at enregistrer time",
+    "selectPrompt": "Sélectionner a snapshot to afficher or comparer"
+  },
+  "actions": {
+    "view": "View",
+    "compareCurrent": "Comparer with Actuel",
+    "restoreSnapshot": "Restore snapshot",
+    "restoreDeploys": "Restore (re-déployers to devices)"
+  },
+  "confirm": {
+    "deleteSnapshot": "Supprimer snapshot from {{time}}?"
+  },
+  "restore": {
+    "buttonLoading": "Restoring…",
+    "closeAria": "Fermer",
+    "diffAfterRestore": "Après Restore",
+    "diffCurrent": "Actuel",
+    "noCurrent": "Non actuel registered manifeste was found, so aucun auto-snapshot will be créerd. Restore will register the snapshot content as a nouveau manifeste.",
+    "snapshotFrom": "Snapshot from {{time}}",
+    "title": "Restore manifeste from snapshot",
+    "warning": "The actuel manifeste will be auto-snapshotted avant restore so vous can roll back. Re-registering may re-déployer the desired state to managed devices."
+  },
+  "diff": {
+    "compareTitle": "Comparer with Actuel",
+    "compareSubtitle": "Snapshot ({{time}}) vs Actuel",
+    "current": "Actuel",
+    "snapshot": "Snapshot",
+    "snapshotContent": "Snapshot Content"
+  }
+}

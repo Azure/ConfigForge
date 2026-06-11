@@ -1,0 +1,11 @@
+{
+  "nav": {
+    "home": "Dashboard",
+    "manifests": "Manifests",
+    "validation": "Validation",
+    "library": "Library",
+    "diff": "Diff",
+    "cis-mapping": "CIS Mapping",
+    "settings": "Settings"
+  }
+}

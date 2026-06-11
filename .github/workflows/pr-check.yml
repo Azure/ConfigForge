@@ -1,0 +1,154 @@
+name: PR check
+
+# Fast PR feedback. Runs lint + the full vitest suite + Playwright
+# Electron smoke on every PR and every push to main. Wall-clock
+# budget: <12 minutes for the slowest job (e2e on windows-latest).
+#
+# Splits into three parallel jobs so a single failure surfaces
+# the actionable info without waiting for the others. All jobs
+# share the same npm cache via setup-node v4 cache:npm; the e2e
+# job additionally caches Playwright browsers + Electron prebuilt
+# binaries because those alone are ~250 MB and would otherwise
+# burn 60-90 seconds of network on every run.
+#
+# The parallel `mac-author-build` branch's CI is `workflow_dispatch`
+# only (trigger with `gh workflow run "PR check" --ref mac-author-build`).
+# This keeps the auto-fire spend on main where most code lands.
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# Cancel previous in-progress runs on the same PR / branch so a
+# rapid sequence of pushes doesn't pile up runners.
+concurrency:
+  group: pr-check-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+# Reproducible toolchain across all jobs.
+env:
+  NODE_VERSION: '22'
+  # Pin electron-builder's binary download cache to a known path so
+  # the actions/cache step can persist + restore it.
+  ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+  ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+
+jobs:
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Lint
+        run: npm run lint
+
+  test:
+    name: Vitest (core + desktop projects)
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+      - name: Install
+        run: npm ci
+      # Supply-chain gate (mirrors the release pipeline): fail the PR if any
+      # production dependency has a HIGH or CRITICAL advisory. Runs here too so
+      # the check is continuous, not only at release time.
+      - name: Audit production dependencies (fail on high/critical)
+        run: npm audit --omit=dev --audit-level=high
+      - name: Build core (workspace dep, needed by desktop tests)
+        run: npm run core:build
+      - name: Test
+        run: npm test
+      # Linux-side desktop build verification — proves the
+      # renderer + main bundles compile on a non-Windows host.
+      # Important because the e2e job below only exercises the
+      # Windows path, but Phase 8+ ships Linux installers too.
+      # If this step regresses, Phase 8's `dist:linux` will fail
+      # in CI for the same reason.
+      - name: Verify desktop build (Linux)
+        run: npm run desktop:build
+      - name: Smoke-check desktop dist artifacts
+        run: |
+          test -f apps/desktop/dist/index.html
+          test -f apps/desktop/dist/electron/main.js
+          test -f apps/desktop/dist/electron/preload.js
+          echo "✓ desktop build artifacts present"
+
+  e2e:
+    name: Playwright Electron smoke
+    runs-on: windows-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      # Electron prebuilt binary cache. Without this every run
+      # re-downloads ~120 MB on first install of the apps/desktop
+      # workspace.
+      - name: Cache Electron binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ELECTRON_CACHE }}
+            ${{ env.ELECTRON_BUILDER_CACHE }}
+            ~/AppData/Local/electron/Cache
+            ~/AppData/Local/electron-builder/Cache
+          key: ${{ runner.os }}-electron-${{ hashFiles('apps/desktop/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-electron-
+
+      # Playwright Chromium download cache (the smoke spec doesn't
+      # actually use Chromium — it launches Electron directly — but
+      # `npx playwright install chromium` runs in postinstall on
+      # some plugin paths, so cache it just in case.
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        with:
+          path: ~/AppData/Local/ms-playwright
+          key: ${{ runner.os }}-playwright-${{ hashFiles('package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+      - name: Install
+        run: npm ci
+
+      - name: Install Playwright Chromium
+        run: npx playwright install chromium
+
+      - name: Build desktop app
+        run: npm run desktop:build
+
+      - name: Generate icons (so dist scripts don't fail on missing build/icon.ico)
+        run: node apps/desktop/scripts/generate-icons.mjs
+
+      - name: Run Playwright Electron smoke
+        run: npx playwright test --config apps/desktop/playwright.config.ts
+
+      # On failure, upload Playwright traces + screenshots so we
+      # can post-mortem without re-running the spec locally.
+      - name: Upload Playwright artifacts on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-failure-artifacts
+          path: |
+            apps/desktop/test-results/
+            apps/desktop/playwright-report/
+          retention-days: 7

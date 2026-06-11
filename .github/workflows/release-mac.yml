@@ -1,0 +1,156 @@
+name: Release (macOS author)
+
+# macOS-only release builder for the `mac-author-build` flavor.
+#
+# Separate from release.yml because:
+#   1. macos-latest runners are billed at 10x the ubuntu rate — opt-in only.
+#   2. The mac flavor uses a different electron-builder config
+#      (electron-builder.author.yml) with a different appId / productName.
+#   3. The tag pattern is `mac-v*` so it doesn't accidentally trigger
+#      release.yml (which builds Win/Linux from `v*.*.*` tags).
+#
+# Trigger: workflow_dispatch only. Run from the Actions tab → "Release (macOS author)" → Run workflow,
+# or via gh CLI: `gh workflow run "Release (macOS author)" --ref mac-author-build -f release_tag=mac-v0.2.1-author.1`
+#
+# Build cost estimate: ~15-20 min wall-clock on macos-latest → ~150-200 ubuntu-equivalent minutes
+# (macos-latest carries a 10x billing multiplier vs ubuntu-latest).
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Existing release tag to attach the .dmg to (e.g. mac-v0.2.2-author.1). The release must already exist as a draft.'
+        required: true
+        type: string
+        default: 'mac-v0.2.8-author.1'
+
+permissions:
+  contents: write
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  build-mac:
+    name: Build macOS .dmg (arm64, unsigned)
+    runs-on: macos-latest
+    timeout-minutes: 30
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install
+        run: npm ci
+
+      # Parity with release.yml — fail the build if any prod dep has a
+      # HIGH or CRITICAL advisory (CF-SEC-014). Moderate/low pass through.
+      - name: Audit production dependencies (fail on high/critical)
+        run: npm audit --omit=dev --audit-level=high
+
+      # esbuild for the electron main bundle resolves @configforge/core
+      # subpaths against the compiled tsc output. Without this step,
+      # build:electron fails with "Could not resolve @configforge/core/handlers"
+      # etc. The release.yml workflow has this same step for Win/Linux.
+      - name: Build core (workspace dep needed by electron main bundle)
+        run: npm run core:build
+
+      # Build the mac author flavor. `npm run dist:mac:author` chains:
+      #   npm run icons -> npm run build:author -> electron-builder --mac
+      # `--publish never` keeps electron-builder from auto-uploading; we
+      # upload manually below to control the target release tag.
+      - name: Build macOS .dmg
+        working-directory: apps/desktop
+        run: |
+          set -euo pipefail
+          npm run icons
+          npm run build:author
+          npx --no-install electron-builder --mac \
+            --config=electron-builder.author.yml \
+            --publish never
+
+      # Generate CycloneDX SBOM (production deps only) to match the
+      # Win/Linux release artifacts (CF-SEC-012).
+      - name: Generate SBOM (CycloneDX, production deps)
+        run: |
+          set -euo pipefail
+          mkdir -p apps/desktop/release
+          out="apps/desktop/release/sbom-macos-author.cdx.json"
+          npx --no-install @cyclonedx/cyclonedx-npm \
+            --omit dev \
+            --output-format JSON \
+            --output-file "$out"
+          if ! grep -q '"components"' "$out"; then
+            echo "::error::SBOM generation produced no components array. Check cyclonedx-npm output."
+            exit 1
+          fi
+          echo "[release-mac] SBOM written: $out ($(wc -c < "$out") bytes)"
+
+      # Generate SHA256SUMS over the .dmg + .blockmap output.
+      # `release/<version>-author/` is the directory electron-builder.author.yml
+      # configures via `directories.output`.
+      - name: Generate SHA256SUMS (macOS)
+        working-directory: apps/desktop/release
+        run: |
+          set -euo pipefail
+          find . -maxdepth 2 -type f \( \
+              -name '*.dmg' -o -name '*.dmg.blockmap' \
+              -o -name 'latest-mac.yml' \
+            \) ! -name 'SHA256SUMS*.txt' -print0 \
+            | sort -z \
+            | xargs -0 -I{} sh -c 'sha256sum "$1"' _ {} \
+            | sed 's|  \./|  |' > SHA256SUMS-macos-author.txt
+          cat SHA256SUMS-macos-author.txt
+
+      # Attach to the existing draft release (e.g. mac-v0.2.1-author.1).
+      # `--clobber` overwrites if a re-run uploads the same filename.
+      - name: Upload artifacts to draft release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.event.inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          # Verify the release exists. We won't auto-create — if the
+          # operator typed the wrong tag, surface that loudly.
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            echo "::error::Release '$TAG' does not exist. Create it as a draft first (gh release create $TAG --draft --target mac-author-build)."
+            exit 1
+          fi
+          cd apps/desktop/release
+          shopt -s nullglob
+          assets=()
+          # mac artifacts live under release/<version>-author/
+          while IFS= read -r -d '' f; do assets+=("$f"); done < <(find . -maxdepth 2 -type f \( \
+            -name '*.dmg' -o -name '*.dmg.blockmap' \
+            -o -name 'latest-mac.yml' \
+            -o -name 'SHA256SUMS-macos-author.txt' \
+            -o -name 'sbom-macos-author.cdx.json' \
+          \) -print0)
+          if [[ ${#assets[@]} -eq 0 ]]; then
+            echo "::error::No artifacts found to upload."
+            ls -la
+            exit 1
+          fi
+          echo "[release-mac] uploading ${#assets[@]} files to $TAG"
+          printf '  %s\n' "${assets[@]}"
+          gh release upload "$TAG" "${assets[@]}" --clobber
+
+      # Belt-and-suspenders stash so artifacts are reachable from the
+      # workflow run page even if the gh release upload step had a hiccup.
+      - name: Stash artifacts as workflow outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-macos-author
+          path: |
+            apps/desktop/release/SHA256SUMS-macos-author.txt
+            apps/desktop/release/sbom-macos-author.cdx.json
+            apps/desktop/release/**/*.dmg
+            apps/desktop/release/**/*.dmg.blockmap
+            apps/desktop/release/**/latest-mac.yml
+          if-no-files-found: warn
+          retention-days: 7

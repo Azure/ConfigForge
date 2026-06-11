@@ -1,0 +1,86 @@
+{
+  "about": {
+    "backendCliInstalled": "Zurückend: oscfg CLI ({{version}})",
+    "backendCliMissing": "Zurückend: oscfg CLI (install separately, see INSTALL.md)",
+    "authorFlavor": "Build-Variante: Author. Nur Manifestbearbeitung, Bibliothek, Compliance-Vergleich und Audit-Pack-PDF. Verwenden Sie den Windows- oder Linux-Build, um auf ein Gerät bereitzustellen.",
+    "docsLabel": "Docs:",
+    "docsLinkLabel": "OSConfig Gen 2 Core Concepts",
+    "resetWelcomeButton": "Zurücksetzen first-run experience",
+    "sectionDescription": "Security baseline authoring tool built on OSConfig Gen 2",
+    "sectionTitle": "Info ConfigForge"
+  },
+  "history": {
+    "retentionDescriptionAfterEnv": "Overrides this when set.",
+    "retentionDescriptionBeforeEnv": "How many Verlauf entries per Manifest vorher older ones are pruned. Range: 5-1000. The env var",
+    "retentionLabel": "Manifest version snapshots to keep",
+    "saveFailed": "Speichern fehlgeschlagen",
+    "sectionTitle": "Verlauf & Retention",
+    "validationRange": "Must be between 5 and 1000."
+  },
+  "language": {
+    "sectionTitle": "Sprache",
+    "sectionDescription": "Wählen Sie die in der gesamten App verwendete Sprache. Technische Inhalte (Manifeste, OSConfig-Ausgabe, CIS-Regeltext) bleiben in Englisch.",
+    "options": {
+      "system": "System (automatische Erkennung)",
+      "en": "English",
+      "fr": "Français",
+      "de": "Deutsch",
+      "es": "Español"
+    }
+  },
+  "messages": {
+    "alreadyElevated": "Already wird ausgeführt as Administratoristrator.",
+    "elevationFailed": "Fehlgeschlagen to start elevation.",
+    "elevationLaunching": "Relaunching with Administratoristrator privileges. This window will close shortly.",
+    "elevationUnavailable": "Elevation nicht verfügbar.",
+    "osconfigDetected": "OSConfig detected: {{version}}.",
+    "osconfigStillMissing": "OSConfig still nicht detected. Install OSConfig, then click Erneut prüfen.",
+    "recheckFailed": "Erneut prüfen fehlgeschlagen.",
+    "welcomeReset": "First-run experience zurücksetzen. The Welcome dialog will appear next time Sie öffnen ConfigForge.",
+    "welcomeResetFailed": "Could nicht zurücksetzen first-run experience."
+  },
+  "page": {
+    "description": "System Integrität and OSConfig engine Status",
+    "descriptionAuthor": "Systeminformationen",
+    "title": "Einstellungen"
+  },
+  "systemHealth": {
+    "elevation": {
+      "description": "Audit durchführening and applying baselines require Administrator rights to read and write protected registry Werts, CSP policies, and system configuration. Click below to trigger the OS elevation prompt. If Sie accept, this window closes and a neu elevated instance öffnens; if Sie abbrechen, this window stays wird ausgeführt and Sie can try again.",
+      "promptPolkit": "You'll see a polkit prompt. Accept it to continue.",
+      "promptUac": "You'll see a UAC prompt. Accept it to continue.",
+      "restartAsAdministrator": "Restart as Administrator",
+      "title": "Some operations need Administratoristrator privileges"
+    },
+    "install": {
+      "description": "ConfigForge's Editor, Bibliothek, and Vergleich/vergleichen features work without the CLI. Install OSConfig to enable Bereitstellen, Audit durchführen, and Revert against this machine.",
+      "recheckButton": "Erneut prüfen",
+      "title": "Lokalisierter Text: Install OSConfig to bereitstellen and audit on this device"
+    },
+    "labels": {
+      "administratorPrivileges": "Administrator Privileges",
+      "osVersion": "OS Version",
+      "osconfigModule": "OSConfig Module",
+      "serverType": "Server Typ"
+    },
+    "resolvedAt": "Resolved at:",
+    "sectionTitle": "System Integrität",
+    "informationTitle": "Systeminformationen",
+    "values": {
+      "notElevated": "Neint elevated",
+      "notInstalled": "Nicht installiert",
+      "runningAsAdmin": "Wird ausgeführt as Administrator",
+      "unknown": "Unbekannt"
+    }
+  },
+  "theme": {
+    "label": "Theme",
+    "options": {
+      "dark": "Dark",
+      "light": "Light",
+      "system": "System"
+    },
+    "sectionDescription": "Choose Light, Dark, or System (follows Ihre OS).",
+    "sectionTitle": "Appearance"
+  }
+}

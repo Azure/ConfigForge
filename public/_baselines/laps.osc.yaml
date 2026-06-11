@@ -1,0 +1,225 @@
+$schema: https://aka.ms/osc/schemas/prerelease/document.json
+resources:
+  - name: PasswordBackup
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: BackupDirectory
+          valueType: Dword
+          value: 1
+      schema:
+        const: 2
+  - name: PasswordComplexity
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: PasswordComplexity
+          valueType: Dword
+          value: 4
+      schema:
+        oneOf:
+          - const: 4
+          - type: 'null'
+  - name: PasswordLength
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: PasswordLength
+          valueType: Dword
+          value: 15
+      schema:
+        minimum: 15
+        maximum: 64
+  - name: PassphraseLength
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: PassphraseLength
+          valueType: Dword
+          value: 6
+      schema:
+        minimum: 6
+        maximum: 10
+  - name: PasswordAge
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: PasswordAgeDays
+          valueType: Dword
+          value: 30
+      schema:
+        minimum: 30
+        maximum: 365
+  - name: PostAuthActions
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: PostAuthenticationActions
+          valueType: Dword
+          value: 3
+      schema:
+        oneOf:
+          - const: 3
+          - type: 'null'
+  - name: PostAuthGracePeriod
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: PostAuthenticationResetDelay
+          valueType: Dword
+          value: 8
+      schema:
+        minimum: 8
+        maximum: 24
+  - name: AdminAccountName
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: AdministratorAccountName
+          valueType: String
+      schema:
+        const: 0
+  - name: PasswordEncryption
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: ADPasswordEncryptionEnabled
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AuthorizedDecryptors
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: ADPasswordEncryptionPrincipal
+          valueType: String
+      schema:
+        const: 0
+  - name: EncryptedPasswordHistory
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: ADEncryptedPasswordHistorySize
+          valueType: Dword
+          value: 0
+      schema:
+        minimum: 0
+        maximum: 12
+  - name: ExpirationProtection
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: PasswordExpirationProtectionEnabled
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AutoAccountManagement
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: AutomaticAccountManagementEnabled
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: AutoAccountTarget
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: AutomaticAccountManagementTarget
+          valueType: Dword
+          value: 1
+      schema:
+        oneOf:
+          - const: 1
+          - type: 'null'
+  - name: AutoAccountName
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: AutomaticAccountManagementNameOrPrefix
+          valueType: String
+          value: WLapsAdmin
+      schema:
+        const: 0
+  - name: AutoAccountRandomize
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: AutomaticAccountManagementRandomizeName
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'
+  - name: AutoAccountEnable
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\LAPS
+          valueName: AutomaticAccountManagementEnableAccount
+          valueType: Dword
+          value: 0
+      schema:
+        oneOf:
+          - const: 0
+          - type: 'null'

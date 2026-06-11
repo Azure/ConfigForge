@@ -1,0 +1,55 @@
+{
+  "breadcrumbs": {
+    "history": "History"
+  },
+  "errors": {
+    "deleteFailed": "Delete failed",
+    "historyLoadFailed": "Failed to load history",
+    "restoreFailed": "Restore failed",
+    "restorePreviewLoadFailed": "Failed to load restore preview",
+    "snapshotLoadFailed": "Failed to load snapshot",
+    "snapshotNotFound": "Snapshot not found",
+    "restoreRecoverySuffix": " (your previous state was saved as an auto-snapshot before the failed restore)"
+  },
+  "header": {
+    "back": "Back",
+    "sectionTitle": "Version History",
+    "summary_one": "{{manifestName}}: {{count}} snapshot",
+    "summary_other": "{{manifestName}}: {{count}} snapshots"
+  },
+  "empty": {
+    "sectionTitle": "No history recorded for this manifest",
+    "sectionDescription": "Snapshots are saved automatically when you register or update the manifest."
+  },
+  "timeline": {
+    "byAuthor": "by {{author}}",
+    "rationaleTitle": "Comment entered at save time",
+    "selectPrompt": "Select a snapshot to view or compare"
+  },
+  "actions": {
+    "view": "View",
+    "compareCurrent": "Compare with Current",
+    "restoreSnapshot": "Restore snapshot",
+    "restoreDeploys": "Restore (re-deploys to devices)"
+  },
+  "confirm": {
+    "deleteSnapshot": "Delete snapshot from {{time}}?"
+  },
+  "restore": {
+    "buttonLoading": "Restoring…",
+    "closeAria": "Close",
+    "diffAfterRestore": "After Restore",
+    "diffCurrent": "Current",
+    "noCurrent": "No current registered manifest was found, so no auto-snapshot will be created. Restore will register the snapshot content as a new manifest.",
+    "snapshotFrom": "Snapshot from {{time}}",
+    "title": "Restore manifest from snapshot",
+    "warning": "The current manifest will be auto-snapshotted before restore so you can roll back. Re-registering may re-deploy the desired state to managed devices."
+  },
+  "diff": {
+    "compareTitle": "Compare with Current",
+    "compareSubtitle": "Snapshot ({{time}}) vs Current",
+    "current": "Current",
+    "snapshot": "Snapshot",
+    "snapshotContent": "Snapshot Content"
+  }
+}

@@ -1,0 +1,55 @@
+{
+  "breadcrumbs": {
+    "history": "Verlauf"
+  },
+  "errors": {
+    "deleteFailed": "Löschen fehlgeschlagen",
+    "historyLoadFailed": "Fehlgeschlagen to load Verlauf",
+    "restoreFailed": "Restore fehlgeschlagen",
+    "restorePreviewLoadFailed": "Fehlgeschlagen to load restore preanzeigen",
+    "snapshotLoadFailed": "Fehlgeschlagen to load snapshot",
+    "snapshotNotFound": "Snapshot nicht found",
+    "restoreRecoverySuffix": " (Ihre previous state was speichernd as an auto-snapshot vorher the fehlgeschlagen restore)"
+  },
+  "header": {
+    "back": "Zurück",
+    "sectionTitle": "Version Verlauf",
+    "summary_one": "{{manifestName}}: {{count}} snapshot",
+    "summary_other": "{{manifestName}}: {{count}} snapshots"
+  },
+  "empty": {
+    "sectionTitle": "Lokalisierter Text: Nein Verlauf recorded for this Manifest",
+    "sectionDescription": "Lokalisierter Text: Snapshots are speichernd automatically when Sie register or aktualisieren the Manifest."
+  },
+  "timeline": {
+    "byAuthor": "By {{author}}",
+    "rationaleTitle": "Comment entered at speichern time",
+    "selectPrompt": "Auswählen a snapshot to anzeigen or vergleichen"
+  },
+  "actions": {
+    "view": "View",
+    "compareCurrent": "Vergleichen with Aktuell",
+    "restoreSnapshot": "Restore snapshot",
+    "restoreDeploys": "Restore (re-bereitstellens to devices)"
+  },
+  "confirm": {
+    "deleteSnapshot": "Löschen snapshot from {{time}}?"
+  },
+  "restore": {
+    "buttonLoading": "Restoring…",
+    "closeAria": "Schließen",
+    "diffAfterRestore": "Nachher Restore",
+    "diffCurrent": "Aktuell",
+    "noCurrent": "Nein aktuell registered Manifest was found, so keine auto-snapshot will be erstellend. Restore will register the snapshot content as a neu Manifest.",
+    "snapshotFrom": "Snapshot from {{time}}",
+    "title": "Restore Manifest from snapshot",
+    "warning": "The aktuell Manifest will be auto-snapshotted vorher restore so Sie can roll back. Re-registering may re-bereitstellen the desired state to managed devices."
+  },
+  "diff": {
+    "compareTitle": "Vergleichen with Aktuell",
+    "compareSubtitle": "Snapshot ({{time}}) vs Aktuell",
+    "current": "Aktuell",
+    "snapshot": "Snapshot",
+    "snapshotContent": "Snapshot Content"
+  }
+}

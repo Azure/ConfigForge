@@ -1,0 +1,336 @@
+name: Release
+
+# Phase 9 — tag-driven release pipeline.
+#
+# Triggers:
+#   - push of a tag matching v*.*.* (e.g. v0.1.0)
+#   - manual workflow_dispatch with a version input (for hotfixes
+#     where you want to rebuild without retagging)
+#
+# Produces installers in parallel on Windows and Linux runners,
+# uploads them to a GitHub Release as a DRAFT (so a human reviews
+# before it goes public). electron-builder's built-in GH publisher
+# handles the upload via GH_TOKEN; we get NSIS exe / zip from
+# windows-latest and AppImage / deb / rpm / tar.gz from
+# ubuntu-latest, all attached to the same release.
+#
+# Artifacts are UNSIGNED by design. This is an open-source project that does
+# not hold code-signing credentials in CI; published builds are a convenience
+# and the trust path is building from source. On Windows, SmartScreen will warn
+# until a binary builds reputation; on macOS, Gatekeeper requires `xattr -cr`
+# (see PACKAGING.md). Optional local self-signing for your own build is described
+# in apps/desktop/scripts/generate-dev-cert.ps1.
+#
+# SHA256SUMS. After electron-builder finishes building (with `--publish never`)
+# we generate `SHA256SUMS.txt` over every installer artifact, then upload
+# artifacts + the checksum file to the draft release via `gh release upload`,
+# so downloaders can verify integrity.
+
+on:
+  # Tag-driven release. ONLY clean vX.Y.Z tags trigger this Win/Linux
+  # builder. The `-author.*` suffix is reserved for the mac-author
+  # flavor and routes to release-mac.yml instead. Excluding -author
+  # here stops the duplicate Win/Linux builds we'd otherwise get from
+  # mac-branch tag pushes (those builds were wrong: they built from
+  # the mac branch's code which has different appId / productName).
+  #
+  # GitHub Actions tag filters use glob (not regex) — `+` and `[0-9]+`
+  # are NOT supported. Use a `!` exclude rule to drop the hyphen-suffix
+  # tags instead.
+  push:
+    tags:
+      - 'v*.*.*'
+      - '!v*-*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to build (e.g. 0.1.0). Must match package.json.'
+        required: true
+        type: string
+
+# Concurrency: serialize releases per tag so two pushes of the
+# same tag (or a manual dispatch on top of a tag run) don't race.
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+# electron-builder's GitHub publisher needs write access to upload
+# artifacts to the release.
+permissions:
+  contents: write
+
+env:
+  NODE_VERSION: '22'
+  ELECTRON_CACHE: ${{ github.workspace }}/.cache/electron
+  ELECTRON_BUILDER_CACHE: ${{ github.workspace }}/.cache/electron-builder
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+
+    strategy:
+      # Don't fail-fast — if the Linux build fails we still want
+      # the Windows artifacts published, and vice versa. Easier
+      # to ship a partial release and retrigger the missing leg
+      # than to rebuild both.
+      fail-fast: false
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      # Linux installers need rpmbuild for .rpm and dpkg-deb (already
+      # present on ubuntu-latest) for .deb. AppImage's mksquashfs is
+      # also pre-installed. We only have to add rpm.
+      - name: Install Linux packaging tools (rpm)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends rpm
+
+      - name: Cache Electron binaries
+        uses: actions/cache@v4
+        with:
+          path: |
+            ${{ env.ELECTRON_CACHE }}
+            ${{ env.ELECTRON_BUILDER_CACHE }}
+            ~/.cache/electron
+            ~/.cache/electron-builder
+            ~/AppData/Local/electron/Cache
+            ~/AppData/Local/electron-builder/Cache
+          key: ${{ runner.os }}-electron-${{ hashFiles('apps/desktop/package.json') }}
+          restore-keys: |
+            ${{ runner.os }}-electron-
+
+      - name: Install
+        run: npm ci
+
+      # CF-SEC-014 — release-gate dependency audit. Fail the release
+      # if any production dependency has a HIGH or CRITICAL advisory.
+      # Moderate/low advisories are allowed through; downstream audits
+      # can pick them up. Scoped to prod deps so dev-only transitive
+      # advisories don't block legitimate releases.
+      - name: Audit production dependencies (fail on high/critical)
+        run: npm audit --omit=dev --audit-level=high
+
+      - name: Generate icons
+        run: node apps/desktop/scripts/generate-icons.mjs
+
+      - name: Build core (workspace dep needed by main bundle)
+        run: npm run core:build
+
+      - name: Build desktop renderer + main
+        run: npm run build -w @configforge/desktop
+
+      # Build artifacts WITHOUT publishing. We need to generate
+      # SHA256SUMS over the resulting files before the upload step.
+      #
+      # CF-SEC-011 — `--no-install` refuses to silently install a
+      # different version of electron-builder if the lockfile is stale
+      # or the locally-installed binary is missing. Combined with
+      # `npm ci` above (which fails on lockfile drift), this constrains
+      # the release toolchain to exactly the versions in package-lock.json.
+      - name: Build Windows installers (NSIS + zip)
+        if: matrix.os == 'windows-latest'
+        working-directory: apps/desktop
+        run: npx --no-install electron-builder --win nsis zip --publish never
+
+      - name: Build Linux installers (AppImage + deb + rpm + tar.gz)
+        if: matrix.os == 'ubuntu-latest'
+        working-directory: apps/desktop
+        run: npx --no-install electron-builder --linux AppImage deb rpm tar.gz --publish never
+
+      # CF-SEC-012 — generate a CycloneDX SBOM (production deps only)
+      # and stage it alongside the installers so the release upload step
+      # picks it up. We use the locked @cyclonedx/cyclonedx-npm devDep
+      # (pinned exactly in package-lock.json) and run it via
+      # `npx --no-install` so a missing/wrong-version binary fails loudly
+      # instead of silently fetching from the network.
+      #
+      # Per-platform output filenames avoid `gh release upload --clobber`
+      # races between the windows + linux jobs (same pattern we use for
+      # SHA256SUMS).
+      - name: Generate SBOM (CycloneDX, production deps)
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p apps/desktop/release
+          out="apps/desktop/release/sbom-${{ matrix.os }}.cdx.json"
+          npx --no-install @cyclonedx/cyclonedx-npm \
+            --omit dev \
+            --output-format JSON \
+            --output-file "$out"
+          # Smoke check: bail if the file is empty or missing components.
+          if ! grep -q '"components"' "$out"; then
+            echo "::error::SBOM generation produced no components array. Check cyclonedx-npm output."
+            exit 1
+          fi
+          echo "[release] SBOM written: $out ($(wc -c < "$out") bytes)"
+
+      # CF-SEC-010 — generate SHA256SUMS over the built artifacts so
+      # auditors and downstream consumers can verify integrity even
+      # without inspecting the GitHub signature. We hash every file
+      # electron-builder produced under apps/desktop/release/.
+      #
+      # NOTE: each platform job uploads its OWN checksum file
+      # (`SHA256SUMS-windows.txt`, `SHA256SUMS-linux.txt`,
+      # `SHA256SUMS-macos-author.txt`) to avoid a `gh release upload
+      # --clobber` race where the last platform to finish would
+      # otherwise overwrite the others.
+      - name: Generate SHA256SUMS (Windows)
+        if: matrix.os == 'windows-latest'
+        shell: pwsh
+        working-directory: apps/desktop/release
+        run: |
+          # Exclude the *-unpacked/ directories — those hold the staged
+          # runtime files (configforge.exe, *.exe.blockmap, the
+          # bundled YAML baselines, etc.) that get packaged into the
+          # NSIS installer. We don't ship them, so we don't hash them
+          # either (otherwise the checksum file lists artifacts that
+          # aren't in the release).
+          #
+          # Pattern set matches the publish-step `find` filter exactly
+          # so the SHA256SUMS file lists ALL and ONLY what's uploaded:
+          # installers + their .blockmap + latest*.yml updater feeds +
+          # SBOM/CycloneDX. The previous loose `*.yml,*.yaml` Include
+          # caught `builder-debug.yml`, `app-update.yml`, and every
+          # bundled `*.osc.yaml` baseline asset — none of which ship.
+          $items = Get-ChildItem -File -Recurse -Include `
+              *.exe,*.zip,*.AppImage,*.deb,*.rpm,*.tar.gz,*.dmg,latest*.yml,*.exe.blockmap,*.dmg.blockmap |
+            Where-Object {
+              $_.Name -notmatch '^SHA256SUMS' -and
+              $_.FullName -notmatch '[\\/][\w-]+-unpacked[\\/]'
+            } |
+            Sort-Object -Property FullName
+          $lines = foreach ($f in $items) {
+            $hash = (Get-FileHash -Algorithm SHA256 $f.FullName).Hash.ToLower()
+            $rel = $f.FullName.Substring($PWD.Path.Length + 1) -replace '\\','/'
+            "$hash  $rel"
+          }
+          $lines | Set-Content -Path SHA256SUMS-windows.txt -Encoding ASCII
+          Get-Content SHA256SUMS-windows.txt
+
+      - name: Generate SHA256SUMS (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        shell: bash
+        working-directory: apps/desktop/release
+        run: |
+          set -euo pipefail
+          # Stable ordering for diffs across re-runs. Exclude
+          # *-unpacked/ directories (same reason as Windows — they hold
+          # the staged runtime files that get bundled into the
+          # AppImage/.deb/etc, not the release artifacts themselves).
+          # Linux's unpacked dir hasn't leaked in practice because the
+          # runtime exe has no extension and doesn't match our `-name`
+          # patterns, but the exclusion is here for defence-in-depth
+          # against future electron-builder changes.
+          find . -maxdepth 2 -type f \
+              -not -path '*/[!.]*-unpacked/*' \
+              \( \
+              -name '*.AppImage' -o -name '*.deb' -o -name '*.rpm' \
+              -o -name '*.tar.gz' -o -name '*.exe' -o -name '*.zip' \
+              -o -name '*.dmg' -o -name 'latest*.yml' \
+              -o -name '*.exe.blockmap' -o -name '*.dmg.blockmap' \
+            \) ! -name 'SHA256SUMS*.txt' -print0 \
+            | sort -z \
+            | xargs -0 -I{} sh -c 'sha256sum "$1"' _ {} \
+            | sed 's|  \./|  |' > SHA256SUMS-linux.txt
+          cat SHA256SUMS-linux.txt
+
+      # Publish artifacts + SHA256SUMS via gh CLI. Using the existing
+      # GITHUB_TOKEN; `gh release upload --clobber` is idempotent for
+      # retries on the same tag.
+      #
+      # IMPORTANT: electron-builder drops platform installers into a
+      # version-named subdirectory (e.g. `release/0.2.2/*.exe`,
+      # `release/0.2.2/*.deb`). The previous flat-glob (`*.exe`)
+      # silently missed every installer. We now `find` recursively
+      # (maxdepth 3 covers the version subdir and any nested per-arch
+      # dirs) and union with the top-level audit files.
+      #
+      # We exclude the `*-unpacked/` directories that electron-builder
+      # also writes. Those contain the staged-but-not-yet-packaged
+      # runtime exe (`configforge.exe`, ~216 MB), the chrome
+      # PAK files, locales, etc. — all already bundled into the NSIS
+      # installer. Shipping the unpacked exe as a release asset is a
+      # 216 MB-per-release leak that was masked by the broader bug
+      # the v0.2.4 fix introduced (recursive find with no path
+      # exclusions). Latent until v0.2.5 surfaced it. Linux unpacked
+      # dirs don't leak because their runtime exe has no extension
+      # and doesn't match any of our `-name` patterns; Mac is on its
+      # own workflow with a different glob and isn't affected.
+      - name: Publish artifacts to release
+        if: github.event_name == 'push'
+        shell: bash
+        working-directory: apps/desktop/release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          # Ensure the release exists as a DRAFT (matches the previous
+          # electron-builder behaviour); harmless if it already exists.
+          if ! gh release view "$TAG" >/dev/null 2>&1; then
+            gh release create "$TAG" --draft --title "$TAG" --notes "Auto-generated release for $TAG"
+          fi
+          shopt -s nullglob
+          # Top-level audit artifacts live in cwd; installers live in a
+          # version subdir. Collect both into one upload set.
+          assets=()
+          for f in SHA256SUMS-*.txt sbom-*.cdx.json; do
+            [[ -f "$f" ]] && assets+=("$f")
+          done
+          while IFS= read -r -d '' f; do assets+=("$f"); done < <(find . -mindepth 1 -maxdepth 3 -type f \
+              -not -path '*/*-unpacked/*' \
+              \( \
+              -name '*.exe' -o -name '*.zip' -o -name '*.AppImage' \
+              -o -name '*.deb' -o -name '*.rpm' -o -name '*.tar.gz' \
+              -o -name '*.dmg' -o -name 'latest*.yml' \
+              -o -name '*.exe.blockmap' -o -name '*.dmg.blockmap' \
+            \) -print0)
+          if [[ ${#assets[@]} -eq 0 ]]; then
+            echo "::error::No artifacts found to upload — check electron-builder output layout under apps/desktop/release/."
+            find . -maxdepth 3 -type f | head -50
+            exit 1
+          fi
+          echo "[release] uploading ${#assets[@]} files to $TAG"
+          printf '  %s\n' "${assets[@]}"
+          gh release upload "$TAG" "${assets[@]}" --clobber
+
+      # Belt-and-suspenders: also stash artifacts as job outputs so
+      # we can grab them from the run page even if the GH Release
+      # publish step had a hiccup. Auto-deletes after 14 days.
+      - name: Stash artifacts as workflow outputs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: installers-${{ matrix.os }}
+          path: |
+            apps/desktop/release/SHA256SUMS-*.txt
+            apps/desktop/release/sbom-*.cdx.json
+            apps/desktop/release/*.exe
+            apps/desktop/release/*.zip
+            apps/desktop/release/*.AppImage
+            apps/desktop/release/*.deb
+            apps/desktop/release/*.rpm
+            apps/desktop/release/*.tar.gz
+            apps/desktop/release/**/*.exe
+            apps/desktop/release/**/*.zip
+            apps/desktop/release/**/*.AppImage
+            apps/desktop/release/**/*.deb
+            apps/desktop/release/**/*.rpm
+            apps/desktop/release/**/*.tar.gz
+            apps/desktop/release/**/latest*.yml
+          if-no-files-found: warn
+          # Short retention — these are belt-and-suspenders stash for the
+          # gh-release-upload step. Once the release draft has the files,
+          # the run-page artifact is redundant. At ~1 GB per run, 14 days
+          # of retention burns through the Actions storage quota fast.
+          retention-days: 7

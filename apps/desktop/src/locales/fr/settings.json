@@ -1,0 +1,86 @@
+{
+  "about": {
+    "backendCliInstalled": "Retourend: oscfg CLI ({{version}})",
+    "backendCliMissing": "Retourend: oscfg CLI (install separately, see INSTALL.md)",
+    "authorFlavor": "Version auteur : édition de manifestes, bibliothèque, comparaison de conformité et PDF d’audit uniquement. Utilisez la version Windows ou Linux pour déployer sur un appareil.",
+    "docsLabel": "Docs:",
+    "docsLinkLabel": "OSConfig Gen 2 Core Concepts",
+    "resetWelcomeButton": "Réinitialiser first-run experience",
+    "sectionDescription": "Security baseline authoring tool built on OSConfig Gen 2",
+    "sectionTitle": "À propos ConfigForge"
+  },
+  "history": {
+    "retentionDescriptionAfterEnv": "Overrides this when set.",
+    "retentionDescriptionBeforeEnv": "How many historique entries per manifeste avant older ones are pruned. Range: 5-1000. The env var",
+    "retentionLabel": "Manifeste version snapshots to keep",
+    "saveFailed": "Enregistrer échoué",
+    "sectionTitle": "Historique & Retention",
+    "validationRange": "Must be between 5 and 1000."
+  },
+  "language": {
+    "sectionTitle": "Langue",
+    "sectionDescription": "Choisissez la langue utilisée dans toute l'application. Le contenu technique (manifestes, sortie OSConfig, texte des règles CIS) reste en anglais.",
+    "options": {
+      "system": "Système (détection automatique)",
+      "en": "English",
+      "fr": "Français",
+      "de": "Deutsch",
+      "es": "Español"
+    }
+  },
+  "messages": {
+    "alreadyElevated": "Exécution déjà en tant qu’administrateur.",
+    "elevationFailed": "Échec du démarrage de l’élévation.",
+    "elevationLaunching": "Relance avec des privilèges administrateur. Cette fenêtre va se fermer sous peu.",
+    "elevationUnavailable": "Élévation indisponible.",
+    "osconfigDetected": "OSConfig détecté : {{version}}.",
+    "osconfigStillMissing": "OSConfig n’est toujours pas détecté. Installez OSConfig, puis cliquez sur Revérifier.",
+    "recheckFailed": "Échec de la revérification.",
+    "welcomeReset": "Expérience de première exécution réinitialisée. La boîte de dialogue de bienvenue apparaîtra à la prochaine ouverture de ConfigForge.",
+    "welcomeResetFailed": "Impossible de réinitialiser l’expérience de première exécution."
+  },
+  "page": {
+    "description": "État d’intégrité du système et du moteur OSConfig",
+    "descriptionAuthor": "Informations système",
+    "title": "Paramètres"
+  },
+  "systemHealth": {
+    "elevation": {
+      "description": "L’audit et l’application des baselines nécessitent des droits administrateur pour lire et écrire les valeurs de Registre protégées, les stratégies CSP et la configuration système. Cliquez ci-dessous pour déclencher la demande d’élévation du système. Si vous acceptez, cette fenêtre se ferme et une nouvelle instance avec élévation s’ouvre ; si vous annulez, cette fenêtre reste ouverte et vous pouvez réessayer.",
+      "promptPolkit": "Une invite polkit s’affichera. Acceptez-la pour continuer.",
+      "promptUac": "Une invite UAC s’affichera. Acceptez-la pour continuer.",
+      "restartAsAdministrator": "Redémarrer en tant qu’administrateur",
+      "title": "Certaines opérations nécessitent des privilèges administrateur"
+    },
+    "install": {
+      "description": "L’éditeur, la bibliothèque et les fonctions différence/comparaison de ConfigForge fonctionnent sans le CLI. Installez OSConfig pour activer Déployer, Auditer et Rétablir sur cette machine.",
+      "recheckButton": "Revérifier",
+      "title": "Installer OSConfig pour déployer et auditer sur cet appareil"
+    },
+    "labels": {
+      "administratorPrivileges": "Privilèges administrateur",
+      "osVersion": "Version du système",
+      "osconfigModule": "Module OSConfig",
+      "serverType": "Type de serveur"
+    },
+    "resolvedAt": "Résolu à :",
+    "sectionTitle": "Intégrité du système",
+    "informationTitle": "Informations système",
+    "values": {
+      "notElevated": "Non élevé",
+      "notInstalled": "Non installé",
+      "runningAsAdmin": "Exécution en tant qu’administrateur",
+      "unknown": "Inconnu"
+    }
+  },
+  "theme": {
+    "label": "Thème",
+    "options": {
+      "dark": "Sombre",
+      "light": "Clair",
+      "system": "Système"
+    },
+    "sectionDescription": "Choisissez Clair, Sombre ou Système (suit votre système d’exploitation).",
+    "sectionTitle": "Apparence"
+  }
+}
