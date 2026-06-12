@@ -1,6 +1,6 @@
 {
   "extracted": {
-    "text1": "Branchen-Benchmark-Zuordnung",
+    "text1": "Benchmark-Zuordnung",
     "text2": "Cross-reference Ihre OSConfig ResQuellen against CIS Benchmark rules. Drop Ihre CIS Dateis into the Ordner below and the Editor will anzeigen matching rules as Sie navigate the YAML.",
     "text3": "Once CIS data is loaded, a",
     "text4": "CIS",

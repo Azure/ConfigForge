@@ -21,7 +21,7 @@
 
 ## Length analysis
 
-Layout warnings (>150% of English): **25**
+Layout warnings (>150% of English): **23**
 
 ### fr: 20 longest values
 
