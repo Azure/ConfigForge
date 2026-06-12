@@ -55,7 +55,7 @@
     "install": {
       "description": "ConfigForge's Editor, Bibliothek, and Vergleich/vergleichen features work without the CLI. Install OSConfig to enable Bereitstellen, Audit durchführen, and Revert against this machine.",
       "recheckButton": "Erneut prüfen",
-      "title": "Lokalisierter Text: Install OSConfig to bereitstellen and audit on this device"
+      "title": "OSConfig installieren, um auf diesem Gerät bereitzustellen und zu auditieren"
     },
     "labels": {
       "administratorPrivileges": "Administrator Privileges",

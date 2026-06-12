@@ -19,7 +19,7 @@
     "revertTitle": "Undo the last implementarment of this manifiesto from this device. If a pre-implementar snapshot exists, prior configuración are re-applied; otherwise OSConfig enforcement is quitard."
   },
   "compliance": {
-    "emptyDescription": "Texto localizado: Ejecutar Auditar or Enforce to check this baseline against the device.",
+    "emptyDescription": "Ejecuta Audit o Enforce para comparar esta baseline con el dispositivo.",
     "emptyTitle": "No compliance data yet.",
     "sectionTitle": "Cumplimiento Estado"
   },
@@ -33,14 +33,14 @@
   },
   "cspTroubleshooting": {
     "declaredConfig": "CSP (Configuration Service Provider) recursos need the Declared Configuration infrastructure",
-    "engineRegistered": "Texto localizado: To use CSP recursos, ensure the OSConfig engine service is properly registered",
+    "engineRegistered": "Para usar recursos CSP, asegúrate de que el servicio del motor de OSConfig esté correctamente registrado",
     "registryWorks": "Registry recursos (Microsoft.Windows/Registry) work without agregaritional setup",
     "title": "CSP Recursos Require Agregaritional Setup",
     "tryMetadata": "Try: <code>Get-OSConfigMetadata</code> to verify the engine is working"
   },
   "deploy": {
     "auditDescription": "Check compliance only",
-    "confirm": "Texto localizado: Implementar manifiesto \"{{name}}\" in {{mode}} mode to this device?",
+    "confirm": "¿Implementar el manifiesto «{{name}}» en modo {{mode}} en este dispositivo?",
     "enforceDescription": "Aplicar configuración to device",
     "enforceRiskConfirm": "WARNING: Enforce will APPLY configuración to this device.\n\nThis action may change Windows or Linux security policy in ways that can break login, networking, RDP, or instalado software, and recovery may require a local administradoristrator or boot media.\n\nProceed at su own risk. This action may break su machine.\n\nContinuar with enforce?",
     "mixedPlatform": "This manifiesto mixes Windows and Linux recurso tipos. Split it into per-plataforma manifiestos antes implementaring.",
@@ -173,6 +173,6 @@
     "parseError": "Could no parse manifiesto YAML. Switch to Editaror ver to fix syntax errors.",
     "resourceFallback": "Recurso {{index}}",
     "unknown": "Desconocido",
-    "usePicker": "Texto localizado: Use the picker to agregar recursos."
+    "usePicker": "Usa el selector para agregar recursos."
   }
 }

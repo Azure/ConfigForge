@@ -9,7 +9,7 @@
     },
     "deploy": {
       "title": "Author + bereitstellen on this machine",
-      "body": "Lokalisierter Text: Windows or Linux. Needs OSConfig installiert locally to apply or audit baselines against this device."
+      "body": "Windows oder Linux. Erfordert ein lokal installiertes OSConfig, um Baselines auf diesem Gerät anzuwenden oder zu auditieren."
     }
   },
   "actions": {

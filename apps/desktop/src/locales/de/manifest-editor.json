@@ -19,7 +19,7 @@
     "revertTitle": "Undo the last bereitstellenment of this Manifest from this device. If a pre-bereitstellen snapshot exists, prior Einstellungen are re-applied; otherwise OSConfig enforcement is entfernend."
   },
   "compliance": {
-    "emptyDescription": "Lokalisierter Text: Ausführen Audit durchführen or Enforce to check this baseline against the device.",
+    "emptyDescription": "Führen Sie Audit oder Enforce aus, um diese Baseline mit dem Gerät abzugleichen.",
     "emptyTitle": "Nein compliance data yet.",
     "sectionTitle": "Konformität Status"
   },
@@ -33,14 +33,14 @@
   },
   "cspTroubleshooting": {
     "declaredConfig": "CSP (Configuration Service Provider) ResQuellen need the Declared Configuration infrastructure",
-    "engineRegistered": "Lokalisierter Text: To use CSP ResQuellen, ensure the OSConfig engine service is properly registered",
+    "engineRegistered": "Um CSP-Ressourcen zu verwenden, stellen Sie sicher, dass der OSConfig-Engine-Dienst ordnungsgemäß registriert ist",
     "registryWorks": "Registry ResQuellen (Microsoft.Windows/Registry) work without hinzufügenitional setup",
     "title": "CSP ResQuellen Require Hinzufügenitional Setup",
     "tryMetadata": "Try: <code>Get-OSConfigMetadata</code> to verify the engine is working"
   },
   "deploy": {
     "auditDescription": "Check compliance only",
-    "confirm": "Lokalisierter Text: Bereitstellen Manifest \"{{name}}\" in {{mode}} mode to this device?",
+    "confirm": "Manifest „{{name}}“ im Modus {{mode}} auf diesem Gerät bereitstellen?",
     "enforceDescription": "Anwenden Einstellungen to device",
     "enforceRiskConfirm": "WARNING: Enforce will APPLY Einstellungen to this device.\n\nThis action may change Windows or Linux security policy in ways that can break login, networking, RDP, or installiert software, and recovery may require a local Administratoristrator or boot media.\n\nProceed at Ihre own risk. This action may break Ihre machine.\n\nFortfahren with enforce?",
     "mixedPlatform": "This Manifest mixes Windows and Linux ResQuelle Typs. Split it into per-Plattform Manifeste vorher bereitstellening.",
@@ -173,6 +173,6 @@
     "parseError": "Could nicht parse Manifest YAML. Switch to Bearbeitenor anzeigen to fix syntax Fehlers.",
     "resourceFallback": "ResQuelle {{index}}",
     "unknown": "Unbekannt",
-    "usePicker": "Lokalisierter Text: Use the picker to hinzufügen ResQuellen."
+    "usePicker": "Verwenden Sie die Auswahl, um Ressourcen hinzuzufügen."
   }
 }

@@ -19,7 +19,7 @@
     "revertTitle": "Undo the last déployerment of this manifeste from this device. If a pre-déployer snapshot exists, prior paramètres are re-applied; otherwise OSConfig enforcement is supprimerd."
   },
   "compliance": {
-    "emptyDescription": "Texte localisé : Exécuter Auditer or Enforce to check this baseline against the device.",
+    "emptyDescription": "Lancez Audit ou Enforce pour vérifier cette baseline par rapport à l'appareil.",
     "emptyTitle": "Non compliance data yet.",
     "sectionTitle": "Conformité État"
   },
@@ -33,14 +33,14 @@
   },
   "cspTroubleshooting": {
     "declaredConfig": "CSP (Configuration Service Provider) ressources need the Declared Configuration infrastructure",
-    "engineRegistered": "Texte localisé : To use CSP ressources, ensure the OSConfig engine service is properly registered",
+    "engineRegistered": "Pour utiliser les ressources CSP, assurez-vous que le service du moteur OSConfig est correctement enregistré",
     "registryWorks": "Registry ressources (Microsoft.Windows/Registry) work without ajouteritional setup",
     "title": "CSP Ressources Require Ajouteritional Setup",
     "tryMetadata": "Try: <code>Get-OSConfigMetadata</code> to verify the engine is working"
   },
   "deploy": {
     "auditDescription": "Check compliance only",
-    "confirm": "Texte localisé : Déployer manifeste \"{{name}}\" in {{mode}} mode to this device?",
+    "confirm": "Déployer le manifeste « {{name}} » en mode {{mode}} sur cet appareil ?",
     "enforceDescription": "Appliquer paramètres to device",
     "enforceRiskConfirm": "WARNING: Enforce will APPLY paramètres to this device.\n\nThis action may change Windows or Linux security policy in ways that can break login, networking, RDP, or installé software, and recovery may require a local administrateuristrator or boot media.\n\nProceed at votre own risk. This action may break votre machine.\n\nContinuer with enforce?",
     "mixedPlatform": "This manifeste mixes Windows and Linux ressource types. Split it into per-plateforme manifestees avant déployering.",
@@ -173,6 +173,6 @@
     "parseError": "Could non parse manifeste YAML. Switch to Modifieror afficher to fix syntax erreurs.",
     "resourceFallback": "Ressource {{index}}",
     "unknown": "Inconnu",
-    "usePicker": "Texte localisé : Use the picker to ajouter ressources."
+    "usePicker": "Utilisez le sélecteur pour ajouter des ressources."
   }
 }
