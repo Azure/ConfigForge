@@ -101,7 +101,7 @@ test('renderer mounts and the dashboard is visible', async () => {
 });
 
 test('sidebar shows all six nav items', async () => {
-  const labels = ['Dashboard', 'Manifests', 'Validation', 'Library', 'Diff', 'Industry Benchmark Mapping', 'Settings'];
+  const labels = ['Dashboard', 'Manifests', 'Validation', 'Library', 'Diff', 'Benchmark Mapping', 'Settings'];
   for (const label of labels) {
     await expect(firstWindow.locator('aside').getByText(label, { exact: true })).toBeVisible();
   }

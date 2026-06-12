@@ -52,7 +52,7 @@ describe('Sidebar', () => {
     expect(screen.getByText('Validation')).toBeInTheDocument();
     expect(screen.getByText('Library')).toBeInTheDocument();
     expect(screen.getByText('Diff')).toBeInTheDocument();
-    expect(screen.getByText('Industry Benchmark Mapping')).toBeInTheDocument();
+    expect(screen.getByText('Benchmark Mapping')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
   });
 

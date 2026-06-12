@@ -1,6 +1,6 @@
 {
   "extracted": {
-    "text1": "Correspondance des référentiels sectoriels",
+    "text1": "Correspondance des référentiels",
     "text2": "Cross-reference votre OSConfig ressources against CIS Benchmark rules. Drop votre CIS fichiers into the dossier below and the éditeur will afficher matching rules as vous navigate the YAML.",
     "text3": "Once CIS data is loaded, a",
     "text4": "CIS",

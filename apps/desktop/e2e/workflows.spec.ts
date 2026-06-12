@@ -116,7 +116,7 @@ test.describe('navigation — every page renders post-upgrade', () => {
     { label: 'Library', expectHeading: /Baseline Library|Library/ },
     { label: 'Validation', expectHeading: /Validation/ },
     { label: 'Diff', expectHeading: /Diff|Compare/ },
-    { label: 'Industry Benchmark Mapping', expectHeading: /Industry Benchmark Mapping/ },
+    { label: 'Benchmark Mapping', expectHeading: /Benchmark Mapping/ },
     { label: 'Settings', expectHeading: /Settings/ },
   ];
 
