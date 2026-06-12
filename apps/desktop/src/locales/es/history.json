@@ -19,7 +19,7 @@
   },
   "empty": {
     "sectionTitle": "No historial recorded for this manifiesto",
-    "sectionDescription": "Texto localizado: Snapshots are guardard automatically when usted register or realizar the manifiesto."
+    "sectionDescription": "Las instantáneas se guardan automáticamente cuando registras o actualizas el manifiesto."
   },
   "timeline": {
     "byAuthor": "By {{author}}",

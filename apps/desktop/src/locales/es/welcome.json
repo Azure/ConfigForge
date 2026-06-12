@@ -8,7 +8,7 @@
     },
     "deploy": {
       "title": "Author + implementar on this machine",
-      "body": "Texto localizado: Windows or Linux. Needs OSConfig instalado locally to apply or audit baselines against this device."
+      "body": "Windows o Linux. Requiere OSConfig instalado localmente para aplicar o auditar baselines en este dispositivo."
     }
   },
   "actions": {

@@ -200,7 +200,7 @@ export function CisCatalogPage() {
                   {t("extracted.text18")}
                 </p>
                 <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">
-                  {t("extracted.text19")}
+                  {t("extracted.text19")}{" "}
                   <strong>{t("extracted.text20")}</strong>.
                 </p>
                 {status?.schemaError && (
@@ -225,9 +225,9 @@ export function CisCatalogPage() {
           {t("extracted.text22")}
         </h2>
         <p className="mt-2 text-sm text-slate-600 dark:text-slate-400">
-          {t("extracted.text23")}
-          <strong>{t("extracted.text24")}</strong>
-          {t("extracted.text25")}
+          {t("extracted.text23")}{" "}
+          <strong>{t("extracted.text24")}</strong>{" "}
+          {t("extracted.text25")}{" "}
           <strong>{t("extracted.text26")}</strong>
           {t("extracted.text27")}
         </p>
@@ -243,8 +243,8 @@ export function CisCatalogPage() {
               </span>
             </h3>
             <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-              {t("extracted.text30")}
-              <strong>{t("extracted.text31")}</strong>
+              {t("extracted.text30")}{" "}
+              <strong>{t("extracted.text31")}</strong>{" "}
               {t("extracted.text32")}
             </p>
             <p className="mt-1.5 text-[11px] text-slate-500 dark:text-slate-400">
@@ -262,11 +262,11 @@ export function CisCatalogPage() {
               </span>
             </h3>
             <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
-              {t("extracted.text36")}
+              {t("extracted.text36")}{" "}
               <strong>{t("extracted.text37")}</strong>
-              {t("extracted.text38")}
-              <code className="rounded bg-slate-200 px-1 dark:bg-slate-700">*-xccdf.xml</code>
-              {t("extracted.text39")}
+              {t("extracted.text38")}{" "}
+              <code className="rounded bg-slate-200 px-1 dark:bg-slate-700">*-xccdf.xml</code>{" "}
+              {t("extracted.text39")}{" "}
               <code className="rounded bg-slate-200 px-1 dark:bg-slate-700">*-oval.xml</code>
               {t("extracted.text40")}
             </p>

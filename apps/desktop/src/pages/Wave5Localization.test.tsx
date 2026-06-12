@@ -121,6 +121,17 @@ describe('Wave 5 localization coverage', () => {
     expect(intro).toHaveTextContent('a CIS tab will also be available on the Diff page');
   });
 
+  it('keeps the "How to set up" instructions spaced across the strong/segment joins', async () => {
+    // The setup paragraph concatenates plain segments with <strong>/<code>
+    // emphasis and no {" "} previously, so it rendered "ClickOpen folderbelow".
+    // Pin the spacing the same way the intro is pinned.
+    withShell(<CisCatalogPage />);
+    const setup = await screen.findByText(
+      (_content, el) => el?.tagName === 'P' && /auto-detects the format/.test(el.textContent ?? ''),
+    );
+    expect(setup).toHaveTextContent('Click Open folder below, drop your CIS files in, then click Re-check.');
+  });
+
   it('keeps the audit-pack PDF preview identity English across language switches', async () => {
     const i18n = getI18n();
     const { rerender } = withShell(
