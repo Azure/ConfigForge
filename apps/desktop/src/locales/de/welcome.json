@@ -1,18 +1,18 @@
 {
-  "title": "Welcome to ConfigForge",
-  "intro": "ConfigForge works in two modes. Pick whichever fits how you'll use it. You can switch later from Einstellungen.",
-  "authorIntro": "Erstellen Sie OSConfig-Sicherheitsbaselines direkt auf Ihrem Mac. Die Author-Version enthält die Microsoft-Baselinebibliothek sowie Bearbeitung, Validierung, Vergleich und Export — keine CLI erforderlich.",
+  "title": "Willkommen bei ConfigForge",
+  "intro": "ConfigForge funktioniert in zwei Modi. Wähle das, was zu dir passt, wie du es verwenden möchtest. Du kannst später über die Einstellungen wechseln.",
   "cards": {
     "author": {
-      "title": "Author baselines anywhere",
-      "body": "Bearbeiten, Vergleich, vergleichen, and export OSConfig Manifeste on any OS. Nein extra installs needed."
+      "title": "Autor baselines überall",
+      "body": "Bearbeiten, differentieren, vergleichen und exportieren OSConfig Manifests auf jedem Betriebssystem. Keine zusätzlichen Installationen nötig."
     },
     "deploy": {
-      "title": "Author + bereitstellen on this machine",
+      "title": "Autor + deploy auf diesem Rechner",
       "body": "Windows oder Linux. Erfordert ein lokal installiertes OSConfig, um Baselines auf diesem Gerät anzuwenden oder zu auditieren."
     }
   },
   "actions": {
     "skip": "Überspringen"
-  }
+  },
+  "authorIntro": "Erstellen Sie OSConfig-Sicherheitsbaselines direkt auf Ihrem Mac. Die Author-Version enthält die Microsoft-Baselinebibliothek sowie Bearbeitung, Validierung, Vergleich und Export — keine CLI erforderlich."
 }

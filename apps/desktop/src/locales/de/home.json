@@ -1,12 +1,12 @@
 {
   "page": {
-    "title": "Dashboard",
-    "description": "OSConfig Gen 2 security baseline management"
+    "title": "Armaturenbrett",
+    "description": "OSConfig Sicherheits- baseline Management der zweiten Generation"
   },
   "interrupted": {
-    "title": "A bereitstellen of “{{name}}” may have been interrupted",
-    "description": "Your device may be in a partially-applied state{{startedAt}}. Ausführen an audit to check aktuell compliance, or revert to the pre-bereitstellen snapshot.",
-    "startedAt": " (started {{time}})",
+    "title": "Ein Einsatz von \"{{name}}\" könnte unterbrochen worden sein",
+    "description": "Ihr Gerät befindet sich möglicherweise in einem teilweise angelegten state{{startedAt}}. Führen Sie ein Audit durch, um die aktuelle Compliance zu überprüfen, oder kehren Sie zum Pre-Deploy-Snapshot zurück.",
+    "startedAt": " (begann {{time}})",
     "actions": {
       "auditCompliance": "Audit durchführen compliance",
       "openManifest": "Öffnen Manifest",
@@ -14,63 +14,63 @@
     }
   },
   "editorMode": {
-    "aria": "Bearbeitenor mode hero",
+    "aria": "Editor-Modus-Held",
     "sectionTitle": "You’re in Bearbeitenor mode",
-    "sectionDescription": "ConfigForge is fully usable for authoring, Vergleich, vergleichen, and export. Bereitstellen / Audit durchführen / Revert against this device require OSConfig installiert locally. Install it any time and click Erneut prüfen on the footer pill.",
+    "sectionDescription": "ConfigForge ist vollständig nutzbar zum Authoring, Diff, Compare und Export. Deploy / Audit / Revert gegen dieses Gerät erfordert OSConfig lokal installiert. Installiere es jederzeit und klicke auf Recheck auf der Sockel-Pille.",
     "actions": {
-      "browseLibrary": "Durchsuchen the baseline Bibliothek",
-      "installOsconfig": "Install OSConfig",
-      "hide": "Hide for now"
+      "browseLibrary": "Durchstöbern Sie die baseline-Bibliothek",
+      "installOsconfig": "Installieren OSConfig",
+      "hide": "Versteck dich vorerst"
     },
-    "installAria": "Öffnen OSConfig install instructions in Ihre default browser"
+    "installAria": "Öffne OSConfig Installationsanweisungen in deinem Standardbrowser"
   },
   "firstRun": {
-    "aria": "Get started",
-    "sectionTitle": "Get started: register Ihre first Manifest",
-    "sectionDescription": "ConfigForge works against OSConfig Manifeste. Durchsuchen the bundled baseline Bibliothek (WS2019/2022/2025 server roles, Defender, LAPS) for ready-to-use content, or register Ihre own YAML.",
+    "aria": "Leg los.",
+    "sectionTitle": "Fangen Sie an: Registrieren Sie Ihr erstes Manifest",
+    "sectionDescription": "ConfigForge wirkt gegen OSConfig Manifestationen. Durchstöbern Sie die mitgelieferte baseline-Bibliothek (WS2019/2022/2025 Server Roles, Defender, LAPS) für einsatzbereite Inhalte oder registrieren Sie Ihre eigene YAML.",
     "actions": {
-      "browseLibrary": "Durchsuchen the baseline Bibliothek",
+      "browseLibrary": "Durchstöbern Sie die baseline-Bibliothek",
       "registerOwn": "Register Ihre own"
     }
   },
   "systemHealth": {
     "sectionTitle": "System Integrität",
-    "sectionDescription": "OSConfig module & environment Status",
+    "sectionDescription": "OSConfig Modul & Umweltstatus",
     "labels": {
       "osconfig": "OSConfig",
-      "admin": "Admin",
+      "admin": "Verwaltung",
       "serverType": "Server Typ",
-      "osVersion": "OS Version"
+      "osVersion": "OS-Version"
     },
     "values": {
       "oscfgUnknown": "Oscfg unbekannt",
       "notInstalled": "Nicht installiert",
-      "elevated": "Elevated",
+      "elevated": "Erhöht",
       "standard": "Standard",
       "unknown": "Unbekannt"
     }
   },
   "stats": {
-    "registeredManifests": "Registered Manifeste"
+    "registeredManifests": "Registrierte Manifeste"
   },
   "validation": {
-    "label": "Validation",
-    "subtitle": "Überprüfen Manifeste & check export readiness",
+    "label": "Validierung",
+    "subtitle": "Manifeste validieren und die Exportbereitschaft überprüfen",
     "cta": "Ausführen check"
   },
   "quickActions": {
     "sectionTitle": "Quick Aktionen",
-    "newManifest": "New Manifest",
+    "newManifest": "Neues Manifest",
     "browseLibrary": "Durchsuchen Bibliothek",
     "compareManifests": "Vergleichen Manifeste"
   },
   "recentActivity": {
-    "sectionTitle": "Recent Activity",
-    "emptyTitle": "Nein recent activity recorded",
-    "emptyDescription": "Activity will appear here as Sie manage Manifeste and baselines.",
+    "sectionTitle": "Jüngste Aktivitäten",
+    "emptyTitle": "Keine jüngste Aktivität dokumentiert",
+    "emptyDescription": "Hier erscheinen Aktivitäten, während du Manifeste und baselines verwickelst.",
     "fallback": "{{type}} '{{name}}'",
     "types": {
-      "registered": "Registered",
+      "registered": "Registriert",
       "deployed": "Bereitstellened",
       "deployed-audit": "Bereitstellened-audit",
       "deployed-enforce": "Bereitstellened-enforce",
@@ -78,14 +78,14 @@
     },
     "relative": {
       "justNow": "Just now",
-      "minute_one": "{{count}} minute ago",
-      "minute_other": "{{count}} minutes ago",
-      "hour_one": "{{count}} hour ago",
-      "hour_other": "{{count}} hours ago",
-      "day_one": "{{count}} day ago",
-      "day_other": "{{count}} days ago",
-      "month_one": "{{count}} month ago",
-      "month_other": "{{count}} months ago"
+      "minute_one": "Vor {{count}} Minute",
+      "minute_other": "Vor {{count}} Minuten",
+      "hour_one": "Vor {{count}} Stunde",
+      "hour_other": "Vor {{count}} Stunden",
+      "day_one": "Vor {{count}} Tag",
+      "day_other": "Vor {{count}} Tagen",
+      "month_one": "Vor {{count}} Monat",
+      "month_other": "Vor {{count}} Monaten"
     }
   }
 }

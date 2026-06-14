@@ -1,86 +1,86 @@
 {
   "about": {
     "backendCliInstalled": "Zurückend: oscfg CLI ({{version}})",
-    "backendCliMissing": "Zurückend: oscfg CLI (install separately, see INSTALL.md)",
-    "authorFlavor": "Build-Variante: Author. Nur Manifestbearbeitung, Bibliothek, Compliance-Vergleich und Audit-Pack-PDF. Verwenden Sie den Windows- oder Linux-Build, um auf ein Gerät bereitzustellen.",
-    "docsLabel": "Docs:",
-    "docsLinkLabel": "OSConfig Gen 2 Core Concepts",
-    "resetWelcomeButton": "Zurücksetzen first-run experience",
-    "sectionDescription": "Security baseline authoring tool built on OSConfig Gen 2",
-    "sectionTitle": "Info ConfigForge"
+    "backendCliMissing": "Backend: oscfg CLI (separat installieren, siehe INSTALL.md)",
+    "docsLabel": "Dokumente:",
+    "docsLinkLabel": "OSConfig Kernkonzepte der zweiten Generation",
+    "resetWelcomeButton": "Erstlauf-Erfahrung zurücksetzen",
+    "sectionDescription": "Sicherheits- baseline Autorentool, das auf OSConfig Gen 2 basiert",
+    "sectionTitle": "Info ConfigForge",
+    "authorFlavor": "Build-Variante: Author. Nur Manifestbearbeitung, Bibliothek, Compliance-Vergleich und Audit-Pack-PDF. Verwenden Sie den Windows- oder Linux-Build, um auf ein Gerät bereitzustellen."
   },
   "history": {
-    "retentionDescriptionAfterEnv": "Overrides this when set.",
-    "retentionDescriptionBeforeEnv": "How many Verlauf entries per Manifest vorher older ones are pruned. Range: 5-1000. The env var",
-    "retentionLabel": "Manifest version snapshots to keep",
+    "retentionDescriptionAfterEnv": "überschreibt dies, wenn es eingestellt ist.",
+    "retentionDescriptionBeforeEnv": "Wie viele Verlaufseinträge pro Manifest werden aufbewahrt, bevor ältere entfernt werden? Bereich: 5-1000. Die Umgebungsvariable",
+    "retentionLabel": "Manifest-Versions-Snapshots zum Aufbewahren",
     "saveFailed": "Speichern fehlgeschlagen",
     "sectionTitle": "Verlauf & Retention",
-    "validationRange": "Must be between 5 and 1000."
+    "validationRange": "Muss zwischen 5 und 1000 liegen."
   },
   "language": {
     "sectionTitle": "Sprache",
     "sectionDescription": "Wählen Sie die in der gesamten App verwendete Sprache. Technische Inhalte (Manifeste, OSConfig-Ausgabe, CIS-Regeltext) bleiben in Englisch.",
     "options": {
       "system": "System (automatische Erkennung)",
-      "en": "English",
-      "fr": "Français",
+      "en": "Englisch",
+      "fr": "Englisch",
       "de": "Deutsch",
-      "es": "Español"
+      "es": "Spanisch"
     }
   },
   "messages": {
     "alreadyElevated": "Already wird ausgeführt as Administratoristrator.",
-    "elevationFailed": "Fehlgeschlagen to start elevation.",
-    "elevationLaunching": "Relaunching with Administratoristrator privileges. This window will close shortly.",
+    "elevationFailed": "Ich habe die Elevation nicht gestartet.",
+    "elevationLaunching": "Neustart mit Administratorrechten. Dieses Zeitfenster wird sich bald schließen.",
     "elevationUnavailable": "Elevation nicht verfügbar.",
-    "osconfigDetected": "OSConfig detected: {{version}}.",
-    "osconfigStillMissing": "OSConfig still nicht detected. Install OSConfig, then click Erneut prüfen.",
+    "osconfigDetected": "OSConfig erkannt: {{version}}.",
+    "osconfigStillMissing": "OSConfig immer noch nicht entdeckt. Installiere OSConfig und klicke dann auf Überprüfen.",
     "recheckFailed": "Erneut prüfen fehlgeschlagen.",
-    "welcomeReset": "First-run experience zurücksetzen. The Welcome dialog will appear next time Sie öffnen ConfigForge.",
-    "welcomeResetFailed": "Could nicht zurücksetzen first-run experience."
+    "welcomeReset": "Erster-Run-Erlebnis-Zurücksetzung. Der Begrüßungsdialog erscheint beim nächsten Mal, wenn du ConfigForge öffnest.",
+    "welcomeResetFailed": "Erstmal-Erfahrung konnte nicht zurückgesetzt werden."
   },
   "page": {
-    "description": "System Integrität and OSConfig engine Status",
-    "descriptionAuthor": "Systeminformationen",
-    "title": "Einstellungen"
+    "description": "Systemzustand und OSConfig Triebwerksstatus",
+    "title": "Einstellungen",
+    "descriptionAuthor": "Systeminformationen"
   },
   "systemHealth": {
     "elevation": {
-      "description": "Audit durchführening and applying baselines require Administrator rights to read and write protected registry Werts, CSP policies, and system configuration. Click below to trigger the OS elevation prompt. If Sie accept, this window closes and a neu elevated instance öffnens; if Sie abbrechen, this window stays wird ausgeführt and Sie can try again.",
-      "promptPolkit": "You'll see a polkit prompt. Accept it to continue.",
-      "promptUac": "You'll see a UAC prompt. Accept it to continue.",
-      "restartAsAdministrator": "Restart as Administrator",
-      "title": "Some operations need Administratoristrator privileges"
+      "description": "Das Auditieren und Anwenden baselines erfordert Administratorrechte zum Lesen und Schreiben geschützter Registerwerte, CSP-Richtlinien und Systemkonfiguration. Klicken Sie unten, um die OS-Höhenaufforderung auszulösen. Wenn du es akzeptierst, schließt sich dieses Fenster und eine neue erhöhte Instanz öffnet sich; Wenn Sie abbrechen, bleibt dieses Fenster laufen und Sie können es erneut versuchen.",
+      "promptPolkit": "Du wirst eine Polkit-Eingabeaufforderung sehen. Akzeptiere es, um weiterzumachen.",
+      "promptUac": "Du wirst einen UAC-Prompt sehen. Akzeptiere es, um weiterzumachen.",
+      "restartAsAdministrator": "Neustart als Administrator",
+      "title": "Einige Operationen benötigen Administratorrechte"
     },
     "install": {
-      "description": "ConfigForge's Editor, Bibliothek, and Vergleich/vergleichen features work without the CLI. Install OSConfig to enable Bereitstellen, Audit durchführen, and Revert against this machine.",
+      "description": "ConfigForge Editor, Bibliothek und Diff/Vergleichsfunktionen funktionieren ohne die CLI. Installieren Sie OSConfig, um Deploy, Audit und Revert auf dieser Maschine zu aktivieren.",
       "recheckButton": "Erneut prüfen",
       "title": "OSConfig installieren, um auf diesem Gerät bereitzustellen und zu auditieren"
     },
     "labels": {
-      "administratorPrivileges": "Administrator Privileges",
-      "osVersion": "OS Version",
-      "osconfigModule": "OSConfig Module",
+      "administratorPrivileges": "Administratorrechte",
+      "osVersion": "OS-Version",
+      "osconfigModule": "OSConfig Modul",
       "serverType": "Server Typ"
     },
-    "resolvedAt": "Resolved at:",
+    "resolvedAt": "Gelöst bei:",
     "sectionTitle": "System Integrität",
-    "informationTitle": "Systeminformationen",
     "values": {
       "notElevated": "Neint elevated",
       "notInstalled": "Nicht installiert",
       "runningAsAdmin": "Wird ausgeführt as Administrator",
       "unknown": "Unbekannt"
-    }
+    },
+    "informationTitle": "Systeminformationen"
   },
   "theme": {
-    "label": "Theme",
+    "label": "Thema",
     "options": {
-      "dark": "Dark",
-      "light": "Light",
+      "dark": "Dunkel",
+      "light": "Licht",
       "system": "System"
     },
-    "sectionDescription": "Choose Light, Dark, or System (follows Ihre OS).",
-    "sectionTitle": "Appearance"
+    "sectionDescription": "Wähle Hell, Dunkel oder System (entspricht deinem Betriebssystem).",
+    "sectionTitle": "Aussehen"
   }
 }

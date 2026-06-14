@@ -1,61 +1,61 @@
 {
   "actions": {
     "auditPack": "Audit Pack",
-    "auditPackTitle": "Generate auditor-ready PDF / Markdown deliverable",
+    "auditPackTitle": "Generar entregables PDF / Markdown listos para auditores",
     "back": "Atrás",
     "docs": "Docs",
-    "duplicate": "Duplicate",
-    "duplicateTitle": "Duplicate this manifiesto",
+    "duplicate": "Duplicado",
+    "duplicateTitle": "Duplica este manifiesto",
     "edit": "Editar",
     "export": "Exportar",
-    "generateDocsTitle": "Generate documentation",
+    "generateDocsTitle": "Generar documentación",
     "history": "Historial",
-    "leaveUnsavedConfirm": "You have unguardard changes to \"{{name}}\". Leave anyway and discard them?",
-    "noRevertTitle": "No previous implementar to revert",
+    "leaveUnsavedConfirm": "Tienes cambios sin guardar en \"{{name}}\". ¿Me vas de todos modos y los desechas?",
+    "noRevertTitle": "No hay despliegue previo para revertir",
     "remove": "Quitar",
-    "removeConfirm": "Quitar manifiesto \"{{name}}\"? This action canno be undone.",
+    "removeConfirm": "¿Eliminar el manifiesto \"{{name}}\"? Esta acción no puede deshacerse.",
     "revert": "Revert",
-    "revertConfirm": "Revert manifiesto \"{{name}}\"?\n\nIf a pre-implementar snapshot exists, su prior configuración will be re-applied to this device. If sin snapshot exists, OSConfig enforcement of this manifiesto will be quitard and the manifiesto will be unregistered. Either way, this manifiesto will sin longer be actively enforced on this device.",
-    "revertTitle": "Undo the last implementarment of this manifiesto from this device. If a pre-implementar snapshot exists, prior configuración are re-applied; otherwise OSConfig enforcement is quitard."
+    "revertConfirm": "¿Revertir el manifiesto \"{{name}}\"?\n\nSi existe una instantánea previa al despliegue, tus ajustes previos se volverán a aplicar a este dispositivo. Si no existe una instantánea, OSConfig aplicación de este manifiesto será eliminada y el manifiesto será desregistrado. En cualquier caso, este manifiesto ya no se aplicará activamente en este dispositivo.",
+    "revertTitle": "Deshacer el último despliegue de este manifiesto desde este dispositivo. Si existe una instantánea previa al despliegue, se vuelven a aplicar configuraciones previas; de lo contrario, OSConfig aplicación se elimina."
   },
   "compliance": {
     "emptyDescription": "Ejecuta Audit o Enforce para comparar esta baseline con el dispositivo.",
-    "emptyTitle": "No compliance data yet.",
+    "emptyTitle": "Aún no hay datos de cumplimiento.",
     "sectionTitle": "Cumplimiento Estado"
   },
   "content": {
     "editorView": "Editaror",
-    "mofEditUnsupported": "Editaring is no supported in MOF format",
-    "mofReadOnly": "MOF is read-only",
+    "mofEditUnsupported": "No se soporta edición en MOF formato",
+    "mofReadOnly": "MOF es de solo lectura",
     "sectionTitle": "Manifiesto Content",
-    "unsavedFormatChanges": "You have unguardard changes in {{format}}. Switching tabs preserves them; guardar antes navigating away.",
-    "visualBuilderView": "Visual Builder"
+    "unsavedFormatChanges": "Tienes cambios no guardados en {{format}}. Cambiar de pestaña los preserva; Guarda antes de navegar y alejarte.",
+    "visualBuilderView": "Constructor Visual"
   },
   "cspTroubleshooting": {
-    "declaredConfig": "CSP (Configuration Service Provider) recursos need the Declared Configuration infrastructure",
+    "declaredConfig": "Los recursos CSP (Proveedor de Servicios de Configuración) necesitan la infraestructura de Configuración Declarada",
     "engineRegistered": "Para usar recursos CSP, asegúrate de que el servicio del motor de OSConfig esté correctamente registrado",
-    "registryWorks": "Registry recursos (Microsoft.Windows/Registry) work without agregaritional setup",
-    "title": "CSP Recursos Require Agregaritional Setup",
-    "tryMetadata": "Try: <code>Get-OSConfigMetadata</code> to verify the engine is working"
+    "registryWorks": "Los recursos del registro (Microsoft.Windows/Registro) funcionan sin configuración adicional",
+    "title": "Los recursos de CSP requieren una configuración adicional",
+    "tryMetadata": "Prueba: <code>Get-OSConfigMetadata</code> para comprobar que el motor funciona"
   },
   "deploy": {
-    "auditDescription": "Check compliance only",
+    "auditDescription": "Solo comprobar el cumplimiento",
     "confirm": "¿Implementar el manifiesto «{{name}}» en modo {{mode}} en este dispositivo?",
     "enforceDescription": "Aplicar configuración to device",
-    "enforceRiskConfirm": "WARNING: Enforce will APPLY configuración to this device.\n\nThis action may change Windows or Linux security policy in ways that can break login, networking, RDP, or instalado software, and recovery may require a local administradoristrator or boot media.\n\nProceed at su own risk. This action may break su machine.\n\nContinuar with enforce?",
-    "mixedPlatform": "This manifiesto mixes Windows and Linux recurso tipos. Split it into per-plataforma manifiestos antes implementaring.",
+    "enforceRiskConfirm": "ADVERTENCIA: Enforcer APLICARÁ configuraciones a este dispositivo.\n\nEsta acción puede modificar la política de seguridad de Windows o Linux de formas que puedan romper el inicio de sesión, la red, el RDP o el software instalado, y la recuperación puede requerir un administrador local o un medio de arranque.\n\nProcede bajo tu propia responsabilidad. Esta acción puede estropear tu máquina.\n\n¿Seguir con hacer cumplir la ley?",
+    "mixedPlatform": "Este manifiesto mezcla tipos de recursos para Windows y Linux. Divídelo en manifiestos por plataforma antes de desplegar.",
     "mode": {
-      "audit": "Audit (compliance check only)",
-      "enforce": "Enforce (apply configuración)"
+      "audit": "Auditoría (solo comprobación de cumplimiento)",
+      "enforce": "Aplicar ajustes (aplicar ajustes)"
     }
   },
   "deployResult": {
-    "compliant": "Compliant",
+    "compliant": "Cumplimiento",
     "couldNotRead": "Could no read",
-    "couldNotReadTitle": "Recursos the CLI could no read (provider no supported, transport error, or unsupported ruta). These are NOT counted as non-compliant. The device may really be in the desired state.",
+    "couldNotReadTitle": "Recursos que la CLI no pudo leer (proveedor no soportado, error de transporte o ruta no soportada). Estos NO se cuentan como no cumplientes. El dispositivo puede estar realmente en el estado deseado.",
     "deployedAt": "Implementared at {{time}}",
-    "host": "Host",
-    "nonCompliant": "Non-compliant",
+    "host": "Presentador",
+    "nonCompliant": "No cumple",
     "viewResources": "View {{count}} recursos",
     "warning": "Advertencia"
   },
@@ -64,22 +64,22 @@
     "copy": "Copiar",
     "downloadMarkdown": "Descargar .md",
     "errorMarkdown": "# Error\n\n{{message}}",
-    "title": "Generated Documentation"
+    "title": "Documentación generada"
   },
   "errors": {
     "deleteFailed": "Eliminar con error",
     "deployFailed": "Implementar con error",
     "duplicateFailed": "Error to duplicate manifiesto",
     "exportFailed": "Exportar con error",
-    "generateDocsFailed": "Error to generate documentation",
-    "loadFormatFailed": "Error to load {{format}} format",
+    "generateDocsFailed": "No se ha generado documentación",
+    "loadFormatFailed": "No se pudo cargar {{format}} formato",
     "loadManifestFailed": "Error to load manifiesto",
     "revertFailed": "Revert con error",
     "saveFailed": "Guardar con error",
     "unknown": "Desconocido error"
   },
   "export": {
-    "documentation": "Documentation (.md)",
+    "documentation": "Documentación (.md)",
     "formats": {
       "azurePolicy": "Azure Policy (.json)",
       "csv": "CSV (.csv)",
@@ -102,7 +102,7 @@
   "messages": {
     "reverted": "Manifiesto reverted",
     "saveSuccess": "Manifiesto \"{{name}}\" guardard correctofully",
-    "savedWithWarning": "Guardard with advertencia: {{warning}}"
+    "savedWithWarning": "Guardado con advertencia: {{warning}}"
   },
   "platform": {
     "crossPlatform": "⚙️ Cross-plataforma",
@@ -113,50 +113,50 @@
   "rationale": {
     "backToManifest": "Atrás to manifiesto",
     "downloadCsv": "Descargar CSV",
-    "downloadCsvTitle": "Descargar all rationale entries as CSV",
-    "emptyDescription": "Abrir the editor, change a valor, and click Guardar. The “Why?” prompt captures rationale for every change.",
-    "emptyTitle": "No rationale captured yet.",
-    "filterCount": "{{visible}} of {{total}}",
-    "filterPlaceholder": "Filtrar by recurso, author, or reason text…",
-    "loadErrorTitle": "Could no load rationale log",
-    "loading": "Loading rationale log…",
-    "logDescription": "Every change captured by the “Why?” prompt in the editor. Chronological, cross-recurso. Auditaror-grade.",
-    "logTitle": "Rationale Log:",
-    "noFilterMatches": "No entries match the real filtrar.",
-    "noReasonSkipped": "(sin reason: skipped by author)",
-    "showSkipped": "Show skipped entries",
+    "downloadCsvTitle": "Descarga todas las entradas de justificación como CSV",
+    "emptyDescription": "Abre el editor, cambia un valor y haz clic en Guardar. El mensaje \"¿Por qué?\" refleja la lógica de cada cambio.",
+    "emptyTitle": "Aún no hay justificación recogida.",
+    "filterCount": "{{visible}} de {{total}}",
+    "filterPlaceholder": "Filtra por fuente, autor o texto de la razón...",
+    "loadErrorTitle": "No se pudo cargar el registro de racionalización",
+    "loading": "Cargando registro de razonamiento...",
+    "logDescription": "Cada cambio capturado por el prompt \"¿Por qué?\" en el editor. Cronológica, entre recursos. De nivel auditor.",
+    "logTitle": "Registro de justificación:",
+    "noFilterMatches": "Ninguna entrada coincide con el filtro actual.",
+    "noReasonSkipped": "(sin motivo: omitido por autor)",
+    "showSkipped": "Entradas omitidas en el programa",
     "skippedBadge": "Skipped",
     "stats": {
       "skipped": "Omitirped",
-      "total": "Total entries",
-      "withRationale": "With rationale"
+      "total": "Total de inscripciones",
+      "withRationale": "Con justificación"
     },
     "table": {
-      "author": "Author",
-      "reason": "Reason",
+      "author": "Autor",
+      "reason": "Motivo",
       "resource": "Recurso",
-      "timestamp": "Timestamp"
+      "timestamp": "Marca temporal"
     },
     "unknownAuthor": "Desconocido"
   },
   "resourceDetails": {
     "desiredValue": "Desired Valor",
-    "path": "Path",
-    "property": "Property",
-    "reason": "Reason",
+    "path": "Camino",
+    "property": "Propiedad",
+    "reason": "Motivo",
     "value": "Valor"
   },
   "resourceEdit": {
-    "cancelAria": "Cancelar and discard changes",
+    "cancelAria": "Cancelar y descartar cambios",
     "title": "Editar recurso"
   },
   "tables": {
-    "reason": "Reason",
+    "reason": "Motivo",
     "resource": "Recurso",
     "resources": "Recursos",
     "showAllResources": "Show all {{count}} recursos",
     "showingFirst": "(mostraring first {{count}})",
-    "showingFirstForPerformance": "(mostraring first {{count}} for performance)",
+    "showingFirstForPerformance": "(mostrando primer {{count}} para la actuación)",
     "status": "Estado",
     "type": "Tipo"
   },
@@ -168,9 +168,9 @@
   "visual": {
     "addResource": "Agregar Recurso",
     "currentResources": "Real Recursos ({{count}})",
-    "groupCount": "Group · {{count}}",
+    "groupCount": "Grupo · {{count}}",
     "noResources": "No recursos in manifiesto.",
-    "parseError": "Could no parse manifiesto YAML. Switch to Editaror ver to fix syntax errors.",
+    "parseError": "No pude analizar el manifesto YAML. Cambia a la vista del editor para corregir errores de sintaxis.",
     "resourceFallback": "Recurso {{index}}",
     "unknown": "Desconocido",
     "usePicker": "Usa el selector para agregar recursos."

@@ -6,50 +6,50 @@
     "deleteFailed": "Supprimer échoué",
     "historyLoadFailed": "Échec to load historique",
     "restoreFailed": "Restore échoué",
-    "restorePreviewLoadFailed": "Échec to load restore preafficher",
-    "snapshotLoadFailed": "Échec to load snapshot",
+    "restorePreviewLoadFailed": "Échec du chargement de la prévisualisation de restauration",
+    "snapshotLoadFailed": "Échec du chargement de l’instantané",
     "snapshotNotFound": "Snapshot non found",
-    "restoreRecoverySuffix": " (votre previous state was enregistrerd as an auto-snapshot avant the échoué restore)"
+    "restoreRecoverySuffix": " (Votre état précédent était sauvegardé en instantané automatique avant l’échec de la restauration)"
   },
   "header": {
     "back": "Retour",
     "sectionTitle": "Version Historique",
-    "summary_one": "{{manifestName}}: {{count}} snapshot",
-    "summary_other": "{{manifestName}}: {{count}} snapshots"
+    "summary_one": "{{manifestName}} : {{count}} instantané",
+    "summary_other": "{{manifestName}} : {{count}} instantanés"
   },
   "empty": {
-    "sectionTitle": "Non historique recorded for this manifeste",
-    "sectionDescription": "Snapshots are enregistrerd automatically when vous register or mettre à jour the manifeste."
+    "sectionTitle": "Aucun historique enregistré pour ce manifeste",
+    "sectionDescription": "Les instantanés sont sauvegardés automatiquement lorsque vous vous enregistrez ou mettez à jour le manifeste."
   },
   "timeline": {
     "byAuthor": "By {{author}}",
-    "rationaleTitle": "Comment entered at enregistrer time",
+    "rationaleTitle": "Commentaire entré en temps de sauvegarde",
     "selectPrompt": "Sélectionner a snapshot to afficher or comparer"
   },
   "actions": {
-    "view": "View",
-    "compareCurrent": "Comparer with Actuel",
-    "restoreSnapshot": "Restore snapshot",
-    "restoreDeploys": "Restore (re-déployers to devices)"
+    "view": "Vue",
+    "compareCurrent": "Comparer avec le courant",
+    "restoreSnapshot": "Restaurer l’instantané",
+    "restoreDeploys": "Restauration (re-déploiement sur les appareils)"
   },
   "confirm": {
-    "deleteSnapshot": "Supprimer snapshot from {{time}}?"
+    "deleteSnapshot": "Supprimer un instantané de {{time}} ?"
   },
   "restore": {
-    "buttonLoading": "Restoring…",
+    "buttonLoading": "Restauration...",
     "closeAria": "Fermer",
     "diffAfterRestore": "Après Restore",
     "diffCurrent": "Actuel",
-    "noCurrent": "Non actuel registered manifeste was found, so aucun auto-snapshot will be créerd. Restore will register the snapshot content as a nouveau manifeste.",
-    "snapshotFrom": "Snapshot from {{time}}",
-    "title": "Restore manifeste from snapshot",
-    "warning": "The actuel manifeste will be auto-snapshotted avant restore so vous can roll back. Re-registering may re-déployer the desired state to managed devices."
+    "noCurrent": "Aucun manifeste enregistré actuel n’a été trouvé, donc aucun instantané automatique ne sera créé. La restauration enregistrera le contenu instantané comme un nouveau manifeste.",
+    "snapshotFrom": "Instantané de {{time}}",
+    "title": "Restaurer le manifeste à partir de l’instantané",
+    "warning": "Le manifeste actuel sera instantané automatiquement avant la restauration, vous pourrez donc revenir en arrière. Le réenregistrement peut redéployer l’état souhaité sur les appareils gérés."
   },
   "diff": {
-    "compareTitle": "Comparer with Actuel",
+    "compareTitle": "Comparer avec le courant",
     "compareSubtitle": "Snapshot ({{time}}) vs Actuel",
     "current": "Actuel",
-    "snapshot": "Snapshot",
-    "snapshotContent": "Snapshot Content"
+    "snapshot": "Instantané",
+    "snapshotContent": "Contenu instantané"
   }
 }

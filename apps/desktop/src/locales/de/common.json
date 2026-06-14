@@ -24,7 +24,7 @@
   },
   "a11y": {
     "toggle-sidebar": "Seitenleiste umschalten",
-    "breadcrumb": "Breadcrumb",
+    "breadcrumb": "Brotkrumen",
     "dismiss": "Ausblenden",
     "cli-not-installed-install": "OSConfig CLI ist nicht installiert. Klicken Sie zum Installieren."
   },
@@ -48,7 +48,7 @@
   "update": {
     "available-title": "Update verfügbar",
     "available-body": "ConfigForge v{{version}} steht zum Download bereit.",
-    "downloading-title": "Update wird heruntergeladen…",
+    "downloading-title": "Downloade Update...",
     "ready-title": "Update bereit",
     "ready-body": "v{{version}} wurde heruntergeladen. Starten Sie neu, um es zu installieren.",
     "check-failed-title": "Updateprüfung fehlgeschlagen"
@@ -56,35 +56,35 @@
   "components": {
     "conflictDetector": {
       "extracted": {
-        "text1": "Need at least 2 Manifeste to detect conflicts.",
-        "text2": "Cross-Manifest Conflict Detection",
-        "text3": "Checking",
+        "text1": "Man braucht mindestens zwei Manifeste, um Konflikte zu erkennen.",
+        "text2": "Cross-Manifest Konflikterkennung",
+        "text3": "Überprüfen",
         "text4": "Manifeste for conflicting Einstellungen",
-        "text5": "Re-check",
-        "text6": "Analyzing Manifeste for conflicts…",
-        "text7": "Nein conflicts detected across registered Manifeste",
-        "text8": "Conflict:"
+        "text5": "Nachprüfung",
+        "text6": "Manifeste auf Konflikte analysieren...",
+        "text7": "Es wurden keine Konflikte zwischen registrierten Manifesten festgestellt",
+        "text8": "Konflikt:"
       }
     },
     "recentRationale": {
       "extracted": {
         "text1": "Wird geladen…",
-        "text2": "Nein rationale captured yet for this ResQuelle.",
+        "text2": "Für diese Ressource ist noch keine Begründung gefunden.",
         "text3": "Skipped",
         "text4": "Unbekannt",
-        "text5": "(keine reason: skipped by author)",
+        "text5": "(kein Grund: vom Autor übersprungen)",
         "text6": "(keine reason)",
-        "text7": "View all →",
-        "text8": "Show recent rationale",
-        "text9": "Hide recent rationale",
-        "text10": "Recent rationale",
+        "text7": "Alle → ansehen",
+        "text8": "Aktuelle Begründung anzeigen",
+        "text9": "Aktuelle Begründung verbergen",
+        "text10": "Jüngste Begründung",
         "text11": "Wird geladen…",
         "text12": "Nein rationale captured yet.",
         "text13": "Skipped",
         "text14": "Unbekannt",
-        "text15": "(keine reason: skipped by author)",
+        "text15": "(kein Grund: vom Autor übersprungen)",
         "text16": "(keine reason)",
-        "text17": "View all →"
+        "text17": "Alle → ansehen"
       }
     }
   }

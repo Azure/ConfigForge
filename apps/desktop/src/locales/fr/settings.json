@@ -1,31 +1,31 @@
 {
   "about": {
     "backendCliInstalled": "Retourend: oscfg CLI ({{version}})",
-    "backendCliMissing": "Retourend: oscfg CLI (install separately, see INSTALL.md)",
-    "authorFlavor": "Version auteur : édition de manifestes, bibliothèque, comparaison de conformité et PDF d’audit uniquement. Utilisez la version Windows ou Linux pour déployer sur un appareil.",
-    "docsLabel": "Docs:",
-    "docsLinkLabel": "OSConfig Gen 2 Core Concepts",
-    "resetWelcomeButton": "Réinitialiser first-run experience",
-    "sectionDescription": "Security baseline authoring tool built on OSConfig Gen 2",
-    "sectionTitle": "À propos ConfigForge"
+    "backendCliMissing": "Backend : OSCFG CLI (installer séparément, voir INSTALL.md)",
+    "docsLabel": "Documents :",
+    "docsLinkLabel": "OSConfig Concepts fondamentaux de la 2e génération",
+    "resetWelcomeButton": "Réinitialiser l’expérience de la première partie",
+    "sectionDescription": "Outil de sécurité baseline d’auteur basé sur OSConfig Gen 2",
+    "sectionTitle": "À propos ConfigForge",
+    "authorFlavor": "Version auteur : édition de manifestes, bibliothèque, comparaison de conformité et PDF d’audit uniquement. Utilisez la version Windows ou Linux pour déployer sur un appareil."
   },
   "history": {
-    "retentionDescriptionAfterEnv": "Overrides this when set.",
-    "retentionDescriptionBeforeEnv": "How many historique entries per manifeste avant older ones are pruned. Range: 5-1000. The env var",
-    "retentionLabel": "Manifeste version snapshots to keep",
+    "retentionDescriptionAfterEnv": "Ça remplace cela une fois réglé.",
+    "retentionDescriptionBeforeEnv": "Combien d'entrées d'historique par manifeste sont conservées avant que les plus anciennes ne soient supprimées. Plage : 5-1000. La variable d'environnement",
+    "retentionLabel": "Snapshots de la version manifeste à conserver",
     "saveFailed": "Enregistrer échoué",
     "sectionTitle": "Historique & Retention",
-    "validationRange": "Must be between 5 and 1000."
+    "validationRange": "Ça doit être entre 5 et 1000."
   },
   "language": {
     "sectionTitle": "Langue",
     "sectionDescription": "Choisissez la langue utilisée dans toute l'application. Le contenu technique (manifestes, sortie OSConfig, texte des règles CIS) reste en anglais.",
     "options": {
       "system": "Système (détection automatique)",
-      "en": "English",
+      "en": "Anglais",
       "fr": "Français",
-      "de": "Deutsch",
-      "es": "Español"
+      "de": "Allemand",
+      "es": "Espagnol"
     }
   },
   "messages": {
@@ -41,8 +41,8 @@
   },
   "page": {
     "description": "État d’intégrité du système et du moteur OSConfig",
-    "descriptionAuthor": "Informations système",
-    "title": "Paramètres"
+    "title": "Paramètres",
+    "descriptionAuthor": "Informations système"
   },
   "systemHealth": {
     "elevation": {
@@ -65,13 +65,13 @@
     },
     "resolvedAt": "Résolu à :",
     "sectionTitle": "Intégrité du système",
-    "informationTitle": "Informations système",
     "values": {
       "notElevated": "Non élevé",
       "notInstalled": "Non installé",
       "runningAsAdmin": "Exécution en tant qu’administrateur",
       "unknown": "Inconnu"
-    }
+    },
+    "informationTitle": "Informations système"
   },
   "theme": {
     "label": "Thème",

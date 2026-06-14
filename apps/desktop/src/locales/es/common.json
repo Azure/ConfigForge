@@ -56,35 +56,35 @@
   "components": {
     "conflictDetector": {
       "extracted": {
-        "text1": "Need at least 2 manifiestos to detect conflicts.",
-        "text2": "Cross-Manifiesto Conflict Detection",
-        "text3": "Checking",
+        "text1": "Necesitan al menos 2 manifiestos para detectar conflictos.",
+        "text2": "Detección de conflictos entre manifestos",
+        "text3": "Comprobación",
         "text4": "Manifiestos for conflicting configuración",
-        "text5": "Re-check",
-        "text6": "Analyzing manifiestos for conflicts…",
-        "text7": "No conflicts detected across registered manifiestos",
-        "text8": "Conflict:"
+        "text5": "Volver a comprobar",
+        "text6": "Analizar manifiestos en busca de conflictos...",
+        "text7": "No se detectaron conflictos entre manifiestos registrados",
+        "text8": "Conflicto:"
       }
     },
     "recentRationale": {
       "extracted": {
         "text1": "Cargando…",
-        "text2": "No rationale captured yet for this recurso.",
+        "text2": "Aún no se ha encontrado ninguna justificación para este recurso.",
         "text3": "Skipped",
         "text4": "Desconocido",
-        "text5": "(sin reason: skipped by author)",
+        "text5": "(sin motivo: omitido por autor)",
         "text6": "(sin reason)",
-        "text7": "View all →",
-        "text8": "Show recent rationale",
-        "text9": "Hide recent rationale",
-        "text10": "Recent rationale",
+        "text7": "Ver todo →",
+        "text8": "Mostrar justificación reciente",
+        "text9": "Ocultar la justificación reciente",
+        "text10": "Justificación reciente",
         "text11": "Cargando…",
-        "text12": "No rationale captured yet.",
+        "text12": "Aún no hay justificación recogida.",
         "text13": "Skipped",
         "text14": "Desconocido",
-        "text15": "(sin reason: skipped by author)",
+        "text15": "(sin motivo: omitido por autor)",
         "text16": "(sin reason)",
-        "text17": "View all →"
+        "text17": "Ver todo →"
       }
     }
   }

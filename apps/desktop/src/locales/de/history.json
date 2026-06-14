@@ -6,16 +6,16 @@
     "deleteFailed": "Löschen fehlgeschlagen",
     "historyLoadFailed": "Fehlgeschlagen to load Verlauf",
     "restoreFailed": "Restore fehlgeschlagen",
-    "restorePreviewLoadFailed": "Fehlgeschlagen to load restore preanzeigen",
-    "snapshotLoadFailed": "Fehlgeschlagen to load snapshot",
+    "restorePreviewLoadFailed": "Es konnte keine Wiederherstellungsvorschau geladen werden",
+    "snapshotLoadFailed": "Snapshot wurde nicht geladen",
     "snapshotNotFound": "Snapshot nicht found",
-    "restoreRecoverySuffix": " (Ihre previous state was speichernd as an auto-snapshot vorher the fehlgeschlagen restore)"
+    "restoreRecoverySuffix": " (Ihr vorheriger Zustand wurde vor der fehlgeschlagenen Wiederherstellung als Auto-Snapshot gespeichert)"
   },
   "header": {
     "back": "Zurück",
     "sectionTitle": "Version Verlauf",
-    "summary_one": "{{manifestName}}: {{count}} snapshot",
-    "summary_other": "{{manifestName}}: {{count}} snapshots"
+    "summary_one": "{{manifestName}}: {{count}} Schnappschuss",
+    "summary_other": "{{manifestName}}: {{count}} Schnappschüsse"
   },
   "empty": {
     "sectionTitle": "Kein Verlauf für dieses Manifest aufgezeichnet",
@@ -23,33 +23,33 @@
   },
   "timeline": {
     "byAuthor": "By {{author}}",
-    "rationaleTitle": "Comment entered at speichern time",
+    "rationaleTitle": "Kommentar beim Speicherstand eingegeben",
     "selectPrompt": "Auswählen a snapshot to anzeigen or vergleichen"
   },
   "actions": {
-    "view": "View",
-    "compareCurrent": "Vergleichen with Aktuell",
-    "restoreSnapshot": "Restore snapshot",
-    "restoreDeploys": "Restore (re-bereitstellens to devices)"
+    "view": "Ansicht",
+    "compareCurrent": "Vergleich mit Current",
+    "restoreSnapshot": "Snapshot wiederherstellen",
+    "restoreDeploys": "Wiederherstellen (neu deployen auf Geräte)"
   },
   "confirm": {
-    "deleteSnapshot": "Löschen snapshot from {{time}}?"
+    "deleteSnapshot": "Snapshot aus {{time}} löschen?"
   },
   "restore": {
-    "buttonLoading": "Restoring…",
+    "buttonLoading": "Wiederherstellen...",
     "closeAria": "Schließen",
     "diffAfterRestore": "Nachher Restore",
     "diffCurrent": "Aktuell",
-    "noCurrent": "Nein aktuell registered Manifest was found, so keine auto-snapshot will be erstellend. Restore will register the snapshot content as a neu Manifest.",
-    "snapshotFrom": "Snapshot from {{time}}",
-    "title": "Restore Manifest from snapshot",
-    "warning": "The aktuell Manifest will be auto-snapshotted vorher restore so Sie can roll back. Re-registering may re-bereitstellen the desired state to managed devices."
+    "noCurrent": "Es wurde kein aktuelles registriertes Manifest gefunden, daher wird kein automatisches Snapshot erstellt. Restore registriert den Snapshot-Inhalt als neues Manifest.",
+    "snapshotFrom": "Schnappschuss aus {{time}}",
+    "title": "Manifest aus Snapshot wiederherstellen",
+    "warning": "Das aktuelle Manifest wird vor der Wiederherstellung automatisch aufgenommen, sodass du zurückrollen kannst. Eine Neuregistrierung kann den gewünschten Zustand auf verwaltete Geräte neu ausrollen."
   },
   "diff": {
-    "compareTitle": "Vergleichen with Aktuell",
+    "compareTitle": "Vergleich mit Current",
     "compareSubtitle": "Snapshot ({{time}}) vs Aktuell",
     "current": "Aktuell",
-    "snapshot": "Snapshot",
-    "snapshotContent": "Snapshot Content"
+    "snapshot": "Schnappschuss",
+    "snapshotContent": "Snapshot-Inhalt"
   }
 }

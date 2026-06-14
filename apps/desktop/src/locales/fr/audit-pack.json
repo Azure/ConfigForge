@@ -1,25 +1,25 @@
 {
   "extracted": {
     "text1": "Retour to manifeste",
-    "text2": "Audit Pack:",
+    "text2": "Audit Pack :",
     "text3": "Pdf",
     "text4": "Pdf",
-    "text5": "Saving…",
+    "text5": "Sauver...",
     "text6": "Télécharger PDF",
     "text7": "Markdown",
     "text8": "Markdown",
-    "text9": "Saving…",
+    "text9": "Sauver...",
     "text10": "Télécharger Markdown",
     "text11": "Loading manifeste…",
-    "text12": "Could non load manifeste",
+    "text12": "Impossible de charger le manifeste",
     "text13": "PDF preafficher",
-    "text14": "What's included",
-    "text15": "Manifeste header & metadata",
+    "text14": "Ce qui est inclus",
+    "text15": "En-tête manifest & métadonnées",
     "text16": "Conformité report",
-    "text17": "(run an audit, or pass",
+    "text17": "(Faites un audit, ou réussissez",
     "text18": "Version historique",
-    "text19": "Rationale log",
-    "text20": "(none captured)",
-    "text21": "The audit pack is a self-contained document. Share the PDF directly with auditors. Téléchargers include a footer with page numbers and a “Confidential - Internal Use Only” mark."
+    "text19": "Journal de rationalisation",
+    "text20": "(aucun capturé)",
+    "text21": "Le audit pack est un document autonome. Partagez le PDF directement avec les auditeurs. Les téléchargements incluent un pied de page avec des numéros de page et une marque « Confidentiel - usage interne uniquement »."
   }
 }
