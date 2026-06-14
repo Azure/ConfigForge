@@ -1,22 +1,22 @@
 {
   "actions": {
     "auditPack": "Audit Pack",
-    "auditPackTitle": "Generate auditor-ready PDF / Markdown deliverable",
+    "auditPackTitle": "Générez un PDF / livrable Markdown prêt pour l’auditeur",
     "back": "Retour",
     "docs": "Docs",
-    "duplicate": "Duplicate",
-    "duplicateTitle": "Duplicate this manifeste",
+    "duplicate": "Duplique",
+    "duplicateTitle": "Dupliquer ce manifeste",
     "edit": "Modifier",
     "export": "Exporter",
-    "generateDocsTitle": "Generate documentation",
+    "generateDocsTitle": "Générer de la documentation",
     "history": "Historique",
-    "leaveUnsavedConfirm": "You have unenregistrerd changes to \"{{name}}\". Leave anyway and discard them?",
-    "noRevertTitle": "Non previous déployer to revert",
+    "leaveUnsavedConfirm": "Vous avez des modifications non enregistrées dans « {{name}} ». Partir quand même et les jeter ?",
+    "noRevertTitle": "Aucun déploiement précédent n’a été annulé",
     "remove": "Supprimer",
-    "removeConfirm": "Supprimer manifeste \"{{name}}\"? This action cannon be undone.",
-    "revert": "Revert",
-    "revertConfirm": "Revert manifeste \"{{name}}\"?\n\nIf a pre-déployer snapshot exists, votre prior paramètres will be re-applied to this device. If aucun snapshot exists, OSConfig enforcement of this manifeste will be supprimerd and the manifeste will be unregistered. Either way, this manifeste will aucun longer be actively enforced on this device.",
-    "revertTitle": "Undo the last déployerment of this manifeste from this device. If a pre-déployer snapshot exists, prior paramètres are re-applied; otherwise OSConfig enforcement is supprimerd."
+    "removeConfirm": "Supprimer le manifeste « {{name}} » ? Cette action ne peut être annulée.",
+    "revert": "Retour",
+    "revertConfirm": "Annuler la manifestation « {{name}} » ?\n\nSi un instantané pré-déploiement existe, vos paramètres précédents seront réappliqués sur cet appareil. Si aucun instantané n’existe, OSConfig'application de ce manifeste sera supprimée et le manifeste sera désenregistré. Dans tous les cas, ce manifeste ne sera plus activement appliqué sur cet appareil.",
+    "revertTitle": "Annulez le dernier déploiement de ce manifeste depuis cet appareil. Si un instantané pré-déploiement existe, les réglages précédents sont réappliqués ; sinon, OSConfig application est supprimée."
   },
   "compliance": {
     "emptyDescription": "Lancez Audit ou Enforce pour vérifier cette baseline par rapport à l'appareil.",
@@ -25,36 +25,36 @@
   },
   "content": {
     "editorView": "Modifieror",
-    "mofEditUnsupported": "Modifiering is non supported in MOF format",
-    "mofReadOnly": "MOF is read-only",
+    "mofEditUnsupported": "L’édition n’est pas prise en charge dans MOF format",
+    "mofReadOnly": "MOF est en lecture seule",
     "sectionTitle": "Contenu du manifeste",
-    "unsavedFormatChanges": "You have unenregistrerd changes in {{format}}. Switching tabs preserves them; enregistrer avant navigating away.",
-    "visualBuilderView": "Visual Builder"
+    "unsavedFormatChanges": "Vous avez des modifications non enregistrées dans {{format}}. Changer d’onglet les préserve ; Sauvegarder avant de s’éloigner.",
+    "visualBuilderView": "Constructeur Visuel"
   },
   "cspTroubleshooting": {
-    "declaredConfig": "CSP (Configuration Service Provider) ressources need the Declared Configuration infrastructure",
+    "declaredConfig": "Les ressources CSP (Fournisseur de Service de Configuration) ont besoin de l’infrastructure de configuration déclarée",
     "engineRegistered": "Pour utiliser les ressources CSP, assurez-vous que le service du moteur OSConfig est correctement enregistré",
-    "registryWorks": "Registry ressources (Microsoft.Windows/Registry) work without ajouteritional setup",
-    "title": "CSP Ressources Require Ajouteritional Setup",
-    "tryMetadata": "Try: <code>Get-OSConfigMetadata</code> to verify the engine is working"
+    "registryWorks": "Les ressources du registre (Microsoft.Windows/Registry) fonctionnent sans configuration supplémentaire",
+    "title": "Les ressources CSP nécessitent une configuration supplémentaire",
+    "tryMetadata": "Essaie : <code>Faites-OSConfigMetadata</code> vérifier que le moteur fonctionne bien"
   },
   "deploy": {
-    "auditDescription": "Check compliance only",
+    "auditDescription": "Vérifier uniquement la conformité",
     "confirm": "Déployer le manifeste « {{name}} » en mode {{mode}} sur cet appareil ?",
     "enforceDescription": "Appliquer paramètres to device",
-    "enforceRiskConfirm": "WARNING: Enforce will APPLY paramètres to this device.\n\nThis action may change Windows or Linux security policy in ways that can break login, networking, RDP, or installé software, and recovery may require a local administrateuristrator or boot media.\n\nProceed at votre own risk. This action may break votre machine.\n\nContinuer with enforce?",
-    "mixedPlatform": "This manifeste mixes Windows and Linux ressource types. Split it into per-plateforme manifestees avant déployering.",
+    "enforceRiskConfirm": "AVERTISSEMENT : Appliquera les paramètres à cet appareil.\n\nCette action peut modifier la politique de sécurité de Windows ou Linux de manière à perturber la connexion, le réseau, le RDP ou les logiciels installés, et la récupération peut nécessiter un administrateur local ou un support de démarrage.\n\nAvancez à vos risques et périls. Cette action peut casser votre machine.\n\nContinuer avec l’application ?",
+    "mixedPlatform": "Ce manifeste mélange les types de ressources Windows et Linux. Séparez-le en manifestes par plateforme avant de déployer.",
     "mode": {
-      "audit": "Audit (compliance check only)",
-      "enforce": "Enforce (apply paramètres)"
+      "audit": "Audit (contrôle de conformité uniquement)",
+      "enforce": "appliquer (appliquer les paramètres)"
     }
   },
   "deployResult": {
-    "compliant": "Compliant",
+    "compliant": "Conformité",
     "couldNotRead": "Could non read",
-    "couldNotReadTitle": "Ressources the CLI could non read (provider non supported, transport erreur, or unsupported chemin). These are NOT counted as non-compliant. The device may réelly be in the desired state.",
+    "couldNotReadTitle": "Ressources que la CLI ne pouvait pas lire (fournisseur non supporté, erreur de transport ou chemin non pris en charge). Ces éléments ne sont PAS comptés comme non conformes. L’appareil peut en fait être dans l’état souhaité.",
     "deployedAt": "Déployered at {{time}}",
-    "host": "Host",
+    "host": "Animateur",
     "nonCompliant": "Nonn-compliant",
     "viewResources": "View {{count}} ressources",
     "warning": "Avertissement"
@@ -64,15 +64,15 @@
     "copy": "Copier",
     "downloadMarkdown": "Télécharger .md",
     "errorMarkdown": "# Erreur\n\n{{message}}",
-    "title": "Generated Documentation"
+    "title": "Documentation générée"
   },
   "errors": {
     "deleteFailed": "Supprimer échoué",
     "deployFailed": "Déployer échoué",
     "duplicateFailed": "Échec to duplicate manifeste",
     "exportFailed": "Exporter échoué",
-    "generateDocsFailed": "Échec to generate documentation",
-    "loadFormatFailed": "Échec to load {{format}} format",
+    "generateDocsFailed": "Échec de générer la documentation",
+    "loadFormatFailed": "Échec de charger {{format}} format",
     "loadManifestFailed": "Échec to load manifeste",
     "revertFailed": "Revert échoué",
     "saveFailed": "Enregistrer échoué",
@@ -97,12 +97,12 @@
     "jsonLoadFailed": "// Échec to load JSON ({{message}})"
   },
   "header": {
-    "source": "Source: {{source}}"
+    "source": "Source : {{source}}"
   },
   "messages": {
     "reverted": "Manifeste reverted",
     "saveSuccess": "Manifeste \"{{name}}\" enregistrerd réussitefully",
-    "savedWithWarning": "Enregistrerd with avertissement: {{warning}}"
+    "savedWithWarning": "Sauvegardé avec avertissement : {{warning}}"
   },
   "platform": {
     "crossPlatform": "⚙️ Cross-plateforme",
@@ -113,50 +113,50 @@
   "rationale": {
     "backToManifest": "Retour to manifeste",
     "downloadCsv": "Télécharger CSV",
-    "downloadCsvTitle": "Télécharger all rationale entries as CSV",
-    "emptyDescription": "Ouvrir the éditeur, change a valeur, and click Enregistrer. The “Why?” prompt captures rationale for every change.",
+    "downloadCsvTitle": "Téléchargez toutes les entrées de justification en CSV",
+    "emptyDescription": "Ouvre l’éditeur, modifie une valeur et clique sur Enregistrer. La demande « Pourquoi ? » exprime la logique de chaque changement.",
     "emptyTitle": "Non rationale captured yet.",
-    "filterCount": "{{visible}} of {{total}}",
-    "filterPlaceholder": "Filtrer by ressource, author, or reason text…",
-    "loadErrorTitle": "Could non load rationale log",
-    "loading": "Loading rationale log…",
-    "logDescription": "Every change captured by the “Why?” prompt in the éditeur. Chronological, cross-ressource. Auditeror-grade.",
-    "logTitle": "Rationale Log:",
-    "noFilterMatches": "Non entries match the actuel filtrer.",
-    "noReasonSkipped": "(aucun reason: skipped by author)",
-    "showSkipped": "Show skipped entries",
+    "filterCount": "{{visible}} de {{total}}",
+    "filterPlaceholder": "Filtrez par ressource, auteur ou texte de raison...",
+    "loadErrorTitle": "Impossible de charger le journal de rationalisation",
+    "loading": "Chargement du journal de justification...",
+    "logDescription": "Chaque changement est capté par la demande « Pourquoi ? » dans l’éditeur. Chronologique, entre ressources. De niveau auditeur.",
+    "logTitle": "Journal de motivation :",
+    "noFilterMatches": "Aucune entrée ne correspond au filtre actuel.",
+    "noReasonSkipped": "(sans raison : ignoré par l’auteur)",
+    "showSkipped": "Entrées sautées dans l’émission",
     "skippedBadge": "Skipped",
     "stats": {
       "skipped": "Ignorerped",
-      "total": "Total entries",
-      "withRationale": "With rationale"
+      "total": "Total des inscriptions",
+      "withRationale": "Avec justification"
     },
     "table": {
-      "author": "Author",
-      "reason": "Reason",
+      "author": "Auteur",
+      "reason": "Raison",
       "resource": "Ressource",
-      "timestamp": "Timestamp"
+      "timestamp": "Horodatage"
     },
     "unknownAuthor": "Inconnu"
   },
   "resourceDetails": {
     "desiredValue": "Desired Valeur",
-    "path": "Path",
-    "property": "Property",
-    "reason": "Reason",
+    "path": "Chemin",
+    "property": "Propriété",
+    "reason": "Raison",
     "value": "Valeur"
   },
   "resourceEdit": {
-    "cancelAria": "Annuler and discard changes",
+    "cancelAria": "Annuler et défausser les changements",
     "title": "Modifier ressource"
   },
   "tables": {
-    "reason": "Reason",
+    "reason": "Raison",
     "resource": "Ressource",
     "resources": "Ressources",
     "showAllResources": "Show all {{count}} ressources",
     "showingFirst": "(affichering first {{count}})",
-    "showingFirstForPerformance": "(affichering first {{count}} for performance)",
+    "showingFirstForPerformance": "(première {{count}} pour la performance)",
     "status": "État",
     "type": "Type"
   },
@@ -168,9 +168,9 @@
   "visual": {
     "addResource": "Ajouter Ressource",
     "currentResources": "Actuel Ressources ({{count}})",
-    "groupCount": "Group · {{count}}",
+    "groupCount": "Groupe · {{count}}",
     "noResources": "Non ressources in manifeste.",
-    "parseError": "Could non parse manifeste YAML. Switch to Modifieror afficher to fix syntax erreurs.",
+    "parseError": "Impossible de comprendre la manifestation YAML. Passer en vue éditeur pour corriger les erreurs de syntaxe.",
     "resourceFallback": "Ressource {{index}}",
     "unknown": "Inconnu",
     "usePicker": "Utilisez le sélecteur pour ajouter des ressources."

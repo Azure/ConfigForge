@@ -1,24 +1,24 @@
 {
   "page": {
     "title": "Comparar Manifiestos",
-    "description": "Side-by-side comparison of manifiesto configurations"
+    "description": "Comparación lado a lado de configuraciones manifiestas"
   },
   "pageError": {
     "dismiss": "Dismiss",
-    "dismissTitle": "Dismiss"
+    "dismissTitle": "Destitución"
   },
   "info": {
-    "oneManifest": "You have 1 manifiesto registered. To comparar two registered manifiestos, register a second one first, or switch either side to <strong>Paste / Cargar</strong> mode below to paste YAML directly."
+    "oneManifest": "Tienes 1 manifiesto registrado. Para comparar dos manifiestos registrados, registra primero un segundo o cambia a cualquiera de los lados al modo <strong>Pegar / Subir</strong> abajo para pegar YAML directamente."
   },
   "errors": {
     "analyzeFailed": "Error to analyze diferencias",
     "loadManifestsFailed": "Error to load manifiestos",
-    "loadManifestsTimeout": "Loading manifiestos timed out. The background list call is taking longer than 10s — try Realizar, or restart the app if it persists.",
-    "network": "Network error"
+    "loadManifestsTimeout": "Los manifiestos de carga se agotaron. La llamada a la lista en segundo plano está tardando más de 10 segundos — prueba a actualizar o reinicia la app si persiste.",
+    "network": "Error de red"
   },
   "tabs": {
-    "pairwise": "Pairwise",
-    "matrix": "Matrix (N-way)",
+    "pairwise": "Por pares",
+    "matrix": "Matriz (N-vía)",
     "cisDiff": "CIS Diferencias"
   },
   "pairwise": {
@@ -26,20 +26,20 @@
     "after": "Después",
     "modes": {
       "pasteUpload": "Paste / Cargar",
-      "fromManifest": "From Manifiesto"
+      "fromManifest": "De Manifest"
     },
     "select": {
       "loading": "Cargando…",
-      "noManifests": "No manifiestos registered",
+      "noManifests": "No se registran manifiestos",
       "selectManifest": "Seleccionar a manifiesto…"
     },
     "loadingManifest": "Loading manifiesto…",
     "empty": {
       "selectManifest": "Seleccionar a manifiesto above",
-      "uploadOrPaste": "Cargar a archivo or paste manifiesto text"
+      "uploadOrPaste": "Sube un archivo o pega el texto del manifiesto"
     },
     "uploadFile": "Cargar archivo",
-    "compareDisabledTitle": "Seleccionar a manifiesto on both sides to enable Comparar",
+    "compareDisabledTitle": "Selecciona un manifiesto en ambos lados para habilitar Comparar",
     "compareButton": "Comparar"
   },
   "stats": {
@@ -59,18 +59,18 @@
     "afterNormalized": "Después (normalized)"
   },
   "changelog": {
-    "downloadTitle": "Descargar a Markdown changelog of the diferencias above",
+    "downloadTitle": "Descarga un registro de cambios de Markdown del diferencial de arriba",
     "downloadButton": "Descargar Changelog (.md)"
   },
   "ai": {
-    "analyzing": "Analyzing configuration changes…",
-    "title": "Intelligent Diferencias Insights",
-    "subtitle": "Heuristic, locally-computed resumen of configuration changes",
-    "showWork": "Show su work",
+    "analyzing": "Analizar cambios de configuración...",
+    "title": "Insights Diferenciales Inteligentes",
+    "subtitle": "Heurística, resumen computado localmente de los cambios de configuración",
+    "showWork": "Muestra tu trabajo",
     "inputFingerprint": "Input-fingerprint",
     "sources": "Origens",
     "citationCoverage": "Citation-coverage",
-    "none": "(none)",
+    "none": "(ninguno)",
     "confidence": "Confidence {{value}}",
     "risk": {
       "low": "Baja Risk",
@@ -78,11 +78,11 @@
       "high": "Alta Risk"
     },
     "sourcesTitle": "Origens",
-    "coverage": "{{percent}}% coverage",
-    "noSourcesAdvisory": "No origens cited. Advisory only.",
-    "lowConfidence": "Baja confidence. Verify antes applying.",
+    "coverage": "Cobertura del {{percent}}%",
+    "noSourcesAdvisory": "No se citan fuentes. Solo para asesoramiento.",
+    "lowConfidence": "Baja confianza. Verifica antes de solicitar.",
     "noSourcesCited": "No origens cited.",
-    "citationCoverageValue": "Citation coverage {{percent}}%."
+    "citationCoverageValue": "Cobertura de citación {{percent}}%."
   },
   "matrixSummary": {
     "totalChanges": "{{count}} recurso {{changeWord}} detected",
@@ -90,39 +90,39 @@
     "change_other": "Changes",
     "added": "{{count}} agregared",
     "removed": "{{count}} quitard",
-    "changed": "{{count}} with valor change"
+    "changed": "{{count}} con cambio de valor"
   },
   "resourceChanges": {
     "sectionTitle": "Recurso Changes",
     "changed": "Cambiado (valor diferenciasers)",
     "added": "Agregado (only in Después)",
     "removed": "Quitado (only in Antes)",
-    "identical": "Identical (same valor in both)",
+    "identical": "Idéntico (mismo valor en ambos)",
     "beforeLabel": "Antes:",
     "afterLabel": "Después:"
   },
   "matrix": {
-    "sectionTitle": "Pick 2–10 baselines to comparar",
-    "sectionDescription": "Each row in the resulting matrix is a setting; each column is a baseline. Cells are color-coded green (identical), red (diferenciasers), or yellow (only-in).",
-    "noManifests": "No manifiestos registered.",
+    "sectionTitle": "Elige el 2–10 baselines para comparar",
+    "sectionDescription": "Cada fila en la matriz resultante es un ajuste; Cada columna es una baseline. Las celdas están codificadas por colores verde (idéntica), roja (diferente) o amarilla (solo en la entrada).",
+    "noManifests": "No hay manifiestos registrados.",
     "compareButton": "Comparar ({{count}})",
     "downloadExcel": "Descargar Excel",
     "filterPlaceholder": "Filtrar configuración…",
     "statusFilter": {
       "all": "Todo estadoes",
-      "identical": "Identical only",
+      "identical": "Solo idénticos",
       "differs": "Diferenciasers only",
-      "partial": "Partial only"
+      "partial": "Solo parcialmente"
     },
-    "showing": "Showing {{filtered}} of {{total}} rows",
+    "showing": "Mostrando {{filtered}} de {{total}} filas",
     "stats": {
-      "rows": "{{count}} rows",
-      "identical": "{{count}} identical",
+      "rows": "{{count}} filas",
+      "identical": "{{count}} idéntico",
       "differs": "{{count}} diferenciaser",
-      "partial": "{{count}} partial"
+      "partial": "{{count}} parcial"
     },
     "table": {
-      "setting": "Setting",
+      "setting": "Ambientación",
       "type": "Tipo",
       "noSettings": "No configuración match su filtrar."
     }
@@ -130,61 +130,61 @@
   "cis": {
     "labels": {
       "manifest": "Manifiesto",
-      "benchmark": "CIS benchmark to score against",
-      "autoHint": "(auto-picked from manifiesto plataforma if blank)"
+      "benchmark": "CIS punto de referencia para puntuar",
+      "autoHint": "(seleccionado automáticamente de la plataforma de manifiestos si está en blanco)"
     },
     "options": {
       "chooseManifest": "Choose a manifiesto...",
-      "autoPick": "Auto-pick by plataforma",
-      "fullCis": "[Full CIS]",
+      "autoPick": "Selección automática por plataforma",
+      "fullCis": "[A CIS completo]",
       "azurePolicy": "[Azure Policy]",
-      "rules": "{{count}} rules"
+      "rules": "{{count}} reglas"
     },
     "compareButton": "Comparar against CIS",
-    "compareLoading": "Comparing...",
-    "loading": "Scoring {{manifest}} against CIS...",
-    "complianceAgainst": "CIS compliance against {{name}} v{{version}}",
-    "rulesCovered": "{{covered}} of {{total}} CIS rules covered",
-    "secondary": "Secondary ver: {{matched}} of {{total}} manifiesto recursos matched a CIS rule.",
-    "noBenchmark": "No CIS benchmark disponible. Drop a CIS archivo into the CIS Mapping carpeta and try again.",
+    "compareLoading": "Comparando...",
+    "loading": "Anotar {{manifest}} contra CIS...",
+    "complianceAgainst": "CIS cumplimiento contra {{name}} v{{version}}",
+    "rulesCovered": "{{covered}} de {{total}} CIS normas cubiertas",
+    "secondary": "Perspectiva secundaria: {{matched}} de {{total}} recursos manifiestos coincidían con una regla CIS.",
+    "noBenchmark": "No hay CIS benchmark disponible. Deja un archivo CIS en la carpeta de mapeo CIS e inténtalo de nuevo.",
     "filters": {
       "all": "Todo recursos ({{count}})",
       "covered": "Covered in manifiesto ({{count}})",
-      "missing": "Missing from CIS ({{count}})"
+      "missing": "Faltan en CIS ({{count}})"
     },
     "placeholders": {
-      "missing": "Filtrar by CIS rule title or section...",
+      "missing": "Filtra por CIS título o sección de la regla...",
       "resources": "Filtrar by recurso or rule nombre..."
     },
     "table": {
-      "section": "Section",
-      "missingRule": "CIS Rule (faltante from manifiesto)",
+      "section": "Sección",
+      "missingRule": "CIS Regla (ausente en el manifiesto)",
       "recommendedValue": "Recommended valor",
       "notSpecified": "(no specified)",
       "status": "Estado",
       "resource": "Recurso",
       "type": "Tipo",
-      "cisRule": "CIS Rule",
+      "cisRule": "CIS Regla",
       "source": "Origen"
     },
     "empty": {
-      "noMissingMatch": "No faltante CIS rules match su filtrar.",
-      "nothingMissing": "Nothing faltante! Todo CIS rules are covered.",
+      "noMissingMatch": "No faltan CIS reglas coinciden con tu filtro.",
+      "nothingMissing": "¡No falta nada! Todas CIS reglas están cubiertas.",
       "noResults": "Sin resultados.",
       "noResourceMatch": "No recursos match su filtrar.",
-      "pickManifest": "Pick a manifiesto and click <strong>Comparar against CIS</strong> to see su compliance score",
-      "description": "Shows how much of the CIS benchmark su manifiesto covers, plus the rules still faltante"
+      "pickManifest": "Elige un manifiesto y haz clic <strong>en Comparar con CIS</strong> para ver tu puntuación de cumplimiento",
+      "description": "Muestra cuánto de la CIS de referencia cubre tu manifiesto, además de que las reglas siguen faltando"
     },
     "sort": {
-      "unmappedFirst": "Click to ordenar: unmapped first",
-      "mappedFirst": "Click to ordenar: mapped first",
-      "clear": "Click to borrar ordenar",
+      "unmappedFirst": "Haz clic para ordenar: unmaped primero",
+      "mappedFirst": "Haz clic para ordenar: mapeado primero",
+      "clear": "Haz clic para ordenar libremente",
       "aria": "Ordenar by estado"
     },
     "aria": {
-      "mapped": "Mapped to CIS rule",
-      "notMapped": "Not mapped to any CIS rule"
+      "mapped": "Mapeado a CIS regla",
+      "notMapped": "No corresponde a ninguna regla CIS"
     },
-    "noCisRule": "No CIS rule"
+    "noCisRule": "No CIS regla"
   }
 }

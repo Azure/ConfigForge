@@ -6,50 +6,50 @@
     "deleteFailed": "Eliminar con error",
     "historyLoadFailed": "Error to load historial",
     "restoreFailed": "Restore con error",
-    "restorePreviewLoadFailed": "Error to load restore prever",
-    "snapshotLoadFailed": "Error to load snapshot",
+    "restorePreviewLoadFailed": "No se pudo cargar la vista previa de restauración",
+    "snapshotLoadFailed": "No se ha conseguido cargar la instantánea",
     "snapshotNotFound": "Snapshot no found",
-    "restoreRecoverySuffix": " (su previous state was guardard as an auto-snapshot antes the con error restore)"
+    "restoreRecoverySuffix": " (tu estado anterior se guardó como una instantánea automática antes de la restauración fallida)"
   },
   "header": {
     "back": "Atrás",
     "sectionTitle": "Versión Historial",
-    "summary_one": "{{manifestName}}: {{count}} snapshot",
-    "summary_other": "{{manifestName}}: {{count}} snapshots"
+    "summary_one": "{{manifestName}}: {{count}} instantánea",
+    "summary_other": "{{manifestName}}: {{count}} instantáneas"
   },
   "empty": {
-    "sectionTitle": "No historial recorded for this manifiesto",
+    "sectionTitle": "No hay historial registrado para este manifiesto",
     "sectionDescription": "Las instantáneas se guardan automáticamente cuando registras o actualizas el manifiesto."
   },
   "timeline": {
     "byAuthor": "By {{author}}",
-    "rationaleTitle": "Comment entered at guardar time",
+    "rationaleTitle": "Comentario introducido en tiempo de ahorro",
     "selectPrompt": "Seleccionar a snapshot to ver or comparar"
   },
   "actions": {
-    "view": "View",
-    "compareCurrent": "Comparar with Real",
-    "restoreSnapshot": "Restore snapshot",
-    "restoreDeploys": "Restore (re-implementars to devices)"
+    "view": "Vista",
+    "compareCurrent": "Compárese con la corriente",
+    "restoreSnapshot": "Restaurar instantánea",
+    "restoreDeploys": "Restaurar (volver a desplegar en dispositivos)"
   },
   "confirm": {
-    "deleteSnapshot": "Eliminar snapshot from {{time}}?"
+    "deleteSnapshot": "¿Borrar una instantánea de {{time}}?"
   },
   "restore": {
-    "buttonLoading": "Restoring…",
+    "buttonLoading": "Restaurando...",
     "closeAria": "Cerrar",
     "diffAfterRestore": "Después Restore",
     "diffCurrent": "Actual",
-    "noCurrent": "No real registered manifiesto was found, so sin auto-snapshot will be creard. Restore will register the snapshot content as a nuevo manifiesto.",
-    "snapshotFrom": "Snapshot from {{time}}",
-    "title": "Restore manifiesto from snapshot",
-    "warning": "The real manifiesto will be auto-snapshotted antes restore so usted can roll back. Re-registering may re-implementar the desired state to managed devices."
+    "noCurrent": "No se encontró ningún manifiesto registrado actual, por lo que no se creará una instantánea automática. La restauración registrará el contenido de la instantánea como un nuevo manifiesto.",
+    "snapshotFrom": "Instantánea de {{time}}",
+    "title": "Restaurar manifiesto desde la instantánea",
+    "warning": "El manifiesto actual se tomará automáticamente antes de restaurar, así que podrás revertir. El re-registro puede volver a desplegar el estado deseado en dispositivos gestionados."
   },
   "diff": {
-    "compareTitle": "Comparar with Real",
+    "compareTitle": "Compárese con la corriente",
     "compareSubtitle": "Snapshot ({{time}}) vs Real",
     "current": "Actual",
-    "snapshot": "Snapshot",
-    "snapshotContent": "Snapshot Content"
+    "snapshot": "Instantánea",
+    "snapshotContent": "Contenido de instantáneas"
   }
 }

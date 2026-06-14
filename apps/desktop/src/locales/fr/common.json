@@ -56,35 +56,35 @@
   "components": {
     "conflictDetector": {
       "extracted": {
-        "text1": "Need at least 2 manifestees to detect conflicts.",
-        "text2": "Cross-Manifeste Conflict Detection",
-        "text3": "Checking",
+        "text1": "Il faut au moins 2 manifestes pour détecter les conflits.",
+        "text2": "Détection des conflits entre manifestes",
+        "text3": "Vérification",
         "text4": "Manifestees for conflicting paramètres",
-        "text5": "Re-check",
-        "text6": "Analyzing manifestees for conflicts…",
-        "text7": "Non conflicts detected across registered manifestees",
-        "text8": "Conflict:"
+        "text5": "Revérifier",
+        "text6": "Analyser les manifestes pour des conflits...",
+        "text7": "Aucun conflit détecté entre manifestes enregistrés",
+        "text8": "Conflit :"
       }
     },
     "recentRationale": {
       "extracted": {
         "text1": "Chargement…",
-        "text2": "Non rationale captured yet for this ressource.",
+        "text2": "Aucune justification n’a encore été recueillie pour cette ressource.",
         "text3": "Skipped",
         "text4": "Inconnu",
-        "text5": "(aucun reason: skipped by author)",
+        "text5": "(sans raison : ignoré par l’auteur)",
         "text6": "(aucun reason)",
-        "text7": "View all →",
-        "text8": "Show recent rationale",
-        "text9": "Hide recent rationale",
-        "text10": "Recent rationale",
+        "text7": "Voir tous les →",
+        "text8": "Montrer la justification récente",
+        "text9": "Cacher la justification récente",
+        "text10": "Justification récente",
         "text11": "Chargement…",
         "text12": "Non rationale captured yet.",
         "text13": "Skipped",
         "text14": "Inconnu",
-        "text15": "(aucun reason: skipped by author)",
+        "text15": "(sans raison : ignoré par l’auteur)",
         "text16": "(aucun reason)",
-        "text17": "View all →"
+        "text17": "Voir tous les →"
       }
     }
   }

@@ -1,13 +1,13 @@
 {
-  "title": "Welcome to ConfigForge",
-  "intro": "ConfigForge works in two modes. Pick whichever fits how you'll use it. You can switch later from Paramètres.",
+  "title": "Bienvenue à ConfigForge",
+  "intro": "ConfigForge fonctionne en deux modes. Choisis celui qui te convient comme tu vas l’utiliser. Vous pouvez changer plus tard depuis les Paramètres.",
   "cards": {
     "author": {
-      "title": "Author baselines anywhere",
-      "body": "Modifier, différence, comparer, and export OSConfig manifestees on any OS. Non extra installs needed."
+      "title": "Auteur baselines partout",
+      "body": "Modifier, différer, comparer et exporter OSConfig manifestes sur n’importe quel système d’exploitation. Aucune installation supplémentaire nécessaire."
     },
     "deploy": {
-      "title": "Author + déployer on this machine",
+      "title": "Auteur + déploiement sur cette machine",
       "body": "Windows ou Linux. Nécessite OSConfig installé localement pour appliquer ou auditer des baselines sur cet appareil."
     }
   },

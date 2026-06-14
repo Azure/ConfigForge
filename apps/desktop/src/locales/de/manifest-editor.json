@@ -1,22 +1,22 @@
 {
   "actions": {
     "auditPack": "Audit Pack",
-    "auditPackTitle": "Generate auditor-ready PDF / Markdown deliverable",
+    "auditPackTitle": "Erstelle prüferbereite PDF-/Markdown-Lieferergebnisse",
     "back": "Zurück",
     "docs": "Docs",
-    "duplicate": "Duplicate",
-    "duplicateTitle": "Duplicate this Manifest",
+    "duplicate": "Duplikat",
+    "duplicateTitle": "Duplizieren Sie dieses Manifest",
     "edit": "Bearbeiten",
     "export": "Exportieren",
-    "generateDocsTitle": "Generate documentation",
+    "generateDocsTitle": "Dokumentation erstellen",
     "history": "Verlauf",
-    "leaveUnsavedConfirm": "You have unspeichernd changes to \"{{name}}\". Leave anyway and discard them?",
-    "noRevertTitle": "Nein previous bereitstellen to revert",
+    "leaveUnsavedConfirm": "Du hast Änderungen an \"{{name}}\" nicht gespeichert. Trotzdem gehen und sie wegwerfen?",
+    "noRevertTitle": "Kein vorheriges Deployen zum Zurücksetzen",
     "remove": "Entfernen",
-    "removeConfirm": "Entfernen Manifest \"{{name}}\"? This action cannicht be undone.",
-    "revert": "Revert",
-    "revertConfirm": "Revert Manifest \"{{name}}\"?\n\nIf a pre-bereitstellen snapshot exists, Ihre prior Einstellungen will be re-applied to this device. If keine snapshot exists, OSConfig enforcement of this Manifest will be entfernend and the Manifest will be unregistered. Either way, this Manifest will keine longer be actively enforced on this device.",
-    "revertTitle": "Undo the last bereitstellenment of this Manifest from this device. If a pre-bereitstellen snapshot exists, prior Einstellungen are re-applied; otherwise OSConfig enforcement is entfernend."
+    "removeConfirm": "Manifest \"{{name}}\" entfernen? Diese Maßnahme kann nicht rückgängig gemacht werden.",
+    "revert": "Rückgängig machen",
+    "revertConfirm": "Manifestiere \"{{name}}\"?\n\nWenn ein Pre-Deploy-Snapshot vorhanden ist, werden deine vorherigen Einstellungen auf dieses Gerät erneut angewendet. Wenn kein Snapshot existiert, wird OSConfig Durchsetzung dieses Manifests entfernt und das Manifest wird nicht registriert. So oder so wird dieses Manifest auf diesem Gerät nicht mehr aktiv durchgesetzt.",
+    "revertTitle": "Die letzte Bereitstellung dieses Manifests von diesem Gerät rückgängig machen. Wenn ein Pre-Deploy-Snapshot existiert, werden vorherige Einstellungen erneut angewendet; ansonsten wird OSConfig Durchsetzung aufgehoben."
   },
   "compliance": {
     "emptyDescription": "Führen Sie Audit oder Enforce aus, um diese Baseline mit dem Gerät abzugleichen.",
@@ -25,36 +25,36 @@
   },
   "content": {
     "editorView": "Bearbeitenor",
-    "mofEditUnsupported": "Bearbeitening is nicht supported in MOF format",
-    "mofReadOnly": "MOF is read-only",
-    "sectionTitle": "Manifest Content",
-    "unsavedFormatChanges": "You have unspeichernd changes in {{format}}. Switching tabs preserves them; speichern vorher navigating away.",
-    "visualBuilderView": "Visual Builder"
+    "mofEditUnsupported": "Das Bearbeiten wird im MOF Format nicht unterstützt.",
+    "mofReadOnly": "MOF ist nur lesegeschützt",
+    "sectionTitle": "Manifest-Inhalt",
+    "unsavedFormatChanges": "Du hast in {{format}} nicht gespeicherte Änderungen. Das Wechseln der Tabs bewahrt sie; Speichere, bevor du wegnavigierst.",
+    "visualBuilderView": "Visueller Builder"
   },
   "cspTroubleshooting": {
-    "declaredConfig": "CSP (Configuration Service Provider) ResQuellen need the Declared Configuration infrastructure",
+    "declaredConfig": "CSP-Ressourcen (Configuration Service Provider) benötigen die deklarierte Konfigurationsinfrastruktur",
     "engineRegistered": "Um CSP-Ressourcen zu verwenden, stellen Sie sicher, dass der OSConfig-Engine-Dienst ordnungsgemäß registriert ist",
-    "registryWorks": "Registry ResQuellen (Microsoft.Windows/Registry) work without hinzufügenitional setup",
-    "title": "CSP ResQuellen Require Hinzufügenitional Setup",
-    "tryMetadata": "Try: <code>Get-OSConfigMetadata</code> to verify the engine is working"
+    "registryWorks": "Registrierungsressourcen (Microsoft.Windows/Registry) funktionieren ohne zusätzliche Einrichtung",
+    "title": "CSP-Ressourcen erfordern zusätzliche Einrichtung",
+    "tryMetadata": "Versuchen Sie: <code>Get-OSConfigMetadata</code>, um zu überprüfen, ob der Motor funktioniert"
   },
   "deploy": {
-    "auditDescription": "Check compliance only",
+    "auditDescription": "Nur Überprüfung der Einhaltung",
     "confirm": "Manifest „{{name}}“ im Modus {{mode}} auf diesem Gerät bereitstellen?",
     "enforceDescription": "Anwenden Einstellungen to device",
-    "enforceRiskConfirm": "WARNING: Enforce will APPLY Einstellungen to this device.\n\nThis action may change Windows or Linux security policy in ways that can break login, networking, RDP, or installiert software, and recovery may require a local Administratoristrator or boot media.\n\nProceed at Ihre own risk. This action may break Ihre machine.\n\nFortfahren with enforce?",
-    "mixedPlatform": "This Manifest mixes Windows and Linux ResQuelle Typs. Split it into per-Plattform Manifeste vorher bereitstellening.",
+    "enforceRiskConfirm": "WARNUNG: Enforce wird Einstellungen auf dieses Gerät ANWENDEN.\n\nDiese Maßnahme kann die Sicherheitsrichtlinien von Windows oder Linux so verändern, dass Login, Netzwerke, RDP oder installierte Software beschädigt werden, und die Wiederherstellung kann einen lokalen Administrator oder ein Bootmedium erfordern.\n\nGehen Sie auf eigenes Risiko vor. Diese Aktion kann Ihre Maschine kaputt machen.\n\nSoll ich mit der Durchsetzung fortfahren?",
+    "mixedPlatform": "Dieses Manifest mischt Windows- und Linux-Ressourcentypen. Teile es vor der Bereitstellung in Manifesten pro Plattform auf.",
     "mode": {
-      "audit": "Audit (compliance check only)",
-      "enforce": "Enforce (apply Einstellungen)"
+      "audit": "Prüfung (nur Compliance-Überprüfung)",
+      "enforce": "Erzwingen (Einstellungen anwenden)"
     }
   },
   "deployResult": {
-    "compliant": "Compliant",
+    "compliant": "Konform",
     "couldNotRead": "Could nicht read",
-    "couldNotReadTitle": "ResQuellen the CLI could nicht read (provider nicht supported, transport Fehler, or unsupported Pfad). These are NOT counted as non-compliant. The device may tatsächlichly be in the desired state.",
+    "couldNotReadTitle": "Ressourcen, die die CLI nicht lesen konnte (Anbieter nicht unterstützt, Transportfehler oder nicht unterstützter Pfad). Diese werden NICHT als nicht konform gewertet. Das Gerät könnte tatsächlich im gewünschten Zustand sein.",
     "deployedAt": "Bereitstellened at {{time}}",
-    "host": "Host",
+    "host": "Moderator",
     "nonCompliant": "Neinn-compliant",
     "viewResources": "View {{count}} ResQuellen",
     "warning": "Warnung"
@@ -64,22 +64,22 @@
     "copy": "Kopieren",
     "downloadMarkdown": "Herunterladen .md",
     "errorMarkdown": "# Fehler\n\n{{message}}",
-    "title": "Generated Documentation"
+    "title": "Generierte Dokumentation"
   },
   "errors": {
     "deleteFailed": "Löschen fehlgeschlagen",
     "deployFailed": "Bereitstellen fehlgeschlagen",
-    "duplicateFailed": "Fehlgeschlagen to duplicate Manifest",
+    "duplicateFailed": "Manifest wurde nicht dupliziert",
     "exportFailed": "Exportieren fehlgeschlagen",
-    "generateDocsFailed": "Fehlgeschlagen to generate documentation",
-    "loadFormatFailed": "Fehlgeschlagen to load {{format}} format",
-    "loadManifestFailed": "Fehlgeschlagen to load Manifest",
+    "generateDocsFailed": "Dokumentation wurde nicht erstellt",
+    "loadFormatFailed": "Kein Laden {{format}} Format",
+    "loadManifestFailed": "Manifest wurde nicht geladen",
     "revertFailed": "Revert fehlgeschlagen",
     "saveFailed": "Speichern fehlgeschlagen",
     "unknown": "Unbekannt Fehler"
   },
   "export": {
-    "documentation": "Documentation (.md)",
+    "documentation": "Dokumentation (.md)",
     "formats": {
       "azurePolicy": "Azure Policy (.json)",
       "csv": "CSV (.csv)",
@@ -100,9 +100,9 @@
     "source": "Quelle: {{source}}"
   },
   "messages": {
-    "reverted": "Manifest reverted",
+    "reverted": "Manifest rückgängig gemacht",
     "saveSuccess": "Manifest \"{{name}}\" speichernd Erfolgfully",
-    "savedWithWarning": "Speichernd with Warnung: {{warning}}"
+    "savedWithWarning": "Mit Warnung gespeichert: {{warning}}"
   },
   "platform": {
     "crossPlatform": "⚙️ Cross-Plattform",
@@ -113,50 +113,50 @@
   "rationale": {
     "backToManifest": "Zurück to Manifest",
     "downloadCsv": "Herunterladen CSV",
-    "downloadCsvTitle": "Herunterladen all rationale entries as CSV",
-    "emptyDescription": "Öffnen the Editor, change a Wert, and click Speichern. The “Why?” prompt captures rationale for every change.",
+    "downloadCsvTitle": "Laden Sie alle Begründungseinträge als CSV herunter",
+    "emptyDescription": "Öffne den Editor, ändere einen Wert und klicke auf Speichern. Der \"Warum?\"-Prompt erfasst die Begründung für jede Änderung.",
     "emptyTitle": "Nein rationale captured yet.",
-    "filterCount": "{{visible}} of {{total}}",
-    "filterPlaceholder": "Filtern by ResQuelle, author, or reason text…",
-    "loadErrorTitle": "Could nicht load rationale log",
-    "loading": "Loading rationale log…",
-    "logDescription": "Every change captured by the “Why?” prompt in the Editor. Chronological, cross-ResQuelle. Audit durchführenor-grade.",
+    "filterCount": "{{visible}} {{total}}",
+    "filterPlaceholder": "Filtern Sie nach Ressource, Autor oder Begründung Text...",
+    "loadErrorTitle": "Konnte das Rationale Log nicht laden",
+    "loading": "Lade: Rationale Log...",
+    "logDescription": "Jede Änderung wird durch die \"Warum?\"-Eingabe im Editor erfasst. Chronologisch, ressourcenübergreifend. Prüfer-Qualität.",
     "logTitle": "Rationale Log:",
-    "noFilterMatches": "Nein entries match the aktuell filtern.",
-    "noReasonSkipped": "(keine reason: skipped by author)",
-    "showSkipped": "Show skipped entries",
+    "noFilterMatches": "Keine Einträge stimmen mit dem aktuellen Filter überein.",
+    "noReasonSkipped": "(kein Grund: vom Autor übersprungen)",
+    "showSkipped": "Show übersprungene Einträge",
     "skippedBadge": "Skipped",
     "stats": {
       "skipped": "Überspringenped",
-      "total": "Total entries",
-      "withRationale": "With rationale"
+      "total": "Gesamtzahl der Anmeldungen",
+      "withRationale": "Mit Begründung"
     },
     "table": {
-      "author": "Author",
-      "reason": "Reason",
+      "author": "Autor",
+      "reason": "Grund",
       "resource": "Ressource",
-      "timestamp": "Timestamp"
+      "timestamp": "Zeitstempel"
     },
     "unknownAuthor": "Unbekannt"
   },
   "resourceDetails": {
     "desiredValue": "Desired Wert",
-    "path": "Path",
-    "property": "Property",
-    "reason": "Reason",
+    "path": "Verlauf",
+    "property": "Eigentum",
+    "reason": "Grund",
     "value": "Wert"
   },
   "resourceEdit": {
-    "cancelAria": "Abbrechen and discard changes",
+    "cancelAria": "Änderungen abbrechen und abwerfen",
     "title": "Bearbeiten ResQuelle"
   },
   "tables": {
-    "reason": "Reason",
+    "reason": "Grund",
     "resource": "Ressource",
     "resources": "Ressourcen",
     "showAllResources": "Show all {{count}} ResQuellen",
     "showingFirst": "(anzeigening first {{count}})",
-    "showingFirstForPerformance": "(anzeigening first {{count}} for performance)",
+    "showingFirstForPerformance": "(zeigt erste {{count}} für die Leistung)",
     "status": "Status",
     "type": "Typ"
   },
@@ -168,9 +168,9 @@
   "visual": {
     "addResource": "Hinzufügen ResQuelle",
     "currentResources": "Aktuell ResQuellen ({{count}})",
-    "groupCount": "Group · {{count}}",
+    "groupCount": "Gruppe · {{count}}",
     "noResources": "Nein ResQuellen in Manifest.",
-    "parseError": "Could nicht parse Manifest YAML. Switch to Bearbeitenor anzeigen to fix syntax Fehlers.",
+    "parseError": "Konnte manifestierte YAML nicht analysieren. Wechsle zur Editor-Ansicht, um Syntaxfehler zu korrigieren.",
     "resourceFallback": "ResQuelle {{index}}",
     "unknown": "Unbekannt",
     "usePicker": "Verwenden Sie die Auswahl, um Ressourcen hinzuzufügen."

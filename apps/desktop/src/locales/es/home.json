@@ -1,12 +1,12 @@
 {
   "page": {
-    "title": "Dashboard",
-    "description": "OSConfig Gen 2 security baseline management"
+    "title": "Salpicadero",
+    "description": "OSConfig Gestión baseline seguridad de la Generación 2"
   },
   "interrupted": {
-    "title": "A implementar of “{{name}}” may have been interrupted",
-    "description": "Your device may be in a partially-applied state{{startedAt}}. Ejecutar an audit to check real compliance, or revert to the pre-implementar snapshot.",
-    "startedAt": " (started {{time}})",
+    "title": "Un despliegue de \"{{name}}\" podría haberse interrumpido",
+    "description": "Tu dispositivo puede estar en una state{{startedAt}} parcialmente aplicada. Realiza una auditoría para comprobar el cumplimiento actual o vuelve a la instantánea previa al despliegue.",
+    "startedAt": " (empezó {{time}})",
     "actions": {
       "auditCompliance": "Auditar compliance",
       "openManifest": "Abrir manifiesto",
@@ -14,48 +14,48 @@
     }
   },
   "editorMode": {
-    "aria": "Editaror mode hero",
+    "aria": "Héroe del modo editor",
     "sectionTitle": "You’re in Editaror mode",
-    "sectionDescription": "ConfigForge is fully usable for authoring, diferencias, comparar, and export. Implementar / Auditar / Revert against this device require OSConfig instalado locally. Install it any time and click Volver a comprobar on the footer pill.",
+    "sectionDescription": "ConfigForge es totalmente utilizable para autoría, diferencias, comparación y exportación. Desplegar / Auditar / Revertir contra este dispositivo requiere OSConfig instalado localmente. Instálalo cuando quieras y haz clic en Revisar en la píldora de pie de página.",
     "actions": {
-      "browseLibrary": "Examinar the baseline biblioteca",
-      "installOsconfig": "Install OSConfig",
-      "hide": "Hide for now"
+      "browseLibrary": "Consulta la biblioteca baseline",
+      "installOsconfig": "Instalar OSConfig",
+      "hide": "Escóndete por ahora"
     },
-    "installAria": "Abrir OSConfig install instructions in su default browser"
+    "installAria": "Abre OSConfig instrucciones de instalación en tu navegador predeterminado"
   },
   "firstRun": {
-    "aria": "Get started",
-    "sectionTitle": "Get started: register su first manifiesto",
-    "sectionDescription": "ConfigForge works against OSConfig manifiestos. Examinar the bundled baseline biblioteca (WS2019/2022/2025 server roles, Defender, LAPS) for ready-to-use content, or register su own YAML.",
+    "aria": "Empieza",
+    "sectionTitle": "Empieza: registra tu primer manifiesto",
+    "sectionDescription": "ConfigForge funciona en contra de OSConfig manifiesta. Explora la biblioteca de baseline incluida (WS2019/2022/2025 roles de servidor, Defender, LAPS) para encontrar contenido listo para usar, o registra tu propio YAML.",
     "actions": {
-      "browseLibrary": "Examinar the baseline biblioteca",
+      "browseLibrary": "Consulta la biblioteca baseline",
       "registerOwn": "Register su own"
     }
   },
   "systemHealth": {
     "sectionTitle": "System Estado",
-    "sectionDescription": "OSConfig module & environment estado",
+    "sectionDescription": "OSConfig Estado del módulo y del entorno",
     "labels": {
       "osconfig": "OSConfig",
-      "admin": "Admin",
+      "admin": "Administración",
       "serverType": "Server Tipo",
       "osVersion": "OS Versión"
     },
     "values": {
       "oscfgUnknown": "Oscfg desconocido",
       "notInstalled": "No instalado",
-      "elevated": "Elevated",
-      "standard": "Standard",
+      "elevated": "Elevado",
+      "standard": "Estándar",
       "unknown": "Desconocido"
     }
   },
   "stats": {
-    "registeredManifests": "Registered Manifiestos"
+    "registeredManifests": "Manifiestos Registrados"
   },
   "validation": {
-    "label": "Validation",
-    "subtitle": "Validar manifiestos & check export readiness",
+    "label": "Validación",
+    "subtitle": "Validar manifiestos y comprobar la preparación para la exportación",
     "cta": "Ejecutar check"
   },
   "quickActions": {
@@ -65,12 +65,12 @@
     "compareManifests": "Comparar Manifiestos"
   },
   "recentActivity": {
-    "sectionTitle": "Recent Activity",
-    "emptyTitle": "No recent activity recorded",
-    "emptyDescription": "Activity will appear here as usted manage manifiestos and baselines.",
+    "sectionTitle": "Actividad reciente",
+    "emptyTitle": "No se ha registrado actividad reciente",
+    "emptyDescription": "Aquí aparecerá actividad mientras gestionas manifiestos y baselines.",
     "fallback": "{{type}} '{{name}}'",
     "types": {
-      "registered": "Registered",
+      "registered": "Registrado",
       "deployed": "Implementared",
       "deployed-audit": "Implementared-audit",
       "deployed-enforce": "Implementared-enforce",
@@ -78,14 +78,14 @@
     },
     "relative": {
       "justNow": "Just now",
-      "minute_one": "{{count}} minute ago",
-      "minute_other": "{{count}} minutes ago",
-      "hour_one": "{{count}} hour ago",
-      "hour_other": "{{count}} hours ago",
-      "day_one": "{{count}} day ago",
-      "day_other": "{{count}} days ago",
-      "month_one": "{{count}} month ago",
-      "month_other": "{{count}} months ago"
+      "minute_one": "{{count}} minuto",
+      "minute_other": "{{count}} minutos",
+      "hour_one": "Hace {{count}} hora",
+      "hour_other": "Hace {{count}} horas",
+      "day_one": "{{count}} día atrás",
+      "day_other": "{{count}} días",
+      "month_one": "Hace {{count}} mes",
+      "month_other": "{{count}} meses"
     }
   }
 }

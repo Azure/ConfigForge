@@ -1,83 +1,83 @@
 {
   "about": {
     "backendCliInstalled": "Atrásend: oscfg CLI ({{version}})",
-    "backendCliMissing": "Atrásend: oscfg CLI (install separately, see INSTALL.md)",
-    "docsLabel": "Docs:",
-    "docsLinkLabel": "OSConfig Gen 2 Core Concepts",
-    "resetWelcomeButton": "Restablecer first-run experience",
-    "sectionDescription": "Security baseline authoring tool built on OSConfig Gen 2",
+    "backendCliMissing": "Backend: CLI OSCFG (instalar por separado, ver INSTALL.md)",
+    "docsLabel": "Documentación:",
+    "docsLinkLabel": "OSConfig Conceptos Básicos de la Generación 2",
+    "resetWelcomeButton": "Reiniciar la experiencia de la primera partida",
+    "sectionDescription": "Herramienta de seguridad baseline autoría basada en OSConfig Gen 2",
     "sectionTitle": "Acerca de ConfigForge"
   },
   "history": {
-    "retentionDescriptionAfterEnv": "Overrides this when set.",
-    "retentionDescriptionBeforeEnv": "How many historial entries per manifiesto antes older ones are pruned. Range: 5-1000. The env var",
-    "retentionLabel": "Manifiesto version snapshots to keep",
+    "retentionDescriptionAfterEnv": "anula esto cuando está activado.",
+    "retentionDescriptionBeforeEnv": "Cuántas entradas de historial por manifiesto se conservan antes de eliminar las más antiguas. Rango: 5-1000. La variable de entorno",
+    "retentionLabel": "Instantáneas de versiones del manifiesto para conservar",
     "saveFailed": "Guardar con error",
     "sectionTitle": "Historial & Retention",
-    "validationRange": "Must be between 5 and 1000."
+    "validationRange": "Debe de estar entre 5 y 1000."
   },
   "language": {
     "sectionTitle": "Idioma",
     "sectionDescription": "Elija el idioma utilizado en toda la aplicación. El contenido técnico (manifiestos, salida de OSConfig, texto de reglas CIS) permanece en inglés.",
     "options": {
       "system": "Sistema (detección automática)",
-      "en": "English",
-      "fr": "Français",
-      "de": "Deutsch",
+      "en": "Inglés",
+      "fr": "Inglés",
+      "de": "Alemán",
       "es": "Español"
     }
   },
   "messages": {
     "alreadyElevated": "Already en ejecución as administradoristrator.",
-    "elevationFailed": "Error to start elevation.",
-    "elevationLaunching": "Relaunching with administradoristrator privileges. This window will close shortly.",
+    "elevationFailed": "No pude empezar la elevación.",
+    "elevationLaunching": "Relanzando con privilegios de administrador. Esta ventana se cerrará en breve.",
     "elevationUnavailable": "Elevation no disponible.",
-    "osconfigDetected": "OSConfig detected: {{version}}.",
-    "osconfigStillMissing": "OSConfig still no detected. Install OSConfig, then click Volver a comprobar.",
+    "osconfigDetected": "OSConfig detectado: {{version}}.",
+    "osconfigStillMissing": "OSConfig aún no detectado. Instala OSConfig y luego haz clic en revisar.",
     "recheckFailed": "Volver a comprobar con error.",
-    "welcomeReset": "First-run experience restablecer. The Welcome dialog will appear next time usted abrir ConfigForge.",
-    "welcomeResetFailed": "Could no restablecer first-run experience."
+    "welcomeReset": "Reinicio de experiencia en primera partida. El cuadro de Bienvenida aparecerá la próxima vez que abras ConfigForge.",
+    "welcomeResetFailed": "No se pude reiniciar la experiencia de la primera partida."
   },
   "page": {
-    "description": "System estado and OSConfig engine estado",
+    "description": "Estado del sistema y estado OSConfig motor",
     "title": "Configuración"
   },
   "systemHealth": {
     "elevation": {
-      "description": "Auditaring and applying baselines require administrador rights to read and write protected registry valors, CSP policies, and system configuration. Click below to trigger the OS elevation prompt. If usted accept, this window closes and a nuevo elevated instance abrirs; if usted cancelar, this window stays en ejecución and usted can try again.",
-      "promptPolkit": "You'll see a polkit prompt. Accept it to continue.",
-      "promptUac": "You'll see a UAC prompt. Accept it to continue.",
-      "restartAsAdministrator": "Restart as Administrator",
-      "title": "Some operations need administradoristrator privileges"
+      "description": "La auditoría y aplicación de baselines requiere derechos de administrador para leer y escribir valores protegidos del registro, políticas CSP y configuración del sistema. Haz clic abajo para activar el aviso de elevación del sistema operativo. Si aceptas, esta ventana se cierra y se abre una nueva instancia elevada; Si cancelas, esta ventana sigue abierta y puedes intentarlo de nuevo.",
+      "promptPolkit": "Verás un prompt de polkit. Acepta que continúe.",
+      "promptUac": "Verás un prompt de UAC. Acepta que continúe.",
+      "restartAsAdministrator": "Reinicio como Administrador",
+      "title": "Algunas operaciones requieren privilegios de administrador"
     },
     "install": {
-      "description": "ConfigForge's editor, biblioteca, and diferencias/comparar features work without the CLI. Install OSConfig to enable Implementar, Auditar, and Revert against this machine.",
+      "description": "El editor, la biblioteca y las características de diferencia/comparación de ConfigForge funcionan sin la CLI. Instala OSConfig para habilitar Desplegar, Auditar y Revertir en esta máquina.",
       "recheckButton": "Volver a comprobar",
       "title": "Instala OSConfig para implementar y auditar en este dispositivo"
     },
     "labels": {
-      "administratorPrivileges": "Administrator Privileges",
+      "administratorPrivileges": "Privilegios de administrador",
       "osVersion": "OS Versión",
-      "osconfigModule": "OSConfig Module",
+      "osconfigModule": "OSConfig Módulo",
       "serverType": "Server Tipo"
     },
-    "resolvedAt": "Resolved at:",
+    "resolvedAt": "Resuelto en:",
     "sectionTitle": "System Estado",
     "values": {
-      "notElevated": "Not elevated",
+      "notElevated": "No elevado",
       "notInstalled": "No instalado",
       "runningAsAdmin": "En ejecución as administrador",
       "unknown": "Desconocido"
     }
   },
   "theme": {
-    "label": "Theme",
+    "label": "Tema",
     "options": {
-      "dark": "Dark",
-      "light": "Light",
-      "system": "System"
+      "dark": "Oscuro",
+      "light": "Luz",
+      "system": "Sistema"
     },
-    "sectionDescription": "Choose Light, Dark, or System (follows su OS).",
-    "sectionTitle": "Appearance"
+    "sectionDescription": "Elige Luz, Oscuro o Sistema (según tu sistema operativo).",
+    "sectionTitle": "Apariencia"
   }
 }
