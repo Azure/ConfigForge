@@ -106,7 +106,7 @@ test('Diff WS2019 vs WS2025: same rule does NOT appear in both Added and Removed
   // Navigate to Diff page.
   await win.locator('aside').getByRole('link', { name: 'Diff' }).click();
   await expect(
-    win.locator('h1, h2').filter({ hasText: /Compare Manifests|Diff/ }).first(),
+    win.locator('h1, h2').filter({ hasText: /Compare Baselines|Diff/ }).first(),
   ).toBeVisible({ timeout: 20_000 });
 
   // Click the Pairwise tab if it's separate.

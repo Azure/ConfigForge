@@ -76,7 +76,7 @@ describe('Wave 5 localization coverage', () => {
     const i18n = getI18n();
     const { rerender } = withShell(<LibraryPage />);
 
-    expect(screen.getByRole('heading', { name: 'Baseline Library' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Microsoft Baselines' })).toBeInTheDocument();
 
     await i18n.changeLanguage('fr');
     rerender(

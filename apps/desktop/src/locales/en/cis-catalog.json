@@ -1,7 +1,7 @@
 {
   "extracted": {
     "text1": "Benchmark Mapping",
-    "text2": "Cross-reference your OSConfig resources against CIS Benchmark rules. Drop your CIS files into the folder below and the editor will show matching rules as you navigate the YAML.",
+    "text2": "Cross-reference your OSConfig settings against CIS Benchmark rules. Drop your CIS files into the folder below and the editor will show matching rules as you navigate the YAML.",
     "text3": "Once CIS data is loaded, a",
     "text4": "CIS",
     "text5": "tab will also be available on the",
@@ -16,7 +16,7 @@
     "text14": "json",
     "text15": "JSON catalog",
     "text16": "XCCDF + JSON",
-    "text17": "The editor will show CIS rule cross-references as you navigate resources.",
+    "text17": "The editor will show CIS rule cross-references as you navigate settings.",
     "text18": "No CIS data found",
     "text19": "Drop your CIS baseline JSON (from Azure Policy) or XCCDF+OVAL XML (from CIS Workbench) into the folder below and click",
     "text20": "Re-check",
@@ -31,7 +31,7 @@
     "text29": "Recommended",
     "text30": "Download CIS baselines from the",
     "text31": "Azure portal",
-    "text32": "(Azure Policy > Machine Configuration > CIS). Drop the JSON as-is. The app detects the platform (Windows / Linux) and matches rules to your manifest resources by name.",
+    "text32": "(Azure Policy > Machine Configuration > CIS). Drop the JSON as-is. The app detects the platform (Windows / Linux) and matches rules to your baseline settings by name.",
     "text33": "You can drop multiple files (one per OS). Name them anything you like.",
     "text34": "CIS XCCDF + OVAL XML",
     "text35": "Alternative",
@@ -59,7 +59,7 @@
     "text57": "Unrecognized files in folder",
     "text58": "These files don't match any expected name. If it's a typo, rename and click Re-check.",
     "text59": "did you mean",
-    "text60": "Back to Manifests",
+    "text60": "Back to My Baselines",
     "text61": "This page is fully optional",
     "text62": "All ConfigForge features except CIS cross-references work without any CIS data."
   }

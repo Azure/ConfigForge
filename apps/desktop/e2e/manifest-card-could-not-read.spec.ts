@@ -117,7 +117,7 @@ test.afterAll(async () => {
 
 test('manifest card surfaces the amber "Could not read" bucket so totals add up', async () => {
   // Navigate to the Manifests page (a fresh mount reads the seeded cache).
-  await win.locator('aside').getByRole('link', { name: 'Manifests' }).click();
+  await win.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
 
   // Filter down to our throwaway manifest so we assert a single card.
   await win.getByPlaceholder('Search manifests…').fill(MANIFEST_NAME);

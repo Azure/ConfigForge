@@ -114,7 +114,7 @@ describe('DiffPage — dropdown stability (v0.3.53)', () => {
   it('survives language switching with translated keys', async () => {
     const i18n = getI18n();
     const { rerender } = renderDiff();
-    expect(screen.getByRole('heading', { name: 'Compare Manifests' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Compare Baselines' })).toBeInTheDocument();
 
     await i18n.changeLanguage('fr');
     rerender(

@@ -5,7 +5,7 @@
     "back": "Back",
     "docs": "Docs",
     "duplicate": "Duplicate",
-    "duplicateTitle": "Duplicate this manifest",
+    "duplicateTitle": "Duplicate this baseline",
     "edit": "Edit",
     "export": "Export",
     "generateDocsTitle": "Generate documentation",
@@ -13,10 +13,10 @@
     "leaveUnsavedConfirm": "You have unsaved changes to \"{{name}}\". Leave anyway and discard them?",
     "noRevertTitle": "No previous deploy to revert",
     "remove": "Remove",
-    "removeConfirm": "Remove manifest \"{{name}}\"? This action cannot be undone.",
+    "removeConfirm": "Remove baseline \"{{name}}\"? This action cannot be undone.",
     "revert": "Revert",
-    "revertConfirm": "Revert manifest \"{{name}}\"?\n\nIf a pre-deploy snapshot exists, your prior settings will be re-applied to this device. If no snapshot exists, OSConfig enforcement of this manifest will be removed and the manifest will be unregistered. Either way, this manifest will no longer be actively enforced on this device.",
-    "revertTitle": "Undo the last deployment of this manifest from this device. If a pre-deploy snapshot exists, prior settings are re-applied; otherwise OSConfig enforcement is removed."
+    "revertConfirm": "Revert baseline \"{{name}}\"?\n\nIf a pre-deploy snapshot exists, your prior settings will be re-applied to this device. If no snapshot exists, OSConfig enforcement of this baseline will be removed and the baseline will be unregistered. Either way, this baseline will no longer be actively enforced on this device.",
+    "revertTitle": "Undo the last deployment of this baseline from this device. If a pre-deploy snapshot exists, prior settings are re-applied; otherwise OSConfig enforcement is removed."
   },
   "compliance": {
     "emptyDescription": "Run Audit or Enforce to check this baseline against the device.",
@@ -27,23 +27,23 @@
     "editorView": "Editor",
     "mofEditUnsupported": "Editing is not supported in MOF format",
     "mofReadOnly": "MOF is read-only",
-    "sectionTitle": "Manifest Content",
+    "sectionTitle": "Baseline Content",
     "unsavedFormatChanges": "You have unsaved changes in {{format}}. Switching tabs preserves them; save before navigating away.",
     "visualBuilderView": "Visual Builder"
   },
   "cspTroubleshooting": {
-    "declaredConfig": "CSP (Configuration Service Provider) resources need the Declared Configuration infrastructure",
-    "engineRegistered": "To use CSP resources, ensure the OSConfig engine service is properly registered",
-    "registryWorks": "Registry resources (Microsoft.Windows/Registry) work without additional setup",
-    "title": "CSP Resources Require Additional Setup",
+    "declaredConfig": "CSP (Configuration Service Provider) settings need the Declared Configuration infrastructure",
+    "engineRegistered": "To use CSP settings, ensure the OSConfig engine service is properly registered",
+    "registryWorks": "Registry settings (Microsoft.Windows/Registry) work without additional setup",
+    "title": "CSP Settings Require Additional Setup",
     "tryMetadata": "Try: <code>Get-OSConfigMetadata</code> to verify the engine is working"
   },
   "deploy": {
     "auditDescription": "Check compliance only",
-    "confirm": "Deploy manifest \"{{name}}\" in {{mode}} mode to this device?",
+    "confirm": "Deploy baseline \"{{name}}\" in {{mode}} mode to this device?",
     "enforceDescription": "Apply settings to device",
     "enforceRiskConfirm": "WARNING: Enforce will APPLY settings to this device.\n\nThis action may change Windows or Linux security policy in ways that can break login, networking, RDP, or installed software, and recovery may require a local administrator or boot media.\n\nProceed at your own risk. This action may break your machine.\n\nContinue with enforce?",
-    "mixedPlatform": "This manifest mixes Windows and Linux resource types. Split it into per-platform manifests before deploying.",
+    "mixedPlatform": "This baseline mixes Windows and Linux setting types. Split it into per-platform baselines before deploying.",
     "mode": {
       "audit": "audit (compliance check only)",
       "enforce": "enforce (apply settings)"
@@ -52,11 +52,11 @@
   "deployResult": {
     "compliant": "Compliant",
     "couldNotRead": "Could not read",
-    "couldNotReadTitle": "Resources the CLI could not read (provider not supported, transport error, or unsupported path). These are NOT counted as non-compliant. The device may actually be in the desired state.",
+    "couldNotReadTitle": "Settings the CLI could not read (provider not supported, transport error, or unsupported path). These are NOT counted as non-compliant. The device may actually be in the desired state.",
     "deployedAt": "Deployed at {{time}}",
     "host": "Host",
     "nonCompliant": "Non-compliant",
-    "viewResources": "View {{count}} resources",
+    "viewResources": "View {{count}} settings",
     "warning": "Warning"
   },
   "docs": {
@@ -69,11 +69,11 @@
   "errors": {
     "deleteFailed": "Delete failed",
     "deployFailed": "Deploy failed",
-    "duplicateFailed": "Failed to duplicate manifest",
+    "duplicateFailed": "Failed to duplicate baseline",
     "exportFailed": "Export failed",
     "generateDocsFailed": "Failed to generate documentation",
     "loadFormatFailed": "Failed to load {{format}} format",
-    "loadManifestFailed": "Failed to load manifest",
+    "loadManifestFailed": "Failed to load baseline",
     "revertFailed": "Revert failed",
     "saveFailed": "Save failed",
     "unknown": "Unknown error"
@@ -100,8 +100,8 @@
     "source": "Source: {{source}}"
   },
   "messages": {
-    "reverted": "Manifest reverted",
-    "saveSuccess": "Manifest \"{{name}}\" saved successfully",
+    "reverted": "Baseline reverted",
+    "saveSuccess": "Baseline \"{{name}}\" saved successfully",
     "savedWithWarning": "Saved with warning: {{warning}}"
   },
   "platform": {
@@ -111,16 +111,16 @@
     "windows": "🪟 Windows"
   },
   "rationale": {
-    "backToManifest": "Back to manifest",
+    "backToManifest": "Back to baseline",
     "downloadCsv": "Download CSV",
     "downloadCsvTitle": "Download all rationale entries as CSV",
     "emptyDescription": "Open the editor, change a value, and click Save. The “Why?” prompt captures rationale for every change.",
     "emptyTitle": "No rationale captured yet.",
     "filterCount": "{{visible}} of {{total}}",
-    "filterPlaceholder": "Filter by resource, author, or reason text…",
+    "filterPlaceholder": "Filter by setting, author, or reason text…",
     "loadErrorTitle": "Could not load rationale log",
     "loading": "Loading rationale log…",
-    "logDescription": "Every change captured by the “Why?” prompt in the editor. Chronological, cross-resource. Auditor-grade.",
+    "logDescription": "Every change captured by the “Why?” prompt in the editor. Chronological, cross-setting. Auditor-grade.",
     "logTitle": "Rationale Log:",
     "noFilterMatches": "No entries match the current filter.",
     "noReasonSkipped": "(no reason: skipped by author)",
@@ -134,7 +134,7 @@
     "table": {
       "author": "Author",
       "reason": "Reason",
-      "resource": "Resource",
+      "resource": "Setting",
       "timestamp": "Timestamp"
     },
     "unknownAuthor": "unknown"
@@ -148,13 +148,13 @@
   },
   "resourceEdit": {
     "cancelAria": "Cancel and discard changes",
-    "title": "Edit resource"
+    "title": "Edit setting"
   },
   "tables": {
     "reason": "Reason",
-    "resource": "Resource",
-    "resources": "Resources",
-    "showAllResources": "Show all {{count}} resources",
+    "resource": "Setting",
+    "resources": "Settings",
+    "showAllResources": "Show all {{count}} settings",
     "showingFirst": "(showing first {{count}})",
     "showingFirstForPerformance": "(showing first {{count}} for performance)",
     "status": "Status",
@@ -166,13 +166,13 @@
     "yaml": "YAML"
   },
   "visual": {
-    "addResource": "Add Resource",
-    "currentResources": "Current Resources ({{count}})",
+    "addResource": "Add Setting",
+    "currentResources": "Current Settings ({{count}})",
     "groupCount": "Group · {{count}}",
-    "noResources": "No resources in manifest.",
-    "parseError": "Could not parse manifest YAML. Switch to Editor view to fix syntax errors.",
-    "resourceFallback": "Resource {{index}}",
+    "noResources": "No settings in baseline.",
+    "parseError": "Could not parse baseline YAML. Switch to Editor view to fix syntax errors.",
+    "resourceFallback": "Setting {{index}}",
     "unknown": "unknown",
-    "usePicker": "Use the picker to add resources."
+    "usePicker": "Use the picker to add settings."
   }
 }

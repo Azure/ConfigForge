@@ -148,9 +148,9 @@ test.describe('cross-manifest conflict detection — UI surfaces real conflicts'
     await registerManifest(NAME_REAL_DC, dcYaml);
     await registerManifest(NAME_REAL_WG, wgYaml);
 
-    await win.locator('aside').getByRole('link', { name: 'Manifests' }).click();
-    await win.locator('aside').getByRole('link', { name: 'Validation' }).click();
-    await expect(win.locator('h1', { hasText: /Validation/ })).toBeVisible();
+    await win.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
+    await win.locator('aside').getByRole('link', { name: 'Export Readiness' }).click();
+    await expect(win.locator('h1', { hasText: /Export Readiness/ })).toBeVisible();
 
     // Wait for the detector to finish — registering 3×~300-rule
     // manifests means a measurable parse pass on each. 30s is
@@ -207,9 +207,9 @@ test.describe('cross-manifest conflict detection — UI surfaces real conflicts'
     await registerManifest(NAME_22, y22);
     await registerManifest(NAME_25, y25);
 
-    await win.locator('aside').getByRole('link', { name: 'Manifests' }).click();
-    await win.locator('aside').getByRole('link', { name: 'Validation' }).click();
-    await expect(win.locator('h1', { hasText: /Validation/ })).toBeVisible();
+    await win.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
+    await win.locator('aside').getByRole('link', { name: 'Export Readiness' }).click();
+    await expect(win.locator('h1', { hasText: /Export Readiness/ })).toBeVisible();
 
     await expect(
       win.locator('[data-testid="conflict-list"], [data-testid="conflict-none"]').first(),
@@ -290,9 +290,9 @@ test.describe('cross-manifest conflict detection — UI surfaces real conflicts'
     await registerManifest(NAME_22, y22);
     await registerManifest(NAME_25, y25);
 
-    await win.locator('aside').getByRole('link', { name: 'Manifests' }).click();
-    await win.locator('aside').getByRole('link', { name: 'Validation' }).click();
-    await expect(win.locator('h1', { hasText: /Validation/ })).toBeVisible();
+    await win.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
+    await win.locator('aside').getByRole('link', { name: 'Export Readiness' }).click();
+    await expect(win.locator('h1', { hasText: /Export Readiness/ })).toBeVisible();
 
     // Detector takes longer with several 200–300-rule manifests
     // already on the box from earlier tests. 30s is generous.
@@ -343,8 +343,8 @@ test.describe('cross-manifest conflict detection — UI surfaces real conflicts'
     await registerManifest(NAME_B, b);
 
     // Navigate to the Validation page (route is still /compliance).
-    await win.locator('aside').getByRole('link', { name: 'Validation' }).click();
-    await expect(win.locator('h1', { hasText: /Validation/ })).toBeVisible();
+    await win.locator('aside').getByRole('link', { name: 'Export Readiness' }).click();
+    await expect(win.locator('h1', { hasText: /Export Readiness/ })).toBeVisible();
 
     // The ConflictDetector renders only when manifestNames.length >= 2,
     // which is the case now that we just registered two. The detector
@@ -388,9 +388,9 @@ test.describe('cross-manifest conflict detection — UI surfaces real conflicts'
 
     // Refresh the Validation page so the ConflictDetector re-fetches
     // with the newly-registered manifests visible.
-    await win.locator('aside').getByRole('link', { name: 'Manifests' }).click();
-    await win.locator('aside').getByRole('link', { name: 'Validation' }).click();
-    await expect(win.locator('h1', { hasText: /Validation/ })).toBeVisible();
+    await win.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
+    await win.locator('aside').getByRole('link', { name: 'Export Readiness' }).click();
+    await expect(win.locator('h1', { hasText: /Export Readiness/ })).toBeVisible();
 
     // At least one conflict card must mention both bare + wrapped.
     // We can't assume only one card given the previous test
@@ -416,9 +416,9 @@ test.describe('cross-manifest conflict detection — UI surfaces real conflicts'
     await registerManifest(NAME_SAME_A, same);
     await registerManifest(NAME_SAME_B, same);
 
-    await win.locator('aside').getByRole('link', { name: 'Manifests' }).click();
-    await win.locator('aside').getByRole('link', { name: 'Validation' }).click();
-    await expect(win.locator('h1', { hasText: /Validation/ })).toBeVisible();
+    await win.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
+    await win.locator('aside').getByRole('link', { name: 'Export Readiness' }).click();
+    await expect(win.locator('h1', { hasText: /Export Readiness/ })).toBeVisible();
 
     // Wait for the detector to settle (either renders a card list or
     // the "no conflicts" success bar) so this assertion isn't a race.

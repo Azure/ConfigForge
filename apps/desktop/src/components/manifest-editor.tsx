@@ -634,7 +634,7 @@ export function ConfigEditor({
           <div className="flex items-center justify-between border-b border-slate-700 px-2 py-1.5">
             <span className="flex items-center gap-1.5 font-semibold text-slate-300">
               <ListRegular className="h-3.5 w-3.5" />
-              Resources ({resourceIndex.length})
+              Settings ({resourceIndex.length})
             </span>
             <button
               onClick={() => setExplorerCollapsed(true)}
@@ -649,7 +649,7 @@ export function ConfigEditor({
               <SearchRegular className="absolute left-2 top-1/2 h-3 w-3 -translate-y-1/2 text-slate-500" />
               <input
                 type="text"
-                placeholder="Filter resources…"
+                placeholder="Filter settings…"
                 value={explorerFilter}
                 onChange={(e) => setExplorerFilter(e.target.value)}
                 className="w-full rounded border border-slate-700 bg-slate-900 py-1 pl-6 pr-2 text-xs text-slate-300 placeholder:text-slate-600 focus:border-blue-500 focus:outline-none"
@@ -698,7 +698,7 @@ export function ConfigEditor({
         <button
           onClick={() => setExplorerCollapsed(false)}
           className="flex h-full w-8 shrink-0 items-center justify-center border-r border-slate-700 bg-slate-950/60 text-slate-500 hover:bg-slate-800 hover:text-slate-300"
-          title="Show Resource Explorer"
+          title="Show Setting Explorer"
         >
           <ListRegular className="h-4 w-4" />
         </button>
@@ -1081,7 +1081,7 @@ function CisCrossrefSidebar({
       </div>
       <div className="overflow-y-auto p-3">
         {!activeName && (
-          <div className="text-slate-500">Click a resource in the editor to see its CIS rule.</div>
+          <div className="text-slate-500">Click a setting in the editor to see its CIS rule.</div>
         )}
         {activeName && loading && (
           <div className="flex items-center gap-1.5 text-slate-400">
@@ -1094,7 +1094,7 @@ function CisCrossrefSidebar({
             <div className="text-slate-300">
               <span className="font-mono">{activeName}</span>
             </div>
-            <div className="text-slate-500">No CIS rule mapped for this resource.</div>
+            <div className="text-slate-500">No CIS rule mapped for this setting.</div>
           </div>
         )}
         {activeName && !loading && match && (

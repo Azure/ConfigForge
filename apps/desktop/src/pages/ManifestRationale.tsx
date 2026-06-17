@@ -95,7 +95,7 @@ export function RationaleLogPage() {
   }, [entries]);
 
   const downloadCsv = () => {
-    const header = ["timestamp", "author", "resource", "reason", "skipped"];
+    const header = ["timestamp", "author", "setting", "reason", "skipped"];
     const rows = sorted.map((e) => [
       e.ts,
       e.author ?? "",

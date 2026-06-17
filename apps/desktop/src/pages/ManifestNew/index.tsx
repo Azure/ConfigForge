@@ -148,7 +148,7 @@ function NewManifestPage() {
     setDocsOpen(true);
     setDocsCopied(false);
     try {
-      const docName = name.trim() || "Untitled-Manifest";
+      const docName = name.trim() || "Untitled-Baseline";
       const json = await cfs.docs.generate({ name: docName, content: yamlContent });
       setDocsMarkdown(json.markdown);
       setDocsFilename(json.filename);
@@ -156,7 +156,7 @@ function NewManifestPage() {
       setDocsMarkdown(
         `# Error\n\n${err instanceof Error ? err.message : "Failed to generate documentation"}`,
       );
-      setDocsFilename(`${name.trim() || "manifest"}.md`);
+      setDocsFilename(`${name.trim() || "baseline"}.md`);
     } finally {
       setDocsLoading(false);
     }
@@ -186,7 +186,7 @@ function NewManifestPage() {
 
   const handleSubmit = async () => {
     if (!name.trim()) {
-      setError("Manifest name is required.");
+      setError("Baseline name is required.");
       return;
     }
 
@@ -225,7 +225,7 @@ function NewManifestPage() {
       } else {
         sessionStorage.setItem(
           "configforge-flash",
-          `Manifest "${name.trim()}" registered successfully`,
+          `Baseline "${name.trim()}" registered successfully`,
         );
         // v0.1.14: clear the unsaved-changes guard before navigating.
         // Otherwise useBlocker would intercept this programmatic
@@ -251,7 +251,7 @@ function NewManifestPage() {
   const hasUnsavedChanges = !justRegistered && hasUserContent();
   useNavigationGuard(
     hasUnsavedChanges,
-    `You haven't registered this manifest yet. Leave anyway and discard your work?`,
+    `You haven't registered this baseline yet. Leave anyway and discard your work?`,
   );
 
   return (
@@ -326,9 +326,9 @@ function NewManifestPage() {
                 {importResult.filename} ({importResult.type})
               </MessageBarTitle>
               {importResult.type === "manifest" &&
-                `${(importResult.data as { resourceCount?: number }).resourceCount ?? 0} resources loaded`}
+                `${(importResult.data as { resourceCount?: number }).resourceCount ?? 0} settings loaded`}
               {importResult.type === "security-definition" &&
-                `${(importResult.data as { settingCount?: number }).settingCount ?? 0} settings converted to manifest`}
+                `${(importResult.data as { settingCount?: number }).settingCount ?? 0} settings converted to baseline`}
               {importResult.type === "baseline-spreadsheet" &&
                 `${(importResult.data as { settingCount?: number }).settingCount ?? 0} baseline settings converted`}{" "}
               {t("new.extracted.text13")}
@@ -505,7 +505,7 @@ function NewManifestPage() {
                   onClick={() => {
                     sessionStorage.setItem(
                       "configforge-flash",
-                      `Manifest "${registeredName}" registered successfully`,
+                      `Baseline "${registeredName}" registered successfully`,
                     );
                     navigate("/manifests");
                   }}
@@ -696,15 +696,15 @@ function NewManifestPage() {
                       } else if (/HTTP 5\d\d/i.test(raw) || /server error/i.test(raw)) {
                         friendly = `Remote server returned an error. The host may be temporarily unavailable.`;
                       } else if (/abort|timeout/i.test(raw) || /signal/i.test(raw)) {
-                        friendly = `The fetch timed out (limit 30s). Check your network connection or try a smaller manifest.`;
+                        friendly = `The fetch timed out (limit 30s). Check your network connection or try a smaller baseline.`;
                       } else if (/fetch failed|enotfound|getaddrinfo|network/i.test(raw)) {
                         friendly = `Could not reach the host. Check your internet connection and that the URL is reachable.`;
                       } else if (/private\/loopback|private\/?internal/i.test(raw)) {
-                        friendly = `URLs pointing to private or loopback addresses are not allowed. Use a public manifest URL.`;
+                        friendly = `URLs pointing to private or loopback addresses are not allowed. Use a public baseline URL.`;
                       } else if (/scheme|unsupported uri|invalid uri/i.test(raw)) {
-                        friendly = `The URL is invalid. Make sure it starts with http:// or https:// and points to a YAML or JSON manifest.`;
+                        friendly = `The URL is invalid. Make sure it starts with http:// or https:// and points to a YAML or JSON baseline.`;
                       } else if (/too large/i.test(raw)) {
-                        friendly = `The manifest is too large (>10 MB). Trim it before importing.`;
+                        friendly = `The baseline is too large (>10 MB). Trim it before importing.`;
                       } else {
                         friendly = `Fetch failed: ${raw}`;
                       }

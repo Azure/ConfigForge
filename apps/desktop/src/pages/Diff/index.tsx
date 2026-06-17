@@ -130,7 +130,7 @@ export function DiffPage() {
   };
 
   const handleDownloadChangelog = () => {
-    const name = leftManifest || rightManifest || "manifest";
+    const name = leftManifest || rightManifest || "baseline";
     const beforeLabel = leftManifest || "before";
     const afterLabel = rightManifest || "after";
     const result = generateChangelog(normLeft, normRight, name);
@@ -235,7 +235,7 @@ export function DiffPage() {
     } catch (err) {
       if (token !== tokenRef.current) return;
       const msg = err instanceof Error ? err.message : t('errors.network');
-      setText(`# Failed to load manifest "${name}"\n# ${msg}`);
+      setText(`# Failed to load baseline "${name}"\n# ${msg}`);
     } finally {
       if (token === tokenRef.current) setLoading(false);
     }

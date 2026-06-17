@@ -127,7 +127,7 @@ const ALL_RESOURCE_TYPES: ResourceTypeOption[] = [
   {
     type: "Microsoft.OSConfig/Group",
     label: "Group",
-    description: "Group multiple resources together",
+    description: "Group multiple settings together",
     icon: LayerRegular,
     platform: "cross-platform",
   },
@@ -748,10 +748,10 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
   const editHeader = isEdit ? (
     <div className="space-y-3 rounded-lg border border-blue-200 bg-blue-50 p-3 dark:border-blue-800 dark:bg-blue-900/20">
       <div className="text-xs uppercase tracking-wide text-blue-700 dark:text-blue-300">
-        Editing resource
+        Editing setting
       </div>
       <label className="block">
-        <span className="mb-1 block text-xs text-slate-600 dark:text-slate-400">Resource Name (display)</span>
+        <span className="mb-1 block text-xs text-slate-600 dark:text-slate-400">Setting Name (display)</span>
         <input
           type="text"
           value={editName}
@@ -799,9 +799,9 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
       <div className="space-y-1">
         <h3 className="text-sm font-semibold text-slate-200">{typeLabel}</h3>
         <p className="text-xs text-slate-400">
-          This resource type doesn&apos;t have a per-field form. Edit the full resource
+          This setting type doesn&apos;t have a per-field form. Edit the full setting
           as YAML below — including nested properties, schema, or wrapped inner
-          resources. Required fields: <code>name</code>, <code>type</code>.
+          settings. Required fields: <code>name</code>, <code>type</code>.
         </p>
       </div>
       <textarea
@@ -830,7 +830,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
           onClick={submitYamlEdit}
           className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-500"
         >
-          {isEdit ? "Save changes" : "Add Resource"}
+          {isEdit ? "Save changes" : "Add Setting"}
         </button>
       </div>
     </div>
@@ -849,13 +849,13 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
           type="search"
           value={typeSearch}
           onChange={(e) => setTypeSearch(e.target.value)}
-          placeholder="Search resource types…"
+          placeholder="Search setting types…"
           className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
         />
         <div className="grid gap-3 sm:grid-cols-2">
           {visibleTypes.length === 0 && (
             <div className="col-span-full py-6 text-center text-sm text-slate-500 dark:text-slate-400">
-              No resource types match &ldquo;{typeSearch}&rdquo;.
+              No setting types match &ldquo;{typeSearch}&rdquo;.
             </div>
           )}
           {visibleTypes.map((rt) => {
@@ -926,7 +926,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
         disabled={disabled}
         className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-500 disabled:opacity-40"
       >
-        {isEdit ? "Save changes" : "Add Resource"}
+        {isEdit ? "Save changes" : "Add Setting"}
       </button>
     </div>
   );
@@ -936,7 +936,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     return (
       <div className="space-y-4">
         {backButton}        {editHeader}
-        <h3 className="text-sm font-semibold text-slate-200">Registry Resource</h3>
+        <h3 className="text-sm font-semibold text-slate-200">Registry Setting</h3>
         <label className="block">
           <span className="mb-1 block text-xs text-slate-400">Registry Path</span>
           <input type="text" value={regPath} onChange={(e) => setRegPath(e.target.value)} placeholder="HKLM:\SOFTWARE\..." className={inputClass} />
@@ -963,7 +963,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     return (
       <div className="space-y-4">
         {backButton}        {editHeader}
-        <h3 className="text-sm font-semibold text-slate-200">CSP Resource</h3>
+        <h3 className="text-sm font-semibold text-slate-200">CSP Setting</h3>
         <label className="block">
           <span className="mb-1 block text-xs text-slate-400">OMA-URI Path</span>
           <input type="text" value={cspUri} onChange={(e) => setCspUri(e.target.value)} placeholder="./Device/Vendor/MSFT/..." className={inputClass} />
@@ -986,7 +986,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     return (
       <div className="space-y-4">
         {backButton}        {editHeader}
-        <h3 className="text-sm font-semibold text-slate-200">Account Policy Resource</h3>
+        <h3 className="text-sm font-semibold text-slate-200">Account Policy Setting</h3>
         <label className="block">
           <span className="mb-1 block text-xs text-slate-400">Policy Name</span>
           <input type="text" value={apName} onChange={(e) => setApName(e.target.value)} placeholder="MinimumPasswordLength" className={inputClass} />
@@ -1005,7 +1005,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     return (
       <div className="space-y-4">
         {backButton}        {editHeader}
-        <h3 className="text-sm font-semibold text-slate-200">Audit Policy Resource</h3>
+        <h3 className="text-sm font-semibold text-slate-200">Audit Policy Setting</h3>
         <label className="block">
           <span className="mb-1 block text-xs text-slate-400">Subcategory</span>
           <input type="text" value={auditSubcategory} onChange={(e) => setAuditSubcategory(e.target.value)} placeholder="Logon" className={inputClass} />
@@ -1024,7 +1024,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     return (
       <div className="space-y-4">
         {backButton}        {editHeader}
-        <h3 className="text-sm font-semibold text-slate-200">User Rights Assignment Resource</h3>
+        <h3 className="text-sm font-semibold text-slate-200">User Rights Assignment Setting</h3>
         <label className="block">
           <span className="mb-1 block text-xs text-slate-400">Right Name</span>
           <input type="text" value={uraName} onChange={(e) => setUraName(e.target.value)} placeholder="SeRemoteInteractiveLogonRight" className={inputClass} />
@@ -1043,7 +1043,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     return (
       <div className="space-y-4">
         {backButton}        {editHeader}
-        <h3 className="text-sm font-semibold text-slate-200">File Permission Resource</h3>
+        <h3 className="text-sm font-semibold text-slate-200">File Permission Setting</h3>
         <label className="block">
           <span className="mb-1 block text-xs text-slate-400">Path</span>
           <input type="text" value={fpPath} onChange={(e) => setFpPath(e.target.value)} placeholder="/etc/ssh/sshd_config" className={inputClass} />
@@ -1070,7 +1070,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     return (
       <div className="space-y-4">
         {backButton}        {editHeader}
-        <h3 className="text-sm font-semibold text-slate-200">Kernel Module Resource</h3>
+        <h3 className="text-sm font-semibold text-slate-200">Kernel Module Setting</h3>
         <label className="block">
           <span className="mb-1 block text-xs text-slate-400">Module Name</span>
           <input type="text" value={kmName} onChange={(e) => setKmName(e.target.value)} placeholder="usb-storage" className={inputClass} />
@@ -1089,7 +1089,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     return (
       <div className="space-y-4">
         {backButton}        {editHeader}
-        <h3 className="text-sm font-semibold text-slate-200">User Resource</h3>
+        <h3 className="text-sm font-semibold text-slate-200">User Setting</h3>
         <label className="block">
           <span className="mb-1 block text-xs text-slate-400">Username</span>
           <input type="text" value={luName} onChange={(e) => setLuName(e.target.value)} placeholder="sshd" className={inputClass} />
@@ -1108,7 +1108,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     return (
       <div className="space-y-4">
         {backButton}        {editHeader}
-        <h3 className="text-sm font-semibold text-slate-200">File Resource</h3>
+        <h3 className="text-sm font-semibold text-slate-200">File Setting</h3>
         <label className="block">
           <span className="mb-1 block text-xs text-slate-400">Path</span>
           <input type="text" value={filePath} onChange={(e) => setFilePath(e.target.value)} placeholder="/etc/motd" className={inputClass} />
@@ -1131,7 +1131,7 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     return (
       <div className="space-y-4">
         {backButton}        {editHeader}
-        <h3 className="text-sm font-semibold text-slate-200">File Line Resource</h3>
+        <h3 className="text-sm font-semibold text-slate-200">File Line Setting</h3>
         <label className="block">
           <span className="mb-1 block text-xs text-slate-400">Path</span>
           <input type="text" value={flPath} onChange={(e) => setFlPath(e.target.value)} placeholder="/etc/sysctl.conf" className={inputClass} />
@@ -1164,8 +1164,8 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
     <div className="space-y-4">
       {backButton}
       {editHeader}
-      <h3 className="text-sm font-semibold text-slate-200">{selected.label} Resource</h3>
-      <p className="text-xs text-slate-400">This resource type does not have a custom form. It will be added with an empty properties block.</p>
+      <h3 className="text-sm font-semibold text-slate-200">{selected.label} Setting</h3>
+      <p className="text-xs text-slate-400">This setting type does not have a custom form. It will be added with an empty properties block.</p>
       {submitButton(false)}
     </div>
   );

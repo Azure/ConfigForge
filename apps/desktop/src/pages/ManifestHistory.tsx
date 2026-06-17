@@ -283,7 +283,7 @@ export function ManifestHistoryPage() {
     <div className="mx-auto max-w-6xl space-y-6">
       <Breadcrumb
         items={[
-          { label: 'Manifests', to: '/manifests' },
+          { label: 'My Baselines', to: '/manifests' },
           { label: manifestName, to: `/manifests/${encodeURIComponent(manifestName)}` },
           { label: 'History' },
         ]}
@@ -327,10 +327,10 @@ export function ManifestHistoryPage() {
         <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 py-20 dark:border-slate-700">
           <HistoryRegular className="mb-4 h-12 w-12 text-slate-300 dark:text-slate-600" />
           <p className="text-lg font-medium text-slate-500 dark:text-slate-400">
-            No history recorded for this manifest
+            No history recorded for this baseline
           </p>
           <p className="mt-1 text-sm text-slate-400 dark:text-slate-500">
-            Snapshots are saved automatically when you register or update the manifest.
+            Snapshots are saved automatically when you register or update the baseline.
           </p>
         </div>
       )}
@@ -396,7 +396,7 @@ export function ManifestHistoryPage() {
                     onClick={() => handleRestore(entry)}
                     disabled={actionLoading === entry.id}
                     className="inline-flex items-center gap-1.5 rounded-md border border-blue-200 px-3 py-1.5 text-xs font-medium text-blue-600 transition-colors hover:bg-blue-50 disabled:opacity-50 dark:border-blue-800 dark:text-blue-400 dark:hover:bg-blue-900/20"
-                    title="Replaces the manifest's authored YAML content with this snapshot. Different from the editor's Revert (which undoes a deploy on this device)."
+                    title="Replaces the baseline's authored YAML content with this snapshot. Different from the editor's Revert (which undoes a deploy on this device)."
                   >
                     {actionLoading === entry.id ? (
                       <Spinner size="tiny" />
@@ -503,14 +503,14 @@ export function ManifestHistoryPage() {
                     id="restore-modal-title"
                     className="text-base font-semibold text-slate-900 dark:text-white"
                   >
-                    Restore manifest from snapshot
+                    Restore baseline from snapshot
                   </h3>
                   <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
                     Snapshot from {formatTimestamp(restoreCandidate.timestamp)}
                     {restoreCandidate.message ? `: ${restoreCandidate.message}` : ""}
                   </p>
                   <p className="mt-2 text-xs text-slate-500 dark:text-slate-400">
-                    The current manifest will be auto-snapshotted before
+                    The current baseline will be auto-snapshotted before
                     restore so you can roll back. Re-registering may
                     re-deploy the desired state to managed devices.
                   </p>
@@ -538,9 +538,9 @@ export function ManifestHistoryPage() {
               ) : (
                 <MessageBar intent="warning">
                   <MessageBarBody>
-                    No current registered manifest was found, so no auto-snapshot
+                    No current registered baseline was found, so no auto-snapshot
                     will be created. Restore will register the snapshot content
-                    as a new manifest.
+                    as a new baseline.
                   </MessageBarBody>
                 </MessageBar>
               )}
