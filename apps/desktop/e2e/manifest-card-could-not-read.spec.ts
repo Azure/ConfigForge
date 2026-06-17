@@ -120,7 +120,7 @@ test('manifest card surfaces the amber "Could not read" bucket so totals add up'
   await win.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
 
   // Filter down to our throwaway manifest so we assert a single card.
-  await win.getByPlaceholder('Search manifests…').fill(MANIFEST_NAME);
+  await win.getByPlaceholder('Search baselines…').fill(MANIFEST_NAME);
 
   const heading = win.getByRole('heading', { name: MANIFEST_NAME });
   await expect(heading).toBeVisible({ timeout: 10_000 });
