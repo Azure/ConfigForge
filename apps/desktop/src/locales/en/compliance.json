@@ -1,14 +1,14 @@
 {
   "perManifest": {
     "extracted": {
-      "text1": "Back to manifest",
+      "text1": "Back to baseline",
       "text2": "Compliance:",
       "text3": "CIS Benchmarks data is not bundled",
-      "text4": "ConfigForge does not redistribute CIS Benchmark content (license restrictions). The compliance % report compares your manifest against a CIS baseline, which requires the catalog files on disk.",
+      "text4": "ConfigForge does not redistribute CIS Benchmark content (license restrictions). The compliance % report compares your baseline against a CIS baseline, which requires the catalog files on disk.",
       "text5": "See",
       "text6": "for how to drop in your own legally-licensed copies and re-enable this feature.",
       "text7": "Generate audit pack (works without CIS) →",
-      "text8": "Back to manifest",
+      "text8": "Back to baseline",
       "text9": "Compliance:",
       "text10": "Compare against",
       "text11": "Download Markdown audit pack",
@@ -39,34 +39,34 @@
       "text36": "Expected",
       "text37": "GPO Path",
       "text38": "missing",
-      "text39": "No extra rules. Your manifest is a strict subset of the CIS baseline."
+      "text39": "No extra rules. Your baseline is a strict subset of the CIS baseline."
     }
   },
   "overview": {
     "extracted": {
-      "text1": "Validation & Export Readiness",
-      "text2": "Validate manifests and check export readiness for Azure Policy, MOF, and more",
+      "text1": "Export Readiness",
+      "text2": "Validate baselines and check export readiness for Azure Policy, MOF, and more",
       "text3": "Refresh",
-      "text4": "Total Manifests",
+      "text4": "Total Baselines",
       "text5": "Export Ready",
       "text6": "Has Issues",
-      "text7": "Total Resources",
-      "text8": "No manifests found",
-      "text9": "Register manifests to validate and export.",
+      "text7": "Total Settings",
+      "text8": "No baselines found",
+      "text9": "Register baselines to validate and export.",
       "text10": "Register New",
-      "text11": "resources ·",
+      "text11": "settings ·",
       "text12": "issue",
       "text13": "issues",
-      "text14": "Manifest Details",
-      "text15": "Resources",
-      "text16": "Resource Types",
+      "text14": "Baseline Details",
+      "text15": "Settings",
+      "text16": "Setting Types",
       "text17": "Has $schema",
       "text18": "Enforcement Values",
       "text19": "Compliance Criteria",
       "text20": "Issues",
       "text21": "Export Readiness",
       "text22": "View / Edit",
-      "text23": "Cross-Manifest Conflicts",
+      "text23": "Cross-Baseline Conflicts",
       "text24": "Export"
     }
   }

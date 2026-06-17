@@ -48,9 +48,9 @@ describe('Sidebar', () => {
   it('renders all seven nav items', () => {
     renderAt('/');
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('Manifests')).toBeInTheDocument();
-    expect(screen.getByText('Validation')).toBeInTheDocument();
-    expect(screen.getByText('Library')).toBeInTheDocument();
+    expect(screen.getByText('My Baselines')).toBeInTheDocument();
+    expect(screen.getByText('Export Readiness')).toBeInTheDocument();
+    expect(screen.getByText('Microsoft Baselines')).toBeInTheDocument();
     expect(screen.getByText('Diff')).toBeInTheDocument();
     expect(screen.getByText('Benchmark Mapping')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
@@ -65,9 +65,9 @@ describe('Sidebar', () => {
     expect(dashboardLink.className).toMatch(/bg-blue-500/);
   });
 
-  it('marks the Manifests link active when at "/manifests"', () => {
+  it('marks the My Baselines link active when at "/manifests"', () => {
     renderAt('/manifests');
-    const manifestsLink = screen.getByRole('link', { name: /Manifests/ });
+    const manifestsLink = screen.getByRole('link', { name: /My Baselines/ });
     expect(manifestsLink.className).toMatch(/bg-blue-500/);
     // Inactive sibling sanity check
     const dashboardLink = screen.getByRole('link', { name: /Dashboard/ });

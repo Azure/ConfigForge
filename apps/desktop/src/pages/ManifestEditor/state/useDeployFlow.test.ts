@@ -133,7 +133,7 @@ describe('useDeployFlow — enforce risk-ack second confirm', () => {
     });
 
     expect(confirmSpy).toHaveBeenCalledTimes(2);
-    expect(confirmSpy.mock.calls[0][0]).toMatch(/Deploy manifest/);
+    expect(confirmSpy.mock.calls[0][0]).toMatch(/Deploy baseline/);
     expect(confirmSpy.mock.calls[1][0]).toMatch(/at your own risk/i);
     expect(confirmSpy.mock.calls[1][0]).toMatch(/may break your machine/i);
     expect(deployRun).toHaveBeenCalledTimes(1);

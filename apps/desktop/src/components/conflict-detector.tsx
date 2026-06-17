@@ -100,8 +100,8 @@ export function ConflictDetector({ manifestNames }: ConflictDetectorProps) {
             )}
           </h3>
           <p className="mt-0.5 text-xs text-slate-400 dark:text-slate-500">
-            {t("components.conflictDetector.extracted.text3")}
-            {manifestNames.length}
+            {t("components.conflictDetector.extracted.text3")}{" "}
+            {manifestNames.length}{" "}
             {t("components.conflictDetector.extracted.text4")}
           </p>
         </div>

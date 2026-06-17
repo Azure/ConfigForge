@@ -52,7 +52,7 @@ describe('ManifestsPage localization', () => {
   it('survives language switching with translated keys', async () => {
     const i18n = getI18n();
     const { rerender } = renderManifests();
-    expect(screen.getByRole('heading', { name: 'Manifests' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'My Baselines' })).toBeInTheDocument();
 
     await i18n.changeLanguage('fr');
     rerender(

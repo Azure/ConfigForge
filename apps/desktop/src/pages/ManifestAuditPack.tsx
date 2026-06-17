@@ -212,7 +212,7 @@ export function AuditPackPage() {
           compliance: hasDeviceAudit || !!against,
         });
         if (!registered) {
-          setError(`Manifest "${manifestName}" is not registered.`);
+          setError(`Baseline "${manifestName}" is not registered.`);
         }
       } catch (e: unknown) {
         if (cancelled) return;
@@ -250,7 +250,7 @@ export function AuditPackPage() {
         <section className="space-y-4">
           <Breadcrumb
             items={[
-              { label: "Manifests", to: "/manifests" },
+              { label: "Baselines", to: "/manifests" },
               { label: manifestName, to: `/manifests/${encodeURIComponent(manifestName)}` },
               { label: "Audit Pack" },
             ]}

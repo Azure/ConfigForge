@@ -474,11 +474,13 @@ export function LibraryPage() {
                     {entry.resourceCount != null && (
                       <span>
                         {entry.resourceCount}
+                        {" "}
                         {t("library.extracted.text16")}
                       </span>
                     )}
                     <span>
                       {entry.resourceTypes.length}
+                      {" "}
                       {t("library.extracted.text17")}
                       {entry.resourceTypes.length !== 1 ? t("library.extracted.text18") : ""}
                     </span>
@@ -498,6 +500,7 @@ export function LibraryPage() {
                         <ChevronRightRegular className="h-3 w-3" />
                       )}
                       {isExpanded ? t("library.extracted.text19") : t("library.extracted.text20")}
+                      {" "}
                       {t("library.extracted.text21")}
                     </button>
 

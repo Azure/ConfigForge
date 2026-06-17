@@ -112,9 +112,9 @@ test.describe('runtime baselines (electron 42 upgrade)', () => {
 test.describe('navigation — every page renders post-upgrade', () => {
   const routes: { label: string; expectHeading: RegExp }[] = [
     { label: 'Dashboard', expectHeading: /Dashboard/ },
-    { label: 'Manifests', expectHeading: /Manifests?/ },
-    { label: 'Library', expectHeading: /Baseline Library|Library/ },
-    { label: 'Validation', expectHeading: /Validation/ },
+    { label: 'My Baselines', expectHeading: /My Baselines/ },
+    { label: 'Microsoft Baselines', expectHeading: /Microsoft Baselines/ },
+    { label: 'Export Readiness', expectHeading: /Export Readiness/ },
     { label: 'Diff', expectHeading: /Diff|Compare/ },
     { label: 'Benchmark Mapping', expectHeading: /Benchmark Mapping/ },
     { label: 'Settings', expectHeading: /Settings/ },
@@ -365,7 +365,7 @@ test.describe('C2 — DOMPurify override active', () => {
     // direct reference — but we CAN verify monaco didn't bring back the
     // vulnerable copy by checking it loads + functions cleanly when we
     // navigate to a page that uses it.
-    await win.locator('aside').getByRole('link', { name: 'Manifests' }).click();
+    await win.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
     await win.waitForLoadState('domcontentloaded');
     // No console errors about DOMPurify post-navigation
     const purifyErrs = consoleErrors.filter((e) =>

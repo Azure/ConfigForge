@@ -100,27 +100,51 @@ test('renderer mounts and the dashboard is visible', async () => {
   await expect(firstWindow.locator('h1', { hasText: 'Dashboard' })).toBeVisible();
 });
 
-test('sidebar shows all six nav items', async () => {
-  const labels = ['Dashboard', 'Manifests', 'Validation', 'Library', 'Diff', 'Benchmark Mapping', 'Settings'];
+test('sidebar shows all seven nav items with the renamed labels', async () => {
+  const labels = ['Dashboard', 'My Baselines', 'Export Readiness', 'Microsoft Baselines', 'Diff', 'Benchmark Mapping', 'Settings'];
   for (const label of labels) {
     await expect(firstWindow.locator('aside').getByText(label, { exact: true })).toBeVisible();
   }
+  // Legacy labels must be gone from the sidebar after the rename.
+  for (const legacy of ['Manifests', 'Validation', 'Library']) {
+    await expect(firstWindow.locator('aside').getByText(legacy, { exact: true })).toHaveCount(0);
+  }
 });
 
-test('navigates from Dashboard to Library', async () => {
-  await firstWindow.locator('aside').getByRole('link', { name: 'Library' }).click();
-  // Library page renders <h1>Baseline Library</h1>; the sidebar
-  // label is "Library" (shorter form) and the page heading is the
-  // full "Baseline Library" descriptor.
-  await expect(firstWindow.locator('h1', { hasText: /Baseline Library/ })).toBeVisible();
+test('Microsoft Baselines: heading + spaced counts (resource→setting rename + JSX spacing fixes)', async () => {
+  await firstWindow.locator('aside').getByRole('link', { name: 'Microsoft Baselines' }).click();
+  await expect(firstWindow.locator('h1', { hasText: /Microsoft Baselines/ })).toBeVisible();
+  // The bundled catalog renders count summaries on every card. This asserts
+  // the resource→setting rename AND the count/label spacing fixes — the exact
+  // bugs reported ("318resources", "1resource type", "showresource types").
+  const body = await firstWindow.locator('body').innerText();
+  expect(body).toMatch(/\d+ settings/); // "318 settings" — number and word spaced
+  expect(body).toMatch(/\d+ setting type/); // "1 setting type" — spaced
+  expect(body).not.toMatch(/\d+settings/); // never glued "318settings"
+  expect(body).not.toMatch(/\d+resources?\b/); // legacy term gone
+  expect(body).not.toMatch(/setting type s\b/); // plural "s" not detached from "type"
+  expect(body).not.toContain('Showsetting'); // expand toggle is spaced
+  expect(body).not.toContain('Hidesetting');
 });
 
-test('navigates from Library to Validation', async () => {
-  await firstWindow.locator('aside').getByRole('link', { name: 'Validation' }).click();
-  // Validation page renders <h1>Validation & Export Readiness</h1>.
-  // Sidebar was renamed in v0.2.15 (Compliance -> Validation).
+test('My Baselines: heading + renamed subtitle', async () => {
+  await firstWindow.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
+  await expect(firstWindow.locator('h1', { hasText: /My Baselines/ })).toBeVisible();
+  await expect(firstWindow.getByText(/Registered OSConfig security baselines/)).toBeVisible();
+});
+
+test('Export Readiness: heading renamed (no "Validation &" prefix) + "Total Settings" card', async () => {
+  await firstWindow.locator('aside').getByRole('link', { name: 'Export Readiness' }).click();
+  await expect(firstWindow.locator('h1', { hasText: /Export Readiness/ })).toBeVisible();
+  // Old title was "Validation & Export Readiness" — the "Validation" prefix must be gone.
+  await expect(firstWindow.locator('h1', { hasText: /Validation/ })).toHaveCount(0);
+  await expect(firstWindow.getByText('Total Settings', { exact: true })).toBeVisible();
+});
+
+test('Diff: "Compare Baselines" heading', async () => {
+  await firstWindow.locator('aside').getByRole('link', { name: 'Diff' }).click();
   await expect(
-    firstWindow.locator('h1', { hasText: /Validation/ }),
+    firstWindow.locator('h1, h2').filter({ hasText: /Compare Baselines/ }).first(),
   ).toBeVisible();
 });
 

@@ -41,7 +41,7 @@ export interface ResourceEditDialogProps {
 
 function asResourceDef(r: Record<string, unknown> | null): ResourceDefinition | null {
   if (!r) return null;
-  const name = typeof r.name === "string" ? r.name : typeof r.Name === "string" ? r.Name : "Resource";
+  const name = typeof r.name === "string" ? r.name : typeof r.Name === "string" ? r.Name : "Setting";
   const type = typeof r.type === "string" ? r.type : typeof r.Type === "string" ? r.Type : "";
   const properties = (r.properties && typeof r.properties === "object" && !Array.isArray(r.properties))
     ? (r.properties as Record<string, unknown>)

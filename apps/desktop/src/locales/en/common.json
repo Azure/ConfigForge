@@ -56,20 +56,20 @@
   "components": {
     "conflictDetector": {
       "extracted": {
-        "text1": "Need at least 2 manifests to detect conflicts.",
-        "text2": "Cross-Manifest Conflict Detection",
+        "text1": "Need at least 2 baselines to detect conflicts.",
+        "text2": "Cross-Baseline Conflict Detection",
         "text3": "Checking",
-        "text4": "manifests for conflicting settings",
+        "text4": "baselines for conflicting settings",
         "text5": "Re-check",
-        "text6": "Analyzing manifests for conflicts…",
-        "text7": "No conflicts detected across registered manifests",
+        "text6": "Analyzing baselines for conflicts…",
+        "text7": "No conflicts detected across registered baselines",
         "text8": "Conflict:"
       }
     },
     "recentRationale": {
       "extracted": {
         "text1": "Loading…",
-        "text2": "No rationale captured yet for this resource.",
+        "text2": "No rationale captured yet for this setting.",
         "text3": "skipped",
         "text4": "unknown",
         "text5": "(no reason: skipped by author)",

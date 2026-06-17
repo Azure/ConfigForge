@@ -1,19 +1,19 @@
 {
   "page": {
-    "title": "Compare Manifests",
-    "description": "Side-by-side comparison of manifest configurations"
+    "title": "Compare Baselines",
+    "description": "Side-by-side comparison of baseline configurations"
   },
   "pageError": {
     "dismiss": "dismiss",
     "dismissTitle": "Dismiss"
   },
   "info": {
-    "oneManifest": "You have 1 manifest registered. To compare two registered manifests, register a second one first, or switch either side to <strong>Paste / Upload</strong> mode below to paste YAML directly."
+    "oneManifest": "You have 1 baseline registered. To compare two registered baselines, register a second one first, or switch either side to <strong>Paste / Upload</strong> mode below to paste YAML directly."
   },
   "errors": {
     "analyzeFailed": "Failed to analyze diff",
-    "loadManifestsFailed": "Failed to load manifests",
-    "loadManifestsTimeout": "Loading manifests timed out. The background list call is taking longer than 10s — try Refresh, or restart the app if it persists.",
+    "loadManifestsFailed": "Failed to load baselines",
+    "loadManifestsTimeout": "Loading baselines timed out. The background list call is taking longer than 10s — try Refresh, or restart the app if it persists.",
     "network": "Network error"
   },
   "tabs": {
@@ -26,26 +26,26 @@
     "after": "After",
     "modes": {
       "pasteUpload": "Paste / Upload",
-      "fromManifest": "From Manifest"
+      "fromManifest": "From Baseline"
     },
     "select": {
       "loading": "Loading…",
-      "noManifests": "No manifests registered",
-      "selectManifest": "Select a manifest…"
+      "noManifests": "No baselines registered",
+      "selectManifest": "Select a baseline…"
     },
-    "loadingManifest": "Loading manifest…",
+    "loadingManifest": "Loading baseline…",
     "empty": {
-      "selectManifest": "Select a manifest above",
-      "uploadOrPaste": "Upload a file or paste manifest text"
+      "selectManifest": "Select a baseline above",
+      "uploadOrPaste": "Upload a file or paste baseline text"
     },
     "uploadFile": "Upload file",
-    "compareDisabledTitle": "Select a manifest on both sides to enable Compare",
+    "compareDisabledTitle": "Select a baseline on both sides to enable Compare",
     "compareButton": "Compare"
   },
   "stats": {
     "title": "Diff Stats:",
     "units": {
-      "resources": "resources",
+      "resources": "settings",
       "lines": "lines"
     },
     "added": "{{count}} {{unit}} added",
@@ -85,7 +85,7 @@
     "citationCoverageValue": "Citation coverage {{percent}}%."
   },
   "matrixSummary": {
-    "totalChanges": "{{count}} resource {{changeWord}} detected",
+    "totalChanges": "{{count}} setting {{changeWord}} detected",
     "change_one": "change",
     "change_other": "changes",
     "added": "{{count}} added",
@@ -93,7 +93,7 @@
     "changed": "{{count}} with value change"
   },
   "resourceChanges": {
-    "sectionTitle": "Resource Changes",
+    "sectionTitle": "Setting Changes",
     "changed": "Changed (value differs)",
     "added": "Added (only in After)",
     "removed": "Removed (only in Before)",
@@ -104,7 +104,7 @@
   "matrix": {
     "sectionTitle": "Pick 2–10 baselines to compare",
     "sectionDescription": "Each row in the resulting matrix is a setting; each column is a baseline. Cells are color-coded green (identical), red (differs), or yellow (only-in).",
-    "noManifests": "No manifests registered.",
+    "noManifests": "No baselines registered.",
     "compareButton": "Compare ({{count}})",
     "downloadExcel": "Download Excel",
     "filterPlaceholder": "Filter settings…",
@@ -129,12 +129,12 @@
   },
   "cis": {
     "labels": {
-      "manifest": "Manifest",
+      "manifest": "Baseline",
       "benchmark": "CIS benchmark to score against",
-      "autoHint": "(auto-picked from manifest platform if blank)"
+      "autoHint": "(auto-picked from baseline platform if blank)"
     },
     "options": {
-      "chooseManifest": "Choose a manifest...",
+      "chooseManifest": "Choose a baseline...",
       "autoPick": "Auto-pick by platform",
       "fullCis": "[Full CIS]",
       "azurePolicy": "[Azure Policy]",
@@ -145,24 +145,24 @@
     "loading": "Scoring {{manifest}} against CIS...",
     "complianceAgainst": "CIS compliance against {{name}} v{{version}}",
     "rulesCovered": "{{covered}} of {{total}} CIS rules covered",
-    "secondary": "Secondary view: {{matched}} of {{total}} manifest resources matched a CIS rule.",
+    "secondary": "Secondary view: {{matched}} of {{total}} baseline settings matched a CIS rule.",
     "noBenchmark": "No CIS benchmark available. Drop a CIS file into the CIS Mapping folder and try again.",
     "filters": {
-      "all": "All resources ({{count}})",
-      "covered": "Covered in manifest ({{count}})",
+      "all": "All settings ({{count}})",
+      "covered": "Covered in baseline ({{count}})",
       "missing": "Missing from CIS ({{count}})"
     },
     "placeholders": {
       "missing": "Filter by CIS rule title or section...",
-      "resources": "Filter by resource or rule name..."
+      "resources": "Filter by setting or rule name..."
     },
     "table": {
       "section": "Section",
-      "missingRule": "CIS Rule (missing from manifest)",
+      "missingRule": "CIS Rule (missing from baseline)",
       "recommendedValue": "Recommended value",
       "notSpecified": "(not specified)",
       "status": "Status",
-      "resource": "Resource",
+      "resource": "Setting",
       "type": "Type",
       "cisRule": "CIS Rule",
       "source": "Source"
@@ -171,9 +171,9 @@
       "noMissingMatch": "No missing CIS rules match your filter.",
       "nothingMissing": "Nothing missing! All CIS rules are covered.",
       "noResults": "No results.",
-      "noResourceMatch": "No resources match your filter.",
-      "pickManifest": "Pick a manifest and click <strong>Compare against CIS</strong> to see your compliance score",
-      "description": "Shows how much of the CIS benchmark your manifest covers, plus the rules still missing"
+      "noResourceMatch": "No settings match your filter.",
+      "pickManifest": "Pick a baseline and click <strong>Compare against CIS</strong> to see your compliance score",
+      "description": "Shows how much of the CIS benchmark your baseline covers, plus the rules still missing"
     },
     "sort": {
       "unmappedFirst": "Click to sort: unmapped first",

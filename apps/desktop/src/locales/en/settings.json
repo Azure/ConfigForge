@@ -10,15 +10,15 @@
   },
   "history": {
     "retentionDescriptionAfterEnv": "overrides this when set.",
-    "retentionDescriptionBeforeEnv": "How many history entries per manifest before older ones are pruned. Range: 5-1000. The env var",
-    "retentionLabel": "Manifest version snapshots to keep",
+    "retentionDescriptionBeforeEnv": "How many history entries per baseline before older ones are pruned. Range: 5-1000. The env var",
+    "retentionLabel": "Baseline version snapshots to keep",
     "saveFailed": "Save failed",
     "sectionTitle": "History & Retention",
     "validationRange": "Must be between 5 and 1000."
   },
   "language": {
     "sectionTitle": "Language",
-    "sectionDescription": "Choose the language used throughout the app. Technical content (manifests, OSConfig output, CIS rule text) stays in English.",
+    "sectionDescription": "Choose the language used throughout the app. Technical content (baseline YAML, OSConfig output, CIS rule text) stays in English.",
     "options": {
       "system": "System (auto-detect)",
       "en": "English",

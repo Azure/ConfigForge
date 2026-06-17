@@ -18,8 +18,8 @@
     "summary_other": "{{manifestName}}: {{count}} snapshots"
   },
   "empty": {
-    "sectionTitle": "No history recorded for this manifest",
-    "sectionDescription": "Snapshots are saved automatically when you register or update the manifest."
+    "sectionTitle": "No history recorded for this baseline",
+    "sectionDescription": "Snapshots are saved automatically when you register or update the baseline."
   },
   "timeline": {
     "byAuthor": "by {{author}}",
@@ -40,10 +40,10 @@
     "closeAria": "Close",
     "diffAfterRestore": "After Restore",
     "diffCurrent": "Current",
-    "noCurrent": "No current registered manifest was found, so no auto-snapshot will be created. Restore will register the snapshot content as a new manifest.",
+    "noCurrent": "No current registered baseline was found, so no auto-snapshot will be created. Restore will register the snapshot content as a new baseline.",
     "snapshotFrom": "Snapshot from {{time}}",
-    "title": "Restore manifest from snapshot",
-    "warning": "The current manifest will be auto-snapshotted before restore so you can roll back. Re-registering may re-deploy the desired state to managed devices."
+    "title": "Restore baseline from snapshot",
+    "warning": "The current baseline will be auto-snapshotted before restore so you can roll back. Re-registering may re-deploy the desired state to managed devices."
   },
   "diff": {
     "compareTitle": "Compare with Current",

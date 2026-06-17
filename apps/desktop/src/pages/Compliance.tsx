@@ -260,9 +260,9 @@ export function CompliancePage() {
                         </span>
                         <span
                           className="min-w-0 flex-1 truncate text-sm text-slate-500 dark:text-slate-400"
-                          title={`${m.resourceCount} resources · ${m.resourceTypes.join(", ")}`}
+                          title={`${m.resourceCount} settings · ${m.resourceTypes.join(", ")}`}
                         >
-                          {m.resourceCount}
+                          {m.resourceCount}{" "}
                           {t("overview.extracted.text11")}
                           {m.resourceTypes.join(", ")}
                         </span>

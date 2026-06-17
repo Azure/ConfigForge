@@ -1,9 +1,9 @@
 {
   "nav": {
     "home": "Dashboard",
-    "manifests": "Manifests",
-    "validation": "Validation",
-    "library": "Library",
+    "manifests": "My Baselines",
+    "validation": "Export Readiness",
+    "library": "Microsoft Baselines",
     "diff": "Diff",
     "cis-mapping": "Benchmark Mapping",
     "settings": "Settings"

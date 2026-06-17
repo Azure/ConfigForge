@@ -78,7 +78,7 @@ test('Diff "Select manifest" stays clickable and operable after rapid editor chu
   // rapid manifests/edit/CIS↔Diff navigation the freeze was reported under.
   for (let i = 0; i < 5; i++) {
     await nav('Benchmark Mapping');
-    await nav('Manifests');
+    await nav('My Baselines');
     await nav('Diff');
     const editor = win.locator('.monaco-editor').first();
     try {
@@ -92,7 +92,7 @@ test('Diff "Select manifest" stays clickable and operable after rapid editor chu
   }
 
   // Land on a clean Diff view (no find widget open).
-  await nav('Manifests');
+  await nav('My Baselines');
   await nav('Diff');
   await expect(win.locator('select').first()).toBeVisible({ timeout: 10_000 });
 
