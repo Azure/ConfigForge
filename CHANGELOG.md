@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.69] - 2026-06-18
+
+### Changed
+- **UI polish across My Baselines, Microsoft Baselines, and the Baseline Editor.** Replaced the Windows emoji and the FluentUI desktop icon with a 4-color Microsoft Windows logo on baseline cards, Microsoft Baselines filters/cards, the setting picker, and the editor header; Linux now uses the penguin consistently. Moved the **Microsoft Baselines** nav item directly under **My Baselines**, renamed the baseline-card action **"View" to "Open"**, removed the redundant **"Source: oscfg"** label from cards and the editor header, and swapped the editor format strip so the Editor/Visual Builder toggle is on the left and the YAML/JSON/MOF tabs are on the right. Renamed the Benchmark Mapping **"CIS data folder" to "Benchmark data folder"** and fixed the License-note spacing.
+- **Deprecated the duplicate toolbar "Docs" button** in the Baseline Editor (use Export → Docs); removed the now-dead docs-preview modal and hook.
+
+### Fixed
+- **Audit-pack PDF section headings now left-align** (Compliance, Device Audit, Version History, Rationale Log, Top non-compliant resources) instead of inheriting the previous element's right-anchored position.
+
+### Localization
+- Re-translated the changed FR/DE/ES keys via Azure Translator and hand-corrected the high-visibility **"Open"** button to the proper imperative form (Ouvrir / Öffnen / Abrir).
+
 ## [0.3.68] - 2026-06-10
 
 ### Changed

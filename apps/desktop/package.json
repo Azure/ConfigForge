@@ -1,6 +1,6 @@
 {
   "name": "@configforge/desktop",
-  "version": "0.3.68",
+  "version": "0.3.69",
   "private": true,
   "description": "ConfigForge \u2014 OSConfig Baseline Editing tool",
   "main": "./dist/electron/main.js",
