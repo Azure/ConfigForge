@@ -94,21 +94,6 @@ vi.mock('./state/useDeployFlow', () => ({
   }),
 }));
 
-vi.mock('./state/useDocsModal', () => ({
-  useDocsModal: () => ({
-    docsOpen: false,
-    setDocsOpen: vi.fn(),
-    docsMarkdown: '',
-    docsFilename: '',
-    docsLoading: false,
-    docsCopied: false,
-    docsCopiedTimerRef: { current: null },
-    handleGenerateDocs: vi.fn().mockResolvedValue(undefined),
-    handleDocsDownload: vi.fn(),
-    handleDocsCopy: vi.fn(),
-  }),
-}));
-
 import { ManifestDetailPage } from './index';
 
 function renderEditor() {

@@ -101,7 +101,7 @@ test('renderer mounts and the dashboard is visible', async () => {
 });
 
 test('sidebar shows all seven nav items with the renamed labels', async () => {
-  const labels = ['Dashboard', 'My Baselines', 'Export Readiness', 'Microsoft Baselines', 'Diff', 'Benchmark Mapping', 'Settings'];
+  const labels = ['Dashboard', 'My Baselines', 'Microsoft Baselines', 'Export Readiness', 'Diff', 'Benchmark Mapping', 'Settings'];
   for (const label of labels) {
     await expect(firstWindow.locator('aside').getByText(label, { exact: true })).toBeVisible();
   }
@@ -109,6 +109,13 @@ test('sidebar shows all seven nav items with the renamed labels', async () => {
   for (const legacy of ['Manifests', 'Validation', 'Library']) {
     await expect(firstWindow.locator('aside').getByText(legacy, { exact: true })).toHaveCount(0);
   }
+  // Nav order: "Microsoft Baselines" now sits directly under "My Baselines"
+  // (moved above "Export Readiness").
+  const navOrder = (await firstWindow.locator('aside').getByRole('link').allInnerTexts()).map((s) => s.trim());
+  const myIdx = navOrder.findIndex((s) => s.includes('My Baselines'));
+  const msIdx = navOrder.findIndex((s) => s.includes('Microsoft Baselines'));
+  expect(myIdx).toBeGreaterThanOrEqual(0);
+  expect(msIdx).toBe(myIdx + 1);
 });
 
 test('Microsoft Baselines: heading + spaced counts (resource→setting rename + JSX spacing fixes)', async () => {

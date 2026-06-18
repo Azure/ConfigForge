@@ -33,8 +33,8 @@ import {
 const navItems = [
   { href: '/', labelKey: 'nav.home', icon: BoardRegular, iconActive: BoardFilled, end: true },
   { href: '/manifests', labelKey: 'nav.manifests', icon: DocumentRegular, iconActive: DocumentFilled, end: false },
-  { href: '/compliance', labelKey: 'nav.validation', icon: CheckmarkCircleRegular, iconActive: CheckmarkCircleFilled, end: false },
   { href: '/library', labelKey: 'nav.library', icon: BookOpenRegular, iconActive: BookOpenFilled, end: false },
+  { href: '/compliance', labelKey: 'nav.validation', icon: CheckmarkCircleRegular, iconActive: CheckmarkCircleFilled, end: false },
   { href: '/diff', labelKey: 'nav.diff', icon: BranchCompareRegular, iconActive: BranchCompareFilled, end: false },
   // v0.3.0 (#11): CIS Catalog moved out of the editor drawer's
   // permanent footprint into its own sidebar entry. Easy to prune

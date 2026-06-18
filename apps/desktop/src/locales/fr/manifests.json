@@ -16,7 +16,7 @@
   },
   "actions": {
     "registerNew": "Inscription Nouveau",
-    "view": "Vue",
+    "view": "Ouvrir",
     "deploy": "Déployer",
     "audit": "Auditer",
     "enforce": "Faire respecter",
@@ -62,7 +62,7 @@
   "card": {
     "localSource": "Local",
     "selectAria": "Sélectionnez baseline {{name}}",
-    "viewTitle": "Voir {{name}}",
+    "viewTitle": "Ouvrir {{name}}",
     "deleteTitle": "Supprimer baseline",
     "deleteAria": "Supprimer baseline {{name}}",
     "revertAria": "Annuler le déploiement de {{name}}",
@@ -76,7 +76,7 @@
       "couldNotReadTitle": "Paramètres que l’audit n’a pas pu lire (fournisseur non supporté, erreur de transport ou chemin non pris en charge). Ces problèmes ne sont pas considérés — l’appareil peut déjà être dans l’état souhaité. Ouvrez la baseline pour la ventilation complète."
     },
     "platform": {
-      "windows": "🪟 Windows",
+      "windows": "Windows",
       "linux": "🐧 Linux",
       "mixed": "⚠️ Mixte",
       "crossPlatform": "⚙️ Cross-plateforme"
@@ -128,7 +128,7 @@
       "text36": "• Essayer :",
       "text37": "pour vérifier que le moteur fonctionne",
       "text38": "Cible Plateforme",
-      "text39": "🪟 Windows",
+      "text39": "Windows",
       "text40": "🐧 Linux",
       "text41": "Baseline Nom",
       "text42": "E.g., SecurityBaseline-v1",

@@ -4,7 +4,7 @@
 /**
  * Page header for the ManifestEditor — title row, platform badge,
  * back link, and the full action button cluster (edit / save / cancel
- * / duplicate / export drawer / docs / history / audit-pack / deploy
+ * / duplicate / export drawer / history / audit-pack / deploy
  * menu / revert / remove).
  *
  * Phase C.5 + C.6 of the page-split refactor. Composing the export
@@ -16,8 +16,8 @@
  * No state of its own. The page passes the `useManifestEditorState`
  * and `useDeployFlow` hook returns down, plus a callbacks object for
  * the few handlers that still live on the page (handleSaveClick,
- * handleDuplicate, handleExport, handleExportDocs, handleGenerateDocs,
- * handleDelete). Phase D may consolidate those into a hook.
+ * handleDuplicate, handleExport, handleExportDocs, handleDelete).
+ * Phase D may consolidate those into a hook.
  */
 import React from "react";
 import { Link } from "react-router-dom";
@@ -31,7 +31,6 @@ import {
   DismissRegular,
   HistoryRegular,
   PlayRegular,
-  DocumentRegular,
   CopyRegular,
   ArrowCounterclockwiseRegular,
   ShieldCheckmarkRegular,
@@ -39,16 +38,17 @@ import {
 } from "@fluentui/react-icons";
 import { Spinner } from "@fluentui/react-components";
 import { useTranslation } from "react-i18next";
-import type { OscManifest } from "@configforge/core/types";
 import type { ManifestEditorState } from "../state/useManifestEditorState";
 import type { DeployFlow } from "../state/useDeployFlow";
+import type { OscManifest } from "@configforge/core/types";
 import { AuditProgressCounter } from "../../../components/AuditProgressCounter";
 import { HAS_DEPLOY } from "../../../lib/flavor";
+import { WindowsLogo } from "../../../components/WindowsLogo";
 
 export interface ManifestHeaderProps {
   manifestName: string;
   manifest: OscManifest | null;
-  platformBadge: { label: string; cls: string };
+  platformBadge: { label: string; cls: string; platform?: "windows" | "linux" | "mixed" | "cross-platform" };
 
   editorState: ManifestEditorState;
   deploy: DeployFlow;
@@ -64,7 +64,6 @@ export interface ManifestHeaderProps {
   onDuplicate: () => void;
   onExport: (format: "yaml" | "json" | "mof" | "excel" | "azurepolicy") => void;
   onExportDocs: () => void;
-  onGenerateDocs: () => void;
   onDelete: () => void;
 }
 
@@ -84,7 +83,6 @@ export const ManifestHeader = React.memo(function ManifestHeader({
   onDuplicate,
   onExport,
   onExportDocs,
-  onGenerateDocs,
   onDelete,
 }: ManifestHeaderProps) {
   const { editing, isEditable, saving, setEditing } = editorState;
@@ -114,14 +112,12 @@ export const ManifestHeader = React.memo(function ManifestHeader({
           <div className="flex items-center gap-3">
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{manifestName}</h1>
             <span
-              className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${platformBadge.cls}`}
+              className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${platformBadge.cls}`}
             >
+              {platformBadge.platform === "windows" && <WindowsLogo className="h-3.5 w-3.5" />}
               {platformBadge.label}
             </span>
           </div>
-          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
-            {t("header.source", { source: manifest?.Source || t("manifests:card.localSource") })}
-          </p>
         </div>
       </div>
 
@@ -148,7 +144,7 @@ export const ManifestHeader = React.memo(function ManifestHeader({
         // UI H8: Two logical clusters separated by gap-x-4. The cluster
         // boundary IS the visual separation (no literal divider), so the
         // destructive Remove button can never end up adjacent to a benign
-        // action like Docs after a flex-wrap reflow. At wide widths both
+        // action like History after a flex-wrap reflow. At wide widths both
         // clusters fit on one row; at narrow widths each cluster wraps
         // independently. Remove keeps explicit destructive styling so it
         // visually stands apart even within its own cluster.
@@ -220,15 +216,6 @@ export const ManifestHeader = React.memo(function ManifestHeader({
                 </>
               )}
             </div>
-
-            <button
-              onClick={onGenerateDocs}
-              className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
-              title={t("actions.generateDocsTitle")}
-            >
-              <DocumentRegular className="h-3.5 w-3.5" />
-              {t("actions.docs")}
-            </button>
 
             <Link
               to={`/manifests/${encodeURIComponent(manifestName)}/history`}

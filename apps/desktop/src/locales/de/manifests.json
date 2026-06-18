@@ -16,7 +16,7 @@
   },
   "actions": {
     "registerNew": "Neu registrieren",
-    "view": "Ansicht",
+    "view": "Öffnen",
     "deploy": "Bereitstellen",
     "audit": "Audit durchführen",
     "enforce": "Durchsetzung",
@@ -62,7 +62,7 @@
   "card": {
     "localSource": "Lokal",
     "selectAria": "Wählen Sie baseline {{name}}",
-    "viewTitle": "Ansehen {{name}}",
+    "viewTitle": "Öffne {{name}}",
     "deleteTitle": "Lösche baseline",
     "deleteAria": "Lösche baseline {{name}}",
     "revertAria": "Bereitstellung von {{name}} rückgängig machen",
@@ -76,7 +76,7 @@
       "couldNotReadTitle": "Einstellungen, die das Audit nicht lesen konnte (Anbieter nicht unterstützt, Transportfehler oder nicht unterstützter Pfad). Diese werden nicht als Probleme gezählt – das Gerät kann bereits im gewünschten Zustand sein. Öffnen Sie die baseline für die vollständige Aufschlüsselung."
     },
     "platform": {
-      "windows": "🪟 Windows",
+      "windows": "Windows",
       "linux": "🐧 Linux",
       "mixed": "⚠️ Gemischt",
       "crossPlatform": "⚙️ Cross-Plattform"
@@ -128,7 +128,7 @@
       "text36": "• Versuche:",
       "text37": "um zu überprüfen, ob die Engine funktioniert",
       "text38": "Ziel Plattform",
-      "text39": "🪟 Windows",
+      "text39": "Windows",
       "text40": "🐧 Linux",
       "text41": "Baseline Name",
       "text42": "E.g., SecurityBaseline-v1",

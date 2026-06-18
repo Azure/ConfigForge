@@ -26,8 +26,6 @@ import { CliRequiredModal } from "../../components/CliRequiredModal";
 import { useCliPresence } from "../../hooks/useCliPresence";
 import { useManifestEditorState } from "./state/useManifestEditorState";
 import { useDeployFlow } from "./state/useDeployFlow";
-import { useDocsModal } from "./state/useDocsModal";
-import { DocsModal } from "./components/DocsModal";
 import { ManifestContent } from "./components/ManifestContent";
 import { DeployResultPanel } from "./components/DeployResultPanel";
 import { ComplianceTable } from "./components/ComplianceTable";
@@ -57,14 +55,6 @@ export function ManifestDetailPage() {
   const presence = useCliPresence();
 
   const [exportOpen, setExportOpen] = useState(false);
-
-  // Phase B.3 — docs modal lives in a hook so the v0.1.11 copy-timer
-  // cleanup is testable in isolation. Phase C.1 — the modal JSX
-  // lives in components/DocsModal.tsx; we just need the generate
-  // entrypoint here so the action-bar button can wire up the source
-  // content.
-  const docs = useDocsModal(manifestName);
-  const generateDocs = docs.handleGenerateDocs;
 
   // Phase A.3 — core load + edit + format-tab state lives in a hook
   // so it can be unit-tested in isolation (Phase B). The hook return
@@ -283,11 +273,6 @@ export function ManifestDetailPage() {
     }
   };
 
-  const handleGenerateDocs = async () => {
-    const content = editedContent || formatCache.current.yaml || "";
-    await generateDocs(content);
-  };
-
   const [duplicating, setDuplicating] = useState(false);
 
   const handleDuplicate = async () => {
@@ -334,10 +319,10 @@ export function ManifestDetailPage() {
 
   const platformBadge =
     detectedPlatform === 'windows'
-      ? { label: t('manifests:card.platform.windows'), cls: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400' }
+      ? { label: t('platform.windows'), cls: 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400', platform: detectedPlatform }
       : detectedPlatform === 'linux'
-        ? { label: t('manifests:card.platform.linux'), cls: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400' }
-        : { label: t('manifests:card.platform.crossPlatform'), cls: 'bg-slate-100 text-slate-600 dark:bg-slate-700/30 dark:text-slate-400' };
+        ? { label: t('platform.linux'), cls: 'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400', platform: detectedPlatform }
+        : { label: t('platform.crossPlatform'), cls: 'bg-slate-100 text-slate-600 dark:bg-slate-700/30 dark:text-slate-400', platform: detectedPlatform };
   // ResourcePicker expects narrow 'windows' | 'linux' | undefined; treat
   // mixed manifests as "show everything" (same as cross-platform) so users
   // can continue editing either side.
@@ -401,7 +386,6 @@ export function ManifestDetailPage() {
         onDuplicate={handleDuplicate}
         onExport={handleExport}
         onExportDocs={handleExportDocs}
-        onGenerateDocs={handleGenerateDocs}
         onDelete={handleDelete}
       />
 
@@ -454,9 +438,6 @@ export function ManifestDetailPage() {
         setComplianceShowAll={setComplianceShowAll}
       />
 
-      {/* Documentation Modal (Phase C.1 — see components/DocsModal.tsx) */}
-      <DocsModal docs={docs} />
-
       {/* PR27: Rationale prompt — appears on Save when content has changed */}
       <RationalePromptModal
         state={rationale.state}
@@ -467,4 +448,3 @@ export function ManifestDetailPage() {
     </div>
   );
 }
-

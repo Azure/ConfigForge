@@ -20,6 +20,7 @@ import {
   LayerRegular,
 } from "@fluentui/react-icons";
 import { type Platform } from "@configforge/core/platform";
+import { WindowsLogo } from "./WindowsLogo";
 
 interface ResourceDefinition {
   name: string;
@@ -157,7 +158,7 @@ const PLATFORM_BADGE_STYLES: Record<string, string> = {
 };
 
 const PLATFORM_BADGE_LABEL: Record<string, string> = {
-  windows: "🪟 Windows",
+  windows: "Windows",
   linux: "🐧 Linux",
   "cross-platform": "⚙️ Cross-platform",
 };
@@ -873,7 +874,8 @@ export function ResourcePicker({ onSelect, platform, initialResource, onCancel }
                     {rt.label}
                   </span>
                 </div>
-                <span className={`rounded-full border px-2 py-0.5 text-[10px] font-medium ${PLATFORM_BADGE_STYLES[rt.platform]}`}>
+                <span className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-[10px] font-medium ${PLATFORM_BADGE_STYLES[rt.platform]}`}>
+                  {rt.platform === "windows" && <WindowsLogo className="h-3 w-3" />}
                   {PLATFORM_BADGE_LABEL[rt.platform]}
                 </span>
               </div>

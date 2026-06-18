@@ -209,27 +209,8 @@ export const ManifestContent = React.memo(function ManifestContent({
             </MessageBar>
           </div>
         )}
-        {/* Format Tabs + Edit View Toggle */}
+        {/* Edit View Toggle + Format Tabs */}
         <div className="mt-3 flex items-center justify-between">
-          <div className="flex gap-1">
-            {FORMAT_TABS.map(({ key }) => (
-              <button
-                key={key}
-                onClick={() => {
-                  handleFormatChange(key);
-                  setEditView("editor");
-                }}
-                disabled={formatLoading}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  activeFormat === key && editView === "editor"
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-300"
-                } disabled:opacity-50`}
-              >
-                {t(`tabs.${key}`)}
-              </button>
-            ))}
-          </div>
           {editing && (
             <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
               <button
@@ -254,6 +235,26 @@ export const ManifestContent = React.memo(function ManifestContent({
               </button>
             </div>
           )}
+          {!editing && <div />}
+          <div className="flex gap-1">
+            {FORMAT_TABS.map(({ key }) => (
+              <button
+                key={key}
+                onClick={() => {
+                  handleFormatChange(key);
+                  setEditView("editor");
+                }}
+                disabled={formatLoading}
+                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
+                  activeFormat === key && editView === "editor"
+                    ? "bg-blue-600 text-white"
+                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-300"
+                } disabled:opacity-50`}
+              >
+                {t(`tabs.${key}`)}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 

@@ -16,7 +16,7 @@
   },
   "actions": {
     "registerNew": "Register New",
-    "view": "View",
+    "view": "Open",
     "deploy": "Deploy",
     "audit": "Audit",
     "enforce": "Enforce",
@@ -62,7 +62,7 @@
   "card": {
     "localSource": "Local",
     "selectAria": "Select baseline {{name}}",
-    "viewTitle": "View {{name}}",
+    "viewTitle": "Open {{name}}",
     "deleteTitle": "Delete baseline",
     "deleteAria": "Delete baseline {{name}}",
     "revertAria": "Revert deployment of {{name}}",
@@ -76,7 +76,7 @@
       "couldNotReadTitle": "Settings the audit could not read (provider not supported, transport error, or unsupported path). These are not counted as issues — the device may already be in the desired state. Open the baseline for the full breakdown."
     },
     "platform": {
-      "windows": "🪟 Windows",
+      "windows": "Windows",
       "linux": "🐧 Linux",
       "mixed": "⚠️ Mixed",
       "crossPlatform": "⚙️ Cross-platform"
@@ -128,7 +128,7 @@
       "text36": "• Try:",
       "text37": "to verify the engine is working",
       "text38": "Target Platform",
-      "text39": "🪟 Windows",
+      "text39": "Windows",
       "text40": "🐧 Linux",
       "text41": "Baseline Name",
       "text42": "e.g., SecurityBaseline-v1",
