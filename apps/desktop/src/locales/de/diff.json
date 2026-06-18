@@ -1,19 +1,19 @@
 {
   "page": {
-    "title": "Vergleichen Manifeste",
-    "description": "Nebeneinander-Vergleich von Manifest-Konfigurationen"
+    "title": "Vergleichen Sie Baselines",
+    "description": "Nebeneinander-Vergleich baseline Konfigurationen"
   },
   "pageError": {
     "dismiss": "Dismiss",
     "dismissTitle": "Entlassung"
   },
   "info": {
-    "oneManifest": "Du hast eine registrierte Manifestliste. Um zwei registrierte Manifeste zu vergleichen, registrieren Sie zuerst ein zweites oder schalten Sie unten in <strong>den Modus Einfügen / Hochladen</strong>, um YAML direkt einzufügen."
+    "oneManifest": "Sie haben 1 baseline registriert. Um zwei registrierte baselines zu vergleichen, registrieren Sie zuerst ein zweites oder schalten Sie unten in <strong>den Modus Einfügen / Hochladen</strong>, um YAML direkt einzufügen."
   },
   "errors": {
     "analyzeFailed": "Fehlgeschlagen to analyze Vergleich",
-    "loadManifestsFailed": "Fehlgeschlagen to load Manifeste",
-    "loadManifestsTimeout": "Das Laden von Manifesten ist abgelaufen. Der Hintergrundlistenaufruf dauert länger als 10 Sekunden – versuche es mit Aktualisieren oder starte die App neu, falls es weiterhin besteht.",
+    "loadManifestsFailed": "Nicht geladen baselines",
+    "loadManifestsTimeout": "Das Laden baselines zeitlich abgelaufen. Der Hintergrundlistenaufruf dauert länger als 10 Sekunden – versuche es mit Aktualisieren oder starte die App neu, falls es weiterhin besteht.",
     "network": "Network Fehler"
   },
   "tabs": {
@@ -26,26 +26,26 @@
     "after": "Nachher",
     "modes": {
       "pasteUpload": "Paste / Hochladen",
-      "fromManifest": "Aus Manifest"
+      "fromManifest": "Von Baseline"
     },
     "select": {
       "loading": "Wird geladen…",
-      "noManifests": "Keine registrierten Manifeste",
-      "selectManifest": "Auswählen a Manifest…"
+      "noManifests": "Kein baselines registriert",
+      "selectManifest": "Wähle einen baseline..."
     },
-    "loadingManifest": "Loading Manifest…",
+    "loadingManifest": "Lädt baseline...",
     "empty": {
-      "selectManifest": "Wählen Sie oben ein Manifest aus",
-      "uploadOrPaste": "Lade eine Datei hoch oder füge den Manifesttext ein"
+      "selectManifest": "Wählen Sie oben ein baseline aus",
+      "uploadOrPaste": "Laden Sie eine Datei hoch oder fügen Sie baseline Text ein"
     },
     "uploadFile": "Hochladen Datei",
-    "compareDisabledTitle": "Wählen Sie auf beiden Seiten ein Manifest aus, um Vergleichen zu ermöglichen",
+    "compareDisabledTitle": "Wählen Sie auf beiden Seiten ein baseline aus, um Vergleichen zu aktivieren",
     "compareButton": "Vergleichen"
   },
   "stats": {
     "title": "Vergleich Stats:",
     "units": {
-      "resources": "ResQuellen",
+      "resources": "Einstellungen",
       "lines": "Lines"
     },
     "added": "{{count}} {{unit}} hinzufügened",
@@ -85,7 +85,7 @@
     "citationCoverageValue": "Zitationsabdeckung {{percent}} %."
   },
   "matrixSummary": {
-    "totalChanges": "{{count}} ResQuelle {{changeWord}} detected",
+    "totalChanges": "{{count}} Einstellung {{changeWord}} erkannt",
     "change_one": "Change",
     "change_other": "Changes",
     "added": "{{count}} hinzufügened",
@@ -93,7 +93,7 @@
     "changed": "{{count}} mit Wertveränderung"
   },
   "resourceChanges": {
-    "sectionTitle": "ResQuelle Changes",
+    "sectionTitle": "Einstellungsänderungen",
     "changed": "Geändert (Wert Vergleichers)",
     "added": "Hinzugefügt (only in Nachher)",
     "removed": "Entfernt (only in Vorher)",
@@ -104,7 +104,7 @@
   "matrix": {
     "sectionTitle": "Pick 2–10 baselines zum Vergleich",
     "sectionDescription": "Jede Zeile in der resultierenden Matrix ist eine Einstellung; jede Spalte ist ein baseline. Die Zellen sind farblich markiert grün (identisch), rot (anders) oder gelb (nur ein-ein).",
-    "noManifests": "Keine Manifeste registriert.",
+    "noManifests": "Kein baselines registriert.",
     "compareButton": "Vergleichen ({{count}})",
     "downloadExcel": "Herunterladen Excel",
     "filterPlaceholder": "Filtern Einstellungen…",
@@ -129,12 +129,12 @@
   },
   "cis": {
     "labels": {
-      "manifest": "Manifest",
+      "manifest": "Baseline",
       "benchmark": "CIS Maßstab zum Punkten",
-      "autoHint": "(automatisch von der Manifestplattform ausgewählt, wenn sie leer ist)"
+      "autoHint": "(automatisch von baseline Plattform ausgewählt, falls leer)"
     },
     "options": {
-      "chooseManifest": "Choose a Manifest...",
+      "chooseManifest": "Wähle eine baseline...",
       "autoPick": "Auto-Auswahl nach Plattform",
       "fullCis": "[Volle CIS]",
       "azurePolicy": "[Azure Policy]",
@@ -145,24 +145,24 @@
     "loading": "{{manifest}} gegen CIS zu erzielen...",
     "complianceAgainst": "CIS Einhaltung von {{name}} v{{version}}",
     "rulesCovered": "{{covered}} {{total}} CIS abgedeckten Regeln",
-    "secondary": "Sekundäre Sichtweise: {{matched}} {{total}} manifesten Ressourcen entsprach einer CIS Regel.",
+    "secondary": "Sekundäransicht: {{matched}} {{total}} baseline Einstellungen entsprachen einer CIS Regel.",
     "noBenchmark": "Kein CIS Benchmark verfügbar. Leg eine CIS Datei in den Ordner CIS Mapping und versuche es erneut.",
     "filters": {
-      "all": "Alle ResQuellen ({{count}})",
-      "covered": "Covered in Manifest ({{count}})",
+      "all": "Alle Einstellungen ({{count}})",
+      "covered": "Bedeckt mit baseline ({{count}})",
       "missing": "Fehlt in CIS ({{count}})"
     },
     "placeholders": {
       "missing": "Filtern Sie nach CIS Regeltitel oder Abschnitt...",
-      "resources": "Filtern Sie nach Ressource oder Regelnamen..."
+      "resources": "Filtere nach Einstellung oder Regelnamen..."
     },
     "table": {
       "section": "Abschnitt",
-      "missingRule": "CIS Regel (fehlt im Manifest)",
+      "missingRule": "CIS Regel (fehlt in baseline)",
       "recommendedValue": "Recommended Wert",
       "notSpecified": "(nicht specified)",
       "status": "Status",
-      "resource": "Ressource",
+      "resource": "Schauplatz",
       "type": "Typ",
       "cisRule": "CIS Regel",
       "source": "Quelle"
@@ -171,9 +171,9 @@
       "noMissingMatch": "Kein Fehlen CIS Regeln passen zu deinem Filter.",
       "nothingMissing": "Nichts fehlt! Alle CIS Regeln sind abgedeckt.",
       "noResults": "Keine Ergebnisse.",
-      "noResourceMatch": "Nein ResQuellen match Ihre filtern.",
-      "pickManifest": "Wählen Sie ein Manifest aus und klicken Sie <strong>auf Vergleichen mit CIS</strong>, um Ihre Compliance-Bewertung zu sehen",
-      "description": "Zeigt an, wie viel von der CIS Benchmark dein Manifest abdeckt, plus die noch fehlenden Regeln"
+      "noResourceMatch": "Keine Einstellungen passen zu deinem Filter.",
+      "pickManifest": "Wählen Sie ein baseline und klicken Sie <strong>auf Vergleichen mit CIS</strong>, um Ihre Compliance-Bewertung zu sehen",
+      "description": "Zeigt, wie viel von der CIS Benchmark dein baseline abdeckt, plus die noch fehlenden Regeln"
     },
     "sort": {
       "unmappedFirst": "Klicken Sie zum Sortieren: zuerst unkarted",

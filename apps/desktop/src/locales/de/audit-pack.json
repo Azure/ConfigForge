@@ -1,6 +1,6 @@
 {
   "extracted": {
-    "text1": "Zurück to Manifest",
+    "text1": "Zurück zu baseline",
     "text2": "Audit Pack:",
     "text3": "Pdf",
     "text4": "Pdf",
@@ -10,11 +10,11 @@
     "text8": "Markdown",
     "text9": "Retten...",
     "text10": "Herunterladen Markdown",
-    "text11": "Loading Manifest…",
-    "text12": "Manifest konnte nicht geladen werden",
+    "text11": "Lädt baseline...",
+    "text12": "Konnte baseline nicht laden",
     "text13": "PDF preanzeigen",
     "text14": "Was enthalten ist",
-    "text15": "Manifest-Header & Metadaten",
+    "text15": "Baseline Header & Metadaten",
     "text16": "Konformität report",
     "text17": "(führe eine Prüfung durch oder passe",
     "text18": "Version Verlauf",

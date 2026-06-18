@@ -1,7 +1,7 @@
 {
   "extracted": {
     "text1": "Correspondance des référentiels",
-    "text2": "Recoupez vos ressources OSConfig avec les règles CIS Benchmark. Déposez vos fichiers CIS dans le dossier ci-dessous : l'éditeur affichera les règles correspondantes au fil de votre navigation dans le YAML.",
+    "text2": "Recoupez vos paramètres de OSConfig avec CIS règles de benchmark. Déposez vos fichiers CIS dans le dossier ci-dessous et l’éditeur affichera les règles correspondantes pendant que vous naviguez dans le YAML.",
     "text3": "Une fois les données CIS chargées, un onglet",
     "text4": "CIS",
     "text5": "sera également disponible sur la page",
@@ -16,7 +16,7 @@
     "text14": "json",
     "text15": "Catalogue JSON",
     "text16": "XCCDF + JSON",
-    "text17": "L'éditeur affichera les correspondances de règles CIS au fil de votre navigation dans les ressources.",
+    "text17": "L’éditeur affichera CIS références croisées de règles pendant que vous naviguez dans les paramètres.",
     "text18": "Aucune donnée CIS trouvée",
     "text19": "Déposez votre baseline CIS au format JSON (depuis Azure Policy) ou un XML XCCDF+OVAL (depuis CIS Workbench) dans le dossier ci-dessous, puis cliquez sur",
     "text20": "Revérifier",
@@ -31,7 +31,7 @@
     "text29": "Recommandé",
     "text30": "Téléchargez les baselines CIS depuis le",
     "text31": "portail Azure",
-    "text32": "(Azure Policy > Machine Configuration > CIS). Déposez le JSON tel quel. L'application détecte la plateforme (Windows / Linux) et fait correspondre les règles à vos ressources de manifeste par leur nom.",
+    "text32": "(Azure Policy > Configuration de la machine > CIS). Laisse tomber le JSON tel quel. L’application détecte la plateforme (Windows / Linux) et associe les règles à vos paramètres de baseline par nom.",
     "text33": "Vous pouvez déposer plusieurs fichiers (un par système d'exploitation). Nommez-les comme vous le souhaitez.",
     "text34": "CIS XCCDF + OVAL XML",
     "text35": "Alternative",
@@ -59,7 +59,7 @@
     "text57": "Fichiers non reconnus dans le dossier",
     "text58": "Ces fichiers ne correspondent à aucun nom attendu. En cas de faute de frappe, renommez-les puis cliquez sur Revérifier.",
     "text59": "Vouliez-vous dire",
-    "text60": "Retour aux manifestes",
+    "text60": "Retour à mon Baselines",
     "text61": "Cette page est entièrement facultative",
     "text62": "Toutes les fonctionnalités de ConfigForge fonctionnent sans aucune donnée CIS, à l'exception des correspondances CIS."
   }

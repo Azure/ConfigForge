@@ -1,19 +1,19 @@
 {
   "page": {
-    "title": "Comparar Manifiestos",
-    "description": "Comparación lado a lado de configuraciones manifiestas"
+    "title": "Comparar Baselines",
+    "description": "Comparación lado a lado de baseline configuraciones"
   },
   "pageError": {
     "dismiss": "Dismiss",
     "dismissTitle": "Destitución"
   },
   "info": {
-    "oneManifest": "Tienes 1 manifiesto registrado. Para comparar dos manifiestos registrados, registra primero un segundo o cambia a cualquiera de los lados al modo <strong>Pegar / Subir</strong> abajo para pegar YAML directamente."
+    "oneManifest": "Tienes 1 baseline registrado. Para comparar dos baselines registrados, primero regístra un segundo, o cambia a cada lado a modo <strong>Pegar / Subir</strong> abajo para pegar YAML directamente."
   },
   "errors": {
     "analyzeFailed": "Error to analyze diferencias",
-    "loadManifestsFailed": "Error to load manifiestos",
-    "loadManifestsTimeout": "Los manifiestos de carga se agotaron. La llamada a la lista en segundo plano está tardando más de 10 segundos — prueba a actualizar o reinicia la app si persiste.",
+    "loadManifestsFailed": "No se ha podido cargar baselines",
+    "loadManifestsTimeout": "La carga baselines agotada. La llamada a la lista en segundo plano está tardando más de 10 segundos — prueba a actualizar o reinicia la app si persiste.",
     "network": "Error de red"
   },
   "tabs": {
@@ -26,26 +26,26 @@
     "after": "Después",
     "modes": {
       "pasteUpload": "Paste / Cargar",
-      "fromManifest": "De Manifest"
+      "fromManifest": "De Baseline"
     },
     "select": {
       "loading": "Cargando…",
-      "noManifests": "No se registran manifiestos",
-      "selectManifest": "Seleccionar a manifiesto…"
+      "noManifests": "No baselines registrado",
+      "selectManifest": "Selecciona un baseline..."
     },
-    "loadingManifest": "Loading manifiesto…",
+    "loadingManifest": "Cargando baseline...",
     "empty": {
-      "selectManifest": "Seleccionar a manifiesto above",
-      "uploadOrPaste": "Sube un archivo o pega el texto del manifiesto"
+      "selectManifest": "Seleccione una baseline arriba",
+      "uploadOrPaste": "Sube un archivo o pega baseline texto"
     },
     "uploadFile": "Cargar archivo",
-    "compareDisabledTitle": "Selecciona un manifiesto en ambos lados para habilitar Comparar",
+    "compareDisabledTitle": "Selecciona una baseline en ambos lados para habilitar Comparar",
     "compareButton": "Comparar"
   },
   "stats": {
     "title": "Diferencias Stats:",
     "units": {
-      "resources": "Recursos",
+      "resources": "Escenarios",
       "lines": "Lines"
     },
     "added": "{{count}} {{unit}} agregared",
@@ -85,7 +85,7 @@
     "citationCoverageValue": "Cobertura de citación {{percent}}%."
   },
   "matrixSummary": {
-    "totalChanges": "{{count}} recurso {{changeWord}} detected",
+    "totalChanges": "{{count}} configuración {{changeWord}} detectada",
     "change_one": "Change",
     "change_other": "Changes",
     "added": "{{count}} agregared",
@@ -93,7 +93,7 @@
     "changed": "{{count}} con cambio de valor"
   },
   "resourceChanges": {
-    "sectionTitle": "Recurso Changes",
+    "sectionTitle": "Cambios de ambientación",
     "changed": "Cambiado (valor diferenciasers)",
     "added": "Agregado (only in Después)",
     "removed": "Quitado (only in Antes)",
@@ -104,7 +104,7 @@
   "matrix": {
     "sectionTitle": "Elige el 2–10 baselines para comparar",
     "sectionDescription": "Cada fila en la matriz resultante es un ajuste; Cada columna es una baseline. Las celdas están codificadas por colores verde (idéntica), roja (diferente) o amarilla (solo en la entrada).",
-    "noManifests": "No hay manifiestos registrados.",
+    "noManifests": "No baselines registrado.",
     "compareButton": "Comparar ({{count}})",
     "downloadExcel": "Descargar Excel",
     "filterPlaceholder": "Filtrar configuración…",
@@ -129,12 +129,12 @@
   },
   "cis": {
     "labels": {
-      "manifest": "Manifiesto",
+      "manifest": "Baseline",
       "benchmark": "CIS punto de referencia para puntuar",
-      "autoHint": "(seleccionado automáticamente de la plataforma de manifiestos si está en blanco)"
+      "autoHint": "(seleccionado automáticamente de baseline plataforma si está en blanco)"
     },
     "options": {
-      "chooseManifest": "Choose a manifiesto...",
+      "chooseManifest": "Elige un baseline...",
       "autoPick": "Selección automática por plataforma",
       "fullCis": "[A CIS completo]",
       "azurePolicy": "[Azure Policy]",
@@ -145,24 +145,24 @@
     "loading": "Anotar {{manifest}} contra CIS...",
     "complianceAgainst": "CIS cumplimiento contra {{name}} v{{version}}",
     "rulesCovered": "{{covered}} de {{total}} CIS normas cubiertas",
-    "secondary": "Perspectiva secundaria: {{matched}} de {{total}} recursos manifiestos coincidían con una regla CIS.",
+    "secondary": "Vista secundaria: {{matched}} de {{total}} baseline ajustes cumplían una regla CIS.",
     "noBenchmark": "No hay CIS benchmark disponible. Deja un archivo CIS en la carpeta de mapeo CIS e inténtalo de nuevo.",
     "filters": {
-      "all": "Todo recursos ({{count}})",
-      "covered": "Covered in manifiesto ({{count}})",
+      "all": "Todos los ajustes ({{count}})",
+      "covered": "Cubierto de baseline ({{count}})",
       "missing": "Faltan en CIS ({{count}})"
     },
     "placeholders": {
       "missing": "Filtra por CIS título o sección de la regla...",
-      "resources": "Filtrar by recurso or rule nombre..."
+      "resources": "Filtra por configuración o nombre de regla..."
     },
     "table": {
       "section": "Sección",
-      "missingRule": "CIS Regla (ausente en el manifiesto)",
+      "missingRule": "CIS Regla (ausente en baseline)",
       "recommendedValue": "Recommended valor",
       "notSpecified": "(no specified)",
       "status": "Estado",
-      "resource": "Recurso",
+      "resource": "Ambientación",
       "type": "Tipo",
       "cisRule": "CIS Regla",
       "source": "Origen"
@@ -171,9 +171,9 @@
       "noMissingMatch": "No faltan CIS reglas coinciden con tu filtro.",
       "nothingMissing": "¡No falta nada! Todas CIS reglas están cubiertas.",
       "noResults": "Sin resultados.",
-      "noResourceMatch": "No recursos match su filtrar.",
-      "pickManifest": "Elige un manifiesto y haz clic <strong>en Comparar con CIS</strong> para ver tu puntuación de cumplimiento",
-      "description": "Muestra cuánto de la CIS de referencia cubre tu manifiesto, además de que las reglas siguen faltando"
+      "noResourceMatch": "Ninguna configuración coincide con tu filtro.",
+      "pickManifest": "Elige un baseline y haz clic <strong>en Comparar con CIS</strong> para ver tu puntuación de cumplimiento",
+      "description": "Muestra cuánto del benchmark de CIS cubre tu baseline, además de que las reglas siguen faltando"
     },
     "sort": {
       "unmappedFirst": "Haz clic para ordenar: unmaped primero",

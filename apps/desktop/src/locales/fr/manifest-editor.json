@@ -5,7 +5,7 @@
     "back": "Retour",
     "docs": "Docs",
     "duplicate": "Duplique",
-    "duplicateTitle": "Dupliquer ce manifeste",
+    "duplicateTitle": "Dupliquez cette baseline",
     "edit": "Modifier",
     "export": "Exporter",
     "generateDocsTitle": "Générer de la documentation",
@@ -13,10 +13,10 @@
     "leaveUnsavedConfirm": "Vous avez des modifications non enregistrées dans « {{name}} ». Partir quand même et les jeter ?",
     "noRevertTitle": "Aucun déploiement précédent n’a été annulé",
     "remove": "Supprimer",
-    "removeConfirm": "Supprimer le manifeste « {{name}} » ? Cette action ne peut être annulée.",
+    "removeConfirm": "Supprimer baseline « {{name}} » ? Cette action ne peut être annulée.",
     "revert": "Retour",
-    "revertConfirm": "Annuler la manifestation « {{name}} » ?\n\nSi un instantané pré-déploiement existe, vos paramètres précédents seront réappliqués sur cet appareil. Si aucun instantané n’existe, OSConfig'application de ce manifeste sera supprimée et le manifeste sera désenregistré. Dans tous les cas, ce manifeste ne sera plus activement appliqué sur cet appareil.",
-    "revertTitle": "Annulez le dernier déploiement de ce manifeste depuis cet appareil. Si un instantané pré-déploiement existe, les réglages précédents sont réappliqués ; sinon, OSConfig application est supprimée."
+    "revertConfirm": "Reviens baseline « {{name}} » ?\n\nSi un instantané pré-déploiement existe, vos paramètres précédents seront réappliqués sur cet appareil. Si aucun snapshot n’existe, OSConfig application de ce baseline sera supprimée et le baseline sera désenregistré. Dans tous les cas, cette baseline ne sera plus activement appliquée sur cet appareil.",
+    "revertTitle": "Annulez le dernier déploiement de ce baseline depuis cet appareil. Si un instantané pré-déploiement existe, les réglages précédents sont réappliqués ; sinon, OSConfig application est supprimée."
   },
   "compliance": {
     "emptyDescription": "Lancez Audit ou Enforce pour vérifier cette baseline par rapport à l'appareil.",
@@ -27,23 +27,23 @@
     "editorView": "Modifieror",
     "mofEditUnsupported": "L’édition n’est pas prise en charge dans MOF format",
     "mofReadOnly": "MOF est en lecture seule",
-    "sectionTitle": "Contenu du manifeste",
+    "sectionTitle": "Baseline Contenu",
     "unsavedFormatChanges": "Vous avez des modifications non enregistrées dans {{format}}. Changer d’onglet les préserve ; Sauvegarder avant de s’éloigner.",
     "visualBuilderView": "Constructeur Visuel"
   },
   "cspTroubleshooting": {
-    "declaredConfig": "Les ressources CSP (Fournisseur de Service de Configuration) ont besoin de l’infrastructure de configuration déclarée",
-    "engineRegistered": "Pour utiliser les ressources CSP, assurez-vous que le service du moteur OSConfig est correctement enregistré",
-    "registryWorks": "Les ressources du registre (Microsoft.Windows/Registry) fonctionnent sans configuration supplémentaire",
-    "title": "Les ressources CSP nécessitent une configuration supplémentaire",
+    "declaredConfig": "Les paramètres CSP (Configuration Service Provider) nécessitent l’infrastructure Declared Configuration",
+    "engineRegistered": "Pour utiliser les paramètres CSP, assurez-vous que le service OSConfig engine est correctement enregistré",
+    "registryWorks": "Les paramètres du registre (Microsoft.Windows/Registry) fonctionnent sans configuration supplémentaire",
+    "title": "Les paramètres CSP nécessitent une configuration supplémentaire",
     "tryMetadata": "Essaie : <code>Faites-OSConfigMetadata</code> vérifier que le moteur fonctionne bien"
   },
   "deploy": {
     "auditDescription": "Vérifier uniquement la conformité",
-    "confirm": "Déployer le manifeste « {{name}} » en mode {{mode}} sur cet appareil ?",
+    "confirm": "Déployer baseline « {{name}} » en mode {{mode}} sur cet appareil ?",
     "enforceDescription": "Appliquer paramètres to device",
     "enforceRiskConfirm": "AVERTISSEMENT : Appliquera les paramètres à cet appareil.\n\nCette action peut modifier la politique de sécurité de Windows ou Linux de manière à perturber la connexion, le réseau, le RDP ou les logiciels installés, et la récupération peut nécessiter un administrateur local ou un support de démarrage.\n\nAvancez à vos risques et périls. Cette action peut casser votre machine.\n\nContinuer avec l’application ?",
-    "mixedPlatform": "Ce manifeste mélange les types de ressources Windows et Linux. Séparez-le en manifestes par plateforme avant de déployer.",
+    "mixedPlatform": "Ce baseline mélange les types de paramètres Windows et Linux. Divisez-le en baselines par plateforme avant de déployer.",
     "mode": {
       "audit": "Audit (contrôle de conformité uniquement)",
       "enforce": "appliquer (appliquer les paramètres)"
@@ -52,11 +52,11 @@
   "deployResult": {
     "compliant": "Conformité",
     "couldNotRead": "Could non read",
-    "couldNotReadTitle": "Ressources que la CLI ne pouvait pas lire (fournisseur non supporté, erreur de transport ou chemin non pris en charge). Ces éléments ne sont PAS comptés comme non conformes. L’appareil peut en fait être dans l’état souhaité.",
+    "couldNotReadTitle": "Paramètres que la ligne de ligne de ligne ne pouvait pas lire (fournisseur non supporté, erreur de transport, ou chemin non pris en charge). Ces éléments ne sont PAS comptés comme non conformes. L’appareil peut en fait être dans l’état souhaité.",
     "deployedAt": "Déployered at {{time}}",
     "host": "Animateur",
     "nonCompliant": "Nonn-compliant",
-    "viewResources": "View {{count}} ressources",
+    "viewResources": "Voir {{count}} paramètres",
     "warning": "Avertissement"
   },
   "docs": {
@@ -69,11 +69,11 @@
   "errors": {
     "deleteFailed": "Supprimer échoué",
     "deployFailed": "Déployer échoué",
-    "duplicateFailed": "Échec to duplicate manifeste",
+    "duplicateFailed": "Échec à dupliquer baseline",
     "exportFailed": "Exporter échoué",
     "generateDocsFailed": "Échec de générer la documentation",
     "loadFormatFailed": "Échec de charger {{format}} format",
-    "loadManifestFailed": "Échec to load manifeste",
+    "loadManifestFailed": "Échec de charger baseline",
     "revertFailed": "Revert échoué",
     "saveFailed": "Enregistrer échoué",
     "unknown": "Inconnu erreur"
@@ -100,8 +100,8 @@
     "source": "Source : {{source}}"
   },
   "messages": {
-    "reverted": "Manifeste reverted",
-    "saveSuccess": "Manifeste \"{{name}}\" enregistrerd réussitefully",
+    "reverted": "Baseline annulée",
+    "saveSuccess": "Baseline « {{name}} » sauvegardé avec succès",
     "savedWithWarning": "Sauvegardé avec avertissement : {{warning}}"
   },
   "platform": {
@@ -111,16 +111,16 @@
     "windows": "🪟 Windows"
   },
   "rationale": {
-    "backToManifest": "Retour to manifeste",
+    "backToManifest": "Retour à baseline",
     "downloadCsv": "Télécharger CSV",
     "downloadCsvTitle": "Téléchargez toutes les entrées de justification en CSV",
     "emptyDescription": "Ouvre l’éditeur, modifie une valeur et clique sur Enregistrer. La demande « Pourquoi ? » exprime la logique de chaque changement.",
     "emptyTitle": "Non rationale captured yet.",
     "filterCount": "{{visible}} de {{total}}",
-    "filterPlaceholder": "Filtrez par ressource, auteur ou texte de raison...",
+    "filterPlaceholder": "Filtrez par univers, auteur ou texte de raison...",
     "loadErrorTitle": "Impossible de charger le journal de rationalisation",
     "loading": "Chargement du journal de justification...",
-    "logDescription": "Chaque changement est capté par la demande « Pourquoi ? » dans l’éditeur. Chronologique, entre ressources. De niveau auditeur.",
+    "logDescription": "Chaque changement est capté par la demande « Pourquoi ? » dans l’éditeur. Chronologique, en croisement. De niveau auditeur.",
     "logTitle": "Journal de motivation :",
     "noFilterMatches": "Aucune entrée ne correspond au filtre actuel.",
     "noReasonSkipped": "(sans raison : ignoré par l’auteur)",
@@ -134,7 +134,7 @@
     "table": {
       "author": "Auteur",
       "reason": "Raison",
-      "resource": "Ressource",
+      "resource": "Cadre",
       "timestamp": "Horodatage"
     },
     "unknownAuthor": "Inconnu"
@@ -148,13 +148,13 @@
   },
   "resourceEdit": {
     "cancelAria": "Annuler et défausser les changements",
-    "title": "Modifier ressource"
+    "title": "Modifier le réglage"
   },
   "tables": {
     "reason": "Raison",
-    "resource": "Ressource",
-    "resources": "Ressources",
-    "showAllResources": "Show all {{count}} ressources",
+    "resource": "Cadre",
+    "resources": "Décors",
+    "showAllResources": "Afficher tous les réglages {{count}}",
     "showingFirst": "(affichering first {{count}})",
     "showingFirstForPerformance": "(première {{count}} pour la performance)",
     "status": "État",
@@ -166,13 +166,13 @@
     "yaml": "YAML"
   },
   "visual": {
-    "addResource": "Ajouter Ressource",
-    "currentResources": "Actuel Ressources ({{count}})",
+    "addResource": "Ajouter un paramètre",
+    "currentResources": "Paramètres actuels ({{count}})",
     "groupCount": "Groupe · {{count}}",
-    "noResources": "Non ressources in manifeste.",
-    "parseError": "Impossible de comprendre la manifestation YAML. Passer en vue éditeur pour corriger les erreurs de syntaxe.",
-    "resourceFallback": "Ressource {{index}}",
+    "noResources": "Aucun réglage dans baseline.",
+    "parseError": "Je n’ai pas pu comprendre baseline YAML. Passer en vue éditeur pour corriger les erreurs de syntaxe.",
+    "resourceFallback": "Cadre {{index}}",
     "unknown": "Inconnu",
-    "usePicker": "Utilisez le sélecteur pour ajouter des ressources."
+    "usePicker": "Utilisez le sélecteur pour ajouter des réglages."
   }
 }

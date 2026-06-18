@@ -1,9 +1,9 @@
 {
   "nav": {
     "home": "Panel",
-    "manifests": "Manifiestos",
-    "validation": "Validación",
-    "library": "Biblioteca",
+    "manifests": "Mis Baselines",
+    "validation": "Preparación para la exportación",
+    "library": "Microsoft Baselines",
     "diff": "Comparación",
     "cis-mapping": "Asignación de referencias",
     "settings": "Configuración"

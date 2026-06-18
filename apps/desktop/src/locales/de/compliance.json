@@ -1,14 +1,14 @@
 {
   "perManifest": {
     "extracted": {
-      "text1": "Zurück to Manifest",
+      "text1": "Zurück zu baseline",
       "text2": "Konformität:",
       "text3": "CIS Benchmarks-Daten sind nicht gebündelt",
-      "text4": "ConfigForge verbreitet CIS Benchmark-Inhalte nicht weiter (Lizenzbeschränkungen). Der Compliance-Prozent-Bericht vergleicht dein Manifest mit einem CIS baseline, das die Katalogdateien auf der Festplatte benötigt.",
+      "text4": "ConfigForge verbreitet keine CIS Benchmark-Inhalte (Lizenzeinschränkungen). Der Compliance-%-Bericht vergleicht Ihre baseline mit einer CIS baseline, die die Katalogdateien auf der Festplatte benötigt.",
       "text5": "Sieh",
       "text6": "Wie Sie Ihre eigenen legal lizenzierten Kopien einfügen und diese Funktion wieder aktivieren können.",
       "text7": "Generiere audit pack (funktioniert ohne CIS) →",
-      "text8": "Zurück to Manifest",
+      "text8": "Zurück zu baseline",
       "text9": "Konformität:",
       "text10": "Vergleichen against",
       "text11": "Markdown herunterladen audit pack",
@@ -39,34 +39,34 @@
       "text36": "Erwartet",
       "text37": "GPO-Pfad",
       "text38": "Fehlend",
-      "text39": "Keine zusätzlichen Regeln. Dein Manifest ist eine strikte Teilmenge der CIS baseline."
+      "text39": "Keine zusätzlichen Regeln. Dein baseline ist eine strikte Teilmenge der CIS baseline."
     }
   },
   "overview": {
     "extracted": {
-      "text1": "Validierung und Exportbereitschaft",
-      "text2": "Validiere Manifeste und prüfe die Exportbereitschaft für Azure Policy, MOF und mehr",
+      "text1": "Exportbereitschaft",
+      "text2": "Validiere baselines und überprüfe die Exportbereitschaft für Azure Policy, MOF und mehr",
       "text3": "Aktualisieren",
-      "text4": "Total Manifeste",
+      "text4": "GesamtBaselines",
       "text5": "Exportieren Bereit",
       "text6": "Hat Probleme",
-      "text7": "Total ResQuellen",
-      "text8": "Nein Manifeste found",
-      "text9": "Registrieren Sie Manifeste, um sie zu validieren und zu exportieren.",
+      "text7": "Gesamtzahl der Schauplätze",
+      "text8": "Kein baselines gefunden",
+      "text9": "Registrieren Sie baselines zum Validieren und Exportieren.",
       "text10": "Neu registrieren",
-      "text11": "ResQuellen ·",
+      "text11": "Einstellungen ·",
       "text12": "Issue",
       "text13": "Issues",
-      "text14": "Manifestdetails",
-      "text15": "Ressourcen",
-      "text16": "ResQuelle Typs",
+      "text14": "Baseline Details",
+      "text15": "Einstellungen",
+      "text16": "Setting-Typen",
       "text17": "Hat $schema",
       "text18": "Enforcement Werts",
       "text19": "Konformität Criteria",
       "text20": "Probleme",
       "text21": "Exportieren Readiness",
       "text22": "View / Bearbeiten",
-      "text23": "Cross-Manifest-Konflikte",
+      "text23": "Cross-Baseline Konflikte",
       "text24": "Exportieren"
     }
   }

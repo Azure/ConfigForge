@@ -9,7 +9,7 @@
     "startedAt": " (empezó {{time}})",
     "actions": {
       "auditCompliance": "Auditar compliance",
-      "openManifest": "Abrir manifiesto",
+      "openManifest": "¡Abierto baseline",
       "handled": "I’ve handled it"
     }
   },
@@ -18,7 +18,7 @@
     "sectionTitle": "You’re in Editaror mode",
     "sectionDescription": "ConfigForge es totalmente utilizable para autoría, diferencias, comparación y exportación. Desplegar / Auditar / Revertir contra este dispositivo requiere OSConfig instalado localmente. Instálalo cuando quieras y haz clic en Revisar en la píldora de pie de página.",
     "actions": {
-      "browseLibrary": "Consulta la biblioteca baseline",
+      "browseLibrary": "Navega por Microsoft Baselines",
       "installOsconfig": "Instalar OSConfig",
       "hide": "Escóndete por ahora"
     },
@@ -26,10 +26,10 @@
   },
   "firstRun": {
     "aria": "Empieza",
-    "sectionTitle": "Empieza: registra tu primer manifiesto",
-    "sectionDescription": "ConfigForge funciona en contra de OSConfig manifiesta. Explora la biblioteca de baseline incluida (WS2019/2022/2025 roles de servidor, Defender, LAPS) para encontrar contenido listo para usar, o registra tu propio YAML.",
+    "sectionTitle": "Empieza: registra tu primer baseline",
+    "sectionDescription": "ConfigForge juega en contra de OSConfig baselines. Consulta el Baselines incluido de Microsoft (WS2019/2022/2025 roles de servidor, Defender, LAPS) para contenido listo para usar, o registra tu propio YAML.",
     "actions": {
-      "browseLibrary": "Consulta la biblioteca baseline",
+      "browseLibrary": "Navega por Microsoft Baselines",
       "registerOwn": "Register su own"
     }
   },
@@ -51,23 +51,23 @@
     }
   },
   "stats": {
-    "registeredManifests": "Manifiestos Registrados"
+    "registeredManifests": "Registrado Baselines"
   },
   "validation": {
-    "label": "Validación",
-    "subtitle": "Validar manifiestos y comprobar la preparación para la exportación",
+    "label": "Preparación para la exportación",
+    "subtitle": "Validar baselines y comprobar la preparación para la exportación",
     "cta": "Ejecutar check"
   },
   "quickActions": {
     "sectionTitle": "Quick Acciones",
-    "newManifest": "New Manifiesto",
-    "browseLibrary": "Examinar Biblioteca",
-    "compareManifests": "Comparar Manifiestos"
+    "newManifest": "Nuevos Baseline",
+    "browseLibrary": "Navega por Microsoft Baselines",
+    "compareManifests": "Comparar Baselines"
   },
   "recentActivity": {
     "sectionTitle": "Actividad reciente",
     "emptyTitle": "No se ha registrado actividad reciente",
-    "emptyDescription": "Aquí aparecerá actividad mientras gestionas manifiestos y baselines.",
+    "emptyDescription": "La actividad aparecerá aquí mientras gestiones baselines.",
     "fallback": "{{type}} '{{name}}'",
     "types": {
       "registered": "Registrado",

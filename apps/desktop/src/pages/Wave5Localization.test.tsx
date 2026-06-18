@@ -87,7 +87,7 @@ describe('Wave 5 localization coverage', () => {
       </FluentProvider>,
     );
 
-    expect(screen.getByRole('heading', { name: 'Bibliothèque de baselines' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Microsoft Baselines' })).toBeInTheDocument();
   });
 
   it('keeps CIS benchmark data verbatim when the UI language changes', async () => {

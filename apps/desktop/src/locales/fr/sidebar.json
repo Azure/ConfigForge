@@ -1,9 +1,9 @@
 {
   "nav": {
     "home": "Accueil",
-    "manifests": "Manifestes",
-    "validation": "Validation",
-    "library": "Bibliothèque",
+    "manifests": "Mes Baselines",
+    "validation": "Préparation à l’exportation",
+    "library": "Microsoft Baselines",
     "diff": "Comparaison",
     "cis-mapping": "Correspondance des référentiels",
     "settings": "Paramètres"

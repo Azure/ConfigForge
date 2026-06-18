@@ -56,20 +56,20 @@
   "components": {
     "conflictDetector": {
       "extracted": {
-        "text1": "Necesitan al menos 2 manifiestos para detectar conflictos.",
-        "text2": "Detección de conflictos entre manifestos",
+        "text1": "Se necesitan al menos 2 baselines para detectar conflictos.",
+        "text2": "Detección de conflictos entre Baseline",
         "text3": "Comprobación",
-        "text4": "Manifiestos for conflicting configuración",
+        "text4": "baselines para entornos en conflicto",
         "text5": "Volver a comprobar",
-        "text6": "Analizar manifiestos en busca de conflictos...",
-        "text7": "No se detectaron conflictos entre manifiestos registrados",
+        "text6": "Analizando baselines en busca de conflictos...",
+        "text7": "No se detectaron conflictos entre baselines registrados",
         "text8": "Conflicto:"
       }
     },
     "recentRationale": {
       "extracted": {
         "text1": "Cargando…",
-        "text2": "Aún no se ha encontrado ninguna justificación para este recurso.",
+        "text2": "Aún no hay ninguna justificación para este escenario.",
         "text3": "Skipped",
         "text4": "Desconocido",
         "text5": "(sin motivo: omitido por autor)",

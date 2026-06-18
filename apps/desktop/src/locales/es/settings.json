@@ -2,24 +2,24 @@
   "about": {
     "backendCliInstalled": "Atrásend: oscfg CLI ({{version}})",
     "backendCliMissing": "Backend: CLI OSCFG (instalar por separado, ver INSTALL.md)",
+    "authorFlavor": "Construye sabor: autor. Baseline solo edición, biblioteca, comparación de cumplimiento y paquete de auditoría en PDF. Usa la versión de Windows o Linux para desplegar en un dispositivo.",
     "docsLabel": "Documentación:",
     "docsLinkLabel": "OSConfig Conceptos Básicos de la Generación 2",
     "resetWelcomeButton": "Reiniciar la experiencia de la primera partida",
     "sectionDescription": "Herramienta de seguridad baseline autoría basada en OSConfig Gen 2",
-    "sectionTitle": "Acerca de ConfigForge",
-    "authorFlavor": "Sabor de compilación: autor. Solo edición de manifiestos, biblioteca, comparación de cumplimiento y PDF de paquete de auditoría. Use la compilación de Windows o Linux para implementar en un dispositivo."
+    "sectionTitle": "Acerca de ConfigForge"
   },
   "history": {
     "retentionDescriptionAfterEnv": "anula esto cuando está activado.",
-    "retentionDescriptionBeforeEnv": "Cuántas entradas de historial por manifiesto se conservan antes de eliminar las más antiguas. Rango: 5-1000. La variable de entorno",
-    "retentionLabel": "Instantáneas de versiones del manifiesto para conservar",
+    "retentionDescriptionBeforeEnv": "¿Cuántas entradas de historia por baseline antes de que se poden las más antiguas? Rango: 5-1000. El env var",
+    "retentionLabel": "Baseline instantáneas de versiones para conservar",
     "saveFailed": "Guardar con error",
     "sectionTitle": "Historial & Retention",
     "validationRange": "Debe de estar entre 5 y 1000."
   },
   "language": {
     "sectionTitle": "Idioma",
-    "sectionDescription": "Elija el idioma utilizado en toda la aplicación. El contenido técnico (manifiestos, salida de OSConfig, texto de reglas CIS) permanece en inglés.",
+    "sectionDescription": "Elige el idioma que se usa a lo largo de la aplicación. El contenido técnico (baseline YAML, OSConfig salida CIS texto de las reglas) permanece en inglés.",
     "options": {
       "system": "Sistema (detección automática)",
       "en": "Inglés",
@@ -41,8 +41,8 @@
   },
   "page": {
     "description": "Estado del sistema y estado OSConfig motor",
-    "title": "Configuración",
-    "descriptionAuthor": "Información del sistema"
+    "descriptionAuthor": "Información del sistema",
+    "title": "Configuración"
   },
   "systemHealth": {
     "elevation": {
@@ -65,13 +65,13 @@
     },
     "resolvedAt": "Resuelto en:",
     "sectionTitle": "System Estado",
+    "informationTitle": "Información del sistema",
     "values": {
       "notElevated": "No elevado",
       "notInstalled": "No instalado",
       "runningAsAdmin": "En ejecución as administrador",
       "unknown": "Desconocido"
-    },
-    "informationTitle": "Información del sistema"
+    }
   },
   "theme": {
     "label": "Tema",

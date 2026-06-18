@@ -18,8 +18,8 @@
     "summary_other": "{{manifestName}}: {{count}} Schnappschüsse"
   },
   "empty": {
-    "sectionTitle": "Kein Verlauf für dieses Manifest aufgezeichnet",
-    "sectionDescription": "Snapshots werden automatisch gespeichert, wenn Sie das Manifest registrieren oder aktualisieren."
+    "sectionTitle": "Für dieses baseline keine Vorgeschichte dokumentiert",
+    "sectionDescription": "Schnappschüsse werden automatisch gespeichert, wenn Sie sich registrieren oder die baseline aktualisieren."
   },
   "timeline": {
     "byAuthor": "By {{author}}",
@@ -40,10 +40,10 @@
     "closeAria": "Schließen",
     "diffAfterRestore": "Nachher Restore",
     "diffCurrent": "Aktuell",
-    "noCurrent": "Es wurde kein aktuelles registriertes Manifest gefunden, daher wird kein automatisches Snapshot erstellt. Restore registriert den Snapshot-Inhalt als neues Manifest.",
+    "noCurrent": "Es wurde kein aktuell registriertes baseline gefunden, daher wird kein automatisches Snapshot erstellt. Restore registriert den Schnappschuss-Inhalt als neues baseline.",
     "snapshotFrom": "Schnappschuss aus {{time}}",
-    "title": "Manifest aus Snapshot wiederherstellen",
-    "warning": "Das aktuelle Manifest wird vor der Wiederherstellung automatisch aufgenommen, sodass du zurückrollen kannst. Eine Neuregistrierung kann den gewünschten Zustand auf verwaltete Geräte neu ausrollen."
+    "title": "Wiederherstellen baseline aus dem Snapshot",
+    "warning": "Das aktuelle baseline wird vor der Wiederherstellung automatisch aufgenommen, damit du zurücksetzen kannst. Eine Neuregistrierung kann den gewünschten Zustand auf verwaltete Geräte neu ausrollen."
   },
   "diff": {
     "compareTitle": "Vergleich mit Current",

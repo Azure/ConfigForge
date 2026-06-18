@@ -153,7 +153,7 @@ describe('ManifestDetailPage localization', () => {
 
     expect(screen.getByRole('button', { name: 'Modifier' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Déployer' })).toBeInTheDocument();
-    expect(screen.getByRole('heading', { name: 'Contenu du manifeste' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Baseline Contenu' })).toBeInTheDocument();
   });
 
   it('keeps the Monaco model content stable while app chrome re-renders on language switch', async () => {

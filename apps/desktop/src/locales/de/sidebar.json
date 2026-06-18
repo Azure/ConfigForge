@@ -1,9 +1,9 @@
 {
   "nav": {
     "home": "Armaturenbrett",
-    "manifests": "Manifeste",
-    "validation": "Validierung",
-    "library": "Bibliothek",
+    "manifests": "Meine Baselines",
+    "validation": "Exportbereitschaft",
+    "library": "Microsoft Baselines",
     "diff": "Vergleich",
     "cis-mapping": "Benchmark-Zuordnung",
     "settings": "Einstellungen"

@@ -1,14 +1,14 @@
 {
   "perManifest": {
     "extracted": {
-      "text1": "Atrás to manifiesto",
+      "text1": "Volviendo a baseline",
       "text2": "Cumplimiento:",
       "text3": "CIS Los datos de Benchmarks no se agrupan",
-      "text4": "ConfigForge no redistribuye CIS contenido de Benchmark (restricciones de licencia). El informe de porcentaje de cumplimiento compara tu manifiesto con un CIS baseline, que requiere los archivos de catálogo en disco.",
+      "text4": "ConfigForge no redistribuye CIS contenido de Benchmark (restricciones de licencia). El informe de porcentaje de cumplimiento compara tu baseline con un CIS baseline, que requiere los archivos de catálogo en disco.",
       "text5": "Véase",
       "text6": "Para cómo dejar tus propias copias con licencia legal y volver a activar esta función.",
       "text7": "Genera audit pack (funciona sin CIS) →",
-      "text8": "Atrás to manifiesto",
+      "text8": "Volviendo a baseline",
       "text9": "Cumplimiento:",
       "text10": "Comparar against",
       "text11": "Descargar Markdown audit pack",
@@ -39,34 +39,34 @@
       "text36": "Esperado",
       "text37": "Ruta GPO",
       "text38": "Faltante",
-      "text39": "Sin reglas adicionales. Tu manifiesto es un subconjunto estricto del CIS baseline."
+      "text39": "Sin reglas adicionales. Tu baseline es un subconjunto estricto del CIS baseline."
     }
   },
   "overview": {
     "extracted": {
-      "text1": "Validación y preparación para la exportación",
-      "text2": "Valida los manifiestos y comprueba la preparación para exportar para Azure Policy, MOF y más",
+      "text1": "Preparación para la exportación",
+      "text2": "Valida baselines y comprueba la preparación para exportar para Azure Policy, MOF y más",
       "text3": "Actualizar",
-      "text4": "Total Manifiestos",
+      "text4": "Total Baselines",
       "text5": "Exportar Listo",
       "text6": "Tiene problemas",
-      "text7": "Total Recursos",
-      "text8": "No manifiestos found",
-      "text9": "Registrar manifiestos para validar y exportar.",
+      "text7": "Configuración total",
+      "text8": "No se encontró baselines",
+      "text9": "Registra baselines para validar y exportar.",
       "text10": "Registro Nuevo",
-      "text11": "Recursos ·",
+      "text11": "Configuración ·",
       "text12": "Issue",
       "text13": "Issues",
-      "text14": "Manifiesto Detalles",
-      "text15": "Recursos",
-      "text16": "Recurso Tipos",
+      "text14": "Baseline Detalles",
+      "text15": "Escenarios",
+      "text16": "Tipos de ambientación",
       "text17": "¿Ha $schema",
       "text18": "Enforcement Valors",
       "text19": "Cumplimiento Criteria",
       "text20": "Cuestiones",
       "text21": "Exportar Readiness",
       "text22": "View / Editar",
-      "text23": "Conflictos entre manifiestos",
+      "text23": "Conflictos entre Baseline",
       "text24": "Exportar"
     }
   }
