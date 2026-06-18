@@ -100,29 +100,45 @@ try {
   // 3) New manifest — register / paste / build entry point
   await shoot('new-manifest', '/manifests/new', { waitFor: 'main' });
 
+  // Warm the baseline store: the detail page fetches the manifest by route
+  // name on mount, so visiting the list first hydrates the cache and avoids a
+  // direct-nav race where the editor renders empty.
+  await navigate('/manifests');
+  await win.waitForTimeout(1800);
+
   // 4) Manifest detail (default Editor view)
-  await shoot('manifest-detail', '/manifests/ws2025-member-server', {
+  await shoot('manifest-detail', '/manifests/Windows-Server-2025---Member-Server', {
     waitFor: 'main',
+    beforeShoot: async (p) => {
+      await p.waitForSelector('button:has-text("YAML")', { timeout: 9000 }).catch(() => {});
+    },
+    settle: 2800,
+  });
+
+  // 5) Visual Builder — enter Edit mode (the Visual Builder toggle is edit-only),
+  //    then switch to the Visual Builder view.
+  await shoot('visual-builder', '/manifests/Windows-Server-2025---Member-Server', {
+    waitFor: 'main',
+    beforeShoot: async (p) => {
+      await p.waitForSelector('button:has-text("YAML")', { timeout: 9000 }).catch(() => {});
+      const editBtn = await p.$('button:text-is("Edit")');
+      if (editBtn) {
+        await editBtn.click();
+        await p.waitForTimeout(1200);
+      }
+      const vbBtn = await p.$('button:has-text("Visual Builder")');
+      if (vbBtn) {
+        await vbBtn.click();
+        await p.waitForTimeout(1200);
+      }
+    },
     settle: 1500,
   });
 
-  // 5) Visual Builder — click the Visual Builder tab
-  await shoot('visual-builder', '/manifests/ws2025-member-server', {
-    waitFor: 'main',
-    beforeShoot: async (p) => {
-      const btn = await p.$('button:has-text("Visual Builder")');
-      if (btn) {
-        await btn.click();
-        await p.waitForTimeout(800);
-      }
-    },
-    settle: 1200,
-  });
-
   // 6) Audit pack
-  await shoot('audit-pack', '/manifests/ws2025-member-server/audit-pack', {
+  await shoot('audit-pack', '/manifests/Windows-Server-2025---Member-Server/audit-pack', {
     waitFor: 'main',
-    settle: 2500,
+    settle: 3000,
   });
 
   // 7) Diff hub — pick WS2019 vs WS2025 Member Server baselines for the most interesting diff

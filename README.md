@@ -2,67 +2,67 @@
 
 > ⚠️ **Disclaimer:**  This tool is provided as-is without Microsoft support. This is an experimental project to help customers accelerate their use of security baselines while helping IT architects validate desired configurations., ConfigForge is **not** an officially supported Microsoft product. **Not intended for production use** — for experimentation, learning, and community contributions only. **Use at your own risk.**
 
-**Cross-platform OSConfig security baseline authoring desktop app.** Electron 42 + React 18 + FluentUI v9 + Vite. Windows + Linux from the `main` branch, macOS author flavor from `mac-author-build`. Author, validate, compare, export, and (when the OSConfig CLI is installed) deploy / audit manifests on **Windows Server 2025 / Windows 11** and **Ubuntu 22.04+** via the native [`oscfg`](https://github.com/microsoft/osconfig/tree/main/docs/cli) CLI. Targets `oscfg`.
+**Cross-platform OSConfig security baseline authoring desktop app.** Electron 42 + React 18 + FluentUI v9 + Vite. Windows + Linux from the `main` branch, macOS author flavor from `mac-author-build`. Author, validate, compare, export, and (when the OSConfig CLI is installed) deploy / audit baselines on **Windows Server 2025 / Windows 11** and **Ubuntu 22.04+** via the native [`oscfg`](https://github.com/microsoft/osconfig/tree/main/docs/cli) CLI. Targets `oscfg`.
 
-> The `oscfg` binary is **not** bundled. Editor, library, diff, CIS mapping, and audit-pack PDF features all work without it. Deploy and Audit require the CLI and degrade gracefully when it is missing. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
+> The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, diff, Benchmark Mapping, and audit-pack PDF features all work without it. Deploy and Audit require the CLI and degrade gracefully when it is missing. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
 ## What it looks like
 
-Left rail order is **Dashboard, Manifests, Validation, Library, Diff, CIS Mapping, Settings**.
+Left rail order is **Dashboard, My Baselines, Microsoft Baselines, Export Readiness, Diff, Benchmark Mapping, Settings**.
 
-### Baseline library: start from a curated catalog
+### Microsoft Baselines: start from a curated catalog
 
-Browse pre-built security baselines (Windows Server 2016/2019/2022/2025, member, DC, workgroup; Microsoft Defender; LAPS; Secured Core; SSH; Linux Security Baseline) and click **Use as Template** to fork one into your own manifest.
+Browse pre-built security baselines (Windows Server 2016/2019/2022/2025, member, DC, workgroup; Microsoft Defender; LAPS; Secured Core; SSH; Linux Security Baseline) and click **Use as Template** to fork one into your own baseline.
 
-![Baseline library: pre-built security baselines you can fork into your own manifest](./docs/images/screenshots/library.png)
+![Microsoft Baselines: pre-built security baselines you can fork into your own baseline](./docs/images/screenshots/library.png)
 
 ### Dashboard: system health + quick actions
 
-See the resolved `oscfg` version, admin status, server type, and OS version at a glance. Three quick-action buttons (New Manifest, Browse Library, Compare Manifests) jump straight into authoring or compliance.
+See the resolved `oscfg` version, admin status, server type, and OS version at a glance. Three quick-action buttons (New Baseline, Browse Microsoft Baselines, Compare Baselines) jump straight into authoring or compliance.
 
-![Dashboard: system health, registered-manifest count, quick actions, and recent activity](./docs/images/screenshots/home.png)
+![Dashboard: system health, registered-baseline count, quick actions, and recent activity](./docs/images/screenshots/home.png)
 
-### Manifest editor: author, deploy, audit pack
+### Baseline editor: author, deploy, audit pack
 
-YAML / JSON / Visual triple-format editor with live validation, deploy/audit dropdown, version history, CIS cross-reference drawer (shows matched CIS rules while editing), and a one-click **Audit Pack** button that produces an auditor-ready PDF (manifest header, compliance score, version history with author + rationale, AI provenance citations).
+YAML / JSON / Visual triple-format editor with live validation, deploy/audit dropdown, version history, CIS cross-reference drawer (shows matched CIS rules while editing), and a one-click **Audit Pack** button that produces an auditor-ready PDF (baseline header, compliance score, version history with author + rationale, AI provenance citations).
 
-![Manifest editor: YAML/JSON/Visual tabs, deploy + audit, history, and Audit Pack button](./docs/images/screenshots/manifest-detail.png)
+![Baseline editor: YAML/JSON/Visual tabs, deploy + audit, history, and Audit Pack button](./docs/images/screenshots/manifest-detail.png)
 
-### Visual Builder: form-based resource authoring
+### Visual Builder: form-based setting authoring
 
-Switch to **Visual Builder** mode to add, edit, or remove resources via per-type forms — no YAML wrangling. Registry resources get key path / value name / expected value / enforcement value fields. CSP, AccountPolicy, UserRights, AuditPolicy, Linux FilePermission, KernelModule, and File / FileLine all have dedicated forms. Edit is form-based too: click **Edit** on any resource card to open the same form pre-populated with current values, including a rename field. All visual edits batch into the editor buffer; one Save → one rationale prompt covering every change.
+Switch to **Visual Builder** mode to add, edit, or remove settings via per-type forms — no YAML wrangling. Registry settings get key path / value name / expected value / enforcement value fields. CSP, AccountPolicy, UserRights, AuditPolicy, Linux FilePermission, KernelModule, and File / FileLine all have dedicated forms. Edit is form-based too: click **Edit** on any setting card to open the same form pre-populated with current values, including a rename field. All visual edits batch into the editor buffer; one Save → one rationale prompt covering every change.
 
-![Visual Builder: form-based resource authoring with per-type inputs](./docs/images/screenshots/visual-builder.png)
+![Visual Builder: form-based setting authoring with per-type inputs](./docs/images/screenshots/visual-builder.png)
 
 ### Audit pack: the auditor deliverable
 
-One click on **Audit Pack** opens a download surface with PDF + Markdown buttons, an inline PDF preview, and a sidebar showing exactly what's in the pack (manifest header, compliance report, version history, rationale log, AI citations) with availability check-marks.
+One click on **Audit Pack** opens a download surface with PDF + Markdown buttons, an inline PDF preview, and a sidebar showing exactly what's in the pack (baseline header, compliance report, version history, rationale log, AI citations) with availability check-marks.
 
 ![Audit pack download page: PDF + Markdown buttons, inline preview, what's-included sidebar](./docs/images/screenshots/audit-pack.png)
 
-### Register a new manifest: type, paste, or import
+### Register a new baseline: type, paste, or import
 
-Drag-drop a `.osc.yaml` / `.json` / `.csv` file, paste from a URL, or start from a starter template. Pick Windows or Linux as the target platform and the editor adjusts validation accordingly. Imported CSV/spreadsheet rows are converted into schema-valid Registry resources (the importer now emits `valueName` and an inferred `valueType` so the editor stops flagging every imported row).
+Drag-drop a `.osc.yaml` / `.json` / `.csv` file, paste from a URL, or start from a starter template. Pick Windows or Linux as the target platform and the editor adjusts validation accordingly. Imported CSV/spreadsheet rows are converted into schema-valid Registry settings (the importer now emits `valueName` and an inferred `valueType` so the editor stops flagging every imported row).
 
-![Register new manifest: import/paste/build with platform-aware validation](./docs/images/screenshots/new-manifest.png)
+![Register new baseline: import/paste/build with platform-aware validation](./docs/images/screenshots/new-manifest.png)
 
 ### Compare baselines: Pairwise, CIS, Matrix
 
-The Diff page has three tabs: **Pairwise**, **CIS**, and **Matrix**. Pairwise shows YAML side-by-side with diff stats (e.g. WS2019 → WS2025: **137 added / 84 removed / 14 changed**), then a Resource Changes panel grouped by status (Changed / Added / Removed / Identical) with before/after values. Matrix collapses cross-baseline rules via hive normalization and word-set overlap so registry-keyed and CSP-keyed views of the same setting collide cleanly.
+The Diff page has three tabs: **Pairwise**, **CIS**, and **Matrix**. Pairwise shows YAML side-by-side with diff stats (e.g. WS2019 → WS2025: **137 added / 84 removed / 12 changed**), then a Setting Changes panel grouped by status (Changed / Added / Removed / Identical) with before/after values. Matrix collapses cross-baseline rules via hive normalization and word-set overlap so registry-keyed and CSP-keyed views of the same setting collide cleanly.
 
-![Compare manifests: pairwise diff with diff stats, AI insights, and Resource Changes panel](./docs/images/screenshots/diff.png)
+![Compare baselines: pairwise diff with diff stats, AI insights, and Setting Changes panel](./docs/images/screenshots/diff.png)
 
-### CIS Mapping: bring-your-own benchmark data
+### Benchmark Mapping: bring-your-own benchmark data
 
-Drop CIS Azure Policy JSON or XCCDF+OVAL XML files onto the **CIS Mapping** page (no benchmarks are bundled — CIS licensing). The page auto-detects platform and shows per-file status indicators with Re-check / Open folder actions. CIS data powers the inline cross-reference drawer in the editor, the compliance scoring on every manifest, and the bulk CIS Diff tab.
+Drop CIS Azure Policy JSON or XCCDF+OVAL XML files onto the **Benchmark Mapping** page (no benchmarks are bundled — CIS licensing). The page auto-detects platform and shows per-file status indicators with Re-check / Open folder actions. CIS data powers the inline cross-reference drawer in the editor, the compliance scoring on every baseline, and the bulk CIS Diff tab.
 
-![CIS Mapping page: per-file detection status with Re-check + Open folder actions](./docs/images/screenshots/cis-mapping.png)
+![Benchmark Mapping page: per-file detection status with Re-check + Open folder actions](./docs/images/screenshots/cis-mapping.png)
 
 ### CIS Diff: bulk compliance scoring
 
-The Diff page includes a **CIS Diff** tab that scores any manifest against any user-supplied CIS benchmark. Big compliance % hero metric ("X of Y CIS rules covered"), filterable resource table with red ✕ / green ✓ status icons (click the Status column to sort), per-row source badge (Azure Policy vs XCCDF), and a "Missing from CIS" filter to surface unmapped rules.
+The Diff page includes a **CIS Diff** tab that scores any baseline against any user-supplied CIS benchmark. Big compliance % hero metric ("X of Y CIS rules covered"), filterable setting table with red ✕ / green ✓ status icons (click the Status column to sort), per-row source badge (Azure Policy vs XCCDF), and a "Missing from CIS" filter to surface unmapped rules.
 
-![CIS Diff tab: compliance hero metric + sortable resource coverage table](./docs/images/screenshots/cis-diff.png)
+![CIS Diff tab: compliance hero metric + sortable setting coverage table](./docs/images/screenshots/cis-diff.png)
 
 ## Quick start: run from source
 
@@ -144,7 +144,10 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.48** (current) | CIS Mapping subtitle mentions the Diff > CIS tab; v0.3.47 adds real History change summaries and auto-scrolls Compare results; v0.3.46 tightens CIS fuzzy matching; v0.3.45 expands Group resources inline in Visual Builder |
+| **0.3.70** (current) | Benchmark Mapping back-arrow; the v0.3.69 UI overhaul — 4-color Microsoft Windows logo + 🐧 Linux, **Microsoft Baselines** nav moved under **My Baselines**, "View" → "Open", redundant "Source" label removed, editor format-strip swap, audit-pack PDF heading alignment; FR/DE/ES re-translated via Azure Translator |
+| **0.3.62 – 0.3.68** | Rebrand **ConfigForge Spark → ConfigForge**; vocabulary refresh (**Manifests → My Baselines**, **Library → Microsoft Baselines**, **Validation → Export Readiness**, **CIS Mapping → Benchmark Mapping**, *resource* → *setting*, **OSConfig vNext → Gen 2**); unsigned OSS release pipeline with `SHA256SUMS` + SBOM verification; MOF export targets the `Microsoft.OSConfig` module; Monaco overflow-widget dropdown root-cause fix; "Could not read" compliance bucket on baseline cards |
+| **0.3.54 – 0.3.61** | Localization rollout (FR / DE / ES) — five extraction waves, machine-translation + review tooling, `Intl` date/number/relative-time formatters, and length/overflow visual QA |
+| **0.3.45 – 0.3.53** | Benchmark (CIS) Mapping subtitle + Diff › CIS tab; real History change summaries + auto-scroll Compare; CIS fuzzy-matching tightening; Group resources expand inline in Visual Builder; Diff "Select baseline" dropdown stability (Monaco overflow fix) |
 | **0.3.27 – 0.3.36** | CIS matcher quality pass (CSP UserRights, alias table, XCCDF fuzzy fallback, 36/36 mappable UserRights match WS2025 CIS); 100x cis.status() perf fix; 3-second warmup deferral eliminates manifest-open regression; ResourceChangesPanel and Resource-level diff stats; AI summary numbers consistent across panels |
 | **0.3.14 – 0.3.26** | CIS Mapping page (Azure Policy JSON + XCCDF/OVAL XML auto-detect), CIS cross-reference drawer in the manifest editor, CIS Diff tab on the Diff page, settings store with history retention, deploy recovery banner, breadcrumb navigation |
 | **0.2.1** | Phase A-E renderer-page split; 15/15 security audit findings closed; typed main-process logger with secret redaction; Prettier config; CSV-import schema fix |
