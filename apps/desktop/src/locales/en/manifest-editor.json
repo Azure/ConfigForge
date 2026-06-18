@@ -108,7 +108,7 @@
     "crossPlatform": "⚙️ Cross-platform",
     "linux": "🐧 Linux",
     "test": "🔒 Test",
-    "windows": "🪟 Windows"
+    "windows": "Windows"
   },
   "rationale": {
     "backToManifest": "Back to baseline",

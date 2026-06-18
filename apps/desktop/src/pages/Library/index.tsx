@@ -13,8 +13,6 @@ import {
   OpenRegular,
   ArrowDownloadRegular,
   DocumentBulletListRegular,
-  DesktopRegular,
-  WindowConsoleRegular,
   BranchCompareRegular,
   DismissRegular,
   AddRegular,
@@ -23,6 +21,7 @@ import {
 } from "@fluentui/react-icons";
 import { Button, MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components";
 import { ExternalLink } from "../../components/ExternalLink";
+import { WindowsLogo } from "../../components/WindowsLogo";
 import { CATEGORIES, type BaselineEntry } from "../../data/baseline-catalog";
 import { cfs } from "../../lib/cfs";
 import { useLibraryFilters, type PlatformFilter } from "./state/useLibraryFilters";
@@ -363,8 +362,10 @@ export function LibraryPage() {
                   : "bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
               }`}
             >
-              {pf.id === "windows" && <DesktopRegular className="h-3.5 w-3.5" />}
-              {pf.id === "linux" && <WindowConsoleRegular className="h-3.5 w-3.5" />}
+              {pf.id === "windows" && <WindowsLogo className="h-3.5 w-3.5" />}
+              {pf.id === "linux" && (
+                <span className="inline-flex h-3.5 w-3.5 items-center justify-center text-[13px] leading-none">🐧</span>
+              )}
               <span className="hidden sm:inline">{pf.label}</span>
             </button>
           ))}
@@ -433,9 +434,9 @@ export function LibraryPage() {
                         }`}
                       >
                         {entry.platform === "windows" ? (
-                          <DesktopRegular className="h-3 w-3" />
+                          <WindowsLogo className="h-3 w-3" />
                         ) : (
-                          <WindowConsoleRegular className="h-3 w-3" />
+                          <span className="inline-flex h-3 w-3 items-center justify-center text-[11px] leading-none">🐧</span>
                         )}
                         {entry.platform === "windows"
                           ? t("library.extracted.text12")

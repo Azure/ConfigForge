@@ -274,7 +274,7 @@ export function CisCatalogPage() {
         </div>
 
         <p className="mt-4 rounded-md bg-amber-50 px-3 py-2 text-xs text-amber-700 dark:bg-amber-900/20 dark:text-amber-300">
-          <strong>{t("extracted.text41")}</strong>
+          <strong>{t("extracted.text41")}</strong>{" "}
           {t("extracted.text42")}
         </p>
       </div>

@@ -16,7 +16,7 @@
   },
   "actions": {
     "registerNew": "Registro Nuevo",
-    "view": "Vista",
+    "view": "Abrir",
     "deploy": "Implementar",
     "audit": "Auditar",
     "enforce": "Hacer cumplir",
@@ -62,7 +62,7 @@
   "card": {
     "localSource": "Local",
     "selectAria": "Selecciona baseline {{name}}",
-    "viewTitle": "Ver {{name}}",
+    "viewTitle": "Abrir {{name}}",
     "deleteTitle": "Borra baseline",
     "deleteAria": "Elimina baseline {{name}}",
     "revertAria": "Deshacer la implementación de {{name}}",
@@ -76,7 +76,7 @@
       "couldNotReadTitle": "Ajustes que la auditoría no pudo leer (proveedor no soportado, error de transporte o ruta no soportada). Estos no se cuentan como problemas: el dispositivo puede estar ya en el estado deseado. Abre la baseline para el desglose completo."
     },
     "platform": {
-      "windows": "🪟 Windows",
+      "windows": "Windows",
       "linux": "🐧 Linux",
       "mixed": "⚠️ Mixto",
       "crossPlatform": "⚙️ Cross-plataforma"
@@ -128,7 +128,7 @@
       "text36": "• Intentar:",
       "text37": "para verificar que el motor funciona",
       "text38": "Destisin Plataforma",
-      "text39": "🪟 Windows",
+      "text39": "Windows",
       "text40": "🐧 Linux",
       "text41": "Baseline Nombre",
       "text42": "E.g., SecurityBaseline-v1",

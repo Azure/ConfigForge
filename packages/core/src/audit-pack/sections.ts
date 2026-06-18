@@ -99,7 +99,7 @@ function rule(doc: PDFKit.PDFDocument): void {
 function sectionHeading(doc: PDFKit.PDFDocument, title: string): void {
   doc.moveDown(0.5);
   ensureSpace(doc, 40);
-  doc.fillColor(COLOR_PRIMARY).font(FONT_BOLD).fontSize(14).text(safeText(title));
+  doc.fillColor(COLOR_PRIMARY).font(FONT_BOLD).fontSize(14).text(safeText(title), doc.page.margins.left, doc.y, { align: 'left', width: pageWidth(doc) });
   doc.fillColor(COLOR_TEXT).font(FONT_REG).fontSize(10);
   rule(doc);
 }
@@ -210,7 +210,7 @@ export function renderCompliance(
   const top5 = report.perRule.filter((r) => r.status === 'missing').slice(0, 5);
   if (top5.length > 0) {
     doc.moveDown(0.4);
-    doc.font(FONT_BOLD).fontSize(11).text('Top missing rules');
+    doc.font(FONT_BOLD).fontSize(11).text('Top missing rules', doc.page.margins.left, doc.y, { align: 'left', width: pageWidth(doc) });
     doc.moveDown(0.2);
     doc.font(FONT_REG).fontSize(10).fillColor(COLOR_TEXT);
     for (const r of top5) {
@@ -381,7 +381,7 @@ export function renderDeviceAudit(
     .slice(0, 5);
   if (failed.length > 0) {
     doc.moveDown(0.5);
-    doc.font(FONT_BOLD).fontSize(11).text('Top non-compliant resources');
+    doc.font(FONT_BOLD).fontSize(11).text('Top non-compliant resources', doc.page.margins.left, doc.y, { align: 'left', width: pageWidth(doc) });
     doc.moveDown(0.2);
     doc.font(FONT_REG).fontSize(10).fillColor(COLOR_TEXT);
     for (const res of failed) {

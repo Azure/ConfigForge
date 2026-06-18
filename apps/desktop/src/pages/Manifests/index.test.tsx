@@ -116,4 +116,29 @@ describe('ManifestsPage localization', () => {
     const cnrBox = screen.getByText('Could not read').closest('div');
     expect(cnrBox!).toHaveTextContent('0');
   });
+
+  it('renames the card action to "Open" and no longer shows the redundant Source label', async () => {
+    (window.cfs!.manifests.list as ReturnType<typeof vi.fn>).mockResolvedValue({
+      data: [
+        {
+          Name: 'ws2022-open-test',
+          Source: 'oscfg',
+          Resources: [
+            { type: 'Microsoft.Windows/Registry', compliance: { status: 'Compliant' } },
+          ],
+        },
+      ],
+    });
+
+    renderManifests();
+
+    expect(await screen.findByRole('heading', { name: 'ws2022-open-test' })).toBeInTheDocument();
+    // "View" → "Open" on the baseline card action.
+    expect(screen.getByText('Open', { exact: true })).toBeInTheDocument();
+    expect(screen.queryByText('View', { exact: true })).toBeNull();
+    // The redundant "Source: oscfg" label was removed from the card.
+    expect(screen.queryByText('oscfg')).toBeNull();
+    // Windows platform pill is emoji-free (🪟 stripped; logo rendered as SVG).
+    expect(screen.queryByText(/🪟/)).toBeNull();
+  });
 });

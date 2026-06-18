@@ -32,6 +32,7 @@ import { TintedSpinner } from "../../components/TintedSpinner";
 import { DangerButton } from "../../components/DangerButton";
 import { AuditProgressCounter } from "../../components/AuditProgressCounter";
 import { CliRequiredModal } from "../../components/CliRequiredModal";
+import { WindowsLogo } from "../../components/WindowsLogo";
 import { useCliPresence } from "../../hooks/useCliPresence";
 import type { DeployProgressEvent } from "@configforge/core/handlers/deploy";
 import { detectManifestPlatform } from "@configforge/core/platform";
@@ -597,7 +598,7 @@ export function ManifestsPage() {
                   Original layout truncated long manifest names ("cis-ws2022-…",
                   "Microsoft-D…") to 1 line, making 4+ cards visually
                   interchangeable. Now we use a 2-row layout:
-                    Row 1: checkbox + icon + Source label + platform pill
+                    Row 1: checkbox + icon + platform pill
                     Row 2: full manifest name (line-clamp-2, break-words)
                   Hover-title is preserved for the rare 3+-line outliers.
                 */}
@@ -620,11 +621,9 @@ export function ManifestsPage() {
                     <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-blue-50 dark:bg-blue-900/30">
                       <DocumentRegular className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                     </div>
-                    <div className="flex flex-1 items-center justify-between gap-2 min-w-0">
-                      <p className="truncate text-xs text-slate-500 dark:text-slate-400">
-                        {manifest.Source || t('card.localSource')}
-                      </p>
-                      <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-medium ${pBadge.cls}`}>
+                    <div className="flex flex-1 items-center justify-end gap-2 min-w-0">
+                      <span className={`inline-flex shrink-0 items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-medium ${pBadge.cls}`}>
+                        {manifestPlatform === 'windows' && <WindowsLogo className="h-3 w-3" />}
                         {pBadge.label}
                       </span>
                     </div>
