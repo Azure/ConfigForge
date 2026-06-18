@@ -45,6 +45,7 @@
     "dompurify": "$dompurify",
     "tmp": "^0.2.7",
     "shell-quote": "^1.8.4",
-    "esbuild": "^0.28.1"
+    "esbuild": "^0.28.1",
+    "undici@>=7.0.0 <7.28.0": "^7.28.0"
   }
 }
