@@ -1,19 +1,19 @@
 {
   "page": {
-    "title": "Comparer les manifestes",
-    "description": "Comparaison côte à côte des configurations manifestes"
+    "title": "Comparez Baselines",
+    "description": "Comparaison côte à côte des configurations baseline"
   },
   "pageError": {
     "dismiss": "Dismiss",
     "dismissTitle": "Libérez"
   },
   "info": {
-    "oneManifest": "Vous avez un manifeste enregistré. Pour comparer deux manifestes enregistrés, enregistrez d’abord un second, ou passez de chaque côté en mode <strong>Collage / Téléversement</strong> ci-dessous pour coller YAML directement."
+    "oneManifest": "Vous avez 1 baseline enregistré. Pour comparer deux baselines enregistrés, enregistrez d’abord un second, ou passez de chaque côté en mode <strong>Collage / Téléversement</strong> ci-dessous pour coller YAML directement."
   },
   "errors": {
     "analyzeFailed": "Échec to analyze différence",
-    "loadManifestsFailed": "Échec to load manifestees",
-    "loadManifestsTimeout": "Les manifestes de chargement sont expirés. L’appel par liste en arrière-plan prend plus de 10 secondes — essayez Refresh, ou redémarrez l’application si elle persiste.",
+    "loadManifestsFailed": "Échec de charger baselines",
+    "loadManifestsTimeout": "Le chargement baselines expiré. L’appel par liste en arrière-plan prend plus de 10 secondes — essayez Refresh, ou redémarrez l’application si elle persiste.",
     "network": "Network erreur"
   },
   "tabs": {
@@ -26,26 +26,26 @@
     "after": "Après",
     "modes": {
       "pasteUpload": "Paste / Charger",
-      "fromManifest": "Extrait du Manifeste"
+      "fromManifest": "De Baseline"
     },
     "select": {
       "loading": "Chargement…",
-      "noManifests": "Aucun manifeste enregistré",
-      "selectManifest": "Sélectionner a manifeste…"
+      "noManifests": "Aucun baselines enregistré",
+      "selectManifest": "Choisissez un baseline..."
     },
-    "loadingManifest": "Loading manifeste…",
+    "loadingManifest": "Chargement baseline...",
     "empty": {
-      "selectManifest": "Sélectionner a manifeste above",
-      "uploadOrPaste": "Téléchargez un fichier ou collez le texte du manifeste"
+      "selectManifest": "Sélectionnez un baseline ci-dessus",
+      "uploadOrPaste": "Téléchargez un fichier ou collez baseline texte"
     },
     "uploadFile": "Charger fichier",
-    "compareDisabledTitle": "Sélectionnez un manifeste des deux côtés pour permettre la comparaison",
+    "compareDisabledTitle": "Sélectionnez un baseline des deux côtés pour permettre la Comparaison",
     "compareButton": "Comparer"
   },
   "stats": {
     "title": "Différence Stats:",
     "units": {
-      "resources": "Ressources",
+      "resources": "Décors",
       "lines": "Lines"
     },
     "added": "{{count}} {{unit}} ajoutered",
@@ -85,7 +85,7 @@
     "citationCoverageValue": "Couverture des contraventions {{percent}} %."
   },
   "matrixSummary": {
-    "totalChanges": "{{count}} ressource {{changeWord}} detected",
+    "totalChanges": "{{count}} paramètre {{changeWord}} détecté",
     "change_one": "Change",
     "change_other": "Changes",
     "added": "{{count}} ajoutered",
@@ -93,7 +93,7 @@
     "changed": "{{count}} avec la variation de la valeur"
   },
   "resourceChanges": {
-    "sectionTitle": "Ressource Changes",
+    "sectionTitle": "Changements de décor",
     "changed": "Modifié (valeur différenceers)",
     "added": "Ajouté (only in Après)",
     "removed": "Supprimé (only in Avant)",
@@ -104,7 +104,7 @@
   "matrix": {
     "sectionTitle": "Choix 2 à 10 baselines à comparer",
     "sectionDescription": "Chaque ligne de la matrice résultante est un réglage ; chaque colonne est une baseline. Les cellules sont codées par couleur verte (identique), rouge (différent) ou jaune (seulement entrée).",
-    "noManifests": "Aucun manifeste enregistré.",
+    "noManifests": "Aucun baselines enregistré.",
     "compareButton": "Comparer ({{count}})",
     "downloadExcel": "Télécharger Excel",
     "filterPlaceholder": "Filtrer paramètres…",
@@ -129,12 +129,12 @@
   },
   "cis": {
     "labels": {
-      "manifest": "Manifeste",
+      "manifest": "Baseline",
       "benchmark": "CIS référence à laquelle noter",
-      "autoHint": "(sélectionné automatiquement depuis la plateforme manifeste s’il est vide)"
+      "autoHint": "(sélectionné automatiquement sur baseline plateforme s’il est vide)"
     },
     "options": {
-      "chooseManifest": "Choose a manifeste...",
+      "chooseManifest": "Choisis un baseline...",
       "autoPick": "Sélection automatique par plateforme",
       "fullCis": "[Plein CIS]",
       "azurePolicy": "[Azure Policy]",
@@ -145,24 +145,24 @@
     "loading": "En marquant {{manifest}} contre CIS...",
     "complianceAgainst": "CIS conformité à {{name}} v{{version}}",
     "rulesCovered": "{{covered}} des règles de {{total}} CIS couvertes",
-    "secondary": "Vue secondaire : {{matched}} des ressources manifestes de {{total}} correspondaient à une règle CIS.",
+    "secondary": "Vue secondaire : {{matched}} de {{total}} baseline réglages correspondaient à une règle CIS.",
     "noBenchmark": "Aucun CIS de référence disponible. Déposez un fichier CIS dans le dossier CIS Mapping et réessayez.",
     "filters": {
-      "all": "Tout ressources ({{count}})",
-      "covered": "Covered in manifeste ({{count}})",
+      "all": "Tous les réglages ({{count}})",
+      "covered": "Couvert de baseline ({{count}})",
       "missing": "Manquants de CIS ({{count}})"
     },
     "placeholders": {
       "missing": "Filtrez par CIS titre de règle ou section...",
-      "resources": "Filtrer by ressource or rule nom..."
+      "resources": "Filtrez par paramètre ou nom de règle..."
     },
     "table": {
       "section": "Section",
-      "missingRule": "CIS Règle (manquante du manifeste)",
+      "missingRule": "CIS Règle (manquante dans baseline)",
       "recommendedValue": "Recommended valeur",
       "notSpecified": "(non specified)",
       "status": "État",
-      "resource": "Ressource",
+      "resource": "Cadre",
       "type": "Type",
       "cisRule": "CIS Règle",
       "source": "Source"
@@ -171,9 +171,9 @@
       "noMissingMatch": "Aucune règle CIS manque correspond à votre filtre.",
       "nothingMissing": "Rien de manquant ! Toutes CIS règles sont couvertes.",
       "noResults": "Aucun résultat.",
-      "noResourceMatch": "Non ressources match votre filtrer.",
-      "pickManifest": "Choisissez un manifeste et cliquez <strong>sur Comparer avec CIS</strong> pour voir votre score de conformité",
-      "description": "Cela montre la part du benchmark de CIS que votre manifeste couvre, ainsi que les règles manquantes"
+      "noResourceMatch": "Aucun réglage ne correspond à votre filtre.",
+      "pickManifest": "Choisissez un baseline et cliquez <strong>sur Comparer avec CIS</strong> pour voir votre score de conformité",
+      "description": "Ça montre combien de CIS couvrent tes baseline benchmark, plus les règles qui manquent encore"
     },
     "sort": {
       "unmappedFirst": "Cliquez pour trier : unmapped d’abord",

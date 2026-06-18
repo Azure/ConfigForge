@@ -1,14 +1,14 @@
 {
   "perManifest": {
     "extracted": {
-      "text1": "Retour to manifeste",
+      "text1": "Retour à baseline",
       "text2": "Conformité:",
       "text3": "CIS Les données des benchmarks ne sont pas regroupées",
-      "text4": "ConfigForge ne redistribue pas CIS contenu Benchmark (restrictions de licence). Le rapport de pourcentage de conformité compare votre manifeste à un CIS baseline, ce qui nécessite les fichiers de catalogue sur disque.",
+      "text4": "ConfigForge ne redistribue pas CIS contenu Benchmark (restrictions de licence). Le rapport de pourcentage de conformité compare votre baseline à un CIS baseline, ce qui nécessite les fichiers de catalogue sur disque.",
       "text5": "Voir",
       "text6": "Pour savoir comment déposer vos propres copies légalement licenciées et réactiver cette fonctionnalité.",
       "text7": "Générez audit pack (fonctionne sans CIS) →",
-      "text8": "Retour to manifeste",
+      "text8": "Retour à baseline",
       "text9": "Conformité:",
       "text10": "Comparer against",
       "text11": "Télécharger Markdown audit pack",
@@ -39,34 +39,34 @@
       "text36": "Attendu",
       "text37": "Chemin GPO",
       "text38": "Manquant",
-      "text39": "Pas de règles supplémentaires. Votre manifeste est un sous-ensemble strict du CIS baseline."
+      "text39": "Pas de règles supplémentaires. Votre baseline est un sous-ensemble strict du CIS baseline."
     }
   },
   "overview": {
     "extracted": {
-      "text1": "Validation et préparation à l’exportation",
-      "text2": "Validez les manifestes et vérifiez la préparation à l’exportation pour Azure Policy, MOF et plus encore",
+      "text1": "Préparation à l’exportation",
+      "text2": "Validez baselines et vérifiez la préparation à l’exportation pour Azure Policy, MOF et plus encore",
       "text3": "Actualiser",
-      "text4": "Total Manifestees",
+      "text4": "Total Baselines",
       "text5": "Exporter Prêt",
       "text6": "A des problèmes",
-      "text7": "Total Ressources",
-      "text8": "Non manifestees found",
-      "text9": "Enregistrer les manifestes pour valider et exporter.",
+      "text7": "Réglages complets",
+      "text8": "Aucune baselines trouvée",
+      "text9": "Inscrivezbaselines pour valider et exporter.",
       "text10": "Inscription Nouveau",
-      "text11": "Ressources ·",
+      "text11": "Paramètres ·",
       "text12": "Issue",
       "text13": "Issues",
-      "text14": "Manifeste Détails",
-      "text15": "Ressources",
-      "text16": "Ressource Types",
+      "text14": "Baseline Détails",
+      "text15": "Décors",
+      "text16": "Types d’univers",
       "text17": "Est-ce $schema",
       "text18": "Enforcement Valeurs",
       "text19": "Conformité Criteria",
       "text20": "Problèmes",
       "text21": "Exporter Readiness",
       "text22": "View / Modifier",
-      "text23": "Conflits inter-manifestes",
+      "text23": "Conflits inter-Baseline",
       "text24": "Exporter"
     }
   }

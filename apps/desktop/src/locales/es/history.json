@@ -18,8 +18,8 @@
     "summary_other": "{{manifestName}}: {{count}} instantáneas"
   },
   "empty": {
-    "sectionTitle": "No hay historial registrado para este manifiesto",
-    "sectionDescription": "Las instantáneas se guardan automáticamente cuando registras o actualizas el manifiesto."
+    "sectionTitle": "No se registra ningún historial para este baseline",
+    "sectionDescription": "Las instantáneas se guardan automáticamente cuando registras o actualizas el baseline."
   },
   "timeline": {
     "byAuthor": "By {{author}}",
@@ -40,10 +40,10 @@
     "closeAria": "Cerrar",
     "diffAfterRestore": "Después Restore",
     "diffCurrent": "Actual",
-    "noCurrent": "No se encontró ningún manifiesto registrado actual, por lo que no se creará una instantánea automática. La restauración registrará el contenido de la instantánea como un nuevo manifiesto.",
+    "noCurrent": "No se encontró ningún baseline registrado actualmente, por lo que no se creará una instantánea automática. La restauración registrará el contenido de la instantánea como un nuevo baseline.",
     "snapshotFrom": "Instantánea de {{time}}",
-    "title": "Restaurar manifiesto desde la instantánea",
-    "warning": "El manifiesto actual se tomará automáticamente antes de restaurar, así que podrás revertir. El re-registro puede volver a desplegar el estado deseado en dispositivos gestionados."
+    "title": "Restaurar baseline desde la instantánea",
+    "warning": "El baseline actual se capturará automáticamente antes de restaurar, así que podrás revertir. El re-registro puede volver a desplegar el estado deseado en dispositivos gestionados."
   },
   "diff": {
     "compareTitle": "Compárese con la corriente",

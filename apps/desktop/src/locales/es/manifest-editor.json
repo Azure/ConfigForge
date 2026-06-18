@@ -5,7 +5,7 @@
     "back": "Atrás",
     "docs": "Docs",
     "duplicate": "Duplicado",
-    "duplicateTitle": "Duplica este manifiesto",
+    "duplicateTitle": "Duplica esta baseline",
     "edit": "Editar",
     "export": "Exportar",
     "generateDocsTitle": "Generar documentación",
@@ -13,10 +13,10 @@
     "leaveUnsavedConfirm": "Tienes cambios sin guardar en \"{{name}}\". ¿Me vas de todos modos y los desechas?",
     "noRevertTitle": "No hay despliegue previo para revertir",
     "remove": "Quitar",
-    "removeConfirm": "¿Eliminar el manifiesto \"{{name}}\"? Esta acción no puede deshacerse.",
+    "removeConfirm": "¿Quitar baseline \"{{name}}\"? Esta acción no puede deshacerse.",
     "revert": "Revert",
-    "revertConfirm": "¿Revertir el manifiesto \"{{name}}\"?\n\nSi existe una instantánea previa al despliegue, tus ajustes previos se volverán a aplicar a este dispositivo. Si no existe una instantánea, OSConfig aplicación de este manifiesto será eliminada y el manifiesto será desregistrado. En cualquier caso, este manifiesto ya no se aplicará activamente en este dispositivo.",
-    "revertTitle": "Deshacer el último despliegue de este manifiesto desde este dispositivo. Si existe una instantánea previa al despliegue, se vuelven a aplicar configuraciones previas; de lo contrario, OSConfig aplicación se elimina."
+    "revertConfirm": "¿Revertir baseline \"{{name}}\"?\n\nSi existe una instantánea previa al despliegue, tus ajustes previos se volverán a aplicar a este dispositivo. Si no existe una instantánea, OSConfig aplicación de esta baseline se eliminará y la baseline se dará de registrar. En cualquier caso, esta baseline ya no se aplicará activamente en este dispositivo.",
+    "revertTitle": "Deshacer el último despliegue de este baseline desde este dispositivo. Si existe una instantánea previa al despliegue, se vuelven a aplicar configuraciones previas; de lo contrario, OSConfig aplicación se elimina."
   },
   "compliance": {
     "emptyDescription": "Ejecuta Audit o Enforce para comparar esta baseline con el dispositivo.",
@@ -27,23 +27,23 @@
     "editorView": "Editaror",
     "mofEditUnsupported": "No se soporta edición en MOF formato",
     "mofReadOnly": "MOF es de solo lectura",
-    "sectionTitle": "Manifiesto Content",
+    "sectionTitle": "Baseline Contenido",
     "unsavedFormatChanges": "Tienes cambios no guardados en {{format}}. Cambiar de pestaña los preserva; Guarda antes de navegar y alejarte.",
     "visualBuilderView": "Constructor Visual"
   },
   "cspTroubleshooting": {
-    "declaredConfig": "Los recursos CSP (Proveedor de Servicios de Configuración) necesitan la infraestructura de Configuración Declarada",
-    "engineRegistered": "Para usar recursos CSP, asegúrate de que el servicio del motor de OSConfig esté correctamente registrado",
-    "registryWorks": "Los recursos del registro (Microsoft.Windows/Registro) funcionan sin configuración adicional",
-    "title": "Los recursos de CSP requieren una configuración adicional",
+    "declaredConfig": "La configuración de CSP (Proveedor de Servicios de Configuración) requiere la infraestructura de Configuración Declarada",
+    "engineRegistered": "Para usar la configuración de CSP, asegúrate de que el servicio de OSConfig motor esté correctamente registrado",
+    "registryWorks": "La configuración del registro (Microsoft.Windows/Registro) funciona sin configuración adicional",
+    "title": "La configuración de CSP requiere una configuración adicional",
     "tryMetadata": "Prueba: <code>Get-OSConfigMetadata</code> para comprobar que el motor funciona"
   },
   "deploy": {
     "auditDescription": "Solo comprobar el cumplimiento",
-    "confirm": "¿Implementar el manifiesto «{{name}}» en modo {{mode}} en este dispositivo?",
+    "confirm": "¿Desplegar baseline \"{{name}}\" en modo {{mode}} en este dispositivo?",
     "enforceDescription": "Aplicar configuración to device",
     "enforceRiskConfirm": "ADVERTENCIA: Enforcer APLICARÁ configuraciones a este dispositivo.\n\nEsta acción puede modificar la política de seguridad de Windows o Linux de formas que puedan romper el inicio de sesión, la red, el RDP o el software instalado, y la recuperación puede requerir un administrador local o un medio de arranque.\n\nProcede bajo tu propia responsabilidad. Esta acción puede estropear tu máquina.\n\n¿Seguir con hacer cumplir la ley?",
-    "mixedPlatform": "Este manifiesto mezcla tipos de recursos para Windows y Linux. Divídelo en manifiestos por plataforma antes de desplegar.",
+    "mixedPlatform": "Este baseline mezcla los tipos de configuración de Windows y Linux. Divídelo en baselines por plataforma antes de desplegar.",
     "mode": {
       "audit": "Auditoría (solo comprobación de cumplimiento)",
       "enforce": "Aplicar ajustes (aplicar ajustes)"
@@ -52,11 +52,11 @@
   "deployResult": {
     "compliant": "Cumplimiento",
     "couldNotRead": "Could no read",
-    "couldNotReadTitle": "Recursos que la CLI no pudo leer (proveedor no soportado, error de transporte o ruta no soportada). Estos NO se cuentan como no cumplientes. El dispositivo puede estar realmente en el estado deseado.",
+    "couldNotReadTitle": "Ajustes que la CLI no podía leer (proveedor no soportado, error de transporte o ruta no soportada). Estos NO se cuentan como no cumplientes. El dispositivo puede estar realmente en el estado deseado.",
     "deployedAt": "Implementared at {{time}}",
     "host": "Presentador",
     "nonCompliant": "No cumple",
-    "viewResources": "View {{count}} recursos",
+    "viewResources": "Ver {{count}} ajustes",
     "warning": "Advertencia"
   },
   "docs": {
@@ -69,11 +69,11 @@
   "errors": {
     "deleteFailed": "Eliminar con error",
     "deployFailed": "Implementar con error",
-    "duplicateFailed": "Error to duplicate manifiesto",
+    "duplicateFailed": "No se pudo duplicar baseline",
     "exportFailed": "Exportar con error",
     "generateDocsFailed": "No se ha generado documentación",
     "loadFormatFailed": "No se pudo cargar {{format}} formato",
-    "loadManifestFailed": "Error to load manifiesto",
+    "loadManifestFailed": "No se ha podido cargar baseline",
     "revertFailed": "Revert con error",
     "saveFailed": "Guardar con error",
     "unknown": "Desconocido error"
@@ -100,8 +100,8 @@
     "source": "Origen: {{source}}"
   },
   "messages": {
-    "reverted": "Manifiesto reverted",
-    "saveSuccess": "Manifiesto \"{{name}}\" guardard correctofully",
+    "reverted": "Baseline revertido",
+    "saveSuccess": "Baseline \"{{name}}\" guardado con éxito",
     "savedWithWarning": "Guardado con advertencia: {{warning}}"
   },
   "platform": {
@@ -111,16 +111,16 @@
     "windows": "🪟 Windows"
   },
   "rationale": {
-    "backToManifest": "Atrás to manifiesto",
+    "backToManifest": "Volviendo a baseline",
     "downloadCsv": "Descargar CSV",
     "downloadCsvTitle": "Descarga todas las entradas de justificación como CSV",
     "emptyDescription": "Abre el editor, cambia un valor y haz clic en Guardar. El mensaje \"¿Por qué?\" refleja la lógica de cada cambio.",
     "emptyTitle": "Aún no hay justificación recogida.",
     "filterCount": "{{visible}} de {{total}}",
-    "filterPlaceholder": "Filtra por fuente, autor o texto de la razón...",
+    "filterPlaceholder": "Filtra por ambientación, autor o texto de razón...",
     "loadErrorTitle": "No se pudo cargar el registro de racionalización",
     "loading": "Cargando registro de razonamiento...",
-    "logDescription": "Cada cambio capturado por el prompt \"¿Por qué?\" en el editor. Cronológica, entre recursos. De nivel auditor.",
+    "logDescription": "Cada cambio capturado por el prompt \"¿Por qué?\" en el editor. Cronológico, con escenarios cruzados. De nivel auditor.",
     "logTitle": "Registro de justificación:",
     "noFilterMatches": "Ninguna entrada coincide con el filtro actual.",
     "noReasonSkipped": "(sin motivo: omitido por autor)",
@@ -134,7 +134,7 @@
     "table": {
       "author": "Autor",
       "reason": "Motivo",
-      "resource": "Recurso",
+      "resource": "Ambientación",
       "timestamp": "Marca temporal"
     },
     "unknownAuthor": "Desconocido"
@@ -148,13 +148,13 @@
   },
   "resourceEdit": {
     "cancelAria": "Cancelar y descartar cambios",
-    "title": "Editar recurso"
+    "title": "Editar configuración"
   },
   "tables": {
     "reason": "Motivo",
-    "resource": "Recurso",
-    "resources": "Recursos",
-    "showAllResources": "Show all {{count}} recursos",
+    "resource": "Ambientación",
+    "resources": "Escenarios",
+    "showAllResources": "Mostrar todos los ajustes {{count}}",
     "showingFirst": "(mostraring first {{count}})",
     "showingFirstForPerformance": "(mostrando primer {{count}} para la actuación)",
     "status": "Estado",
@@ -166,13 +166,13 @@
     "yaml": "YAML"
   },
   "visual": {
-    "addResource": "Agregar Recurso",
-    "currentResources": "Real Recursos ({{count}})",
+    "addResource": "Añadir Ambientación",
+    "currentResources": "Configuración actual ({{count}})",
     "groupCount": "Grupo · {{count}}",
-    "noResources": "No recursos in manifiesto.",
-    "parseError": "No pude analizar el manifesto YAML. Cambia a la vista del editor para corregir errores de sintaxis.",
-    "resourceFallback": "Recurso {{index}}",
+    "noResources": "No hay ajustes en baseline.",
+    "parseError": "No pude entender baseline YAML. Cambia a la vista del editor para corregir errores de sintaxis.",
+    "resourceFallback": "Ambientación {{index}}",
     "unknown": "Desconocido",
-    "usePicker": "Usa el selector para agregar recursos."
+    "usePicker": "Usa el selector para añadir ajustes."
   }
 }

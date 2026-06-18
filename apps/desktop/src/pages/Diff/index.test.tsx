@@ -125,6 +125,6 @@ describe('DiffPage — dropdown stability (v0.3.53)', () => {
       </FluentProvider>,
     );
 
-    expect(screen.getByRole('heading', { name: 'Comparer les manifestes' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Comparez Baselines' })).toBeInTheDocument();
   });
 });

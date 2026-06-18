@@ -1,7 +1,7 @@
 {
   "extracted": {
     "text1": "Benchmark-Zuordnung",
-    "text2": "Gleichen Sie Ihre OSConfig-Ressourcen mit den CIS-Benchmark-Regeln ab. Legen Sie Ihre CIS-Dateien im Ordner unten ab; der Editor zeigt passende Regeln an, während Sie durch das YAML navigieren.",
+    "text2": "Vergleiche deine OSConfig-Einstellungen mit CIS Benchmark-Regeln. Fügen Sie Ihre CISDateien in den folgenden Ordner ein, und der Editor zeigt entsprechende Regeln an, während Sie sich durch die YAML bewegen.",
     "text3": "Sobald CIS-Daten geladen sind, ist auch eine",
     "text4": "CIS",
     "text5": "Registerkarte auf der Seite",
@@ -16,7 +16,7 @@
     "text14": "json",
     "text15": "JSON-Katalog",
     "text16": "XCCDF + JSON",
-    "text17": "Der Editor zeigt CIS-Regel-Querverweise an, während Sie durch die Ressourcen navigieren.",
+    "text17": "Der Editor zeigt CIS Regel-Querverweise an, während du durch die Einstellungen navigierst.",
     "text18": "Keine CIS-Daten gefunden",
     "text19": "Legen Sie Ihre CIS-Baseline als JSON (aus Azure Policy) oder XCCDF+OVAL-XML (aus CIS Workbench) im Ordner unten ab und klicken Sie auf",
     "text20": "Erneut prüfen",
@@ -31,7 +31,7 @@
     "text29": "Empfohlen",
     "text30": "Laden Sie CIS-Baselines aus dem",
     "text31": "Azure-Portal",
-    "text32": "(Azure Policy > Machine Configuration > CIS) herunter. Legen Sie das JSON unverändert ab. Die App erkennt die Plattform (Windows / Linux) und ordnet die Regeln Ihren Manifest-Ressourcen anhand des Namens zu.",
+    "text32": "(Azure Policy > Maschinenkonfiguration > CIS). Lass die JSON so fallen, wie sie ist. Die App erkennt die Plattform (Windows / Linux) und ordnet die Regeln anhand deiner baseline Einstellungen anhand des Namens ab.",
     "text33": "Sie können mehrere Dateien ablegen (eine pro Betriebssystem). Benennen Sie sie beliebig.",
     "text34": "CIS XCCDF + OVAL XML",
     "text35": "Alternative",
@@ -59,7 +59,7 @@
     "text57": "Nicht erkannte Dateien im Ordner",
     "text58": "Diese Dateien entsprechen keinem erwarteten Namen. Bei einem Tippfehler benennen Sie sie um und klicken Sie auf „Erneut prüfen“.",
     "text59": "Meinten Sie",
-    "text60": "Zurück zu den Manifesten",
+    "text60": "Zurück zu meinem Baselines",
     "text61": "Diese Seite ist vollständig optional",
     "text62": "Alle ConfigForge-Funktionen außer den CIS-Querverweisen funktionieren ohne CIS-Daten."
   }

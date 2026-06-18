@@ -10,15 +10,15 @@
   },
   "history": {
     "retentionDescriptionAfterEnv": "überschreibt dies, wenn es eingestellt ist.",
-    "retentionDescriptionBeforeEnv": "Wie viele Verlaufseinträge pro Manifest werden aufbewahrt, bevor ältere entfernt werden? Bereich: 5-1000. Die Umgebungsvariable",
-    "retentionLabel": "Manifest-Versions-Snapshots zum Aufbewahren",
+    "retentionDescriptionBeforeEnv": "Wie viele Geschichtseinträge pro baseline bevor ältere zurückgeschnitten werden? Reichweite: 5-1000. The env var",
+    "retentionLabel": "Baseline Versionssnapshots zu speichern",
     "saveFailed": "Speichern fehlgeschlagen",
     "sectionTitle": "Verlauf & Retention",
     "validationRange": "Muss zwischen 5 und 1000 liegen."
   },
   "language": {
     "sectionTitle": "Sprache",
-    "sectionDescription": "Wählen Sie die in der gesamten App verwendete Sprache. Technische Inhalte (Manifeste, OSConfig-Ausgabe, CIS-Regeltext) bleiben in Englisch.",
+    "sectionDescription": "Wählen Sie die Sprache, die in der gesamten App verwendet wird. Technischer Inhalt (baseline YAML, OSConfig Ausgabe CIS Regeltext) bleibt auf Englisch.",
     "options": {
       "system": "System (automatische Erkennung)",
       "en": "Englisch",

@@ -63,7 +63,7 @@ describe('ManifestsPage localization', () => {
       </FluentProvider>,
     );
 
-    expect(screen.getByRole('heading', { name: 'Manifestes' })).toBeInTheDocument();
+    expect(screen.getByRole('heading', { name: 'Mes Baselines' })).toBeInTheDocument();
   });
 
   it('shows a "Could not read" count for indeterminate/error resources on the card', async () => {

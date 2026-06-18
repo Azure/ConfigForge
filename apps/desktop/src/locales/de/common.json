@@ -56,20 +56,20 @@
   "components": {
     "conflictDetector": {
       "extracted": {
-        "text1": "Man braucht mindestens zwei Manifeste, um Konflikte zu erkennen.",
-        "text2": "Cross-Manifest Konflikterkennung",
+        "text1": "Man braucht mindestens 2 baselines, um Konflikte zu erkennen.",
+        "text2": "Cross-Baseline Konflikterkennung",
         "text3": "Überprüfen",
-        "text4": "Manifeste for conflicting Einstellungen",
+        "text4": "baselines für widersprüchliche Einstellungen",
         "text5": "Nachprüfung",
-        "text6": "Manifeste auf Konflikte analysieren...",
-        "text7": "Es wurden keine Konflikte zwischen registrierten Manifesten festgestellt",
+        "text6": "Analysieren baselines auf Konflikte...",
+        "text7": "Es wurden keine Konflikte zwischen registrierten baselines",
         "text8": "Konflikt:"
       }
     },
     "recentRationale": {
       "extracted": {
         "text1": "Wird geladen…",
-        "text2": "Für diese Ressource ist noch keine Begründung gefunden.",
+        "text2": "Für dieses Setting ist noch keine Begründung gefunden.",
         "text3": "Skipped",
         "text4": "Unbekannt",
         "text5": "(kein Grund: vom Autor übersprungen)",

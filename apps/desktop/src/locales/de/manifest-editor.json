@@ -5,7 +5,7 @@
     "back": "Zurück",
     "docs": "Docs",
     "duplicate": "Duplikat",
-    "duplicateTitle": "Duplizieren Sie dieses Manifest",
+    "duplicateTitle": "Dupliziere dieses baseline",
     "edit": "Bearbeiten",
     "export": "Exportieren",
     "generateDocsTitle": "Dokumentation erstellen",
@@ -13,10 +13,10 @@
     "leaveUnsavedConfirm": "Du hast Änderungen an \"{{name}}\" nicht gespeichert. Trotzdem gehen und sie wegwerfen?",
     "noRevertTitle": "Kein vorheriges Deployen zum Zurücksetzen",
     "remove": "Entfernen",
-    "removeConfirm": "Manifest \"{{name}}\" entfernen? Diese Maßnahme kann nicht rückgängig gemacht werden.",
+    "removeConfirm": "Entfernen baseline \"{{name}}\"? Diese Maßnahme kann nicht rückgängig gemacht werden.",
     "revert": "Rückgängig machen",
-    "revertConfirm": "Manifestiere \"{{name}}\"?\n\nWenn ein Pre-Deploy-Snapshot vorhanden ist, werden deine vorherigen Einstellungen auf dieses Gerät erneut angewendet. Wenn kein Snapshot existiert, wird OSConfig Durchsetzung dieses Manifests entfernt und das Manifest wird nicht registriert. So oder so wird dieses Manifest auf diesem Gerät nicht mehr aktiv durchgesetzt.",
-    "revertTitle": "Die letzte Bereitstellung dieses Manifests von diesem Gerät rückgängig machen. Wenn ein Pre-Deploy-Snapshot existiert, werden vorherige Einstellungen erneut angewendet; ansonsten wird OSConfig Durchsetzung aufgehoben."
+    "revertConfirm": "Zurücksetzen baseline \"{{name}}\"?\n\nWenn ein Pre-Deploy-Snapshot vorhanden ist, werden deine vorherigen Einstellungen auf dieses Gerät erneut angewendet. Wenn kein Snapshot vorhanden ist, wird OSConfig Durchsetzung dieses baseline entfernt und der baseline wird nicht registriert. So oder so wird dieser baseline auf diesem Gerät nicht mehr aktiv durchgesetzt.",
+    "revertTitle": "Die letzte Bereitstellung dieses baseline von diesem Gerät rückgängig machen. Wenn ein Pre-Deploy-Snapshot existiert, werden vorherige Einstellungen erneut angewendet; ansonsten wird OSConfig Durchsetzung aufgehoben."
   },
   "compliance": {
     "emptyDescription": "Führen Sie Audit oder Enforce aus, um diese Baseline mit dem Gerät abzugleichen.",
@@ -27,23 +27,23 @@
     "editorView": "Bearbeitenor",
     "mofEditUnsupported": "Das Bearbeiten wird im MOF Format nicht unterstützt.",
     "mofReadOnly": "MOF ist nur lesegeschützt",
-    "sectionTitle": "Manifest-Inhalt",
+    "sectionTitle": "Baseline Inhalt",
     "unsavedFormatChanges": "Du hast in {{format}} nicht gespeicherte Änderungen. Das Wechseln der Tabs bewahrt sie; Speichere, bevor du wegnavigierst.",
     "visualBuilderView": "Visueller Builder"
   },
   "cspTroubleshooting": {
-    "declaredConfig": "CSP-Ressourcen (Configuration Service Provider) benötigen die deklarierte Konfigurationsinfrastruktur",
-    "engineRegistered": "Um CSP-Ressourcen zu verwenden, stellen Sie sicher, dass der OSConfig-Engine-Dienst ordnungsgemäß registriert ist",
-    "registryWorks": "Registrierungsressourcen (Microsoft.Windows/Registry) funktionieren ohne zusätzliche Einrichtung",
-    "title": "CSP-Ressourcen erfordern zusätzliche Einrichtung",
+    "declaredConfig": "CSP-Einstellungen (Configuration Service Provider) benötigen die deklarierte Konfigurationsinfrastruktur",
+    "engineRegistered": "Um die CSP-Einstellungen zu verwenden, stellen Sie sicher, dass der OSConfig-Engine-Service korrekt registriert ist",
+    "registryWorks": "Registry-Einstellungen (Microsoft.Windows/Registry) funktionieren ohne zusätzliche Einrichtung",
+    "title": "CSP-Einstellungen erfordern zusätzliche Einrichtung",
     "tryMetadata": "Versuchen Sie: <code>Get-OSConfigMetadata</code>, um zu überprüfen, ob der Motor funktioniert"
   },
   "deploy": {
     "auditDescription": "Nur Überprüfung der Einhaltung",
-    "confirm": "Manifest „{{name}}“ im Modus {{mode}} auf diesem Gerät bereitstellen?",
+    "confirm": "Soll ich baseline \"{{name}}\" im {{mode}}-Modus auf dieses Gerät ausrichten?",
     "enforceDescription": "Anwenden Einstellungen to device",
     "enforceRiskConfirm": "WARNUNG: Enforce wird Einstellungen auf dieses Gerät ANWENDEN.\n\nDiese Maßnahme kann die Sicherheitsrichtlinien von Windows oder Linux so verändern, dass Login, Netzwerke, RDP oder installierte Software beschädigt werden, und die Wiederherstellung kann einen lokalen Administrator oder ein Bootmedium erfordern.\n\nGehen Sie auf eigenes Risiko vor. Diese Aktion kann Ihre Maschine kaputt machen.\n\nSoll ich mit der Durchsetzung fortfahren?",
-    "mixedPlatform": "Dieses Manifest mischt Windows- und Linux-Ressourcentypen. Teile es vor der Bereitstellung in Manifesten pro Plattform auf.",
+    "mixedPlatform": "Dies baseline eine Mischung aus Windows- und Linux-Einstellungstypen. Teile es vor der Bereitstellung in baselines pro Plattform auf.",
     "mode": {
       "audit": "Prüfung (nur Compliance-Überprüfung)",
       "enforce": "Erzwingen (Einstellungen anwenden)"
@@ -52,11 +52,11 @@
   "deployResult": {
     "compliant": "Konform",
     "couldNotRead": "Could nicht read",
-    "couldNotReadTitle": "Ressourcen, die die CLI nicht lesen konnte (Anbieter nicht unterstützt, Transportfehler oder nicht unterstützter Pfad). Diese werden NICHT als nicht konform gewertet. Das Gerät könnte tatsächlich im gewünschten Zustand sein.",
+    "couldNotReadTitle": "Einstellungen, die die CLI nicht lesen konnte (Anbieter nicht unterstützt, Transportfehler oder nicht unterstützter Pfad). Diese werden NICHT als nicht konform gewertet. Das Gerät könnte tatsächlich im gewünschten Zustand sein.",
     "deployedAt": "Bereitstellened at {{time}}",
     "host": "Moderator",
     "nonCompliant": "Neinn-compliant",
-    "viewResources": "View {{count}} ResQuellen",
+    "viewResources": "Ansicht {{count}} Einstellungen",
     "warning": "Warnung"
   },
   "docs": {
@@ -69,11 +69,11 @@
   "errors": {
     "deleteFailed": "Löschen fehlgeschlagen",
     "deployFailed": "Bereitstellen fehlgeschlagen",
-    "duplicateFailed": "Manifest wurde nicht dupliziert",
+    "duplicateFailed": "Es konnte baseline nicht dupliziert werden.",
     "exportFailed": "Exportieren fehlgeschlagen",
     "generateDocsFailed": "Dokumentation wurde nicht erstellt",
     "loadFormatFailed": "Kein Laden {{format}} Format",
-    "loadManifestFailed": "Manifest wurde nicht geladen",
+    "loadManifestFailed": "Nicht geladen baseline",
     "revertFailed": "Revert fehlgeschlagen",
     "saveFailed": "Speichern fehlgeschlagen",
     "unknown": "Unbekannt Fehler"
@@ -100,8 +100,8 @@
     "source": "Quelle: {{source}}"
   },
   "messages": {
-    "reverted": "Manifest rückgängig gemacht",
-    "saveSuccess": "Manifest \"{{name}}\" speichernd Erfolgfully",
+    "reverted": "Baseline wurde zurückgesetzt",
+    "saveSuccess": "Baseline \"{{name}}\" erfolgreich gespeichert",
     "savedWithWarning": "Mit Warnung gespeichert: {{warning}}"
   },
   "platform": {
@@ -111,16 +111,16 @@
     "windows": "🪟 Windows"
   },
   "rationale": {
-    "backToManifest": "Zurück to Manifest",
+    "backToManifest": "Zurück zu baseline",
     "downloadCsv": "Herunterladen CSV",
     "downloadCsvTitle": "Laden Sie alle Begründungseinträge als CSV herunter",
     "emptyDescription": "Öffne den Editor, ändere einen Wert und klicke auf Speichern. Der \"Warum?\"-Prompt erfasst die Begründung für jede Änderung.",
     "emptyTitle": "Nein rationale captured yet.",
     "filterCount": "{{visible}} {{total}}",
-    "filterPlaceholder": "Filtern Sie nach Ressource, Autor oder Begründung Text...",
+    "filterPlaceholder": "Filtern Sie nach Setting, Autor oder Begründungstext...",
     "loadErrorTitle": "Konnte das Rationale Log nicht laden",
     "loading": "Lade: Rationale Log...",
-    "logDescription": "Jede Änderung wird durch die \"Warum?\"-Eingabe im Editor erfasst. Chronologisch, ressourcenübergreifend. Prüfer-Qualität.",
+    "logDescription": "Jede Änderung wird durch die \"Warum?\"-Eingabe im Editor erfasst. Chronologisch, über das Setting hinaus. Prüfer-Qualität.",
     "logTitle": "Rationale Log:",
     "noFilterMatches": "Keine Einträge stimmen mit dem aktuellen Filter überein.",
     "noReasonSkipped": "(kein Grund: vom Autor übersprungen)",
@@ -134,7 +134,7 @@
     "table": {
       "author": "Autor",
       "reason": "Grund",
-      "resource": "Ressource",
+      "resource": "Schauplatz",
       "timestamp": "Zeitstempel"
     },
     "unknownAuthor": "Unbekannt"
@@ -148,13 +148,13 @@
   },
   "resourceEdit": {
     "cancelAria": "Änderungen abbrechen und abwerfen",
-    "title": "Bearbeiten ResQuelle"
+    "title": "Bearbeitungseinstellung"
   },
   "tables": {
     "reason": "Grund",
-    "resource": "Ressource",
-    "resources": "Ressourcen",
-    "showAllResources": "Show all {{count}} ResQuellen",
+    "resource": "Schauplatz",
+    "resources": "Einstellungen",
+    "showAllResources": "Alle {{count}} Einstellungen anzeigen",
     "showingFirst": "(anzeigening first {{count}})",
     "showingFirstForPerformance": "(zeigt erste {{count}} für die Leistung)",
     "status": "Status",
@@ -166,13 +166,13 @@
     "yaml": "YAML"
   },
   "visual": {
-    "addResource": "Hinzufügen ResQuelle",
-    "currentResources": "Aktuell ResQuellen ({{count}})",
+    "addResource": "Einstellung hinzufügen",
+    "currentResources": "Aktuelle Einstellungen ({{count}})",
     "groupCount": "Gruppe · {{count}}",
-    "noResources": "Nein ResQuellen in Manifest.",
-    "parseError": "Konnte manifestierte YAML nicht analysieren. Wechsle zur Editor-Ansicht, um Syntaxfehler zu korrigieren.",
-    "resourceFallback": "ResQuelle {{index}}",
+    "noResources": "Keine Einstellungen in baseline.",
+    "parseError": "Konnte baseline YAML nicht verstehen. Wechsle zur Editor-Ansicht, um Syntaxfehler zu korrigieren.",
+    "resourceFallback": "Setting {{index}}",
     "unknown": "Unbekannt",
-    "usePicker": "Verwenden Sie die Auswahl, um Ressourcen hinzuzufügen."
+    "usePicker": "Benutze den Picker, um Einstellungen hinzuzufügen."
   }
 }

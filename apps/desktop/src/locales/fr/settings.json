@@ -10,15 +10,15 @@
   },
   "history": {
     "retentionDescriptionAfterEnv": "Ça remplace cela une fois réglé.",
-    "retentionDescriptionBeforeEnv": "Combien d'entrées d'historique par manifeste sont conservées avant que les plus anciennes ne soient supprimées. Plage : 5-1000. La variable d'environnement",
-    "retentionLabel": "Snapshots de la version manifeste à conserver",
+    "retentionDescriptionBeforeEnv": "Combien d’entrées d’histoire par baseline avant que les plus anciennes ne soient élagées. Portée : 5-1000. L’env var",
+    "retentionLabel": "Baseline instantanés de version à conserver",
     "saveFailed": "Enregistrer échoué",
     "sectionTitle": "Historique & Retention",
     "validationRange": "Ça doit être entre 5 et 1000."
   },
   "language": {
     "sectionTitle": "Langue",
-    "sectionDescription": "Choisissez la langue utilisée dans toute l'application. Le contenu technique (manifestes, sortie OSConfig, texte des règles CIS) reste en anglais.",
+    "sectionDescription": "Choisissez la langue utilisée dans toute l’application. Le contenu technique (baseline YAML, OSConfig sortie, CIS texte des règles) reste en anglais.",
     "options": {
       "system": "Système (détection automatique)",
       "en": "Anglais",

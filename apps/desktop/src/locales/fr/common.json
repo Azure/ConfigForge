@@ -56,20 +56,20 @@
   "components": {
     "conflictDetector": {
       "extracted": {
-        "text1": "Il faut au moins 2 manifestes pour détecter les conflits.",
-        "text2": "Détection des conflits entre manifestes",
+        "text1": "Il faut au moins 2 baselines pour détecter les conflits.",
+        "text2": "Détection de conflits croisés Baseline",
         "text3": "Vérification",
-        "text4": "Manifestees for conflicting paramètres",
+        "text4": "baselines pour les réglages conflictuels",
         "text5": "Revérifier",
-        "text6": "Analyser les manifestes pour des conflits...",
-        "text7": "Aucun conflit détecté entre manifestes enregistrés",
+        "text6": "Analyser baselines pour détecter des conflits...",
+        "text7": "Aucun conflit n’a été détecté entre les baselines enregistrés",
         "text8": "Conflit :"
       }
     },
     "recentRationale": {
       "extracted": {
         "text1": "Chargement…",
-        "text2": "Aucune justification n’a encore été recueillie pour cette ressource.",
+        "text2": "Aucune raison n’a encore été trouvée pour ce cadre.",
         "text3": "Skipped",
         "text4": "Inconnu",
         "text5": "(sans raison : ignoré par l’auteur)",

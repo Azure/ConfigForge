@@ -1,7 +1,7 @@
 {
   "extracted": {
     "text1": "Asignación de referencias",
-    "text2": "Compara tus recursos de OSConfig con las reglas de CIS Benchmark. Coloca tus archivos CIS en la carpeta de abajo y el editor mostrará las reglas coincidentes mientras navegas por el YAML.",
+    "text2": "Contrasta tus ajustes de OSConfig con las reglas de CIS Benchmark. Coloca tus archivos CIS en la carpeta de abajo y el editor mostrará las reglas correspondientes mientras navegas por la YAML.",
     "text3": "Una vez cargados los datos de CIS, también habrá una pestaña",
     "text4": "CIS",
     "text5": "disponible en la página",
@@ -16,7 +16,7 @@
     "text14": "json",
     "text15": "Catálogo JSON",
     "text16": "XCCDF + JSON",
-    "text17": "El editor mostrará las referencias cruzadas de reglas CIS mientras navegas por los recursos.",
+    "text17": "El editor mostrará CIS referencias cruzadas de reglas mientras navegas por la configuración.",
     "text18": "No se encontraron datos de CIS",
     "text19": "Coloca tu baseline de CIS en JSON (desde Azure Policy) o XML XCCDF+OVAL (desde CIS Workbench) en la carpeta de abajo y haz clic en",
     "text20": "Volver a comprobar",
@@ -31,7 +31,7 @@
     "text29": "Recomendado",
     "text30": "Descarga las baselines de CIS desde el",
     "text31": "portal de Azure",
-    "text32": "(Azure Policy > Machine Configuration > CIS). Coloca el JSON tal cual. La aplicación detecta la plataforma (Windows / Linux) y hace coincidir las reglas con los recursos de tu manifiesto por su nombre.",
+    "text32": "(Azure Policy > Configuración de la máquina > CIS). Deja el JSON tal cual. La app detecta la plataforma (Windows / Linux) y empareja las reglas con tus baseline ajustes por nombre.",
     "text33": "Puedes colocar varios archivos (uno por sistema operativo). Nómbralos como quieras.",
     "text34": "CIS XCCDF + OVAL XML",
     "text35": "Alternativa",
@@ -59,7 +59,7 @@
     "text57": "Archivos no reconocidos en la carpeta",
     "text58": "Estos archivos no coinciden con ningún nombre esperado. Si es un error tipográfico, renómbralos y haz clic en Volver a comprobar.",
     "text59": "Quizás quisiste decir",
-    "text60": "Volver a los manifiestos",
+    "text60": "De vuelta a mi Baselines",
     "text61": "Esta página es totalmente opcional",
     "text62": "Todas las funciones de ConfigForge funcionan sin datos de CIS, excepto las referencias cruzadas de CIS."
   }

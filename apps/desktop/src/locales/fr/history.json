@@ -18,8 +18,8 @@
     "summary_other": "{{manifestName}} : {{count}} instantanés"
   },
   "empty": {
-    "sectionTitle": "Aucun historique enregistré pour ce manifeste",
-    "sectionDescription": "Les instantanés sont sauvegardés automatiquement lorsque vous vous enregistrez ou mettez à jour le manifeste."
+    "sectionTitle": "Aucun historique enregistré pour cette baseline",
+    "sectionDescription": "Les instantanés sont sauvegardés automatiquement lorsque vous vous enregistrez ou mettez à jour le baseline."
   },
   "timeline": {
     "byAuthor": "By {{author}}",
@@ -40,10 +40,10 @@
     "closeAria": "Fermer",
     "diffAfterRestore": "Après Restore",
     "diffCurrent": "Actuel",
-    "noCurrent": "Aucun manifeste enregistré actuel n’a été trouvé, donc aucun instantané automatique ne sera créé. La restauration enregistrera le contenu instantané comme un nouveau manifeste.",
+    "noCurrent": "Aucun baseline enregistré actuel n’a été trouvé, donc aucun instantané automatique ne sera créé. La restauration enregistrera le contenu instantané comme un nouveau baseline.",
     "snapshotFrom": "Instantané de {{time}}",
-    "title": "Restaurer le manifeste à partir de l’instantané",
-    "warning": "Le manifeste actuel sera instantané automatiquement avant la restauration, vous pourrez donc revenir en arrière. Le réenregistrement peut redéployer l’état souhaité sur les appareils gérés."
+    "title": "Restaurez baseline à partir d’un instantané",
+    "warning": "Le baseline actuel sera instantané automatiquement avant la restauration, donc vous pourrez revenir en arrière. Le réenregistrement peut redéployer l’état souhaité sur les appareils gérés."
   },
   "diff": {
     "compareTitle": "Comparer avec le courant",

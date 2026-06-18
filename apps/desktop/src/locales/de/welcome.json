@@ -4,7 +4,7 @@
   "cards": {
     "author": {
       "title": "Autor baselines überall",
-      "body": "Bearbeiten, differentieren, vergleichen und exportieren OSConfig Manifests auf jedem Betriebssystem. Keine zusätzlichen Installationen nötig."
+      "body": "Bearbeiten, differentieren, vergleichen und OSConfig baselines auf jedem Betriebssystem exportieren. Keine zusätzlichen Installationen nötig."
     },
     "deploy": {
       "title": "Autor + deploy auf diesem Rechner",

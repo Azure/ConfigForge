@@ -4,7 +4,7 @@
   "cards": {
     "author": {
       "title": "Autor baselines en cualquier lugar",
-      "body": "Editar, diferenciar, comparar y exportar OSConfig manifiestos en cualquier sistema operativo. No se necesitan instalaciones adicionales."
+      "body": "Editar, diferenciar, comparar y exportar OSConfig baselines en cualquier sistema operativo. No se necesitan instalaciones adicionales."
     },
     "deploy": {
       "title": "Autor + despliegue en esta máquina",
