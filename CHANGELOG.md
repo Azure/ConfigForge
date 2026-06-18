@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.70-author.1] - 2026-06-18
+
+### Fixed
+- **Benchmark Mapping: the "Back to My Baselines" button now shows a back arrow**, matching the other back buttons across the app (added the `ArrowLeftRegular` icon to the link in `CisCatalog.tsx`).
+
 ## [0.3.69-author.1] - 2026-06-18
 
 ### Changed
