@@ -3,7 +3,11 @@
 ## [0.3.69] - 2026-06-18
 
 ### Changed
-- **UI polish across My Baselines, Microsoft Baselines, and the Baseline Editor.** Replaced the Windows emoji and the FluentUI desktop icon with a 4-color Microsoft Windows logo on baseline cards, Microsoft Baselines filters/cards, the setting picker, and the editor header; Linux now uses the penguin consistently. Moved the **Microsoft Baselines** nav item directly under **My Baselines**, renamed the baseline-card action **"View" to "Open"**, removed the redundant **"Source: oscfg"** label from cards and the editor header, and swapped the editor format strip so the Editor/Visual Builder toggle is on the left and the YAML/JSON/MOF tabs are on the right. Renamed the Benchmark Mapping **"CIS data folder" to "Benchmark data folder"** and fixed the License-note spacing.
+- **UI polish across My Baselines, Microsoft Baselines, and the Baseline Editor.**
+  - Replaced the Windows emoji and the FluentUI desktop icon with a 4-color Microsoft Windows logo on baseline cards, Microsoft Baselines filters/cards, the setting picker, and the editor header; Linux now uses the penguin consistently.
+  - Moved the **Microsoft Baselines** nav item directly under **My Baselines** and renamed the baseline-card action **"View" to "Open"**.
+  - Removed the redundant **"Source: oscfg"** label from cards and the editor header.
+  - Swapped the editor format strip so the Editor/Visual Builder toggle is on the left and the YAML/JSON/MOF tabs are on the right; renamed the Benchmark Mapping **"CIS data folder" to "Benchmark data folder"**; and fixed the License-note spacing.
 - **Deprecated the duplicate toolbar "Docs" button** in the Baseline Editor (use Export → Docs); removed the now-dead docs-preview modal and hook.
 
 ### Fixed
@@ -15,7 +19,7 @@
 ## [0.3.68] - 2026-06-10
 
 ### Changed
-- **Removed all code-signing from CI; release builds are now unsigned by design (OSS migration).** Ahead of the open-source repo move, the Release workflow no longer signs Windows installers: dropped the Azure Trusted Signing step, the legacy `.pfx`/`CSC_*` path, the signing gate, and the `allow_unsigned` dispatch input (plus all `WIN_CSC_*`, `AZURE_*`, and `TRUSTED_SIGNING_*` secret/variable references). `release.yml`/`release-mac.yml` still build the full installer matrix (NSIS/zip/AppImage/deb/rpm/tar.gz/.dmg) with SBOM + SHA256SUMS and publish to a draft release — just **unsigned**. The trust path is building from source; an optional **local** self-sign helper (`apps/desktop/scripts/generate-dev-cert.ps1`) is retained but never runs in CI.
+- **Removed all code-signing from CI; release builds are now unsigned by design (OSS migration).** Ahead of the open-source repo move, the Release workflow no longer signs Windows installers: dropped the Azure Trusted Signing step, the legacy `.pfx`/`CSC_*` path, the signing gate, and the `allow_unsigned` dispatch input (plus all `WIN_CSC_*`, `AZURE_*`, and `TRUSTED_SIGNING_*` secret/variable references). `release.yml`/`release-mac.yml` still build the full installer matrix (NSIS/zip/AppImage/deb/rpm/tar.gz/.dmg) with SBOM + SHA256SUMS and publish to a draft release — just **unsigned**. **Verification workflow:** before installing, download artifacts only from the GitHub release, verify each file against `SHA256SUMS`, and review attached provenance/SBOM artifacts; for high-assurance environments, build from source at the tagged commit and compare resulting hashes where reproducible. The trust path is building from source; an optional **local** self-sign helper (`apps/desktop/scripts/generate-dev-cert.ps1`) is retained but never runs in CI.
 - **Moved the `npm audit --omit=dev --audit-level=high` supply-chain gate into `pr-check.yml`** so it runs on every PR (previously only at release). The release pipeline keeps its copy as a pre-ship gate.
 
 ### Docs
@@ -28,6 +32,7 @@
 
 ### Fixed
 - **MOF export now produces a package the Azure Machine Configuration cmdlets can build.** `exportToMof` stamped `ModuleName = "OSConfig"` / `ModuleVersion = "1.0.0"`, but the OSConfig DSC resource ships in the **`Microsoft.OSConfig`** PSGallery module, and `New-GuestConfigurationPackage` requires the MOF's `ModuleVersion` to match an *installed* version exactly. The result: packaging a ConfigForge-exported MOF failed with *"Failed to find a module with the name 'OSConfig' and the version '1.0.0'."* The export now emits `ModuleName = "Microsoft.OSConfig"` and **omits `ModuleVersion`**, so the packaging cmdlet binds to whatever `Microsoft.OSConfig` (1.2.0 or later) is installed. Verified end-to-end: Export → MOF → `New-GuestConfigurationPackage -Type AuditAndSet` now produces a valid `.zip` with no manual edits (against GuestConfiguration 4.11.0 + Microsoft.OSConfig 1.3.11). The DSC resource class (`instance of OSConfig`) and the configuration footer are unchanged.
+  - **If you exported MOFs before 0.3.67, re-export them before packaging.** Manual fallback: update `ModuleName` to `Microsoft.OSConfig` and remove the `ModuleVersion` line in the existing MOF, then rerun `New-GuestConfigurationPackage`.
   - Documented the one-time prerequisites (`Install-Module GuestConfiguration` + `Install-Module Microsoft.OSConfig`) in the manifest-editor export guide and added 4 regression tests (`import-export/index.test.ts`).
 
 ### Tests
@@ -39,14 +44,18 @@
 - **Shortened the desktop app package description** shown in the Windows executable / installer metadata: "ConfigForge — Electron desktop app. Cross-platform (Windows + Linux) with Fluent-inspired desktop polish." → "ConfigForge — OSConfig Baseline Editing tool". The source is the `description` field in `apps/desktop/package.json`, which electron-builder embeds in the built artifact. No functional change.
 
 ### Fixed
-- **Manifests list card stat labels no longer look cramped.** The 4-up Resources / Compliant / Issues / Could not read grid used wide letter-spacing (`tracking-wider`) plus large side padding (`px-3`), leaving only ~70px for text, so the three-word "Could not read" label wrapped to three tight lines and crowded the tile edges. Tightened the label tracking and trimmed the stat-box horizontal padding so the label wraps cleanly to two lines — tile size and the other three stats are unchanged.
+- **Manifests list card stat labels no longer look cramped.**
+  - The 4-up Resources / Compliant / Issues / Could not read grid used wide letter-spacing (`tracking-wider`) plus large side padding (`px-3`), leaving only ~70px for text, so the three-word "Could not read" label wrapped to three tight lines and crowded the tile edges.
+  - Tightened the label tracking and trimmed the stat-box horizontal padding so the label wraps cleanly to two lines — tile size and the other three stats are unchanged.
 
 ## [0.3.65] - 2026-06-10
 
 ### Fixed
 - **Diff "Select manifest" dropdown could freeze until app restart (definitive fix).** Rapidly navigating between pages that mount and dispose Monaco editors (Manifests, the manifest editor, CIS Mapping, Diff) could leave an orphaned `position: fixed` Monaco overflow widget parented on `document.body`. The invisible overlay sat over the Pairwise "Select manifest" `<select>`, swallowed clicks, and froze the dropdown until restart. v0.3.53 mitigated the symptom (removed a stuck-loading guard, added an IPC timeout); this is the root-cause fix — Monaco's overflow widgets are now hosted in a node ConfigForge owns via `overflowWidgetsDomNode`: created with `document.createElement`, appended to `<body>` for the editor's lifetime, and **removed on unmount**, so no orphan can survive a dispose/navigation race.
-  - The host is deliberately a non-React `document.createElement` node rather than JSX. A React-rendered node carries `__reactFiber$…` expando properties that point into the cyclic Fiber tree, and Monaco deep-clones the editor options (which include this node); cloning a React-owned node recurses through the entire Fiber graph and crashes the renderer with "Maximum call stack size exceeded" on a later editor mount.
 - Covered by a strengthened Playwright e2e (`e2e/diff-dropdown-no-orphan.spec.ts`): it churns editors, then switches the Pairwise side to "from manifest" mode and asserts the dropdown has no overlay, accepts a real pointer click, and actually changes value when a manifest is selected.
+
+### Notes
+- The overflow-widget host is deliberately a non-React `document.createElement` node rather than JSX. A React-rendered node carries `__reactFiber$…` expando properties that point into the cyclic Fiber tree, and Monaco deep-clones the editor options (which include this node); cloning a React-owned node recurses through the entire Fiber graph and crashes the renderer with "Maximum call stack size exceeded" on a later editor mount.
 
 ### Tests
 - Full vitest suite **1254 passing, 0 failing**; full Playwright e2e **61 passing** (1 known-flaky `conflict-detection` retry); `npm run desktop:build` clean; `npm run lint` 0 errors.
@@ -54,13 +63,17 @@
 ## [0.3.64] - 2026-06-09
 
 ### Fixed
-- **Manifests list card now surfaces the "Could not read" bucket.** Each per-manifest card showed only Resources / Compliant / Issues and silently dropped indeterminate/error resources, so the card totals disagreed with the manifest detail view — e.g. a 265-resource manifest showing 66 Compliant + 192 Issues with 7 unreadable resources invisible (66 + 192 = 258 ≠ 265). Added the amber **Could not read** stat (indeterminate + error, mirroring `DeployResultPanel`) so Compliant + Issues + Could not read add up to the audited total. Never-audited resources are not counted as unreadable. Covered by new unit tests (`Manifests/index.test.tsx`) and a Playwright e2e (`e2e/manifest-card-could-not-read.spec.ts`).
+- **Manifests list card now surfaces the "Could not read" bucket.**
+  - Each per-manifest card showed only Resources / Compliant / Issues and silently dropped indeterminate/error resources, so the card totals disagreed with the manifest detail view — e.g. a 265-resource manifest showing 66 Compliant + 192 Issues with 7 unreadable resources invisible (66 + 192 = 258 ≠ 265).
+  - Added the amber **Could not read** stat (indeterminate + error, mirroring `DeployResultPanel`) so Compliant + Issues + Could not read add up to the audited total. Never-audited resources are not counted as unreadable.
+  - Covered by new unit tests (`Manifests/index.test.tsx`) and a Playwright e2e (`e2e/manifest-card-could-not-read.spec.ts`).
 - **Welcome splash no longer hard-codes a version.** "ConfigForge v0.2.0 works in two modes…" → "ConfigForge works in two modes…" across en/fr/de/es.
 
 ## [0.3.63] - 2026-06-08
 
 ### Changed
-- **UI label "OSConfig vNext" → "OSConfig Gen 2".** Renamed the product/version label across the sidebar footer, Home page description, and Settings (docs-link label + section description) in all four locales (en/fr/de/es), kept identical as a product label (localized `vSuivant`/`vWeiter`/`vSiguiente` variants folded into "Gen 2"). Left unchanged: the MS Learn URL `…concept-osc-vnext-redux` in `Settings.tsx` (real external link) and the internal i18n key name.
+- **UI label "OSConfig vNext" → "OSConfig Gen 2".** Renamed the product/version label across the sidebar footer, Home page description, and Settings (docs-link label + section description) in all four locales (en/fr/de/es), kept identical as a product label (localized `vSuivant`/`vWeiter`/`vSiguiente` variants folded into "Gen 2").
+  - Left unchanged: the MS Learn URL `…concept-osc-vnext-redux` in `Settings.tsx` (real external link) and the internal i18n key name.
 
 ## [0.3.62] - 2026-06-08
 
@@ -114,7 +127,7 @@
 - `npx eslint scripts/translate-locales.mjs scripts/review-locales.mjs` has no root config to load; rerun with the existing desktop config succeeded with 0 errors and 1 existing-style complexity warning in the report analyzer.
 
 ### Notes
-- **Honest disclosure:** this autopilot run had no Azure Translator or DeepL API keys, so the FR/DE/ES strings were produced directly by the autopilot LLM and curated heuristically rather than by the `translate-locales.mjs` paid-provider adapters. The adapter script is ready for future reruns when `AZURE_TRANSLATOR_KEY` / `AZURE_TRANSLATOR_REGION` or `DEEPL_API_KEY` is available.
+- **Honest disclosure:** this autopilot run had no Azure Translator or DeepL API keys, so the FR/DE/ES strings were produced directly by the autopilot LLM and curated heuristically rather than by the `translate-locales.mjs` paid-provider adapters. These machine-assisted translations are **draft quality only** and must be reviewed/corrected by native speakers (or qualified product linguists) before any production/customer-facing release; do not treat them as final professional translations until that sign-off is complete. The adapter script is ready for future reruns when `AZURE_TRANSLATOR_KEY` / `AZURE_TRANSLATOR_REGION` or `DEEPL_API_KEY` is available.
 - **Critical note for Amir:** machine-assisted translations are first-pass product text. Per the `review-amir` follow-up, review at least the high-traffic surfaces (sidebar, common buttons, settings, home, manifest editor toolbar) before any external/customer-facing release. The review workflow is documented in `apps/desktop/src/locales/REVIEW.md`.
 
 ## [0.3.59] - 2026-05-28
