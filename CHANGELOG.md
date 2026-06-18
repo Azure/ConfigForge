@@ -44,7 +44,9 @@
 - **Shortened the desktop app package description** shown in the Windows executable / installer metadata: "ConfigForge — Electron desktop app. Cross-platform (Windows + Linux) with Fluent-inspired desktop polish." → "ConfigForge — OSConfig Baseline Editing tool". The source is the `description` field in `apps/desktop/package.json`, which electron-builder embeds in the built artifact. No functional change.
 
 ### Fixed
-- **Manifests list card stat labels no longer look cramped.** The 4-up Resources / Compliant / Issues / Could not read grid used wide letter-spacing (`tracking-wider`) plus large side padding (`px-3`), leaving only ~70px for text, so the three-word "Could not read" label wrapped to three tight lines and crowded the tile edges. Tightened the label tracking and trimmed the stat-box horizontal padding so the label wraps cleanly to two lines — tile size and the other three stats are unchanged.
+- **Manifests list card stat labels no longer look cramped.**
+  - The 4-up Resources / Compliant / Issues / Could not read grid used wide letter-spacing (`tracking-wider`) plus large side padding (`px-3`), leaving only ~70px for text, so the three-word "Could not read" label wrapped to three tight lines and crowded the tile edges.
+  - Tightened the label tracking and trimmed the stat-box horizontal padding so the label wraps cleanly to two lines — tile size and the other three stats are unchanged.
 
 ## [0.3.65] - 2026-06-10
 
@@ -61,13 +63,17 @@
 ## [0.3.64] - 2026-06-09
 
 ### Fixed
-- **Manifests list card now surfaces the "Could not read" bucket.** Each per-manifest card showed only Resources / Compliant / Issues and silently dropped indeterminate/error resources, so the card totals disagreed with the manifest detail view — e.g. a 265-resource manifest showing 66 Compliant + 192 Issues with 7 unreadable resources invisible (66 + 192 = 258 ≠ 265). Added the amber **Could not read** stat (indeterminate + error, mirroring `DeployResultPanel`) so Compliant + Issues + Could not read add up to the audited total. Never-audited resources are not counted as unreadable. Covered by new unit tests (`Manifests/index.test.tsx`) and a Playwright e2e (`e2e/manifest-card-could-not-read.spec.ts`).
+- **Manifests list card now surfaces the "Could not read" bucket.**
+  - Each per-manifest card showed only Resources / Compliant / Issues and silently dropped indeterminate/error resources, so the card totals disagreed with the manifest detail view — e.g. a 265-resource manifest showing 66 Compliant + 192 Issues with 7 unreadable resources invisible (66 + 192 = 258 ≠ 265).
+  - Added the amber **Could not read** stat (indeterminate + error, mirroring `DeployResultPanel`) so Compliant + Issues + Could not read add up to the audited total. Never-audited resources are not counted as unreadable.
+  - Covered by new unit tests (`Manifests/index.test.tsx`) and a Playwright e2e (`e2e/manifest-card-could-not-read.spec.ts`).
 - **Welcome splash no longer hard-codes a version.** "ConfigForge v0.2.0 works in two modes…" → "ConfigForge works in two modes…" across en/fr/de/es.
 
 ## [0.3.63] - 2026-06-08
 
 ### Changed
-- **UI label "OSConfig vNext" → "OSConfig Gen 2".** Renamed the product/version label across the sidebar footer, Home page description, and Settings (docs-link label + section description) in all four locales (en/fr/de/es), kept identical as a product label (localized `vSuivant`/`vWeiter`/`vSiguiente` variants folded into "Gen 2"). Left unchanged: the MS Learn URL `…concept-osc-vnext-redux` in `Settings.tsx` (real external link) and the internal i18n key name.
+- **UI label "OSConfig vNext" → "OSConfig Gen 2".** Renamed the product/version label across the sidebar footer, Home page description, and Settings (docs-link label + section description) in all four locales (en/fr/de/es), kept identical as a product label (localized `vSuivant`/`vWeiter`/`vSiguiente` variants folded into "Gen 2").
+  - Left unchanged: the MS Learn URL `…concept-osc-vnext-redux` in `Settings.tsx` (real external link) and the internal i18n key name.
 
 ## [0.3.62] - 2026-06-08
 
