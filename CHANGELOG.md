@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.71] - 2026-06-19
+
+### Security
+- **Bumped `undici` to 7.28.0** (Dependabot #14 medium, #15 high) via a targeted override (`undici@>=7.0.0 <7.28.0` → `^7.28.0`), resolving both advisories. `undici` is a build/test-only dependency (electron-builder, `@electron/get`, jsdom) and is **not bundled** into the shipped app; node-gyp's non-vulnerable `undici` 6.25.0 is left untouched. `npm audit`: 0 vulnerabilities.
+
+### Changed
+- Bumped `dompurify` (dev dependency) 3.4.9 → 3.4.11 (Dependabot).
+
+### Docs
+- Regenerated all 9 README screenshots and refreshed the Release-history table for the current UI (My Baselines / Microsoft Baselines / Export Readiness / Benchmark Mapping nav, "setting" terminology, 4-color Windows logo + penguin, OSConfig Gen 2).
+
 ## [0.3.70] - 2026-06-18
 
 ### Fixed
