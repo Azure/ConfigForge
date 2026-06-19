@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.72] - 2026-06-19
+
+### Security
+- **Completed the `undici` fix — also bumped node-gyp's nested `undici` 6.25.0 → 6.27.0.** v0.3.71 patched the top-level `undici` (7.28.0) but left node-gyp's transitive `undici` at 6.25.0, still flagged HIGH by `npm audit` (GHSA-vxpw-j846-p89q et al, affecting `<6.27.0`). Added an `undici@6` override (`^6.27.0`) alongside the existing `undici@7` one; 6.27.0 satisfies node-gyp's `^6.25.0` requirement. `npm audit` now reports **0 vulnerabilities**. Still build/test-only — not bundled into the app.
+
 ## [0.3.71] - 2026-06-19
 
 ### Security
