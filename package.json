@@ -1,8 +1,8 @@
 {
   "name": "configforge",
-  "version": "0.3.71-author.1",
+  "version": "0.3.72-author.1",
   "private": true,
-  "description": "ConfigForge — Cross-platform Electron desktop app for OSConfig security baseline authoring",
+  "description": "ConfigForge \u2014 Cross-platform Electron desktop app for OSConfig security baseline authoring",
   "engines": {
     "node": ">=22.0.0 <23.0.0",
     "npm": ">=10.0.0"
@@ -35,7 +35,7 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.10.5",
-    "dompurify": "^3.4.9",
+    "dompurify": "^3.4.11",
     "eslint-config-prettier": "10.1.8",
     "jsdom": "^29.1.1",
     "prettier": "3.8.3",
@@ -47,6 +47,7 @@
     "tmp": "^0.2.7",
     "shell-quote": "^1.8.4",
     "esbuild": "^0.28.1",
-    "undici@>=7.0.0 <7.28.0": "^7.28.0"
+    "undici@7": "^7.28.0",
+    "undici@6": "^6.27.0"
   }
 }
