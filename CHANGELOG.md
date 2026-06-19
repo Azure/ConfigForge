@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.71-author.1] - 2026-06-19
+
+### Security
+- **Bumped `undici` to 7.28.0** (Dependabot #14 medium, #15 high) via a targeted override (`undici@>=7.0.0 <7.28.0` → `^7.28.0`), resolving both advisories. `undici` is a build/test-only dependency (electron-builder, `@electron/get`, jsdom) and is **not bundled** into the shipped app; node-gyp's non-vulnerable `undici` 6.25.0 is left untouched. `npm audit`: 0 vulnerabilities.
+
 ## [0.3.70-author.1] - 2026-06-18
 
 ### Fixed
