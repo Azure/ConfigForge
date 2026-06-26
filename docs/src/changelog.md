@@ -3,6 +3,25 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.72 — 2026-06-19
+
+- **Security: completed the `undici` dependency update.** A follow-up to v0.3.71 that also patches a deeper, build-time-only copy of `undici` used by the native-module build tooling. `npm audit` now reports zero vulnerabilities. As with v0.3.71, these are build/test dependencies only — none of them ship inside the installed app.
+
+## v0.3.71 — 2026-06-19
+
+- **Security: patched the `undici` and `dompurify` build dependencies.** Updated `undici` to 7.28.0 and `dompurify` to 3.4.11 to clear reported advisories. Both are development/build-time dependencies and are not bundled into the installed app.
+
+## v0.3.70 — 2026-06-18
+
+- **Benchmark Mapping: the "Back to My Baselines" button now has a back arrow**, matching the other back buttons throughout the app.
+
+## v0.3.69 — 2026-06-18
+
+- **Refreshed navigation and vocabulary.** The left rail now reads **Dashboard, My Baselines, Microsoft Baselines, Export Readiness, Diff, Benchmark Mapping, Settings** (formerly Manifests / Library / Validation / CIS Mapping), with Microsoft Baselines sitting directly under My Baselines. A baseline's items are now called **settings** rather than resources throughout the app, and the baseline-card action is **Open** (was "View").
+- **Microsoft Windows logo.** A four-color Windows logo replaces the previous window emoji / icon on baseline cards, the Microsoft Baselines catalog, the setting picker, and the editor header; Linux uses the penguin consistently.
+- **Editor and Benchmark Mapping polish.** The editor's format strip now puts the Editor / Visual Builder toggle on the left and the YAML / JSON / MOF tabs on the right; Benchmark Mapping's folder field is labeled **Benchmark data folder**; the redundant "Source" line and a duplicate "Docs" button were removed; and the Audit Pack PDF section headings are left-aligned.
+- **Localization refresh.** The French / German / Spanish catalogs were re-translated for the new terminology via Azure Translator (still pending native-speaker review).
+
 ## v0.3.68 — 2026-06-10
 
 - **Release builds are now unsigned.** Ahead of the open-source migration, all code signing was removed from CI. The Windows/Linux/macOS installers are still built and published as drafts (with SBOM + SHA256SUMS) — just unsigned. Build from source for trust, or self-sign your own local build. Windows SmartScreen / macOS Gatekeeper will warn on unsigned builds.
