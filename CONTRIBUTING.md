@@ -15,9 +15,9 @@ or contact [opencode@microsoft.com](mailto:opencode@microsoft.com) with any addi
 
 ## Contributor License Agreement
 
-When this repository is transferred to the official Microsoft open-source organization (in progress), contributions will require a one-time [Microsoft Contributor License Agreement (CLA)](https://cla.opensource.microsoft.com/) signature. The CLA bot will guide you through this on your first PR.
+This project welcomes contributions and suggestions. Most contributions require you to agree to a Microsoft [Contributor License Agreement (CLA)](https://cla.opensource.microsoft.com/) declaring that you have the right to, and actually do, grant us the rights to use your contribution. The CLA bot will automatically determine whether you need to provide a CLA and decorate the PR appropriately (e.g., status check, comment). Simply follow the instructions provided by the bot. You will only need to do this once across all repos using our CLA.
 
-For PRs to the current personal repository, the CLA is not required, but commits should still include a `Co-authored-by` trailer when AI tooling assisted (see Commit conventions below).
+Commits should still include a `Co-authored-by` trailer when AI tooling assisted (see Commit conventions below).
 
 ## Pre-PR bar
 
