@@ -229,7 +229,7 @@ If the banner never appears, check:
 - **Differential updates** — electron-updater supports them on
   Windows via the blockmap files we already produce; just need
   to verify the publisher creates them correctly
-- **Telemetry** for update success/failure rates (opt-in only)
+- **Telemetry** for update success/failure rates (potential future, opt-in only; none collected today — see [PRIVACY.md](../../PRIVACY.md))
 
 ---
 
