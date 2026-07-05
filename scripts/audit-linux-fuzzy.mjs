@@ -39,7 +39,12 @@ const { parseAzurePolicyCisJson } = await import(
   pathToFileURL(join(corePath, 'cis', 'azure-policy-cis.js')).href
 );
 
-const dataDir = 'C:/Users/amirbredy/AppData/Local/Programs/configforge/resources/public-assets/_baselines/cis/_data';
+// CIS `_data` lives in the installed app's resources (licensed, gitignored).
+// Override CONFIGFORGE_CIS_DATA to point anywhere / any OS; the default targets
+// a standard Windows per-user install of ConfigForge.
+const dataDir =
+  process.env.CONFIGFORGE_CIS_DATA ??
+  join(homedir(), 'AppData', 'Local', 'Programs', 'configforge', 'resources', 'public-assets', '_baselines', 'cis', '_data');
 const files = await readdir(dataDir);
 const jsonFile = files.find((f) => f.toLowerCase().endsWith('.json') && /linux/i.test(f));
 if (!jsonFile) {

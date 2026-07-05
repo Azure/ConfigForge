@@ -39,7 +39,12 @@ const {
   pathToFileURL(join(corePath, 'cis', 'xccdf-parser.js')).href
 );
 
-const dataDir = 'C:/Users/amirbredy/AppData/Local/Programs/configforge/resources/public-assets/_baselines/cis/_data';
+// CIS `_data` lives in the installed app's resources (licensed, gitignored).
+// Override CONFIGFORGE_CIS_DATA to point anywhere / any OS; the default targets
+// a standard Windows per-user install of ConfigForge.
+const dataDir =
+  process.env.CONFIGFORGE_CIS_DATA ??
+  join(homedir(), 'AppData', 'Local', 'Programs', 'configforge', 'resources', 'public-assets', '_baselines', 'cis', '_data');
 const files = await readdir(dataDir);
 const xccdfFile = files.find((f) => /xccdf/i.test(f) && /windows/i.test(f));
 if (!xccdfFile) {
