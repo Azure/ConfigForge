@@ -127,10 +127,6 @@ export function isLinux(): boolean {
   return _cachedInfo?.platform === 'linux';
 }
 
-export function isMacOs(): boolean {
-  return _cachedInfo?.platform === 'darwin';
-}
-
 /**
  * Test-only: reset the module-scope IPC cache. Phase 7 component
  * tests need this so each test can mock a different platform; in
@@ -289,29 +285,4 @@ export function useThemePreference(): [ThemePreference, (pref: ThemePreference) 
   };
 
   return [pref, setPref];
-}
-
-// ── Accessibility preferences ─────────────────────────────────────
-
-/** Hook: prefers-reduced-motion. Re-renders on change. */
-export function usePrefersReducedMotion(): boolean {
-  return useMatchMedia('(prefers-reduced-motion: reduce)');
-}
-
-/** Hook: forced-colors mode (Windows High Contrast). Re-renders on change. */
-export function usePrefersForcedColors(): boolean {
-  return useMatchMedia('(forced-colors: active)');
-}
-
-function useMatchMedia(query: string): boolean {
-  return useSyncExternalStore(
-    (cb) => {
-      if (typeof window === 'undefined') return () => {};
-      const mq = window.matchMedia(query);
-      mq.addEventListener('change', cb);
-      return () => mq.removeEventListener('change', cb);
-    },
-    () => typeof window !== 'undefined' && window.matchMedia(query).matches,
-    () => false,
-  );
 }
