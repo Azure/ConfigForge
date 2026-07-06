@@ -66,19 +66,20 @@ of the generic "Manifest registered" message.
 
 ## Citation coverage
 
-A 0..1 number describing the fraction of an AI response's claims
-that have at least one cited source. Below 0.5 the
+A 0..1 number: the mean of per-source confidence for an AI response
+(a heuristic label, not a verified-evidence measure). Below 0.5 the
 [Apply](../user-guide/ai-provenance.md) button is hidden.
 
 ## Circular-guard
 
-The mechanism that refuses to ground an AI response on content
-tagged as previously AI-generated. Combines an inline marker
-(`<!-- ai-generated:rev=N -->`) with a spoof-resistant per-process
+Labels AI-generated output with an inline marker
+(`<!-- ai-generated:rev=N -->`) plus a spoof-resistant per-process
 content-hash registry (CF-SEC-007 - see
-[FNV-1a hash registry](#fnv-1a-hash-registry-cf-sec-007) below).
-Prevents the analyzer from reinforcing its own hallucinations.
-Implemented in
+[FNV-1a hash registry](#fnv-1a-hash-registry-cf-sec-007) below) so
+re-fed content is detectable. A detection helper
+(`assertNotAiGenerated`) exists but is **not currently wired** into the
+analyzer's ingestion path, so the marker is advisory (labeling, not
+enforcement) today. Implemented in
 [`packages/core/src/ai/circular-guard.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/ai/circular-guard.ts).
 
 ## CLI_REQUIRED gate

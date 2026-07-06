@@ -63,20 +63,23 @@ stateDiagram-v2
 
 ## AI provenance + circular-guard
 
-Every AI request walks a retrieval chain; every chain element either
-contributes a citation or trips the circular-guard. `Apply` is
-hidden until a confidence threshold is met. The marker
-(`<!-- ai-generated:rev=N -->`) is paired with a spoof-resistant
-per-process FNV-1a 64-bit content-hash registry (CF-SEC-007) so
-stripping the marker doesn't bypass the guard.
+The diff analysis is a local heuristic (no LLM/network). Each element
+of the retrieval chain contributes a heuristic citation, and `Apply`
+is hidden until a citation-coverage threshold is met. AI-generated
+output is **labeled** with a marker (`<!-- ai-generated:rev=N -->`)
+plus a spoof-resistant per-process FNV-1a 64-bit content-hash registry
+(CF-SEC-007). Note: the marker is advisory — the `assertNotAiGenerated`
+check is available in core but is **not currently wired** into
+ingestion, so marked content is not auto-rejected today.
 
 ```mermaid
 flowchart TD
   Q[User question] --> Retrieval{Retrieve grounding}
   Retrieval -->|CIS / NIST / MSDocs / GPO| Sources[(Sources with confidence)]
-  Retrieval -->|Manifest content| Guard{Marker present<br/>or hash in registry?}
-  Guard -->|yes| Reject[Reject: circular]
+  Retrieval -->|Manifest content| Guard{Marker detected?<br/>advisory, not wired}
+  Guard -->|yes| Flag[Flagged: re-fed AI<br/>advisory only, not blocked]
   Guard -->|no| Sources
+  Flag --> Sources
   Sources --> Coverage{citationCoverage ≥ 0.5?}
   Coverage -->|yes| ShowApply[Apply visible]
   Coverage -->|no| Advisory[Advisory only: Apply hidden]

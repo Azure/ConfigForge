@@ -6,10 +6,12 @@
 > AI rationale-assist is the only optional online feature.
 
 The Intelligent Diff Insights panel explains a pairwise diff with a
-locally-computed summary, risk badge, and source/provenance panel.
-AI-adjacent responses carry a **provenance bundle**, a list of sources
-with confidence scores, and a **circular-reference guard** refuses to
-ground on content that's been tagged as previously AI-generated.
+locally-computed summary, risk badge, and source/provenance panel. The
+analysis is a **local, deterministic heuristic** — there is no LLM or
+network call. AI-adjacent responses carry a **provenance bundle** (a
+heuristic list of sources with confidence scores), and AI-generated
+output is **labeled** with a marker so it can be recognized if it is
+ever fed back in.
 
 This is a direct response to user research:
 
@@ -29,7 +31,8 @@ interface DiffAnalysis {
 
 interface Provenance {
   sources: AiSource[];
-  /** 0..1, fraction of claims with at least one cited source. */
+  /** 0..1 — mean of per-source confidence (a heuristic label, not a
+   *  verified-evidence measure); empty sources → 0. */
   citationCoverage: number;
 }
 
@@ -81,10 +84,16 @@ We tag every AI-generated comment block with:
 # <!-- ai-generated:rev=2 -->
 ```
 
-When the analyzer is fed a manifest as ground truth, it scans for
-this marker. If present, the manifest is **rejected** with a clear
-error rather than used to answer a question. The AI never grounds
-on its own previous output.
+This **labels** AI output so it can be recognized later. A detection
+helper, `assertNotAiGenerated()`, is available in core (with the
+spoof-resistant hash registry below) and would reject marked content
+if it were fed back in.
+
+> **Honest scope:** today this is a *labeling* feature. The
+> `assertNotAiGenerated()` check is **not currently wired** into the
+> diff / changelog ingestion path, so re-fed AI output is not
+> automatically rejected. Treat provenance and citation coverage as
+> heuristic, advisory signals and verify inputs yourself.
 
 ### Spoof-resistant content-hash registry (CF-SEC-007)
 
