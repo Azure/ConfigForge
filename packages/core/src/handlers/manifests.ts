@@ -26,6 +26,8 @@
 // renderer is no longer honored. Manifests come from `content`
 // (inline YAML) or `uri` (fetched + SSRF-guarded) only.
 import yaml from 'js-yaml';
+import { lookup as dnsLookup } from 'node:dns/promises';
+import { isIP } from 'node:net';
 import {
   deleteNamespace,
   deleteRegistration,
@@ -458,6 +460,46 @@ export async function getManifest(
 
 const MAX_REMOTE_BYTES = 10 * 1024 * 1024;
 
+// ─── SSRF address guard (CF-SEC-016) ─────────────────────────────────
+// True when a *resolved* IP literal is private / loopback / link-local /
+// unique-local / multicast / reserved — i.e. must never be fetched by the
+// privileged main process. Used by both the literal-host fast path and the
+// resolve-and-recheck DNS step in fetchManifestFromUri.
+function isBlockedIpv4(ip: string): boolean {
+  const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(ip);
+  if (!m) return false;
+  const a = Number(m[1]);
+  const b = Number(m[2]);
+  if (a === 0) return true; // 0.0.0.0/8 "this network"
+  if (a === 10) return true; // 10/8 private
+  if (a === 127) return true; // loopback
+  if (a === 169 && b === 254) return true; // link-local incl. cloud IMDS 169.254.169.254
+  if (a === 172 && b >= 16 && b <= 31) return true; // 172.16/12 private
+  if (a === 192 && b === 168) return true; // 192.168/16 private
+  if (a === 100 && b >= 64 && b <= 127) return true; // 100.64/10 CGNAT
+  if (a >= 224) return true; // 224/4 multicast + 240/4 reserved + 255.255.255.255
+  return false;
+}
+function isBlockedIpv6(ip: string): boolean {
+  let s = ip.toLowerCase();
+  const zone = s.indexOf('%');
+  if (zone >= 0) s = s.slice(0, zone);
+  if (s === '::1' || s === '::') return true; // loopback / unspecified
+  // IPv4-mapped/-embedded (e.g. ::ffff:169.254.169.254) — check the tail as IPv4.
+  const embedded = /(?:^|:)((?:\d{1,3}\.){3}\d{1,3})$/.exec(s);
+  if (embedded && isBlockedIpv4(embedded[1])) return true;
+  if (/^fe80:/.test(s)) return true; // link-local fe80::/10
+  if (/^f[cd][0-9a-f]{2}:/.test(s)) return true; // unique-local fc00::/7
+  if (/^ff[0-9a-f]{2}:/.test(s)) return true; // multicast ff00::/8
+  return false;
+}
+function isBlockedIp(ip: string): boolean {
+  const fam = isIP(ip);
+  if (fam === 4) return isBlockedIpv4(ip);
+  if (fam === 6) return isBlockedIpv6(ip);
+  return false;
+}
+
 /**
  * Fetch a remote manifest's text content over HTTP/HTTPS.
  *
@@ -485,43 +527,47 @@ export async function fetchManifestFromUri(uri: string): Promise<string> {
     );
   }
 
-  // v0.2.21 (CF-SEC-016): SSRF guard. Block private / loopback /
-  // link-local IPs before any network call. Without this, a user (or
-  // a compromised renderer dispatching `cfs:manifests:fetch-uri`)
-  // could direct the privileged main process to fetch cloud metadata
-  // (Azure/AWS IMDS at 169.254.169.254), internal-network admin
-  // panels, or the local Node DevTools port. The fetched body is
-  // returned to the renderer as "manifest content," exfiltrating
-  // arbitrary internal-network responses.
+  // CF-SEC-016 SSRF guard. The URL-import channel (`cfs:manifests:fetch-uri`)
+  // runs in the privileged main process, so a pasted URL — or a compromised
+  // renderer — must not be able to reach cloud metadata (IMDS 169.254.169.254),
+  // loopback, or internal-network hosts and have the response handed back as
+  // "manifest content."
   //
-  // Hostname-only blocks: a hostname that resolves to a private IP
-  // via DNS is NOT caught here. A future hardening pass should add a
-  // resolve-and-recheck step before fetch (`dns.lookup` then walk the
-  // result through the same predicates). For now this guard catches
-  // the direct-IP attack vectors which are the practical SSRF risk
-  // for the URL-import feature.
+  // Two layers: (1) reject literal private/loopback/link-local addresses, and
+  // (2) resolve DNS names and reject if ANY resolved address is private — this
+  // closes the "public hostname that resolves to a private IP" bypass. Redirects
+  // are refused outright (`redirect: 'error'` below) so a 302 to an internal
+  // host can't sidestep these checks. (Residual: a TOCTOU DNS-rebind between
+  // this lookup and the fetch is out of scope for this single-user desktop
+  // tool; closing it would require pinning the socket to the vetted IP.)
   const host = parsedUri.hostname.replace(/^\[|\]$/g, '');
-  if (
-    host === 'localhost' ||
-    /^127\./.test(host) ||
-    /^10\./.test(host) ||
-    /^172\.(1[6-9]|2\d|3[01])\./.test(host) ||
-    /^192\.168\./.test(host) ||
-    /^169\.254\./.test(host) ||
-    /^0\.0\.0\.0$/.test(host) ||
-    host === '::1' ||
-    /^fc[0-9a-f]{2}:/i.test(host) ||
-    /^fd[0-9a-f]{2}:/i.test(host) ||
-    /^fe80:/i.test(host)
-  ) {
+  if (host === 'localhost' || host.endsWith('.localhost') || (isIP(host) !== 0 && isBlockedIp(host))) {
     throw new HandlerError(
       400,
       `URI resolves to a private/loopback address (${host}). Manifest URLs must point to a public host.`,
     );
   }
+  if (isIP(host) === 0) {
+    let resolved: Array<{ address: string }>;
+    try {
+      resolved = await dnsLookup(host, { all: true });
+    } catch {
+      throw new HandlerError(400, `Could not resolve manifest host '${host}'.`);
+    }
+    const blocked = resolved.find((r) => isBlockedIp(r.address));
+    if (blocked) {
+      throw new HandlerError(
+        400,
+        `URI host '${host}' resolves to a private/loopback address (${blocked.address}). Manifest URLs must point to a public host.`,
+      );
+    }
+  }
 
   try {
-    const res = await fetch(uri, { signal: AbortSignal.timeout(30_000) });
+    const res = await fetch(uri, {
+      signal: AbortSignal.timeout(30_000),
+      redirect: 'error',
+    });
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const cl = res.headers.get('content-length');
     if (cl && Number(cl) > MAX_REMOTE_BYTES) {
