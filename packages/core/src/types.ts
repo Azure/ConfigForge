@@ -32,13 +32,6 @@ export interface OscManifestStatus {
   resources: OscResource[];
 }
 
-export type ManifestFormat = 'Json' | 'Yaml' | 'Mof';
-
-export interface ManifestSource {
-  path?: string;
-  uri?: string;
-}
-
 export interface SettingConfiguration {
   Name: string;
   Description: string;
