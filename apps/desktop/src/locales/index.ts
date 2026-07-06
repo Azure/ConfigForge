@@ -27,7 +27,6 @@ import i18n, { type i18n as I18nInstance } from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import {
   initializeLocale,
-  getActiveLocale,
   resolveLocale,
   getLocalePreference,
   subscribeLocale,
@@ -133,10 +132,6 @@ export async function initI18n(): Promise<I18nInstance> {
 
 export function getI18n(): I18nInstance {
   return i18n;
-}
-
-export function getCurrentLocale(): SupportedLocale {
-  return getActiveLocale();
 }
 
 export const __TEST__ = {
