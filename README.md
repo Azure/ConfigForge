@@ -24,7 +24,7 @@ See the resolved `oscfg` version, admin status, server type, and OS version at a
 
 ### Baseline editor: author, deploy, audit pack
 
-YAML / JSON / Visual triple-format editor with live validation, deploy/audit dropdown, version history, CIS cross-reference drawer (shows matched CIS rules while editing), and a one-click **Audit Pack** button that produces an auditor-ready PDF (baseline header, compliance score, version history with author + rationale, AI provenance citations).
+YAML / JSON / Visual triple-format editor with live validation, deploy/audit dropdown, version history, CIS cross-reference drawer (shows matched CIS rules while editing), and a one-click **Audit Pack** button that produces an auditor-ready PDF (baseline header, compliance score, version history with author + rationale, heuristic AI provenance labels).
 
 ![Baseline editor: YAML/JSON/Visual tabs, deploy + audit, history, and Audit Pack button](./docs/images/screenshots/manifest-detail.png)
 
@@ -36,7 +36,7 @@ Switch to **Visual Builder** mode to add, edit, or remove settings via per-type 
 
 ### Audit pack: the auditor deliverable
 
-One click on **Audit Pack** opens a download surface with PDF + Markdown buttons, an inline PDF preview, and a sidebar showing exactly what's in the pack (baseline header, compliance report, version history, rationale log, AI citations) with availability check-marks.
+One click on **Audit Pack** opens a download surface with PDF + Markdown buttons, an inline PDF preview, and a sidebar showing exactly what's in the pack (baseline header, compliance report, version history, rationale log, AI provenance labels) with availability check-marks.
 
 ![Audit pack download page: PDF + Markdown buttons, inline preview, what's-included sidebar](./docs/images/screenshots/audit-pack.png)
 
@@ -109,7 +109,7 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 |---|---|
 | `apps/desktop/**` | The Electron app: renderer (React + FluentUI v9 + Vite), main process, preload bridge, electron-builder config |
 | `apps/desktop/src/pages/<Page>/` | Each lighthouse page lives in its own directory with `index.tsx` (composition), `state/` (custom hooks + their tests), `components/` (memoised sub-components), and optional `helpers.tsx`. Pattern landed during the Phase A-E renderer-page split |
-| `packages/core/**` | Platform-neutral core: manifests, history, audit-pack, oscfg wrapper, AI guardrails (`circular-guard`, `provenance`). Imported as `@configforge/core` from the desktop app |
+| `packages/core/**` | Platform-neutral core: manifests, history, audit-pack, oscfg wrapper, AI provenance labeling (`circular-guard`, `provenance`; local heuristic, advisory). Imported as `@configforge/core` from the desktop app |
 | `resources/oscfg/**` | **Dev-only convenience drop** for contributors who bring their own `oscfg` binary. Never shipped to users; the installer carries no Microsoft-owned binaries |
 | `public/_baselines/**` | Curated baseline manifests (Windows Server, Defender, LAPS, Secured Core, OpenSSH, etc.), bundled into installers |
 | `docs/**` | mdbook documentation site (separate from the app) |

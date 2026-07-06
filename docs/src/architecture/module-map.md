@@ -123,13 +123,13 @@ Single source of truth for business logic. Each handler is a pure function calle
 | `format.ts` | Pretty-prints CLI output for the UI. |
 | `concurrency.ts` | Per-namespace mutex. |
 
-## `packages/core/src/ai/` -- AI guardrails
+## `packages/core/src/ai/` -- AI analysis (local heuristic)
 
 | File | Role |
 | --- | --- |
-| `analyzer.ts` | The actual AI call surface. `analyzeDiff`, `generateChangelog`, `renderChangelogMarkdown`. Output is tagged via `tagAsAiGenerated` before it leaves the system. |
-| `provenance.ts` | `AiSource` + `Provenance` types, `normalizeUrl` (strips utm_*, etc.), `dedupeSources`, `computeCitationCoverage`, `decorateWithProvenance`. |
-| `circular-guard.ts` | `tagAsAiGenerated` / `isAiGenerated` / `assertNotAiGenerated` / `stripAiMarker`. **Spoof-resistant** (CF-SEC-007) via an in-process content-hash registry (FNV-1a 64-bit, browser-safe) in addition to the inline `<!-- ai-generated:rev=N -->` marker. Pure JS hash, no `crypto` import, so the module is safe to pull into the renderer bundle. |
+| `analyzer.ts` | Local, deterministic diff/changelog analysis (no LLM or network). `analyzeDiff`, `generateChangelog`, `renderChangelogMarkdown`. Output is labeled via `tagAsAiGenerated` before it leaves the system. |
+| `provenance.ts` | `AiSource` + `Provenance` types, `normalizeUrl` (strips utm_*, etc.), `dedupeSources`, `computeCitationCoverage` (mean of per-source confidence — a heuristic), `decorateWithProvenance`. |
+| `circular-guard.ts` | `tagAsAiGenerated` / `isAiGenerated` / `assertNotAiGenerated` / `stripAiMarker`. **Spoof-resistant** (CF-SEC-007) via an in-process content-hash registry (FNV-1a 64-bit, browser-safe) in addition to the inline `<!-- ai-generated:rev=N -->` marker. Pure JS hash, no `crypto` import, so the module is safe to pull into the renderer bundle. `assertNotAiGenerated`/`isAiGenerated` detect marked content but are **not currently wired** into ingestion (advisory labeling, not enforcement). |
 
 ## `packages/core/src/markdown/` -- Output escaping
 

@@ -1034,7 +1034,10 @@ export function generateChangelog(
   };
 
   // Render a human-readable form, then tag it as AI-generated so a future
-  // call to `assertNotAiGenerated` can refuse to ground on it.
+  // call to `assertNotAiGenerated` can refuse to ground on it. NOTE:
+  // `assertNotAiGenerated` is available in circular-guard but is not
+  // currently wired into any ingestion path, so this marker is advisory
+  // today (labeling, not enforcement).
   const rendered = [
     `# Changelog — ${manifestName}`,
     `Generated ${base.date}`,
@@ -1059,10 +1062,10 @@ export function generateChangelog(
  * and includes a footer explaining the source manifests.
  *
  * The output is wrapped with the `<!-- ai-generated -->` marker so that
- * if the user feeds this file back into the analyzer it gets refused as
- * ground truth (the circular-reference guard from PR25). The marker is
+ * re-fed content is *detectable* by `assertNotAiGenerated`. The marker is
  * an HTML comment, so it's invisible when the file is rendered as
- * Markdown but still detectable by `assertNotAiGenerated`.
+ * Markdown. NOTE: the ingestion-time check is not currently wired into
+ * the analyzer, so the marker is advisory (labeling, not enforcement).
  */
 export function renderChangelogMarkdown(
   changelog: Changelog,
