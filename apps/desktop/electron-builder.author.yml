@@ -36,7 +36,7 @@
 appId: community.configforge.author
 productName: ConfigForge Author
 executableName: configforge-author
-copyright: Copyright (c) ConfigForge contributors
+copyright: Copyright (c) Microsoft Corporation
 
 directories:
   output: release/${version}-author
@@ -146,6 +146,6 @@ dmg:
 # add a macos-latest job in Phase 4 that pulls + uploads.
 publish:
   provider: github
-  owner: ABMFST
+  owner: Azure
   repo: ConfigForge
   releaseType: draft
