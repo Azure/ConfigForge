@@ -15,6 +15,47 @@ import {
   ENFORCEMENT_FIELD_KEYS,
 } from './analyzer';
 
+describe('manifest parsing contract', () => {
+  it('rejects malformed before YAML instead of reporting a clean diff', () => {
+    expect(() => analyzeDiff('{{{', 'resources: []\n')).toThrow(
+      /Invalid before manifest YAML/i,
+    );
+  });
+
+  it('rejects malformed after YAML', () => {
+    expect(() => analyzeDiff('resources: []\n', 'resources: [')).toThrow(
+      /Invalid after manifest YAML/i,
+    );
+  });
+
+  it('rejects documents without a resources array', () => {
+    expect(() => analyzeDiff('name: before\n', 'resources: []\n')).toThrow(
+      /before manifest: resources must be an array/i,
+    );
+  });
+
+  it('continues to accept valid empty manifests', () => {
+    const result = analyzeDiff('resources: []\n', 'Resources: []\n');
+    expect(result.summary).toBe('No differences detected between manifests');
+    expect(result.riskLevel).toBe('low');
+  });
+
+  it('rejects changelog generation when either manifest is malformed', () => {
+    expect(() => generateChangelog('{{{', 'resources: []\n', 'baseline')).toThrow(
+      /Invalid before manifest YAML/i,
+    );
+  });
+
+  it('identifies the malformed manifest during conflict detection', () => {
+    expect(() =>
+      detectConflicts([
+        { name: 'good', content: 'resources: []\n' },
+        { name: 'broken', content: '{{{' },
+      ]),
+    ).toThrow(/Invalid 'broken' manifest YAML/i);
+  });
+});
+
 // ── isCriticalSetting ──────────────────────────────────────────────────────
 
 describe('isCriticalSetting', () => {

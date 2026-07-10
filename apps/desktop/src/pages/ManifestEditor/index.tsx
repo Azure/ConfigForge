@@ -71,6 +71,7 @@ export function ManifestDetailPage() {
     setError,
     fetchData,
     setEditing,
+    cancelEditing,
     editedContent,
     setEditedContent,
     savedContent,
@@ -148,30 +149,22 @@ export function ManifestDetailPage() {
           setError(t("messages.savedWithWarning", { warning: (json as { data: { _warning: string } }).data._warning }));
         }
 
-        formatCache.current = { yaml: editedContent };
-        setActiveFormat('yaml');
-        setEditing(false);
-        // v0.1.13 fix — record the new "saved" baseline so the
-        // unsaved-changes blocker doesn't fire on the next navigation
-        // (Save just made editedContent === savedContent).
+        // Keep the successfully submitted representation available if the
+        // canonical YAML re-read encounters an IPC error. On success,
+        // fetchData replaces this cache with normalized YAML.
+        formatCache.current = { [activeFormat]: editedContent };
         setSavedContent(editedContent);
+        setEditing(false);
+        // Re-read the persisted registration so the editor always returns
+        // to canonical YAML. This matters when Save originated from JSON:
+        // labeling the JSON buffer as cached YAML would briefly expose the
+        // wrong representation and could seed the next edit incorrectly.
+        await fetchData();
 
         try {
           sessionStorage.setItem("configforge-flash", t("messages.saveSuccess", { name: manifestName }));
         } catch { /* non-critical */ }
 
-        // v0.1.13 fix — refresh `manifest` + `status` from the
-        // server after save. The `cfs.manifests.register` response
-        // only confirms the write; the in-memory `manifest` object
-        // (Resources, Platform, etc.) is still the pre-save copy.
-        // Without this, switching to the visual builder or looking
-        // at the compliance sidebar after a save shows stale
-        // Resources until the user manually navigates away + back.
-        // We intentionally don't await — the user's UI is already
-        // in a good state via the optimistic formatCache update;
-        // this just rehydrates the secondary panels in the
-        // background.
-        fetchData();
       } catch (err) {
         setError(err instanceof Error ? err.message : t("errors.saveFailed"));
         throw err;
@@ -179,7 +172,7 @@ export function ManifestDetailPage() {
         setSaving(false);
       }
     },
-    [manifestName, editedContent, fetchData, t],
+    [manifestName, activeFormat, editedContent, fetchData, formatCache, setSavedContent, t],
   );
 
   // PR27: rationale-prompt wrapper. We intercept the Save click, ask the
@@ -378,11 +371,7 @@ export function ManifestDetailPage() {
         duplicating={duplicating}
         deleting={deleting}
         onSaveClick={handleSaveClick}
-        onCancelEdit={() => {
-          setEditing(false);
-          const cached = formatCache.current[activeFormat];
-          if (cached !== undefined) setEditedContent(cached);
-        }}
+        onCancelEdit={cancelEditing}
         onDuplicate={handleDuplicate}
         onExport={handleExport}
         onExportDocs={handleExportDocs}

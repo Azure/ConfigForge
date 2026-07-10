@@ -130,25 +130,29 @@ export function DiffPage() {
   };
 
   const handleDownloadChangelog = () => {
-    const name = leftManifest || rightManifest || "baseline";
-    const beforeLabel = leftManifest || "before";
-    const afterLabel = rightManifest || "after";
-    const result = generateChangelog(normLeft, normRight, name);
-    const md = renderChangelogMarkdown(result, { beforeLabel, afterLabel });
+    try {
+      const name = leftManifest || rightManifest || "baseline";
+      const beforeLabel = leftManifest || "before";
+      const afterLabel = rightManifest || "after";
+      const result = generateChangelog(normLeft, normRight, name);
+      const md = renderChangelogMarkdown(result, { beforeLabel, afterLabel });
 
-    const today = new Date().toISOString().split("T")[0];
-    const safeName = name.replace(/[^a-zA-Z0-9._-]/g, "_");
-    const filename = `${safeName}-changelog-${today}.md`;
+      const today = new Date().toISOString().split("T")[0];
+      const safeName = name.replace(/[^a-zA-Z0-9._-]/g, "_");
+      const filename = `${safeName}-changelog-${today}.md`;
 
-    const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = filename;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+      const blob = new Blob([md], { type: "text/markdown;charset=utf-8" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("errors.analyzeFailed"));
+    }
   };
 
   // Fetch manifests for dropdown

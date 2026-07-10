@@ -562,8 +562,9 @@ interface PolicySettingParam {
  */
 function extractPolicySettingParams(resources: unknown): PolicySettingParam[] {
   if (!Array.isArray(resources)) return [];
+
   const out: PolicySettingParam[] = [];
-  const seen = new Set<string>();
+  const seen = new Map<string, string>();
 
   for (const raw of resources) {
     if (!raw || typeof raw !== 'object') continue;
@@ -594,8 +595,14 @@ function extractPolicySettingParams(resources: unknown): PolicySettingParam[] {
     let armName = outerName.replace(/[^a-zA-Z0-9_]/g, '_');
     if (/^\d/.test(armName)) armName = `p_${armName}`;
     if (!armName) continue;
-    if (seen.has(armName)) continue;
-    seen.add(armName);
+    const collisionKey = armName.toLowerCase();
+    const existingName = seen.get(collisionKey);
+    if (existingName !== undefined) {
+      throw new Error(
+        `Azure Policy parameter name collision: resources "${existingName}" and "${outerName}" both normalize to "${armName}". Rename one resource before export.`,
+      );
+    }
+    seen.set(collisionKey, outerName);
 
     // Pull the current value. compliance.equals wins over inline
     // properties.value (matches the matrix-diff `extractEnforcementValue`

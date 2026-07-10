@@ -162,19 +162,25 @@ function isComplianceOnlyField(field: string): boolean {
   );
 }
 
-function parseManifest(content: string): ParsedResource[] {
+function parseManifest(content: string, label: string): ParsedResource[] {
+  let doc: Record<string, unknown> | null;
   try {
-    const doc = yaml.load(content) as Record<string, unknown> | null;
-    if (!doc) return [];
-
-    // Handle Resources array at top level or under a root key
-    const resources = (doc.Resources ?? doc.resources ?? []) as ParsedResource[];
-    if (Array.isArray(resources)) return resources;
-
-    return [];
-  } catch {
-    return [];
+    doc = yaml.load(content) as Record<string, unknown> | null;
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'unknown YAML parse error';
+    throw new Error(`Invalid ${label} manifest YAML: ${message}`);
   }
+
+  if (!doc || typeof doc !== 'object' || Array.isArray(doc)) {
+    throw new Error(`Invalid ${label} manifest: expected a YAML object with a resources array`);
+  }
+
+  const resources = doc.Resources ?? doc.resources;
+  if (!Array.isArray(resources)) {
+    throw new Error(`Invalid ${label} manifest: resources must be an array`);
+  }
+
+  return resources as ParsedResource[];
 }
 
 /**
@@ -445,8 +451,8 @@ function extractEnforcementValue(r: ParsedResource): unknown {
 }
 
 export function analyzeDiff(before: string, after: string): DiffAnalysis {
-  const beforeResources = parseManifest(before);
-  const afterResources = parseManifest(after);
+  const beforeResources = parseManifest(before, 'before');
+  const afterResources = parseManifest(after, 'after');
 
   // ─── Pass 1: structural identity ───
   // Build maps keyed by structural identity. The same resource can
@@ -705,7 +711,7 @@ export function detectConflicts(
   const nameMap = new Map<string, Entry[]>();
 
   for (const { name: manifestName, content } of manifests) {
-    const resources = parseManifest(content);
+    const resources = parseManifest(content, `'${manifestName}'`);
     for (const resource of resources) {
       const identityKey = resourceKey(resource);
       const value = extractEnforcementValue(resource);

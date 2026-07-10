@@ -85,7 +85,7 @@ export const ManifestHeader = React.memo(function ManifestHeader({
   onExportDocs,
   onDelete,
 }: ManifestHeaderProps) {
-  const { editing, isEditable, saving, setEditing } = editorState;
+  const { editing, isEditable, saving, beginEditing } = editorState;
   const {
     deploying,
     deployProgress,
@@ -152,7 +152,7 @@ export const ManifestHeader = React.memo(function ManifestHeader({
           {/* Cluster A: Read / Export */}
           <div className="flex flex-wrap items-center gap-2">
             <button
-              onClick={() => setEditing(true)}
+              onClick={beginEditing}
               disabled={!isEditable}
               title={!isEditable ? t("content.mofEditUnsupported") : undefined}
               className="inline-flex items-center gap-2 rounded-lg border border-slate-200 px-3 py-1.5 text-sm font-medium text-slate-600 transition-colors hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
