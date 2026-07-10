@@ -174,6 +174,36 @@ describe('exportToAzurePolicy structural shape', () => {
     expect(p.properties.parameters.IncludeArcMachines.allowedValues).toEqual(['true', 'false']);
   });
 
+  it('rejects sanitized ARM parameter-name collisions instead of dropping a setting', () => {
+    const colliding = [
+      {
+        name: 'Foo-Bar',
+        type: 'Microsoft.Windows/Registry',
+        properties: { keyPath: 'HKLM\\A', valueName: 'A', value: 1 },
+      },
+      {
+        name: 'Foo_Bar',
+        type: 'Microsoft.Windows/Registry',
+        properties: { keyPath: 'HKLM\\B', valueName: 'B', value: 0 },
+      },
+    ];
+
+    expect(() => exportToAzurePolicy('collision', colliding)).toThrow(
+      /parameter name collision.*Foo-Bar.*Foo_Bar.*Foo_Bar/i,
+    );
+  });
+
+  it('rejects case-only ARM parameter-name collisions', () => {
+    const colliding = [
+      { name: 'SettingName', type: 'T', properties: { value: 1 } },
+      { name: 'settingname', type: 'T', properties: { value: 2 } },
+    ];
+
+    expect(() => exportToAzurePolicy('collision', colliding)).toThrow(
+      /parameter name collision/i,
+    );
+  });
+
   it('configurationParameter (metadata) maps ARM names to MOF parameter names', () => {
     const p = policyOf(lapsResources);
     const cp = p.properties.metadata.guestConfiguration.configurationParameter;

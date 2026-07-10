@@ -14,6 +14,10 @@ export interface OscManifest {
   Status?: string;
   Platform?: string;
   Resources?: OscResource[];
+  /** True when the registration has a recorded successful deployment. */
+  Deployed?: boolean;
+  /** ISO timestamp of the most recent successful deployment. */
+  LastAppliedAt?: string | null;
 }
 
 export interface OscResource {

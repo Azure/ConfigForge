@@ -88,7 +88,8 @@ export function defaultBrowserClient(): RestoreClient {
  *
  * Order of operations (must not change without updating tests):
  *   1. Fetch snapshot content (no side effects yet).
- *   2. Fetch current YAML (best-effort; '' is allowed).
+ *   2. Fetch current YAML ('' is allowed only when the lookup succeeds and
+ *      confirms there is no current registration).
  *   3. Auto-snapshot current YAML — IF non-empty. If this step fails we
  *      refuse to proceed: re-registering without a recovery point would
  *      be a destructive operation with no rollback.
@@ -117,8 +118,12 @@ export async function safeRestore(
   let currentYaml = '';
   try {
     currentYaml = await client.fetchCurrentYaml(manifestName);
-  } catch {
-    currentYaml = '';
+  } catch (err) {
+    return {
+      ok: false,
+      autoSnapshotted: false,
+      error: `Current manifest fetch failed (refusing to restore without knowing whether a recovery snapshot is required): ${err instanceof Error ? err.message : String(err)}`,
+    };
   }
 
   let autoSnapshotted = false;

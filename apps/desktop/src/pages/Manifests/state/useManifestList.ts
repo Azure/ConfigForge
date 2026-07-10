@@ -85,6 +85,8 @@ export function useManifestList(): ManifestListState {
             Status: (m.Status ?? m.status) as string | undefined,
             Platform: (m.Platform ?? m.platform) as string | undefined,
             Resources: resources,
+            Deployed: Boolean(m.Deployed ?? m.deployed),
+            LastAppliedAt: (m.LastAppliedAt ?? m.lastAppliedAt ?? null) as string | null,
           };
         })
         .filter((m) => m.Name && m.Name !== "unnamed");

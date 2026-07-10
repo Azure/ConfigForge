@@ -217,6 +217,108 @@ describe('useManifestEditorState — fetchToken race-guard (v0.1.13)', () => {
     expect(result.current.loading).toBe(false);
     void callIndex;
   });
+
+  it('clears manifest A immediately when manifest B YAML fails to load', async () => {
+    const exportGet = vi.fn(({ name }: { name: string }) =>
+      name === 'first'
+        ? Promise.resolve({ body: 'first-yaml\n' })
+        : Promise.reject(new Error('second YAML unavailable')),
+    );
+    const get = vi.fn((name: string) =>
+      Promise.resolve({ data: { Name: name, Source: 'user', Resources: [] } }),
+    );
+    const status = vi.fn((name: string) =>
+      Promise.resolve({ data: { name, resources: [] } }),
+    );
+    const errSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    installCfsMocks({ get, exportGet, status });
+
+    const { result, rerender } = renderHook(
+      ({ name }) => useManifestEditorState(name),
+      { initialProps: { name: 'first' } },
+    );
+    await waitFor(() => expect(result.current.editedContent).toBe('first-yaml\n'));
+
+    rerender({ name: 'second' });
+    await waitFor(() => expect(result.current.error).toContain('second YAML unavailable'));
+
+    expect(result.current.loading).toBe(false);
+    expect(result.current.manifest?.Name).toBe('second');
+    expect(result.current.editedContent).toBe('');
+    expect(result.current.savedContent).toBe('');
+    expect(result.current.formatCache.current).toEqual({});
+    expect(result.current.isEditable).toBe(false);
+    expect(errSpy).toHaveBeenCalled();
+  });
+
+  it('uses a monotonic generation guard for A → B → A navigation', async () => {
+    const oldA = deferred<{ body: string }>();
+    const slowB = deferred<{ body: string }>();
+    let aCalls = 0;
+    const exportGet = vi.fn(({ name }: { name: string }) => {
+      if (name === 'first') {
+        aCalls += 1;
+        return aCalls === 1 ? oldA : Promise.resolve({ body: 'new-a-yaml\n' });
+      }
+      return slowB;
+    });
+    const get = vi.fn((name: string) =>
+      Promise.resolve({ data: { Name: name, Source: 'user', Resources: [] } }),
+    );
+    const status = vi.fn((name: string) =>
+      Promise.resolve({ data: { name, resources: [] } }),
+    );
+    installCfsMocks({ get, exportGet, status });
+
+    const { result, rerender } = renderHook(
+      ({ name }) => useManifestEditorState(name),
+      { initialProps: { name: 'first' } },
+    );
+    rerender({ name: 'second' });
+    rerender({ name: 'first' });
+
+    await waitFor(() => expect(result.current.editedContent).toBe('new-a-yaml\n'));
+
+    await act(async () => {
+      oldA.resolve({ body: 'stale-a-yaml\n' });
+      slowB.resolve({ body: 'stale-b-yaml\n' });
+      await Promise.resolve();
+      await Promise.resolve();
+    });
+
+    expect(result.current.manifest?.Name).toBe('first');
+    expect(result.current.editedContent).toBe('new-a-yaml\n');
+    expect(result.current.savedContent).toBe('new-a-yaml\n');
+  });
+
+  it('ignores a stale A refresh callback after navigation to B', async () => {
+    const get = vi.fn((name: string) =>
+      Promise.resolve({ data: { Name: name, Source: 'user', Resources: [] } }),
+    );
+    const exportGet = vi.fn(({ name }: { name: string }) =>
+      Promise.resolve({ body: `${name}-yaml\n` }),
+    );
+    const status = vi.fn((name: string) =>
+      Promise.resolve({ data: { name, resources: [] } }),
+    );
+    installCfsMocks({ get, exportGet, status });
+
+    const { result, rerender } = renderHook(
+      ({ name }) => useManifestEditorState(name),
+      { initialProps: { name: 'first' } },
+    );
+    await waitFor(() => expect(result.current.editedContent).toBe('first-yaml\n'));
+    const staleFirstRefresh = result.current.fetchData;
+
+    rerender({ name: 'second' });
+    await act(async () => {
+      await staleFirstRefresh();
+    });
+    await waitFor(() => expect(result.current.editedContent).toBe('second-yaml\n'));
+
+    expect(result.current.manifest?.Name).toBe('second');
+    expect(result.current.loading).toBe(false);
+  });
 });
 
 // ── Rejection-path logging (v0.1.11) ───────────────────────────────
@@ -292,17 +394,17 @@ describe('useManifestEditorState — rejection logging (v0.1.11)', () => {
 // ── Edit lifecycle ─────────────────────────────────────────────────
 
 describe('useManifestEditorState — edit lifecycle', () => {
-  it('hasUnsavedChanges flips when editedContent diverges from savedContent', async () => {
+  it('hasUnsavedChanges flips when editedContent diverges from the edit baseline', async () => {
     installCfsMocks();
     const { result } = renderHook(() => useManifestEditorState('sample'));
     await waitFor(() => expect(result.current.loading).toBe(false));
 
-    // Fresh load: editedContent === savedContent === yaml from disk.
+    // Fresh load: editedContent equals the persisted format baseline.
     expect(result.current.hasUnsavedChanges).toBe(false);
 
     // Enter edit mode but don't change anything yet.
     act(() => {
-      result.current.setEditing(true);
+      result.current.beginEditing();
     });
     expect(result.current.hasUnsavedChanges).toBe(false);
 
@@ -311,11 +413,25 @@ describe('useManifestEditorState — edit lifecycle', () => {
       result.current.setEditedContent('resources:\n  - name: new\n');
     });
     expect(result.current.hasUnsavedChanges).toBe(true);
+  });
 
-    // Acknowledge a save by syncing savedContent.
+  it('beginEditing establishes a per-format baseline and Cancel restores it', async () => {
+    installCfsMocks();
+    const { result } = renderHook(() => useManifestEditorState('sample'));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
     act(() => {
-      result.current.setSavedContent('resources:\n  - name: new\n');
+      result.current.beginEditing();
+      result.current.setEditedContent('resources:\n  - name: changed\n');
     });
+    expect(result.current.hasUnsavedChanges).toBe(true);
+
+    act(() => {
+      result.current.cancelEditing();
+    });
+    expect(result.current.editing).toBe(false);
+    expect(result.current.editedContent).toBe('resources: []\n');
+    expect(result.current.formatCache.current.yaml).toBe('resources: []\n');
     expect(result.current.hasUnsavedChanges).toBe(false);
   });
 
@@ -395,6 +511,62 @@ describe('useManifestEditorState — format tabs', () => {
     expect(result.current.activeFormat).toBe('mof');
     expect(result.current.isEditable).toBe(false);
   });
+
+  it('does not switch to a persisted derived format during an edit session', async () => {
+    const exportGet = vi.fn().mockResolvedValue({ body: 'resources: []\n' });
+    installCfsMocks({ exportGet });
+    const { result } = renderHook(() => useManifestEditorState('sample'));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => {
+      result.current.beginEditing();
+      result.current.setEditedContent('resources:\n  - name: dirty\n');
+    });
+    await act(async () => {
+      await result.current.handleFormatChange('json');
+    });
+
+    expect(result.current.activeFormat).toBe('yaml');
+    expect(result.current.editedContent).toContain('dirty');
+    expect(exportGet).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps the current tab active when a derived-format load fails', async () => {
+    const exportGet = vi.fn();
+    exportGet.mockResolvedValueOnce({ body: 'resources: []\n' });
+    exportGet.mockRejectedValueOnce(new Error('JSON export failed'));
+    installCfsMocks({ exportGet });
+    const { result } = renderHook(() => useManifestEditorState('sample'));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.handleFormatChange('json');
+    });
+
+    expect(result.current.activeFormat).toBe('yaml');
+    expect(result.current.editedContent).toBe('resources: []\n');
+    expect(result.current.formatCache.current.json).toBeUndefined();
+    expect(result.current.error).toContain('JSON export failed');
+  });
+
+  it('does not mark an untouched JSON edit session dirty', async () => {
+    const exportGet = vi.fn();
+    exportGet.mockResolvedValueOnce({ body: 'resources: []\n' });
+    exportGet.mockResolvedValueOnce({ body: '{"resources":[]}' });
+    installCfsMocks({ exportGet });
+    const { result } = renderHook(() => useManifestEditorState('sample'));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.handleFormatChange('json');
+    });
+    act(() => {
+      result.current.beginEditing();
+    });
+
+    expect(result.current.editing).toBe(true);
+    expect(result.current.hasUnsavedChanges).toBe(false);
+  });
 });
 
 // ── fetchData refresh ──────────────────────────────────────────────
@@ -423,5 +595,31 @@ describe('useManifestEditorState — fetchData re-fetch', () => {
     expect(result.current.manifest?.Resources).toHaveLength(1);
     expect(result.current.manifest?.Resources?.[0]?.name).toBe('After');
     expect(get).toHaveBeenCalledTimes(2);
+  });
+
+  it('retains submitted same-manifest content when post-save YAML re-read fails', async () => {
+    vi.spyOn(console, 'error').mockImplementation(() => {});
+    const exportGet = vi.fn();
+    exportGet.mockResolvedValueOnce({ body: 'resources: []\n' });
+    exportGet.mockRejectedValueOnce(new Error('post-save read failed'));
+    installCfsMocks({ exportGet });
+
+    const { result } = renderHook(() => useManifestEditorState('sample'));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => {
+      result.current.formatCache.current = { yaml: 'resources:\n  - name: submitted\n' };
+      result.current.setEditedContent('resources:\n  - name: submitted\n');
+      result.current.setSavedContent('resources:\n  - name: submitted\n');
+      result.current.setEditing(false);
+    });
+    await act(async () => {
+      await result.current.fetchData();
+    });
+
+    expect(result.current.error).toContain('post-save read failed');
+    expect(result.current.editedContent).toContain('submitted');
+    expect(result.current.currentDisplayContent).toContain('submitted');
+    expect(result.current.isEditable).toBe(true);
   });
 });

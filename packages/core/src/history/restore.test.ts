@@ -56,15 +56,19 @@ describe('safeRestore', () => {
     expect(calls.at(-1)).toBe('registerManifest(m1,snapshot-yaml)');
   });
 
-  it('treats fetchCurrentYaml errors as "no current YAML"', async () => {
-    const { client } = buildClient({
+  it('aborts when current YAML cannot be read', async () => {
+    const { client, calls } = buildClient({
       fetchCurrentYaml: vi.fn(async () => {
         throw new Error('boom');
       }),
     });
     const r = await safeRestore('m1', 'snap-1', client);
-    expect(r.ok).toBe(true);
+    expect(r.ok).toBe(false);
     expect(r.autoSnapshotted).toBe(false);
+    expect(r.error).toMatch(/Current manifest fetch failed.*boom/);
+    expect(client.saveAutoSnapshot).not.toHaveBeenCalled();
+    expect(client.registerManifest).not.toHaveBeenCalled();
+    expect(calls).not.toContain('registerManifest(m1,snapshot-yaml)');
   });
 
   it('refuses to restore when auto-snapshot fails (preserves recovery invariant)', async () => {

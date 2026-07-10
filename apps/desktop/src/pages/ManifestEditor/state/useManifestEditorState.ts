@@ -43,6 +43,8 @@ export interface ManifestEditorState {
   // ── Edit lifecycle ─────────────────────────────────────────────
   editing: boolean;
   setEditing: React.Dispatch<React.SetStateAction<boolean>>;
+  beginEditing: () => void;
+  cancelEditing: () => void;
   editedContent: string;
   setEditedContent: React.Dispatch<React.SetStateAction<string>>;
   savedContent: string;
@@ -80,6 +82,7 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
   // ── Edit lifecycle ─────────────────────────────────────────────
   const [editing, setEditing] = useState(false);
   const [editedContent, setEditedContent] = useState("");
+  const [editBaselineContent, setEditBaselineContent] = useState("");
   // v0.1.13 fix — track the YAML content as it was when the user
   // last hit Save (or as it was loaded from disk). Compared against
   // `editedContent` to compute a `hasUnsavedChanges` flag that
@@ -95,6 +98,8 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
   const [activeFormat, setActiveFormat] = useState<FormatTab>("yaml");
   const [formatLoading, setFormatLoading] = useState(false);
   const formatCache = useRef<Partial<Record<FormatTab, string>>>({});
+  const latestFormatRequestRef = useRef<FormatTab | null>(null);
+  const fetchGenerationRef = useRef(0);
 
   // Mirror of manifestName for in-flight fetch comparison. Kept as a
   // ref so the comparison in fetchData reads the *latest* URL value,
@@ -103,6 +108,23 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
   const manifestNameRef = useRef(manifestName);
   useEffect(() => {
     manifestNameRef.current = manifestName;
+    // Route changes must immediately detach the editor from the previous
+    // manifest. If the new load fails, keeping the previous YAML visible
+    // would let Save register manifest A's content under manifest B's name.
+    fetchGenerationRef.current += 1;
+    latestFormatRequestRef.current = null;
+    formatCache.current = {};
+    setManifest(null);
+    setStatus(null);
+    setError(null);
+    setEditing(false);
+    setEditedContent("");
+    setSavedContent("");
+    setEditBaselineContent("");
+    setEditView("editor");
+    setActiveFormat("yaml");
+    setFormatLoading(false);
+    setLoading(true);
   }, [manifestName]);
 
   const fetchFormatContent = useCallback(
@@ -126,24 +148,31 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
           : new TextDecoder().decode(artifact.body);
       } catch (err) {
         const msg = err instanceof Error ? err.message : t("errors.unknown");
-        if (format === "json") return t("formatErrors.jsonLoadFailed", { message: msg });
-        return t("formatErrors.formatLoadFailed", { format: format.toUpperCase(), message: msg });
+        if (format === "json") {
+          throw new Error(t("formatErrors.jsonLoadFailed", { message: msg }));
+        }
+        throw new Error(
+          t("formatErrors.formatLoadFailed", { format: format.toUpperCase(), message: msg }),
+        );
       }
     },
     [manifestName, t],
   );
 
   const fetchData = useCallback(async () => {
+    // A Save started on manifest A may resolve after navigation to B and
+    // invoke the A-bound refresh callback. It must not invalidate B's active
+    // generation or clear B's editor state.
+    if (manifestName !== manifestNameRef.current) return;
+
+    const fetchGeneration = ++fetchGenerationRef.current;
+    const fetchToken = manifestName;
+    const isCurrent = () =>
+      fetchGeneration === fetchGenerationRef.current &&
+      fetchToken === manifestNameRef.current;
+
     setLoading(true);
     setError(null);
-    // v0.1.13 fix — race-condition guard for rapid manifest switching.
-    // useCallback deps on manifestName, so a new fetchData closure is
-    // created every time the URL changes. But the previous fetch's
-    // promises might still be in-flight; if they resolve AFTER the
-    // new fetch but BEFORE the new one's setState calls, the renderer
-    // would show data from the wrong manifest. We snapshot the
-    // current manifestName via this token and bail if it changed.
-    const fetchToken = manifestName;
     try {
       // perf W2 / C5: previously this called `cfs.manifests.list({})`
       // and threw away N-1 entries — for a 50-manifest / 326-resource
@@ -161,7 +190,7 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
       // After awaiting: if the URL has navigated to a different
       // manifest in the meantime, drop everything from this stale
       // fetch — the new fetch is the source of truth.
-      if (fetchToken !== manifestNameRef.current) return;
+      if (!isCurrent()) return;
 
       // v0.1.11 fix — log rejected branches. Previously the
       // statusRes-rejected case fell through to a sessionStorage
@@ -175,6 +204,11 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
       if (yamlRes.status === "rejected") {
         // eslint-disable-next-line no-console
         console.error("[ManifestEditor] cfs.exportChannel.get(yaml) failed:", yamlRes.reason);
+        const message =
+          yamlRes.reason instanceof Error
+            ? yamlRes.reason.message
+            : t("errors.loadManifestFailed");
+        setError(message);
       }
       if (statusRes.status === "rejected") {
         // eslint-disable-next-line no-console
@@ -198,6 +232,7 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
         // Seed the "saved" baseline so the unsaved-changes guard
         // doesn't fire just because we loaded fresh content.
         setSavedContent(yamlRes.value);
+        setEditBaselineContent(yamlRes.value);
       }
 
       if (statusRes.status === "fulfilled") {
@@ -222,10 +257,10 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
 
       setActiveFormat("yaml");
     } catch (err) {
-      if (fetchToken !== manifestNameRef.current) return;
+      if (!isCurrent()) return;
       setError(err instanceof Error ? err.message : t("errors.loadManifestFailed"));
     } finally {
-      if (fetchToken === manifestNameRef.current) setLoading(false);
+      if (isCurrent()) setLoading(false);
     }
   }, [manifestName, t]);
 
@@ -233,27 +268,21 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
     fetchData();
   }, [fetchData]);
 
-  // v0.2.21: track the latest format requested by handleFormatChange
-  // so a slow in-flight fetch that resolves AFTER the user has
-  // already switched away doesn't write its stale content into the
-  // editor and risk being saved as the wrong format.
-  const latestFormatRequestRef = useRef<FormatTab | null>(null);
-
   const handleFormatChange = useCallback(
     async (format: FormatTab) => {
       if (format === activeFormat) return;
+      // An edit session owns exactly one representation. Switching to a
+      // server-derived format while editing would show the last persisted
+      // version and allow Save to discard the current buffer.
+      if (editing) return;
 
-      // Save any in-progress edits back to cache before switching
-      if (editing) {
-        formatCache.current[activeFormat] = editedContent;
-      }
-
-      setActiveFormat(format);
       latestFormatRequestRef.current = format;
 
       const cached = formatCache.current[format];
       if (cached !== undefined) {
+        setActiveFormat(format);
         setEditedContent(cached);
+        setEditBaselineContent(cached);
         return;
       }
 
@@ -266,7 +295,9 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
         // user hasn't moved on.
         formatCache.current[format] = content;
         if (latestFormatRequestRef.current === format) {
+          setActiveFormat(format);
           setEditedContent(content);
+          setEditBaselineContent(content);
         }
       } catch (err) {
         if (latestFormatRequestRef.current === format) {
@@ -278,15 +309,30 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
         }
       }
     },
-    [activeFormat, editing, editedContent, fetchFormatContent, t],
+    [activeFormat, editing, fetchFormatContent, t],
   );
+
+  const beginEditing = useCallback(() => {
+    setEditBaselineContent(editedContent);
+    setEditing(true);
+  }, [editedContent]);
+
+  const cancelEditing = useCallback(() => {
+    setEditing(false);
+    setEditedContent(editBaselineContent);
+    formatCache.current[activeFormat] = editBaselineContent;
+    setEditView("editor");
+    setError(null);
+  }, [activeFormat, editBaselineContent]);
 
   // ── Derived values ─────────────────────────────────────────────
   // MOF is always read-only; editing only allowed in YAML and JSON
-  const isEditable = activeFormat !== "mof";
+  const isEditable =
+    activeFormat !== "mof" && formatCache.current[activeFormat] !== undefined;
   const isReadOnly = !editing || !isEditable;
   const currentDisplayContent = formatCache.current[activeFormat] ?? "";
-  const hasUnsavedChanges = editing && editedContent !== "" && editedContent !== savedContent;
+  const hasUnsavedChanges =
+    editing && editedContent !== "" && editedContent !== editBaselineContent;
 
   // Phase D.1 — memoise the return so consumers don't re-render
   // when state they don't read changes. Every setter from useState
@@ -310,6 +356,8 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
       // Edit lifecycle
       editing,
       setEditing,
+      beginEditing,
+      cancelEditing,
       editedContent,
       setEditedContent,
       savedContent,
@@ -340,6 +388,8 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
       loading,
       error,
       editing,
+      beginEditing,
+      cancelEditing,
       editedContent,
       savedContent,
       editView,

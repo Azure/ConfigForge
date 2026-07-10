@@ -342,6 +342,11 @@ test.describe('cross-manifest conflict detection — UI surfaces real conflicts'
     await registerManifest(NAME_A, a);
     await registerManifest(NAME_B, b);
 
+    // The previous test leaves the shared Electron window on this route.
+    // Navigate away first so CompliancePage remounts and re-fetches the two
+    // registrations created above; clicking the current route alone is a
+    // React Router no-op and was the source of this test's recurring retry.
+    await win.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
     // Navigate to the Validation page (route is still /compliance).
     await win.locator('aside').getByRole('link', { name: 'Export Readiness' }).click();
     await expect(win.locator('h1', { hasText: /Export Readiness/ })).toBeVisible();

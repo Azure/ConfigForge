@@ -55,6 +55,8 @@ vi.mock('./state/useManifestEditorState', () => ({
     fetchData: vi.fn().mockResolvedValue(undefined),
     editing: false,
     setEditing: vi.fn(),
+    beginEditing: vi.fn(),
+    cancelEditing: vi.fn(),
     editedContent: sampleYaml,
     setEditedContent: vi.fn(),
     savedContent: sampleYaml,

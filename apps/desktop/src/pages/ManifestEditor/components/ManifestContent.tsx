@@ -244,7 +244,8 @@ export const ManifestContent = React.memo(function ManifestContent({
                   handleFormatChange(key);
                   setEditView("editor");
                 }}
-                disabled={formatLoading}
+                disabled={formatLoading || editing}
+                title={editing ? t("content.unsavedFormatChanges", { format: activeFormat.toUpperCase() }) : undefined}
                 className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
                   activeFormat === key && editView === "editor"
                     ? "bg-blue-600 text-white"

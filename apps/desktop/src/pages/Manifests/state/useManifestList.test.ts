@@ -68,6 +68,44 @@ describe('useManifestList — happy path', () => {
     expect(result.current.platformByName.get('a')).toBe('windows');
     expect(result.current.platformByName.get('b')).toBe('linux');
   });
+
+  it('preserves deployment metadata used to enable Revert', async () => {
+    const list = vi.fn().mockResolvedValue({
+      data: [
+        {
+          Name: 'deployed',
+          Source: 'user',
+          Platform: 'windows',
+          Resources: [],
+          Deployed: true,
+          LastAppliedAt: '2026-07-09T12:00:00.000Z',
+        },
+        {
+          Name: 'never-deployed',
+          Source: 'user',
+          Platform: 'windows',
+          Resources: [],
+          Deployed: false,
+          LastAppliedAt: null,
+        },
+      ],
+    });
+    installMocks({ list });
+
+    const { result } = renderHook(() => useManifestList());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.manifests[0]).toMatchObject({
+      Name: 'deployed',
+      Deployed: true,
+      LastAppliedAt: '2026-07-09T12:00:00.000Z',
+    });
+    expect(result.current.manifests[1]).toMatchObject({
+      Name: 'never-deployed',
+      Deployed: false,
+      LastAppliedAt: null,
+    });
+  });
 });
 
 describe('useManifestList — listTokenRef race-guard (v0.1.14)', () => {
