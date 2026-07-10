@@ -27,7 +27,7 @@ productName: ConfigForge
 # `productName` stays as the friendly display name shown in
 # menus / taskbar / About dialog.
 executableName: configforge
-copyright: Copyright (c) ConfigForge contributors
+copyright: Copyright (c) Microsoft Corporation
 
 directories:
   output: release/${version}
@@ -154,10 +154,9 @@ deb:
 
 publish:
   provider: github
-  owner: ABMFST
+  owner: Azure
   repo: ConfigForge
   # `releaseType: draft` keeps releases hidden until a human clicks
   # Publish in the GitHub UI. release.yml uploads to the draft;
   # publishing is the deliberate gate.
   releaseType: draft
-

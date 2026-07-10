@@ -4,7 +4,7 @@
   "private": true,
   "description": "ConfigForge \u2014 OSConfig Baseline Editing tool",
   "main": "./dist/electron/main.js",
-  "homepage": "https://github.com/ABMFST/ConfigForge",
+  "homepage": "https://github.com/Azure/ConfigForge",
   "author": {
     "name": "ConfigForge contributors",
     "email": "noreply@github.com"

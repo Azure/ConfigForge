@@ -2,7 +2,7 @@
 
 ## How to file issues and get help
 
-This project uses [GitHub Issues](https://github.com/ABMFST/ConfigForge/issues) to track bugs and feature requests. Please search the existing issues before filing new issues to avoid duplicates. For new issues, file your bug or feature request as a new issue.
+This project uses [GitHub Issues](https://github.com/Azure/ConfigForge/issues) to track bugs and feature requests. Please search the existing issues before filing new issues to avoid duplicates. For new issues, file your bug or feature request as a new issue.
 
 For help and questions about using this project, please file a GitHub Issue, or contact the maintainer:
 
