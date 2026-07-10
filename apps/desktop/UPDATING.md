@@ -95,7 +95,7 @@ Linux: `~/.config/ConfigForge/logs/main.log`).
 | `apps/desktop/electron/preload.ts` | Exposes `cfs.update.{getStatus, onStatus, check, download, quitAndInstall}` to the renderer. |
 | `apps/desktop/src/components/UpdateBanner.tsx` | FluentUI MessageBar that renders a contextual CTA per state. |
 | `apps/desktop/src/components/Layout.tsx` | Hosts `<UpdateBanner />` between `<TitleBar />` and the main app shell. |
-| `apps/desktop/electron-builder.yml` | `publish: { provider: github, ... }` — tells electron-builder where to upload `latest.yml` / `latest-linux.yml`. |
+| `apps/desktop/electron-builder.yml` | `publish: { provider: github, owner: Azure, repo: ConfigForge }` — makes packaged apps read `latest.yml` / `latest-linux.yml` from the canonical Microsoft repository. |
 
 ## Disabled by default in dev
 

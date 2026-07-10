@@ -9,8 +9,8 @@ src = "src"
 [output.html]
 default-theme = "light"
 preferred-dark-theme = "navy"
-git-repository-url = "https://github.com/ABMFST/ConfigForge"
-edit-url-template = "https://github.com/ABMFST/ConfigForge/edit/main/docs/{path}"
+git-repository-url = "https://github.com/Azure/ConfigForge"
+edit-url-template = "https://github.com/Azure/ConfigForge/edit/main/docs/{path}"
 site-url = "/ConfigForge/"
 additional-css = ["theme/css/custom.css"]
 additional-js = ["mermaid.min.js", "mermaid-init.js"]

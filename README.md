@@ -153,7 +153,7 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 ## Maintainer
 
-Community-maintained. Use [GitHub Issues](https://github.com/ABMFST/ConfigForge/issues) for bug reports and feature discussion.
+Community-maintained. Use [GitHub Issues](https://github.com/Azure/ConfigForge/issues) for bug reports and feature discussion.
 
 ## Code of Conduct
 
