@@ -42,6 +42,7 @@ import {
   saveRegistration,
   saveRegistrationIfAbsent,
   type ManifestRegistration,
+  type RegistrationRecoveryBackup,
 } from '../oscfg';
 import {
   detectManifestPlatform,
@@ -58,7 +59,7 @@ import { resolveAuthor } from '../history/author';
 import { deleteRationale } from '../manifest/rationale-store';
 import {
   deleteAuditResult,
-  readAuditResult,
+  readAuditResultForRegistration,
 } from '../manifest/audit-results-store';
 import { deleteHistoryForManifest } from '../history';
 import type { OscComplianceSummary } from '../types';
@@ -152,16 +153,14 @@ export function normalizeManifestContent(content: string): NormalizeResult {
   if (rawSettings) {
     const resources = (rawSettings as unknown[])
       .map((s) => {
-        if (typeof s === 'string') return { name: s, type: 'Microsoft.Windows/Registry', properties: {} };
+        if (typeof s === 'string')
+          return { name: s, type: 'Microsoft.Windows/Registry', properties: {} };
         if (!s || typeof s !== 'object') return null;
         const sr = s as Record<string, unknown>;
-        const name = String(
-          sr.Name ?? sr.name ?? sr.settingName ?? sr.SettingName ?? '',
-        ).trim();
+        const name = String(sr.Name ?? sr.name ?? sr.settingName ?? sr.SettingName ?? '').trim();
         if (!name) return null;
         const keyPath = sr.Path ?? sr.path ?? sr.registryPath ?? sr.RegistryPath;
-        const expectedValue =
-          sr.ExpectedValue ?? sr.expectedValue ?? sr.value ?? sr.Value;
+        const expectedValue = sr.ExpectedValue ?? sr.expectedValue ?? sr.value ?? sr.Value;
         const type = String(sr.Type ?? sr.type ?? 'Microsoft.Windows/Registry');
         const resource: Record<string, unknown> = {
           name,
@@ -254,6 +253,7 @@ export interface ManifestListEntry {
   RegisteredAt: string | null;
   /** Updated on every registration/save and therefore the list's modified time. */
   LastModifiedAt: string | null;
+  Revision: string | null;
   Resources?: { name: string; type: string }[];
 }
 
@@ -266,15 +266,16 @@ async function readSourceYaml(namespace: string): Promise<string | null> {
 }
 
 function nonNegativeNumber(value: unknown): number | null {
-  return typeof value === 'number' && Number.isFinite(value) && value >= 0
-    ? value
-    : null;
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value : null;
 }
 
 async function readComplianceSummary(
-  namespace: string,
+  registration: ManifestRegistration,
 ): Promise<OscComplianceSummary | null> {
-  const audit = await readAuditResult(namespace);
+  const audit = await readAuditResultForRegistration(registration.namespace, {
+    modifiedAt: registration.modifiedAt ?? registration.registeredAt,
+    revision: registration.revision,
+  });
   if (!audit || !audit.result || typeof audit.result !== 'object') return null;
   const result = audit.result as Record<string, unknown>;
   const total = nonNegativeNumber(result.TotalResources);
@@ -329,7 +330,7 @@ async function buildManifestList(
       const deployed = Boolean(reg?.lastAppliedAt) || cliVisible;
 
       if (reg) {
-        const compliance = await readComplianceSummary(name);
+        const compliance = await readComplianceSummary(reg);
         let summary = reg.resourceSummary;
         let validation: ValidationSummary | undefined = reg.validationSummary;
         if (!summary || !validation) {
@@ -369,7 +370,8 @@ async function buildManifestList(
           Validation: validation ?? null,
           Compliance: compliance,
           RegisteredAt: reg.registeredAt ?? null,
-          LastModifiedAt: reg.registeredAt ?? null,
+          LastModifiedAt: reg.modifiedAt ?? reg.registeredAt ?? null,
+          Revision: reg.revision ?? null,
         };
         return includeResources ? { ...base, Resources: resources } : base;
       }
@@ -389,8 +391,11 @@ async function buildManifestList(
         Compliance: null,
         RegisteredAt: null,
         LastModifiedAt: null,
+        Revision: null,
       };
-      return includeResources ? { ...cliBase, Resources: [] as { name: string; type: string }[] } : cliBase;
+      return includeResources
+        ? { ...cliBase, Resources: [] as { name: string; type: string }[] }
+        : cliBase;
     }),
   );
 }
@@ -470,6 +475,7 @@ export interface GetManifestResult {
     Compliance: OscComplianceSummary | null;
     RegisteredAt: string | null;
     LastModifiedAt: string | null;
+    Revision: string | null;
     Resources?: { name: string; type: string }[];
   } | null;
   warning?: string;
@@ -532,7 +538,7 @@ export async function getManifest(
   }
 
   const resources = (summary ?? []).map((r) => ({ name: r.name, type: r.type }));
-  const compliance = await readComplianceSummary(namespace);
+  const compliance = await readComplianceSummary(reg);
   const data = {
     Name: namespace,
     DisplayName: reg.displayName ?? namespace,
@@ -547,7 +553,8 @@ export async function getManifest(
     Validation: validation ?? null,
     Compliance: compliance,
     RegisteredAt: reg.registeredAt ?? null,
-    LastModifiedAt: reg.registeredAt ?? null,
+    LastModifiedAt: reg.modifiedAt ?? reg.registeredAt ?? null,
+    Revision: reg.revision ?? null,
     ...(includeResources ? { Resources: resources } : {}),
   };
 
@@ -639,7 +646,11 @@ export async function fetchManifestFromUri(uri: string): Promise<string> {
   // this lookup and the fetch is out of scope for this single-user desktop
   // tool; closing it would require pinning the socket to the vetted IP.)
   const host = parsedUri.hostname.replace(/^\[|\]$/g, '');
-  if (host === 'localhost' || host.endsWith('.localhost') || (isIP(host) !== 0 && isBlockedIp(host))) {
+  if (
+    host === 'localhost' ||
+    host.endsWith('.localhost') ||
+    (isIP(host) !== 0 && isBlockedIp(host))
+  ) {
     throw new HandlerError(
       400,
       `URI resolves to a private/loopback address (${host}). Manifest URLs must point to a public host.`,
@@ -669,10 +680,7 @@ export async function fetchManifestFromUri(uri: string): Promise<string> {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     const cl = res.headers.get('content-length');
     if (cl && Number(cl) > MAX_REMOTE_BYTES) {
-      throw new HandlerError(
-        413,
-        `Remote manifest too large (${cl} bytes); limit is 10 MB.`,
-      );
+      throw new HandlerError(413, `Remote manifest too large (${cl} bytes); limit is 10 MB.`);
     }
     const text = await res.text();
     if (text.length > MAX_REMOTE_BYTES) {
@@ -726,6 +734,18 @@ export interface RegisterManifestResult {
   message: string;
   data: { namespace: string; platform: Platform | 'mixed' | 'cross-platform' | 'unknown' };
   warnings: string[];
+}
+
+let registrationRevisionSequence = 0;
+
+function createRegistrationRevision(): string {
+  registrationRevisionSequence += 1;
+  return [
+    Date.now().toString(36),
+    process.pid.toString(36),
+    registrationRevisionSequence.toString(36),
+    Math.random().toString(36).slice(2, 10),
+  ].join('-');
 }
 
 export async function registerManifest(
@@ -792,9 +812,13 @@ export async function registerManifest(
   const isDarwin = process.platform === 'darwin';
   const warnings: string[] = [];
 
-  // v0.3.0 (#20): namespace-collision warning.
+  // v0.3.0 (#20): namespace-collision warning. Two different display
+  // names that sanitize to the same namespace will silently clobber
+  // each other; we now surface that as a soft warning the UI shows
+  // in a banner. The renderer (or a future CLI) can pass
+  // `req.force = true` to skip the warning and overwrite explicitly.
+  const existing = await getRegistration(namespace);
   if (!req.force) {
-    const existing = await getRegistration(namespace);
     if (existing && existing.displayName && existing.displayName !== req.name) {
       warnings.push(
         `Manifest name "${req.name}" maps to the same namespace ("${namespace}") as the existing "${existing.displayName}". Registering will overwrite the existing manifest's source YAML, deploy history pointer, and rationale log. Use a different name (or pass force:true) to keep both manifests.`,
@@ -831,19 +855,21 @@ export async function registerManifest(
     }
   }
 
-  await saveRegistration(
-    {
-      namespace,
-      displayName: req.name,
-      platform: manifestPlatform,
-      registeredAt: new Date().toISOString(),
-      source: req.source ?? 'user',
-      sourceId: req.sourceId,
-      resourceSummary: extractResourceSummary(resources),
-      validationSummary: extractValidationSummary(parsed as Record<string, unknown>),
-    },
-    yamlContent,
-  );
+  const modifiedAt = new Date().toISOString();
+  const revision = createRegistrationRevision();
+  const registration: ManifestRegistration = {
+    namespace,
+    displayName: req.name,
+    platform: manifestPlatform,
+    registeredAt: existing?.registeredAt ?? modifiedAt,
+    modifiedAt,
+    revision,
+    source: req.source ?? 'user',
+    sourceId: req.sourceId,
+    resourceSummary: extractResourceSummary(resources),
+    validationSummary: extractValidationSummary(parsed as Record<string, unknown>),
+  };
+  await saveRegistration(registration, yamlContent);
 
   invalidateCache();
 
@@ -926,9 +952,7 @@ export interface RestoreManifestResult {
  * the absence check and write under one namespace lock so this operation can
  * never overwrite a registration recreated after deletion.
  */
-export async function restoreManifest(
-  req: RestoreManifestRequest,
-): Promise<RestoreManifestResult> {
+export async function restoreManifest(req: RestoreManifestRequest): Promise<RestoreManifestResult> {
   if (!req || typeof req !== 'object') {
     throw new HandlerError(400, 'restore request is required');
   }
@@ -964,12 +988,15 @@ export async function restoreManifest(
 
   const resources = parsed.resources ?? [];
   const platform = detectManifestPlatform(resources);
+  const modifiedAt = new Date().toISOString();
   const restored = await saveRegistrationIfAbsent(
     {
       namespace,
       displayName: req.displayName,
       platform,
-      registeredAt: new Date().toISOString(),
+      registeredAt: modifiedAt,
+      modifiedAt,
+      revision: createRegistrationRevision(),
       source: req.source,
       ...(req.sourceId ? { sourceId: req.sourceId } : {}),
       resourceSummary: extractResourceSummary(resources),
@@ -1002,50 +1029,75 @@ export interface DeleteManifestResult {
     cliError: string | null;
     rationaleLogRemoved: boolean;
     rationaleLogError: string | null;
+    recovery: RegistrationRecoveryBackup | null;
   };
 }
 
-export async function deleteManifest(name: string): Promise<DeleteManifestResult> {
+export interface DeleteManifestOptions {
+  requireRecovery?: boolean;
+}
+
+export async function deleteManifest(
+  name: string,
+  options: DeleteManifestOptions = {},
+): Promise<DeleteManifestResult> {
   if (!name) throw new HandlerError(400, 'name query parameter is required');
+  if (options.requireRecovery !== undefined && typeof options.requireRecovery !== 'boolean') {
+    throw new HandlerError(400, 'requireRecovery must be a boolean when provided');
+  }
   const namespace = sanitizeNamespace(name);
 
-  // Best-effort CLI cleanup. Registered-but-never-deployed manifests
-  // won't exist in the CLI; that's expected, not an error. Always
-  // delete the ConfigForge-side registration afterwards so the UI
-  // doesn't leak stale entries.
-  const cli = await deleteNamespace(namespace);
-  await deleteRegistration(namespace);
-
-  // Drop the per-manifest rationale log. Best-effort — a cleanup
-  // failure must not block the manifest delete.
+  let cliRemoved = false;
+  let cliError: string | null = null;
   let rationaleLogRemoved = false;
   let rationaleLogError: string | null = null;
-  try {
-    const rationale = await deleteRationale(namespace);
-    rationaleLogRemoved = rationale.removed;
-    rationaleLogError = rationale.removed ? null : rationale.error ?? null;
-  } catch (err) {
-    rationaleLogError = err instanceof Error ? err.message : String(err);
+  const cleanupWhileRegistrationLocked = async (): Promise<void> => {
+    // Keep namespace-scoped cleanup inside the same registration lock as the
+    // delete. A concurrent save/undo cannot recreate this namespace and then
+    // have its new CLI state or side stores erased by the older deletion.
+    try {
+      const cli = await deleteNamespace(namespace);
+      cliRemoved = cli.success;
+      cliError = cli.success ? null : cli.error;
+    } catch (err) {
+      cliError = err instanceof Error ? err.message : String(err);
+    }
+
+    try {
+      const rationale = await deleteRationale(namespace);
+      rationaleLogRemoved = rationale.removed;
+      rationaleLogError = rationale.removed ? null : (rationale.error ?? null);
+    } catch (err) {
+      rationaleLogError = err instanceof Error ? err.message : String(err);
+    }
+
+    await deleteAuditResult(namespace).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.warn(`[manifests] audit-result cleanup failed for ${namespace}:`, err);
+    });
+
+    await deleteHistoryForManifest(namespace).catch((err) => {
+      // eslint-disable-next-line no-console
+      console.warn(`[manifests] history cleanup failed for ${namespace}:`, err);
+    });
+  };
+
+  // Capture registration metadata + source and remove both registry files in
+  // one namespace-locked operation. Cleanup stays in that operation so a
+  // replacement registration cannot collide with namespace-scoped cleanup.
+  const registrationDelete = await deleteRegistration(namespace, {
+    ...(options.requireRecovery === true ? { requireRecovery: true } : {}),
+    afterDeleteWhileLocked: cleanupWhileRegistrationLocked,
+  });
+  if (
+    options.requireRecovery === true &&
+    (!registrationDelete?.removed || !registrationDelete.recovery)
+  ) {
+    throw new HandlerError(
+      409,
+      `Manifest "${name}" was not deleted because its recovery source YAML is unavailable.`,
+    );
   }
-
-  // v0.1.6: drop the cached last-audit-run JSON too. Best-effort,
-  // same reasoning as the rationale-log cleanup above. Doesn't
-  // surface in the response shape because the audit-result cache is
-  // an implementation detail callers shouldn't depend on.
-  await deleteAuditResult(namespace).catch((err) => {
-    // eslint-disable-next-line no-console
-    console.warn(`[manifests] audit-result cleanup failed for ${namespace}:`, err);
-  });
-
-  // v0.2.21: drop the manifest's history directory. Without this,
-  // a re-registration under the same namespace surfaces ghost
-  // snapshots from the prior manifest on the History page, and a
-  // user clicking "Restore snapshot" would silently overwrite their
-  // new YAML with old, unrelated content.
-  await deleteHistoryForManifest(namespace).catch((err) => {
-    // eslint-disable-next-line no-console
-    console.warn(`[manifests] history cleanup failed for ${namespace}:`, err);
-  });
 
   invalidateCache();
 
@@ -1053,10 +1105,11 @@ export async function deleteManifest(name: string): Promise<DeleteManifestResult
     message: `Manifest '${name}' removed`,
     data: {
       namespace,
-      cliRemoved: cli.success,
-      cliError: cli.success ? null : cli.error,
+      cliRemoved,
+      cliError,
       rationaleLogRemoved,
       rationaleLogError,
+      recovery: registrationDelete?.recovery ?? null,
     },
   };
 }

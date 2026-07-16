@@ -48,10 +48,18 @@ export function installElectronPathStrategy(): void {
 
   // public/_baselines/ ships via extraResources to
   // <process.resourcesPath>/public-assets/ at install time.
-  // In dev, point at the repo's public/ tree.
-  const publicRoot = isDev
-    ? path.join(repoRoot, 'public')
-    : path.join(process.resourcesPath, 'public-assets');
+  // In dev, point at the repo's public/ tree. Tests and explicitly isolated
+  // hosts may override only this root before Electron starts; normal runtime
+  // behavior is unchanged when the variable is absent or empty.
+  const configuredPublicRoot =
+    !app.isPackaged && process.env.CONFIGFORGE_TEST_MODE === "1"
+      ? process.env.CONFIGFORGE_PUBLIC_ROOT?.trim()
+      : undefined;
+  const publicRoot = configuredPublicRoot
+    ? path.resolve(configuredPublicRoot)
+    : isDev
+      ? path.join(repoRoot, 'public')
+      : path.join(process.resourcesPath, 'public-assets');
 
   const strategy: PathStrategy = {
     resolveOscfgBinaryDir(platformSubdir) {

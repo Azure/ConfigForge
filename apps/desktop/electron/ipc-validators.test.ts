@@ -20,6 +20,7 @@ import {
   MAX_MANIFEST_CONTENT_LEN,
   MAX_MANIFEST_NAME_LEN,
   validateAppendRationaleRequest,
+  validateDeleteManifestRequest,
   validateDeleteSnapshotRequest,
   validateDeployRequest,
   validateDocsGenerateRequest,
@@ -30,6 +31,27 @@ import {
   validateRevertRequest,
   validateSaveSnapshotRequest,
 } from './ipc-validators';
+
+describe('validateDeleteManifestRequest', () => {
+  it('accepts legacy delete and recovery-required delete payloads', () => {
+    expect(validateDeleteManifestRequest({ name: 'baseline' })).toBeNull();
+    expect(
+      validateDeleteManifestRequest({
+        name: 'baseline',
+        requireRecovery: true,
+      }),
+    ).toBeNull();
+  });
+
+  it('rejects malformed recovery flags', () => {
+    expect(
+      validateDeleteManifestRequest({
+        name: 'baseline',
+        requireRecovery: 'yes',
+      }),
+    ).toMatch(/requireRecovery/);
+  });
+});
 
 describe('validateRevertRequest', () => {
   it('accepts a valid request', () => {

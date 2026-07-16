@@ -71,7 +71,7 @@ vi.mock('../manifest/rationale-store', () => ({
 
 vi.mock('../manifest/audit-results-store', () => ({
   deleteAuditResult: vi.fn().mockResolvedValue(undefined),
-  readAuditResult: vi.fn().mockResolvedValue(null),
+  readAuditResultForRegistration: vi.fn().mockResolvedValue(null),
 }));
 
 import {
@@ -90,6 +90,7 @@ import * as auditResultsStore from '../manifest/audit-results-store';
 
 const listRegistrationsMock = vi.mocked(oscfg.listRegistrations);
 const getNamespacesMock = vi.mocked(oscfg.getNamespaces);
+const getRegistrationMock = vi.mocked(oscfg.getRegistration);
 const saveRegistrationMock = vi.mocked(oscfg.saveRegistration);
 const saveRegistrationIfAbsentMock = vi.mocked(oscfg.saveRegistrationIfAbsent);
 const deleteNamespaceMock = vi.mocked(oscfg.deleteNamespace);
@@ -97,17 +98,24 @@ const deleteRegistrationMock = vi.mocked(oscfg.deleteRegistration);
 const validateMock = vi.mocked(platform.validateManifestSchema);
 const detectPlatformMock = vi.mocked(platform.detectManifestPlatform);
 const deleteRationaleMock = vi.mocked(rationaleStore.deleteRationale);
-const readAuditResultMock = vi.mocked(auditResultsStore.readAuditResult);
+const readAuditResultMock = vi.mocked(auditResultsStore.readAuditResultForRegistration);
 
 beforeEach(() => {
   vi.clearAllMocks();
   _clearManifestsListCache();
   listRegistrationsMock.mockResolvedValue([]);
+  getRegistrationMock.mockResolvedValue(null);
   getNamespacesMock.mockResolvedValue({ success: true, data: [], error: null, exitCode: 0 });
   saveRegistrationMock.mockResolvedValue();
   saveRegistrationIfAbsentMock.mockResolvedValue(true);
   deleteNamespaceMock.mockResolvedValue({ success: true, error: null, exitCode: 0, data: null });
-  deleteRegistrationMock.mockResolvedValue();
+  deleteRegistrationMock.mockImplementation(async (_namespace, options) => {
+    await options?.afterDeleteWhileLocked?.();
+    return {
+      removed: true,
+      recovery: null,
+    };
+  });
   deleteRationaleMock.mockResolvedValue({ removed: true });
   readAuditResultMock.mockResolvedValue(null);
 });
@@ -149,9 +157,7 @@ describe('normalizeManifestContent', () => {
   it('converts security-definition JSON with Settings array', () => {
     const json = JSON.stringify({
       Name: 'win10-baseline',
-      Settings: [
-        { Name: 'PasswordHistory', Path: 'HKLM\\Soft', ExpectedValue: 24 },
-      ],
+      Settings: [{ Name: 'PasswordHistory', Path: 'HKLM\\Soft', ExpectedValue: 24 }],
     });
     const result = normalizeManifestContent(json);
     expect(result.ok).toBe(true);
@@ -319,6 +325,54 @@ describe('listManifests', () => {
       compliant: 8,
       nonCompliant: 1,
       indeterminate: 1,
+      errors: 0,
+    });
+  });
+
+  it('ignores an audit from an older registration revision and shows the current revision', async () => {
+    listRegistrationsMock.mockResolvedValue([
+      {
+        namespace: 'revisioned',
+        displayName: 'Revisioned baseline',
+        platform: 'windows',
+        registeredAt: '2026-07-15T18:30:00.000Z',
+        modifiedAt: '2026-07-15T20:00:00.000Z',
+        revision: 'current-revision',
+        source: 'user',
+        resourceSummary: [],
+        validationSummary: {
+          hasSchema: true,
+          hasEnforcementValues: true,
+          hasComplianceCriteria: true,
+          issues: [],
+        },
+      } as never,
+    ]);
+    const auditResult = {
+      TotalResources: 2,
+      Compliant: 1,
+      NonCompliant: 1,
+      Indeterminate: 0,
+      Errors: 0,
+    };
+    readAuditResultMock.mockResolvedValue(null);
+
+    expect((await listManifests({ lite: true, force: true })).data[0]?.Compliance).toBeNull();
+
+    readAuditResultMock.mockResolvedValue({
+      version: 1,
+      recordedAt: '2026-07-15T21:01:00.000Z',
+      registrationRevision: 'current-revision',
+      mode: 'audit',
+      result: auditResult,
+    });
+
+    expect((await listManifests({ lite: true, force: true })).data[0]?.Compliance).toEqual({
+      auditedAt: '2026-07-15T21:01:00.000Z',
+      total: 2,
+      compliant: 1,
+      nonCompliant: 1,
+      indeterminate: 0,
       errors: 0,
     });
   });
@@ -553,13 +607,58 @@ describe('getManifest (perf W2 / C5)', () => {
     expect(result.data?.Deployed).toBe(true);
     expect(result.data?.LastAppliedAt).toBe('2026-02-01T12:00:00Z');
   });
+
+  it('ignores a pre-edit legacy audit and shows a post-edit audit', async () => {
+    listRegistrationsMock.mockResolvedValue([
+      {
+        namespace: 'legacy-audit',
+        displayName: 'Legacy Audit',
+        platform: 'windows',
+        registeredAt: '2026-07-15T18:00:00.000Z',
+        modifiedAt: '2026-07-15T20:00:00.000Z',
+        source: 'user',
+        resourceSummary: [],
+        validationSummary: {
+          hasSchema: true,
+          hasEnforcementValues: true,
+          hasComplianceCriteria: true,
+          issues: [],
+        },
+      } as never,
+    ]);
+    const result = {
+      TotalResources: 1,
+      Compliant: 1,
+      NonCompliant: 0,
+      Indeterminate: 0,
+      Errors: 0,
+    };
+    readAuditResultMock.mockResolvedValue(null);
+
+    expect((await getManifest('legacy-audit')).data?.Compliance).toBeNull();
+
+    readAuditResultMock.mockResolvedValue({
+      version: 1,
+      recordedAt: '2026-07-15T20:00:00.001Z',
+      mode: 'audit',
+      result,
+    });
+    expect((await getManifest('legacy-audit')).data?.Compliance).toEqual({
+      auditedAt: '2026-07-15T20:00:00.001Z',
+      total: 1,
+      compliant: 1,
+      nonCompliant: 0,
+      indeterminate: 0,
+      errors: 0,
+    });
+  });
 });
 
 describe('registerManifest', () => {
   it('rejects empty name', async () => {
-    await expect(
-      registerManifest({ name: '', content: 'resources: []' }),
-    ).rejects.toMatchObject({ status: 400 });
+    await expect(registerManifest({ name: '', content: 'resources: []' })).rejects.toMatchObject({
+      status: 400,
+    });
   });
 
   it('rejects when no source provided', async () => {
@@ -570,9 +669,9 @@ describe('registerManifest', () => {
   });
 
   it('rejects whitespace-only content as if absent', async () => {
-    await expect(
-      registerManifest({ name: 'foo', content: '   \n\n   ' }),
-    ).rejects.toMatchObject({ status: 400 });
+    await expect(registerManifest({ name: 'foo', content: '   \n\n   ' })).rejects.toMatchObject({
+      status: 400,
+    });
   });
 
   it('rejects non-http URI', async () => {
@@ -585,9 +684,7 @@ describe('registerManifest', () => {
   });
 
   it('rejects malformed URI', async () => {
-    await expect(
-      registerManifest({ name: 'foo', uri: 'not a url' }),
-    ).rejects.toMatchObject({
+    await expect(registerManifest({ name: 'foo', uri: 'not a url' })).rejects.toMatchObject({
       status: 400,
       message: expect.stringMatching(/Invalid URI/),
     });
@@ -595,9 +692,7 @@ describe('registerManifest', () => {
 
   it('rejects schema errors with a multi-line error', async () => {
     validateMock.mockReturnValueOnce(['no resources field', 'no $schema']);
-    await expect(
-      registerManifest({ name: 'foo', content: 'invalid:' }),
-    ).rejects.toMatchObject({
+    await expect(registerManifest({ name: 'foo', content: 'invalid:' })).rejects.toMatchObject({
       status: 400,
       message: expect.stringMatching(/Invalid manifest schema/),
     });
@@ -612,6 +707,33 @@ describe('registerManifest', () => {
     expect(result.data.namespace).toBe('mybase');
     expect(saveRegistrationMock).toHaveBeenCalledTimes(1);
     expect(saveRegistrationMock.mock.calls[0][0].source).toBe('user');
+  });
+
+  it('assigns a fresh revision for identical and changed saves and removes stale audit data', async () => {
+    const first = await registerManifest({
+      name: 'mybase',
+      content: 'resources: []',
+    });
+    getRegistrationMock.mockResolvedValueOnce(saveRegistrationMock.mock.calls[0]?.[0] as never);
+    await registerManifest({
+      name: 'mybase',
+      content: 'resources: []',
+    });
+    getRegistrationMock.mockResolvedValueOnce(saveRegistrationMock.mock.calls[1]?.[0] as never);
+    await registerManifest({
+      name: 'mybase',
+      content: 'resources:\n  # changed\n',
+    });
+
+    expect(first.data.namespace).toBe('mybase');
+    const registrations = saveRegistrationMock.mock.calls.map(([registration]) => registration);
+    expect(new Set(registrations.map((registration) => registration.revision)).size).toBe(3);
+    expect(
+      registrations.every(
+        (registration) =>
+          typeof registration.modifiedAt === 'string' && registration.modifiedAt.length > 0,
+      ),
+    ).toBe(true);
   });
 
   it('warns when manifest platform != host', async () => {
@@ -661,12 +783,8 @@ describe('restoreManifest', () => {
       }),
       'resources: []',
     );
-    expect(saveRegistrationIfAbsentMock.mock.calls[0]?.[0]).not.toHaveProperty(
-      'lastAppliedAt',
-    );
-    expect(saveRegistrationIfAbsentMock.mock.calls[0]?.[0]).not.toHaveProperty(
-      'lastAuditedAt',
-    );
+    expect(saveRegistrationIfAbsentMock.mock.calls[0]?.[0]).not.toHaveProperty('lastAppliedAt');
+    expect(saveRegistrationIfAbsentMock.mock.calls[0]?.[0]).not.toHaveProperty('lastAuditedAt');
   });
 
   it('returns a clear conflict and does not overwrite a recreated namespace', async () => {
@@ -698,7 +816,58 @@ describe('deleteManifest', () => {
     expect(result.data.cliRemoved).toBe(true);
     expect(result.data.rationaleLogRemoved).toBe(true);
     expect(deleteNamespaceMock).toHaveBeenCalledWith('mybase');
-    expect(deleteRegistrationMock).toHaveBeenCalledWith('mybase');
+    expect(deleteRegistrationMock).toHaveBeenCalledWith('mybase', {
+      afterDeleteWhileLocked: expect.any(Function),
+    });
+  });
+
+  it('returns the atomically captured recovery backup when required', async () => {
+    deleteRegistrationMock.mockImplementationOnce(async (_namespace, options) => {
+      await options?.afterDeleteWhileLocked?.();
+      return {
+        removed: true,
+        recovery: {
+          namespace: 'mybase',
+          displayName: 'My Baseline',
+          sourceYaml: 'resources: []',
+          source: 'import',
+          sourceId: 'mybase.yaml',
+        },
+      };
+    });
+
+    const result = await deleteManifest('mybase', {
+      requireRecovery: true,
+    });
+
+    expect(deleteRegistrationMock).toHaveBeenCalledWith('mybase', {
+      requireRecovery: true,
+      afterDeleteWhileLocked: expect.any(Function),
+    });
+    expect(result.data.recovery).toEqual({
+      namespace: 'mybase',
+      displayName: 'My Baseline',
+      sourceYaml: 'resources: []',
+      source: 'import',
+      sourceId: 'mybase.yaml',
+    });
+    expect(deleteRegistrationMock.mock.invocationCallOrder[0]).toBeLessThan(
+      deleteNamespaceMock.mock.invocationCallOrder[0],
+    );
+  });
+
+  it('performs no CLI or side-store cleanup when required recovery is unavailable', async () => {
+    deleteRegistrationMock.mockResolvedValueOnce({
+      removed: false,
+      recovery: null,
+    });
+
+    await expect(deleteManifest('unrecoverable', { requireRecovery: true })).rejects.toMatchObject({
+      status: 409,
+      message: expect.stringMatching(/recovery source YAML is unavailable/i),
+    });
+    expect(deleteNamespaceMock).not.toHaveBeenCalled();
+    expect(deleteRationaleMock).not.toHaveBeenCalled();
   });
 
   it('still removes registration if CLI cleanup fails', async () => {

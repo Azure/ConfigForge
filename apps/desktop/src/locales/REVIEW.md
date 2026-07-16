@@ -11,9 +11,9 @@
 
 | Locale | Translated | Fallback/TODO | Total | Coverage |
 |---|---:|---:|---:|---:|
-| fr | 894 | 63 | 957 | 93.4% |
-| de | 891 | 66 | 957 | 93.1% |
-| es | 898 | 59 | 957 | 93.8% |
+| fr | 895 | 63 | 958 | 93.4% |
+| de | 892 | 66 | 958 | 93.1% |
+| es | 899 | 59 | 958 | 93.8% |
 
 ## Placeholder integrity check
 

@@ -122,6 +122,7 @@ export function ManifestDetailPage() {
     manifestName,
     presenceInstalled: presence.installed,
     detectedPlatform,
+    registrationRevision: manifest?.Revision,
     setStatus,
     setError,
     fetchData,

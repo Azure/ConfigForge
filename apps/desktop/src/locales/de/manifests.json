@@ -75,6 +75,7 @@
     "showing": "{{filtered}} von {{total}} werden angezeigt",
     "status": {
       "allCompliant": "Alle konform",
+      "complianceIncompleteTitle": "{{compliant}} von {{total}} ausgewerteten Einstellungen sind konform; {{unknown}} Einstellungen konnten nicht ausgewertet werden",
       "complianceTitle": "{{compliant}} von {{total}} auditierten Einstellungen sind konform",
       "issueCount_one": "{{count}} Problem",
       "issueCount_other": "{{count}} Probleme",

@@ -38,6 +38,7 @@ type FilterOption<T extends string> = Exclude<T, "all">;
 export interface ManifestComplianceState {
   audited: boolean;
   compliant: number;
+  unknown: number;
   total: number;
   ratio: number | null;
   category: FilterOption<ComplianceFilter>;
@@ -55,40 +56,64 @@ export function getManifestCompliance(manifest: OscManifest): ManifestCompliance
   const persisted = manifest.Compliance;
   if (
     persisted &&
-    Number.isFinite(persisted.total) &&
-    persisted.total > 0 &&
-    Number.isFinite(persisted.compliant)
+    Number.isFinite(persisted.compliant) &&
+    Number.isFinite(persisted.nonCompliant)
   ) {
-    const compliant = Math.max(0, Math.min(persisted.compliant, persisted.total));
-    const ratio = compliant / persisted.total;
+    // "Could not read" / indeterminate resources are not evidence of
+    // non-compliance. Exclude them (and transport errors) from the
+    // denominator rather than lowering the displayed compliance rate.
+    const total = Math.max(0, persisted.compliant) + Math.max(0, persisted.nonCompliant);
+    const unknown = Math.max(0, persisted.indeterminate) + Math.max(0, persisted.errors);
+    if (total === 0) {
+      return {
+        audited: false,
+        compliant: 0,
+        unknown,
+        total: 0,
+        ratio: null,
+        category: "not-audited",
+      };
+    }
+    const compliant = Math.max(0, Math.min(persisted.compliant, total));
+    const ratio = compliant / total;
     return {
       audited: true,
       compliant,
-      total: persisted.total,
+      unknown,
+      total,
       ratio,
-      category: compliant === persisted.total ? "all-compliant" : "partially-compliant",
+      category:
+        compliant === total && unknown === 0 ? "all-compliant" : "partially-compliant",
     };
   }
 
   const statuses = (manifest.Resources ?? [])
     .map((resource) => normalizedComplianceStatus(resource.compliance?.status))
     .filter(Boolean);
-  if (statuses.length === 0) {
+  const determinateStatuses = statuses.filter(
+    (status) => status === "compliant" || status === "noncompliant",
+  );
+  if (determinateStatuses.length === 0) {
     return {
       audited: false,
       compliant: 0,
+      unknown: statuses.length,
       total: 0,
       ratio: null,
       category: "not-audited",
     };
   }
-  const compliant = statuses.filter((status) => status === "compliant").length;
+  const compliant = determinateStatuses.filter((status) => status === "compliant").length;
+  const unknown = statuses.length - determinateStatuses.length;
   return {
     audited: true,
     compliant,
-    total: statuses.length,
-    ratio: compliant / statuses.length,
-    category: compliant === statuses.length ? "all-compliant" : "partially-compliant",
+    unknown,
+    total: determinateStatuses.length,
+    ratio: compliant / determinateStatuses.length,
+    category:     compliant === determinateStatuses.length && unknown === 0
+      ? "all-compliant"
+      : "partially-compliant",
   };
 }
 
@@ -222,6 +247,7 @@ export function useManifestList(): ManifestListState {
         .filter((m): m is Record<string, unknown> => m != null && typeof m === "object")
         .map((m) => {
           const name = (m.Name ?? m.name ?? "unnamed") as string;
+          const revision = optionalString(m.Revision ?? m.revision);
           let resources = (m.Resources ?? m.resources ?? []) as OscManifest["Resources"];
           if (
             !resources ||
@@ -232,7 +258,9 @@ export function useManifestList(): ManifestListState {
               const cached = sessionStorage.getItem(`configforge-compliance-${name}`);
               if (cached) {
                 const parsed = JSON.parse(cached);
-                if (parsed.resources?.length) resources = parsed.resources;
+                if (parsed.revision === revision && parsed.resources?.length) {
+                  resources = parsed.resources;
+                }
               }
             } catch {
               /* ignore */
@@ -265,6 +293,7 @@ export function useManifestList(): ManifestListState {
             LastModifiedAt: optionalString(
               m.LastModifiedAt ?? m.lastModifiedAt ?? m.RegisteredAt ?? m.registeredAt,
             ),
+            Revision: revision,
           };
         })
         .filter((m) => m.Name && m.Name !== "unnamed");
@@ -342,6 +371,28 @@ export function useManifestList(): ManifestListState {
       lastModified: lastModifiedOrder.filter((option) => lastModifiedSet.has(option)),
     };
   }, [manifests, platformByName]);
+
+  // A controlled <select> whose value no longer has a matching <option>
+  // visually falls back to its first option while React retains the stale
+  // value. Reset removed options so the visible "All" state and predicates
+  // cannot diverge after refresh/delete.
+  useEffect(() => {
+    if (
+      operatingSystemFilter !== "all" &&
+      !filterOptions.operatingSystems.includes(operatingSystemFilter)
+    ) {
+      setOperatingSystemFilter("all");
+    }
+    if (issuesFilter !== "all" && !filterOptions.issues.includes(issuesFilter)) {
+      setIssuesFilter("all");
+    }
+    if (complianceFilter !== "all" && !filterOptions.compliance.includes(complianceFilter)) {
+      setComplianceFilter("all");
+    }
+    if (lastModifiedFilter !== "all" && !filterOptions.lastModified.includes(lastModifiedFilter)) {
+      setLastModifiedFilter("all");
+    }
+  }, [complianceFilter, filterOptions, issuesFilter, lastModifiedFilter, operatingSystemFilter]);
 
   // Search + administrative filters. All predicates operate on normalized
   // current list data; no static/fake filter values are introduced.

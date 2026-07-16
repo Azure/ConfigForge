@@ -24,6 +24,7 @@ import {
   utimes,
   writeFile,
 } from 'fs/promises';
+import type { Stats } from 'fs';
 import { homedir } from 'os';
 import { basename, dirname, join } from 'path';
 
@@ -31,7 +32,16 @@ export interface ManifestRegistration {
   namespace: string;
   displayName: string;
   platform: 'windows' | 'linux' | 'cross-platform' | 'mixed';
+  /** Original registration timestamp. Older records use this as modifiedAt too. */
   registeredAt: string;
+  /** Timestamp of the most recent content registration/save. */
+  modifiedAt?: string;
+  /**
+   * Opaque content-registration identity. It changes even when an identical
+   * source is saved so audit results can be tied to the exact registration
+   * revision without relying only on wall-clock ordering.
+   */
+  revision?: string;
   source: 'user' | 'library' | 'import';
   sourceId?: string;
   /** Flat {name,type} list captured at register/edit time for fast list rendering. */
@@ -52,6 +62,34 @@ export interface ManifestRegistration {
   lastAppliedAt?: string;
   /** ISO timestamp of the last successful `oscfg get resource` read. */
   lastAuditedAt?: string;
+}
+
+export interface RegistrationRecoveryBackup {
+  namespace: string;
+  displayName: string;
+  sourceYaml: string;
+  source: ManifestRegistration['source'];
+  sourceId?: string;
+}
+
+export interface DeleteRegistrationOptions {
+  requireRecovery?: boolean;
+  /**
+   * Runs after the registry files are removed but before the namespace lock
+   * is released. Keep this callback bounded and catch non-fatal cleanup
+   * failures inside it.
+   */
+  afterDeleteWhileLocked?: () => Promise<void>;
+}
+
+export interface DeleteRegistrationResult {
+  removed: boolean;
+  recovery: RegistrationRecoveryBackup | null;
+}
+
+export interface RegistrationSnapshot {
+  registration: ManifestRegistration;
+  sourceYaml: string | null;
 }
 
 /**
@@ -91,6 +129,10 @@ interface LockState {
   owner: string | null;
   pid: number | null;
   recordReadable: boolean;
+}
+
+function lockFileIdentity(info: Stats): string {
+  return `${info.dev}-${info.ino}-${Math.trunc(info.birthtimeMs)}`;
 }
 
 function isProcessRunning(pid: number): boolean {
@@ -133,11 +175,7 @@ async function readLockState(lockPath: string): Promise<LockState | null> {
     if (typeof parsed.owner === 'string' && parsed.owner) {
       owner = parsed.owner;
     }
-    if (
-      typeof parsed.pid === 'number' &&
-      Number.isInteger(parsed.pid) &&
-      parsed.pid > 0
-    ) {
+    if (typeof parsed.pid === 'number' && Number.isInteger(parsed.pid) && parsed.pid > 0) {
       ownerPid = parsed.pid;
     }
   } catch {
@@ -146,9 +184,8 @@ async function readLockState(lockPath: string): Promise<LockState | null> {
   }
   return {
     age: Date.now() - info.mtimeMs,
-    fileIdentity: `${info.dev}-${info.ino}-${Math.trunc(info.birthtimeMs)}`,
-    identity:
-      owner ?? `unowned-${info.ino}-${info.size}-${Math.trunc(info.mtimeMs)}`,
+    fileIdentity: lockFileIdentity(info),
+    identity: owner ?? `unowned-${info.ino}-${info.size}-${Math.trunc(info.mtimeMs)}`,
     owner,
     pid: ownerPid,
     recordReadable,
@@ -168,28 +205,22 @@ function abandonmentMarkerPath(lockPath: string): string {
   return `${lockPath}.abandoned`;
 }
 
-async function hasPersistedAbandonment(
-  lockPath: string,
-  state: LockState,
-): Promise<boolean> {
+async function hasPersistedAbandonment(lockPath: string, state: LockState): Promise<boolean> {
   try {
-    const parsed = JSON.parse(
-      await readFile(abandonmentMarkerPath(lockPath), 'utf-8'),
-    ) as { fileIdentity?: unknown; owner?: unknown };
+    const parsed = JSON.parse(await readFile(abandonmentMarkerPath(lockPath), 'utf-8')) as {
+      fileIdentity?: unknown;
+      owner?: unknown;
+    };
     if (parsed.fileIdentity !== state.fileIdentity) return false;
     return (
-      !state.recordReadable ||
-      (typeof parsed.owner === 'string' && parsed.owner === state.owner)
+      !state.recordReadable || (typeof parsed.owner === 'string' && parsed.owner === state.owner)
     );
   } catch {
     return false;
   }
 }
 
-async function isAbandonedLock(
-  lockPath: string,
-  state: LockState,
-): Promise<boolean> {
+async function isAbandonedLock(lockPath: string, state: LockState): Promise<boolean> {
   if (state.owner !== null && activeLockOwners.has(state.owner)) {
     return false;
   }
@@ -226,12 +257,9 @@ async function readReaperOwner(path: string): Promise<{
     };
     return {
       age: Date.now() - info.mtimeMs,
-      observed:
-        typeof parsed.observed === 'string' ? parsed.observed : null,
+      observed: typeof parsed.observed === 'string' ? parsed.observed : null,
       pid:
-        typeof parsed.pid === 'number' &&
-        Number.isInteger(parsed.pid) &&
-        parsed.pid > 0
+        typeof parsed.pid === 'number' && Number.isInteger(parsed.pid) && parsed.pid > 0
           ? parsed.pid
           : null,
     };
@@ -258,14 +286,10 @@ async function acquireReaperElection(
   const highest = generations.at(-1);
 
   if (highest !== undefined) {
-    const current = await readReaperOwner(
-      join(directory, `${prefix}${highest}`),
-    ).catch(() => null);
+    const current = await readReaperOwner(join(directory, `${prefix}${highest}`)).catch(() => null);
     if (
       current &&
-      ((current.pid !== null &&
-        isProcessRunning(current.pid) &&
-        current.age < LOCK_MAX_AGE_MS) ||
+      ((current.pid !== null && isProcessRunning(current.pid) && current.age < LOCK_MAX_AGE_MS) ||
         (current.pid === null && current.age < LOCK_MAX_AGE_MS))
     ) {
       return null;
@@ -303,9 +327,7 @@ async function acquireReaperElection(
   };
 }
 
-async function isLatestReaperElection(
-  election: ReaperElection,
-): Promise<boolean> {
+async function isLatestReaperElection(election: ReaperElection): Promise<boolean> {
   const generations = (await readdir(election.directory))
     .filter((name) => name.startsWith(election.prefix))
     .map((name) => Number.parseInt(name.slice(election.prefix.length), 10))
@@ -313,23 +335,15 @@ async function isLatestReaperElection(
   return Math.max(-1, ...generations) === election.generation;
 }
 
-async function cleanupReaperElections(
-  election: ReaperElection,
-): Promise<void> {
+async function cleanupReaperElections(election: ReaperElection): Promise<void> {
   await election.close().catch(() => {});
   const names = await readdir(election.directory).catch(() => []);
   await Promise.all(
     names
       .filter((name) => name.startsWith(election.prefix))
       .filter((name) => {
-        const generation = Number.parseInt(
-          name.slice(election.prefix.length),
-          10,
-        );
-        return (
-          Number.isInteger(generation) &&
-          generation <= election.generation
-        );
+        const generation = Number.parseInt(name.slice(election.prefix.length), 10);
+        return Number.isInteger(generation) && generation <= election.generation;
       })
       .map((name) => unlink(join(election.directory, name)).catch(() => {})),
   );
@@ -343,9 +357,7 @@ async function cleanupReaperElections(
  *
  * @internal Exported for the cross-process race regression test.
  */
-export async function _removeAbandonedRegistrationLock(
-  lockPath: string,
-): Promise<boolean> {
+export async function _removeAbandonedRegistrationLock(lockPath: string): Promise<boolean> {
   const observed = await readLockState(lockPath);
   if (!observed) return true;
   if (!(await isAbandonedLock(lockPath, observed))) return false;
@@ -356,10 +368,7 @@ export async function _removeAbandonedRegistrationLock(
     if (!(await isLatestReaperElection(election))) return false;
     const current = await readLockState(lockPath);
     if (!current) return true;
-    if (
-      current.identity !== observed.identity ||
-      current.fileIdentity !== observed.fileIdentity
-    ) {
+    if (current.identity !== observed.identity || current.fileIdentity !== observed.fileIdentity) {
       return false;
     }
     if (!(await isAbandonedLock(lockPath, current))) return false;
@@ -436,9 +445,43 @@ async function releaseOwnedLock(
   );
 }
 
-async function acquireCrossProcessLock(
-  namespace: string,
-): Promise<() => Promise<void>> {
+async function cleanupFailedLockAcquisition(
+  lockPath: string,
+  owner: string,
+  ownedFileIdentity: string | null,
+  close: () => Promise<void>,
+): Promise<void> {
+  await close().catch(() => {});
+  activeLockOwners.delete(owner);
+  abandonedLocalLockOwners.delete(owner);
+
+  let stillOwned = false;
+  try {
+    const current = await readLockState(lockPath);
+    if (!current) return;
+    stillOwned =
+      current.owner === owner ||
+      (ownedFileIdentity !== null && current.fileIdentity === ownedFileIdentity);
+  } catch {
+    // A verification read may be the operation that failed. Fall back to file
+    // identity from stat rather than either leaking the lock or unlinking a
+    // replacement created by another process.
+    try {
+      stillOwned = lockFileIdentity(await stat(lockPath)) === ownedFileIdentity;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code === 'ENOENT') return;
+      return;
+    }
+  }
+
+  if (!stillOwned) return;
+  await unlink(lockPath).catch((err) => {
+    if ((err as NodeJS.ErrnoException).code !== 'ENOENT') throw err;
+  });
+  await unlink(abandonmentMarkerPath(lockPath)).catch(() => {});
+}
+
+async function acquireCrossProcessLock(namespace: string): Promise<() => Promise<void>> {
   const root = await ensureRoot();
   const lockPath = join(root, `${namespace}.lock`);
   const startedAt = Date.now();
@@ -447,45 +490,47 @@ async function acquireCrossProcessLock(
     try {
       const handle = await open(lockPath, 'wx');
       const owner = `${process.pid}-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+      const lockRecord = JSON.stringify({
+        pid: process.pid,
+        owner,
+        createdAt: new Date().toISOString(),
+      });
+      let ownedFileIdentity: string | null = null;
       try {
-        await handle.writeFile(
-          JSON.stringify({
-            pid: process.pid,
-            owner,
-            createdAt: new Date().toISOString(),
-          }),
-          'utf-8',
-        );
+        ownedFileIdentity = lockFileIdentity(await handle.stat());
+        await handle.writeFile(lockRecord, 'utf-8');
+        const state = await readLockState(lockPath);
+        if (!state || state.owner !== owner || state.fileIdentity !== ownedFileIdentity) {
+          throw new Error(`Manifest namespace lock "${namespace}" changed during acquisition`);
+        }
+        activeLockOwners.add(owner);
+        const heartbeat = setInterval(() => {
+          const now = new Date();
+          void utimes(lockPath, now, now).catch(() => {});
+        }, LOCK_HEARTBEAT_MS);
+        heartbeat.unref();
+        return () =>
+          releaseOwnedLock(lockPath, owner, state.fileIdentity, async () => {
+            clearInterval(heartbeat);
+            await handle.close();
+          });
       } catch (err) {
-        await handle.close().catch(() => {});
-        await unlink(lockPath).catch(() => {});
+        if (!ownedFileIdentity) {
+          // If the first fstat failed, persist the unique owner token while
+          // the exclusive-create handle is still open. Cleanup can then
+          // identify this file without risking a concurrently replaced lock.
+          await handle.writeFile(lockRecord, 'utf-8').catch(() => {});
+        }
+        await cleanupFailedLockAcquisition(lockPath, owner, ownedFileIdentity, () =>
+          handle.close(),
+        );
         throw err;
       }
-      const state = await readLockState(lockPath);
-      if (!state || state.owner !== owner) {
-        await handle.close().catch(() => {});
-        throw new Error(
-          `Manifest namespace lock "${namespace}" changed during acquisition`,
-        );
-      }
-      activeLockOwners.add(owner);
-      const heartbeat = setInterval(() => {
-        const now = new Date();
-        void utimes(lockPath, now, now).catch(() => {});
-      }, LOCK_HEARTBEAT_MS);
-      heartbeat.unref();
-      return () =>
-        releaseOwnedLock(lockPath, owner, state.fileIdentity, async () => {
-          clearInterval(heartbeat);
-          await handle.close();
-        });
     } catch (err) {
       if ((err as NodeJS.ErrnoException).code !== 'EEXIST') throw err;
       if (await _removeAbandonedRegistrationLock(lockPath)) continue;
       if (Date.now() - startedAt >= LOCK_TIMEOUT_MS) {
-        throw new Error(
-          `Timed out waiting for manifest namespace lock "${namespace}"`,
-        );
+        throw new Error(`Timed out waiting for manifest namespace lock "${namespace}"`);
       }
       await new Promise((resolve) => setTimeout(resolve, LOCK_RETRY_MS));
     }
@@ -624,16 +669,82 @@ export async function getRegistrationSource(namespace: string): Promise<string |
   }
 }
 
-export async function deleteRegistration(namespace: string): Promise<void> {
+/**
+ * Read registration metadata and source from one committed revision.
+ * Saving and deleting use the same namespace lock, so callers never observe
+ * metadata from one revision paired with another revision's YAML.
+ */
+export async function getRegistrationSnapshot(
+  namespace: string,
+): Promise<RegistrationSnapshot | null> {
+  return withNamespaceLock(namespace, async () => {
+    const registration = await getRegistration(namespace);
+    if (!registration) return null;
+    return {
+      registration,
+      sourceYaml: await getRegistrationSource(namespace),
+    };
+  });
+}
+
+export async function deleteRegistration(
+  namespace: string,
+  options: DeleteRegistrationOptions = {},
+): Promise<DeleteRegistrationResult> {
   return withNamespaceLock(namespace, async () => {
     const root = getRoot();
-    for (const suffix of ['.json', '.source.yaml']) {
-      try {
-        await unlink(join(root, `${namespace}${suffix}`));
-      } catch {
-        // best-effort
+    const registration = await getRegistration(namespace);
+    const sourceYaml = await getRegistrationSource(namespace);
+    const recovery =
+      registration && typeof sourceYaml === 'string' && sourceYaml.trim()
+        ? {
+            namespace,
+            displayName: registration.displayName ?? namespace,
+            sourceYaml,
+            source: registration.source,
+            ...(registration.sourceId ? { sourceId: registration.sourceId } : {}),
+          }
+        : null;
+
+    if (options.requireRecovery === true && !recovery) {
+      return { removed: false, recovery: null };
+    }
+
+    // The JSON metadata is the registration's commit marker. Remove it first:
+    // if that unlink fails, leave the source and all downstream state intact.
+    // Once it succeeds, the manifest is logically deleted and the in-memory
+    // recovery payload is sufficient even if best-effort source cleanup is
+    // temporarily blocked (for example by antivirus on Windows).
+    let removed = false;
+    try {
+      await unlink(join(root, `${namespace}.json`));
+      removed = true;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+        if (options.requireRecovery === true) throw err;
+        return { removed: false, recovery };
+      }
+      // If metadata was captured but disappeared before unlink completed,
+      // the registration is already logically absent.
+      removed = registration !== null;
+    }
+
+    try {
+      await unlink(join(root, `${namespace}.source.yaml`));
+      removed = true;
+    } catch (err) {
+      if ((err as NodeJS.ErrnoException).code !== 'ENOENT') {
+        // Do not turn a committed, recoverable deletion into a reported
+        // failure. A later save/undo atomically replaces this orphaned source.
+        // eslint-disable-next-line no-console
+        console.warn(
+          `[registry] Source cleanup deferred for deleted registration "${namespace}":`,
+          err,
+        );
       }
     }
+    await options.afterDeleteWhileLocked?.();
+    return { removed, recovery };
   });
 }
 
@@ -646,10 +757,17 @@ export async function deleteRegistration(namespace: string): Promise<void> {
 export async function updateRegistration(
   namespace: string,
   patch: Partial<ManifestRegistration>,
+  options?: { expectedRevision?: string | null },
 ): Promise<ManifestRegistration | null> {
   return withNamespaceLock(namespace, async () => {
     const existing = await getRegistration(namespace);
     if (!existing) return null;
+    if (
+      options?.expectedRevision !== undefined &&
+      (existing.revision ?? null) !== options.expectedRevision
+    ) {
+      return null;
+    }
     const updated: ManifestRegistration = { ...existing, ...patch, namespace };
     const root = await ensureRoot();
     await atomicWrite(join(root, `${namespace}.json`), JSON.stringify(updated, null, 2));

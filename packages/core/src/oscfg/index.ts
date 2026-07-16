@@ -21,22 +21,25 @@ export {
   summarizeCompliance,
 } from './compliance';
 export type { ComplianceResult, ComplianceStatus, DesiredResource } from './compliance';
-export {
-  isTransientOscfgError,
-  runWithBoundedConcurrency,
-  withRetries,
-} from './concurrency';
+export { isTransientOscfgError, runWithBoundedConcurrency, withRetries } from './concurrency';
 export type { ConcurrencyOptions, RetryHandle, RetryOptions, TaskResult } from './concurrency';
 export {
   saveRegistration,
   saveRegistrationIfAbsent,
   getRegistration,
   getRegistrationSource,
+  getRegistrationSnapshot,
   deleteRegistration,
   listRegistrations,
   updateRegistration,
 } from './registry';
-export type { ManifestRegistration } from './registry';
+export type {
+  DeleteRegistrationOptions,
+  DeleteRegistrationResult,
+  ManifestRegistration,
+  RegistrationSnapshot,
+  RegistrationRecoveryBackup,
+} from './registry';
 export {
   OSCFG_CLI_VERSION,
   REGISTERED_WINDOWS_TYPES,

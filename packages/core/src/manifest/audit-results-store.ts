@@ -30,6 +30,26 @@ import path from 'path';
 import os from 'os';
 
 const ENV_OVERRIDE = 'CONFIGFORGE_HOME';
+const auditResultLocks = new Map<string, Promise<void>>();
+
+async function withAuditResultLock<T>(file: string, operation: () => Promise<T>): Promise<T> {
+  const previous = auditResultLocks.get(file) ?? Promise.resolve();
+  let release!: () => void;
+  const turn = new Promise<void>((resolve) => {
+    release = resolve;
+  });
+  const entry = previous.then(() => turn);
+  auditResultLocks.set(file, entry);
+  await previous;
+  try {
+    return await operation();
+  } finally {
+    release();
+    if (auditResultLocks.get(file) === entry) {
+      auditResultLocks.delete(file);
+    }
+  }
+}
 
 function configforgeHome(): string {
   return process.env[ENV_OVERRIDE] ?? path.join(os.homedir(), '.configforge');
@@ -78,6 +98,8 @@ export interface PersistedAuditResult {
   recordedAt: string;
   /** `audit` (read-only check) vs `enforce` (apply + audit). */
   mode: 'audit' | 'enforce';
+  /** Registration revision audited, when the registration supports revisions. */
+  registrationRevision?: string;
   /** Raw `DeployResponseData` body, unwrapped from the IPC envelope. */
   result: unknown;
 }
@@ -95,28 +117,30 @@ export async function writeAuditResult(
   ns: string,
   mode: 'audit' | 'enforce',
   result: unknown,
+  registrationRevision?: string,
 ): Promise<string | null> {
   try {
     const file = resolvePath(ns);
-    await mkdir(auditResultsRoot(), { recursive: true });
-    const envelope: PersistedAuditResult = {
-      version: 1,
-      recordedAt: new Date().toISOString(),
-      mode,
-      result,
-    };
-    // Atomic-ish write via rename. write-then-rename minimizes the
-    // window where a concurrent reader sees a half-written file. We
-    // don't take a per-file lock because writes happen exactly once
-    // per audit run and the deploy handler already serializes audit
-    // runs per namespace via `withDeployLock`.
-    const tmp = `${file}.tmp-${process.pid}-${Date.now()}`;
-    await writeFile(tmp, JSON.stringify(envelope, null, 2), 'utf-8');
-    // fs.rename on Win replaces the target atomically when both are
-    // on the same volume (which they always are — both live in
-    // `~/.configforge/audit-results/`).
-    await rename(tmp, file);
-    return file;
+    return await withAuditResultLock(file, async () => {
+      await mkdir(auditResultsRoot(), { recursive: true });
+      const envelope: PersistedAuditResult = {
+        version: 1,
+        recordedAt: new Date().toISOString(),
+        mode,
+        ...(registrationRevision ? { registrationRevision } : {}),
+        result,
+      };
+      // Atomic write via rename keeps concurrent readers from seeing a
+      // half-written file. The per-file lock also serializes registration
+      // cleanup with a completing audit so cleanup cannot unlink a newer run.
+      const tmp = `${file}.tmp-${process.pid}-${Date.now()}`;
+      await writeFile(tmp, JSON.stringify(envelope, null, 2), 'utf-8');
+      // fs.rename on Win replaces the target atomically when both are
+      // on the same volume (which they always are — both live in
+      // `~/.configforge/audit-results/`).
+      await rename(tmp, file);
+      return file;
+    });
   } catch (err) {
     // Don't throw — the audit result already came back to the user;
     // failing to cache it is a degraded-mode condition, not an error.
@@ -156,18 +180,57 @@ export async function readAuditResult(ns: string): Promise<PersistedAuditResult 
       !parsed ||
       parsed.version !== 1 ||
       typeof parsed.recordedAt !== 'string' ||
+      (parsed.registrationRevision !== undefined &&
+        typeof parsed.registrationRevision !== 'string') ||
       (parsed.mode !== 'audit' && parsed.mode !== 'enforce')
     ) {
       // eslint-disable-next-line no-console
       console.warn(`[audit-results] ${file}: schema mismatch, ignoring`);
       return null;
     }
+
     return parsed as PersistedAuditResult;
   } catch (err) {
     // eslint-disable-next-line no-console
     console.warn(`[audit-results] ${file}: parse failed (${(err as Error).message})`);
     return null;
   }
+}
+
+export interface CurrentAuditRegistration {
+  modifiedAt: string;
+  revision?: string;
+}
+
+function auditMatchesRegistration(
+  audit: PersistedAuditResult,
+  registration: CurrentAuditRegistration,
+): boolean {
+  if (registration.revision) {
+    return audit.registrationRevision === registration.revision;
+  }
+
+  const auditTime = Date.parse(audit.recordedAt);
+  const modifiedTime = Date.parse(registration.modifiedAt);
+  // Preserve legacy behavior for malformed historical timestamps. New
+  // registrations always carry a revision, so this branch is compatibility
+  // only and must not hide otherwise usable historical audit data.
+  if (!Number.isFinite(auditTime) || !Number.isFinite(modifiedTime)) return true;
+  return auditTime >= modifiedTime;
+}
+
+/**
+ * Read an audit only when it describes the supplied registration revision.
+ * This is the single freshness boundary for list/detail, Audit Pack, and IPC.
+ * Stale files are left in place and safely ignored; a later audit overwrites
+ * them. Avoiding read-then-delete also prevents cross-process races.
+ */
+export async function readAuditResultForRegistration(
+  ns: string,
+  registration: CurrentAuditRegistration,
+): Promise<PersistedAuditResult | null> {
+  const audit = await readAuditResult(ns);
+  return audit && auditMatchesRegistration(audit, registration) ? audit : null;
 }
 
 /**
@@ -182,10 +245,19 @@ export async function deleteAuditResult(ns: string): Promise<void> {
   } catch {
     return;
   }
-  try {
-    await rm(file, { force: true });
-  } catch (err) {
-    // eslint-disable-next-line no-console
-    console.warn(`[audit-results] delete failed for ${ns}:`, err);
-  }
+  await withAuditResultLock(file, async () => {
+    try {
+      await rm(file, { force: true });
+    } catch (err) {
+      // eslint-disable-next-line no-console
+      console.warn(`[audit-results] delete failed for ${ns}:`, err);
+    }
+  });
 }
+
+/**
+ * Best-effort removal of an audit that cannot describe the current
+ * registration. The same lock used by writers makes the freshness check and
+ * deletion one operation: a matching audit that is already finishing wins
+ * first and is retained; one that starts later is written after cleanup.
+ */

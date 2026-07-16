@@ -26,12 +26,13 @@ import os from 'node:os';
 // YAML directly from the oscfg registry (not via `manifests.status`,
 // which returns the CLI-reported live state and is empty for
 // registered-but-not-deployed manifests).
-import { getRegistrationSource, sanitizeNamespace } from '@configforge/core/oscfg';
+import { getRegistration, getRegistrationSource, sanitizeNamespace } from '@configforge/core/oscfg';
 import { isRemoteDesktopSession } from './platform-detection';
 import { isCurrentProcessElevated, relaunchElevated } from './elevate';
 import {
   MAX_JOB_ID_LEN,
   validateAppendRationaleRequest,
+  validateDeleteManifestRequest,
   validateDeleteSnapshotRequest,
   validateDeployRequest,
   validateDocsGenerateRequest,
@@ -112,7 +113,7 @@ import {
 // build and threw "Cannot find package '@configforge/core'" on every
 // call from the audit-pack page, leaving the "What's included"
 // sidebar with no checkmark for the Compliance report row.
-import { readAuditResult } from '@configforge/core/manifest/audit-results-store.js';
+import { readAuditResultForRegistration } from '@configforge/core/manifest/audit-results-store.js';
 
 // perf W2 / H10: heavy / rarely-fired handlers stay TYPE-only at the
 // top of the module, with runtime imports deferred to inside each
@@ -488,7 +489,14 @@ export function registerCfsIpcHandlers(): void {
       // when the on-disk JSON existed and the PDF had the data.
       // No reason for the lazy load: this module is ~80 lines, no
       // heavy deps. Static import bundles cleanly.
-      const snapshot = await readAuditResult(req);
+      const namespace = sanitizeNamespace(req);
+      const registration = await getRegistration(namespace);
+      const snapshot = registration
+        ? await readAuditResultForRegistration(namespace, {
+            modifiedAt: registration.modifiedAt ?? registration.registeredAt,
+            revision: registration.revision,
+          })
+        : null;
       return { snapshot };
     } catch (err) {
       return envelope(err);
@@ -740,11 +748,18 @@ export function registerCfsIpcHandlers(): void {
   });
 
   ipcMain.handle('cfs:manifests:delete', async (_evt, req: unknown) => {
-    if (!isStringRequest(req)) {
-      return envelope(new Error('payload must be { name: string }'));
+    const validationError = validateDeleteManifestRequest(req);
+    if (validationError) {
+      return envelope(new Error(validationError));
     }
+    const deleteRequest = req as {
+      name: string;
+      requireRecovery?: boolean;
+    };
     try {
-      return await deleteManifest(req.name);
+      return await deleteManifest(deleteRequest.name, {
+        ...(deleteRequest.requireRecovery === true ? { requireRecovery: true } : {}),
+      });
     } catch (err) {
       return envelope(err);
     }

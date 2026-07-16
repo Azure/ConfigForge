@@ -77,9 +77,7 @@ export function ManifestsPage() {
   const percentFormatter = useNumberFormatter(PERCENT_FORMAT);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [busyAction, setBusyAction] = useState<OperationKind | null>(null);
-  const operationRef = useRef<{ kind: OperationKind; token: symbol } | null>(
-    null,
-  );
+  const operationRef = useRef<{ kind: OperationKind; token: symbol } | null>(null);
 
   const {
     manifests,
@@ -201,33 +199,37 @@ export function ManifestsPage() {
       }
 
       setFeedback(null);
-      // Data-safety gate: capture every authoritative registration source
-      // before issuing the first delete. Promise.all rejects atomically here,
-      // so no delete can begin when even one registration is unrecoverable.
-      const backups = await Promise.all(
-        namesToDelete.map(async (name): Promise<DeletedBaselineRegistrationBackup> => {
-          const source = await cfs.manifests.getSource(name);
-          if (typeof source.data !== "string" || !source.data.trim()) {
-            throw new Error(`Registered source YAML is unavailable for "${name}"`);
-          }
-          const manifest = manifests.find((candidate) => candidate.Name === name);
-          return {
-            name,
-            displayName: manifest?.DisplayName || name,
-            content: source.data,
-            source:
-              manifest?.RegistrationSource ?? (manifest?.Source === "library" ? "library" : "user"),
-            ...(manifest?.RegistrationSourceId ? { sourceId: manifest.RegistrationSourceId } : {}),
-            reopen: openBaselines.includes(name),
-          };
-        }),
-      );
-
+      // The privileged registry operation captures metadata + source and
+      // removes that same revision under one namespace lock. The renderer
+      // retains only UI-local tab state.
+      const reopenNames = new Set(openBaselines);
       const results = await Promise.allSettled(
-        backups.map((backup) => cfs.manifests.delete(backup.name)),
+        namesToDelete.map((name) => cfs.manifests.delete(name, { requireRecovery: true })),
       );
-      const deleted = backups.filter((_, index) => results[index]?.status === "fulfilled");
-      const failed = backups.filter((_, index) => results[index]?.status === "rejected");
+      const deleted: DeletedBaselineRegistrationBackup[] = [];
+      const failed: string[] = [];
+      let firstFailure: unknown;
+      results.forEach((result, index) => {
+        const requestedName = namesToDelete[index];
+        if (result.status === "fulfilled" && result.value.data.recovery) {
+          const recovery = result.value.data.recovery;
+          deleted.push({
+            name: recovery.namespace,
+            displayName: recovery.displayName,
+            content: recovery.sourceYaml,
+            source: recovery.source,
+            ...(recovery.sourceId ? { sourceId: recovery.sourceId } : {}),
+            reopen: reopenNames.has(recovery.namespace),
+          });
+          return;
+        }
+
+        failed.push(requestedName);
+        firstFailure ??=
+          result.status === "rejected"
+            ? result.reason
+            : new Error(`Delete did not return recovery content for "${requestedName}"`);
+      });
 
       if (deleted.length > 0) {
         // Undo restores only a new registration from captured source YAML.
@@ -236,17 +238,29 @@ export function ManifestsPage() {
         setLastDeletedBatch(deleted);
         closeManyBaselines(deleted.map((backup) => backup.name));
       }
-      setSelected(new Set(failed.map((backup) => backup.name)));
+      setSelected(new Set(failed));
       await refreshAll();
 
       if (failed.length > 0) {
-        setFeedback({
-          intent: "error",
-          message: t("administration.messages.deletePartial", {
-            deleted: deleted.length,
-            failed: failed.length,
-          }),
-        });
+        if (deleted.length === 0) {
+          setFeedback({
+            intent: "error",
+            message: t("administration.messages.captureFailed", {
+              error:
+                firstFailure instanceof Error
+                  ? firstFailure.message
+                  : t("administration.messages.unknownError"),
+            }),
+          });
+        } else {
+          setFeedback({
+            intent: "error",
+            message: t("administration.messages.deletePartial", {
+              deleted: deleted.length,
+              failed: failed.length,
+            }),
+          });
+        }
       } else {
         setFeedback({
           intent: "success",
@@ -288,23 +302,16 @@ export function ManifestsPage() {
           }),
         ),
       );
-      const restored = batch.filter(
-        (_, index) => results[index]?.status === "fulfilled",
-      );
-      const failed = batch.filter(
-        (_, index) => results[index]?.status === "rejected",
-      );
+      const restored = batch.filter((_, index) => results[index]?.status === "fulfilled");
+      const failed = batch.filter((_, index) => results[index]?.status === "rejected");
 
-      openManyBaselines(
-        restored.filter((backup) => backup.reopen).map((backup) => backup.name),
-      );
+      openManyBaselines(restored.filter((backup) => backup.reopen).map((backup) => backup.name));
       setLastDeletedBatch(failed.length > 0 ? failed : null);
       await refreshAll();
 
       if (failed.length > 0) {
         const firstFailure = results.find(
-          (result): result is PromiseRejectedResult =>
-            result.status === "rejected",
+          (result): result is PromiseRejectedResult => result.status === "rejected",
         );
         const failureMessage =
           firstFailure?.reason instanceof Error
@@ -609,10 +616,16 @@ export function ManifestsPage() {
                             }`}
                             title={
                               compliance.audited
-                                ? t("administration.status.complianceTitle", {
-                                    compliant: compliance.compliant,
-                                    total: compliance.total,
-                                  })
+                                ? compliance.unknown > 0
+                                  ? t("administration.status.complianceIncompleteTitle", {
+                                      compliant: compliance.compliant,
+                                      total: compliance.total,
+                                      unknown: compliance.unknown,
+                                    })
+                                  : t("administration.status.complianceTitle", {
+                                      compliant: compliance.compliant,
+                                      total: compliance.total,
+                                    })
                                 : t("administration.status.notAuditedTitle")
                             }
                           >

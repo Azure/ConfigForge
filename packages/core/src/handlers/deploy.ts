@@ -52,8 +52,7 @@ import {
   applyManifest,
   execResource,
   getResources,
-  getRegistration,
-  getRegistrationSource,
+  getRegistrationSnapshot,
   resolveOscfgBinary,
   sanitizeNamespace,
   updateRegistration,
@@ -81,6 +80,7 @@ import {
 import { resolveUserDataDir } from '../runtime/paths';
 import { writeAuditResult } from '../manifest/audit-results-store';
 import { HandlerError, cliRequiredError } from './errors';
+import { _clearManifestsListCache } from './manifests';
 
 // ── Types ─────────────────────────────────────────────────────────────
 
@@ -97,12 +97,7 @@ export interface DeployRequest {
   jobId?: string;
 }
 
-export type DeployPhase =
-  | 'validate'
-  | 'apply'
-  | 'audit'
-  | 'snapshot'
-  | 'finalize';
+export type DeployPhase = 'validate' | 'apply' | 'audit' | 'snapshot' | 'finalize';
 
 export interface DeployProgressEvent {
   phase: DeployPhase;
@@ -278,10 +273,7 @@ export async function dismissInterruptedDeploy(namespace: string): Promise<void>
  */
 const deployLocks = new Map<string, Promise<void>>();
 
-export async function withDeployLock<T>(
-  namespace: string,
-  fn: () => Promise<T>,
-): Promise<T> {
+export async function withDeployLock<T>(namespace: string, fn: () => Promise<T>): Promise<T> {
   const previous = deployLocks.get(namespace) ?? Promise.resolve();
   let release!: () => void;
   const myTurn = new Promise<void>((resolve) => {
@@ -309,9 +301,7 @@ function platformFromProcess(): Platform {
   return process.platform === 'win32' ? 'windows' : 'linux';
 }
 
-function indexActualsByName(
-  bulk: unknown[],
-): Map<string, Record<string, unknown>> {
+function indexActualsByName(bulk: unknown[]): Map<string, Record<string, unknown>> {
   const out = new Map<string, Record<string, unknown>>();
   for (const entry of bulk) {
     if (!entry || typeof entry !== 'object') continue;
@@ -475,10 +465,7 @@ function toUiResources(results: ComplianceResult[]): DeployResource[] {
   }));
 }
 
-async function loadDesiredFromSource(
-  namespace: string,
-): Promise<DesiredResource[] | null> {
-  const yaml = await getRegistrationSource(namespace);
+function loadDesiredFromSource(yaml: string | null): DesiredResource[] | null {
   if (!yaml) return null;
   try {
     const doc = parseYamlDocument(yaml) as Record<string, unknown>;
@@ -512,10 +499,7 @@ function checkCancelled(signal: AbortSignal | undefined): void {
   }
 }
 
-function emit(
-  opts: DeployOptions,
-  event: Omit<DeployProgressEvent, 'cancelRequested'>,
-): void {
+function emit(opts: DeployOptions, event: Omit<DeployProgressEvent, 'cancelRequested'>): void {
   if (!opts.onProgress) return;
   opts.onProgress({
     ...event,
@@ -552,7 +536,9 @@ export async function runDeploy(
   try {
     resolveOscfgBinary();
   } catch {
-    throw cliRequiredError('Install OSConfig and use "Recheck" to enable deploy/audit on this device.');
+    throw cliRequiredError(
+      'Install OSConfig and use "Recheck" to enable deploy/audit on this device.',
+    );
   }
   const namespace = sanitizeNamespace(req.name);
   return withDeployLock(namespace, () => runDeployInner(req, opts, namespace));
@@ -565,6 +551,12 @@ async function runDeployInner(
 ): Promise<DeployResponse> {
   const mode: 'audit' | 'enforce' = req.mode ?? 'enforce';
   const hostname = process.env.COMPUTERNAME ?? process.env.HOSTNAME ?? 'localhost';
+  // Capture the registration revision once before either audit path starts.
+  // If the source is saved while work is in flight, the persisted audit keeps
+  // this older revision and list/get correctly ignore it.
+  const registrationSnapshot = await getRegistrationSnapshot(namespace);
+  const reg = registrationSnapshot?.registration ?? null;
+  const sourceYaml = registrationSnapshot?.sourceYaml ?? null;
 
   // ── AUDIT path ────────────────────────────────────────────────────
   if (mode === 'audit') {
@@ -578,7 +570,6 @@ async function runDeployInner(
     });
     checkCancelled(opts.signal);
 
-    const reg = await getRegistration(namespace);
     const host = process.platform === 'win32' ? 'windows' : 'linux';
     if (reg && reg.platform !== 'cross-platform') {
       if (reg.platform === 'mixed') {
@@ -595,7 +586,7 @@ async function runDeployInner(
       }
     }
 
-    const desired = await loadDesiredFromSource(namespace);
+    const desired = loadDesiredFromSource(sourceYaml);
     if (!desired) {
       throw new HandlerError(
         404,
@@ -623,7 +614,7 @@ async function runDeployInner(
     });
 
     const bulk = await getResources({ namespace });
-    const bulkResources = bulk.success ? bulk.data ?? [] : null;
+    const bulkResources = bulk.success ? (bulk.data ?? []) : null;
     const audit = await auditResources(desired, bulkResources, {
       signal: opts.signal,
       onProgress: (completed, total) =>
@@ -655,15 +646,16 @@ async function runDeployInner(
       warning =
         `Audit partial — ${audit.fallbackErrors} of ${desired.length} resources could not be read from the device` +
         (bulk.error ? ` (${bulk.error})` : '') +
-        (audit.fallbackRetries > 0 ? ` (${audit.fallbackRetries} resources required a retry)` : '') +
+        (audit.fallbackRetries > 0
+          ? ` (${audit.fallbackRetries} resources required a retry)`
+          : '') +
         `. Those resources are reported as "could not read" until they can be audited.`;
     } else if (audit.fallbackRetries > 0) {
       warning =
         `Audit completed cleanly, but ${audit.fallbackRetries} resources required a retry due to transient CLI errors. ` +
         `If you see this regularly, lower CONFIGFORGE_AUDIT_CONCURRENCY (default: 4).`;
     } else if (bulkFailed) {
-      warning =
-        `The bulk audit call errored (${bulk.error ?? 'unknown CLI error'}); compliance was computed per-resource instead. Results are accurate but one or more CLI providers reported errors.`;
+      warning = `The bulk audit call errored (${bulk.error ?? 'unknown CLI error'}); compliance was computed per-resource instead. Results are accurate but one or more CLI providers reported errors.`;
     } else if (bulkEmpty) {
       warning = reg?.lastAppliedAt
         ? `The CLI returned no resources for this namespace even though it was previously applied. Compliance was computed per-resource directly against the device.`
@@ -678,7 +670,11 @@ async function runDeployInner(
       cancellable: false,
     });
 
-    updateRegistration(namespace, { lastAuditedAt: new Date().toISOString() }).catch((err) => {
+    updateRegistration(
+      namespace,
+      { lastAuditedAt: new Date().toISOString() },
+      { expectedRevision: reg?.revision ?? null },
+    ).catch((err) => {
       console.warn(`[deploy] failed to persist registration metadata for ${namespace}:`, err);
     });
 
@@ -716,7 +712,8 @@ async function runDeployInner(
     // pick up the user's most recent device-side audit instead of
     // only the on-demand CIS-vs-user re-comparison. Best-effort —
     // never blocks the response.
-    void writeAuditResult(namespace, 'audit', auditResponse.data);
+    await writeAuditResult(namespace, 'audit', auditResponse.data, reg?.revision);
+    _clearManifestsListCache();
 
     return auditResponse;
   }
@@ -748,7 +745,6 @@ async function runDeployInner(
     // best-effort; if probe fails for non-handler reasons, let CLI surface the error
   }
 
-  const sourceYaml = await getRegistrationSource(namespace);
   if (!sourceYaml) {
     throw new HandlerError(
       404,
@@ -806,11 +802,7 @@ async function runDeployInner(
     );
     const snapshotDir = getSnapshotDir();
     // Latest-pointer file (unchanged — revert handler reads this).
-    await writeFile(
-      path.join(snapshotDir, `${namespace}.pre-deploy.json`),
-      snapshotBody,
-      'utf-8',
-    );
+    await writeFile(path.join(snapshotDir, `${namespace}.pre-deploy.json`), snapshotBody, 'utf-8');
     // v0.3.1 (#2): also write a timestamped copy so the user retains
     // multiple revert levels. Filename collides only at sub-second
     // granularity — extraordinarily unlikely in practice, and even
@@ -819,10 +811,7 @@ async function runDeployInner(
     // semantics are unchanged. Future UI can surface the timestamped
     // copies for "revert to which version?" choice.
     const isoStamp = new Date().toISOString().replace(/[:.]/g, '-');
-    const timestampedPath = path.join(
-      snapshotDir,
-      `${namespace}.pre-deploy-${isoStamp}.json`,
-    );
+    const timestampedPath = path.join(snapshotDir, `${namespace}.pre-deploy-${isoStamp}.json`);
     await writeFile(timestampedPath, snapshotBody, 'utf-8').catch((err) => {
       // Not fatal — the latest-pointer above is the authoritative one
       // for revert. Log and continue.
@@ -884,10 +873,7 @@ async function runDeployInner(
   // the app died." A surviving sentinel means the device may be in a
   // partially-applied state and the dashboard banner should prompt
   // for audit/revert.
-  const sentinelPath = path.join(
-    getSnapshotDir(),
-    `${namespace}.deploy-in-progress`,
-  );
+  const sentinelPath = path.join(getSnapshotDir(), `${namespace}.deploy-in-progress`);
   if (mode === 'enforce') {
     try {
       await writeFile(
@@ -947,7 +933,7 @@ async function runDeployInner(
   });
 
   const statusResult = await getResources({ namespace });
-  const bulkResources = statusResult.success ? statusResult.data ?? [] : null;
+  const bulkResources = statusResult.success ? (statusResult.data ?? []) : null;
   const audit = await auditResources(desired, bulkResources, {
     signal: opts.signal,
     onProgress: (completed, total) =>
@@ -974,7 +960,9 @@ async function runDeployInner(
     if (src.length) patch.resourceSummary = src;
     const mfPlatform = detectManifestPlatform(resources as unknown[]);
     if (mfPlatform) patch.platform = mfPlatform;
-    updateRegistration(namespace, patch).catch((err) => {
+    updateRegistration(namespace, patch, {
+      expectedRevision: reg?.revision ?? null,
+    }).catch((err) => {
       console.warn(`[deploy] failed to persist registration metadata for ${namespace}:`, err);
     });
   }
@@ -1042,7 +1030,8 @@ async function runDeployInner(
   // audit phase produced authoritative device-side compliance state;
   // cache it so the audit pack PDF + the renderer "last audited"
   // badge can read it.
-  void writeAuditResult(namespace, 'enforce', enforceResponse.data);
+  await writeAuditResult(namespace, 'enforce', enforceResponse.data, reg?.revision);
+  _clearManifestsListCache();
 
   return enforceResponse;
 }

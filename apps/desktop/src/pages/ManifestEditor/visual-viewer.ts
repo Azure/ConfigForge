@@ -185,14 +185,7 @@ export function flattenVisualSettings(document: unknown): VisualSetting[] {
           const childTypeName =
             slash >= 0 && slash < childType.length - 1 ? childType.slice(slash + 1) : childType;
           const childFallback = `${groupName} — ${childTypeName || "Setting"} ${index + 1}`;
-          walk(
-            child,
-            [...path, index],
-            undefined,
-            childFallback,
-            desiredOverride,
-            depth + 1,
-          );
+          walk(child, [...path, index], undefined, childFallback, desiredOverride, depth + 1);
         });
         return;
       }
@@ -329,7 +322,29 @@ function valueForColumn(setting: VisualSetting, column: string): unknown {
   return setting.properties[column];
 }
 
-function compareValues(left: unknown, right: unknown): number {
+function visualValueTypeRank(value: unknown): number {
+  if (value === null) return 0;
+  if (typeof value === "boolean") return 1;
+  if (typeof value === "number") return 2;
+  if (typeof value === "bigint") return 3;
+  if (typeof value === "string") return 4;
+  if (Array.isArray(value)) return 5;
+  if (typeof value === "object") return 6;
+  if (value === undefined) return 7;
+  if (typeof value === "symbol") return 8;
+  return 9;
+}
+
+/**
+ * Compare visual cell values with a fixed cross-type precedence. Never mix a
+ * numeric comparison on one pair with a lexical comparison on another pair:
+ * Array.sort requires a transitive comparator for deterministic results.
+ */
+export function compareVisualValues(left: unknown, right: unknown): number {
+  const leftRank = visualValueTypeRank(left);
+  const rightRank = visualValueTypeRank(right);
+  if (leftRank !== rightRank) return leftRank < rightRank ? -1 : 1;
+
   if (typeof left === "number" && typeof right === "number") {
     const leftNaN = Number.isNaN(left);
     const rightNaN = Number.isNaN(right);
@@ -342,6 +357,11 @@ function compareValues(left: unknown, right: unknown): number {
   if (typeof left === "boolean" && typeof right === "boolean") {
     return left === right ? 0 : left ? 1 : -1;
   }
+  if (typeof left === "bigint" && typeof right === "bigint") {
+    return left === right ? 0 : left < right ? -1 : 1;
+  }
+  if (left === null && right === null) return 0;
+  if (left === undefined && right === undefined) return 0;
 
   const leftText = formatVisualValue(left);
   const rightText = formatVisualValue(right);
@@ -375,7 +395,7 @@ export function sortVisualSettings(
         return leftMissing ? 1 : -1;
       }
 
-      const compared = compareValues(leftValue, rightValue);
+      const compared = compareVisualValues(leftValue, rightValue);
       if (compared === 0) return left.index - right.index;
       return sort.direction === "ascending" ? compared : -compared;
     })

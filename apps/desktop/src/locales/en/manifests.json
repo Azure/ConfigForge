@@ -75,6 +75,7 @@
     "showing": "Showing {{filtered}} of {{total}}",
     "status": {
       "allCompliant": "All compliant",
+      "complianceIncompleteTitle": "{{compliant}} of {{total}} evaluated settings are compliant; {{unknown}} settings could not be evaluated",
       "complianceTitle": "{{compliant}} of {{total}} audited settings are compliant",
       "issueCount_one": "{{count}} issue",
       "issueCount_other": "{{count}} issues",

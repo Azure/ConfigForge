@@ -9,7 +9,7 @@
  */
 import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { useManifestList } from './useManifestList';
+import { getManifestCompliance, useManifestList } from './useManifestList';
 
 function deferred<T>() {
   let resolve!: (v: T) => void;
@@ -60,6 +60,125 @@ describe('useManifestList — happy path', () => {
     expect(result.current.error).toBeNull();
   });
 
+  describe("getManifestCompliance", () => {
+    it("excludes indeterminate and error reads from the compliance denominator", () => {
+      const state = getManifestCompliance({
+        Name: "audit",
+        Source: "user",
+        Compliance: {
+          auditedAt: "2026-07-15T10:00:00.000Z",
+          total: 6,
+          compliant: 2,
+          nonCompliant: 1,
+          indeterminate: 2,
+          errors: 1,
+        },
+      });
+
+      expect(state).toMatchObject({
+        audited: true,
+        compliant: 2,
+        unknown: 3,
+        total: 3,
+        category: "partially-compliant",
+      });
+      expect(state.ratio).toBeCloseTo(2 / 3);
+    });
+
+    it("reports no evaluated compliance when every read is indeterminate", () => {
+      expect(
+        getManifestCompliance({
+          Name: "unknown",
+          Source: "user",
+          Compliance: {
+            auditedAt: "2026-07-15T10:00:00.000Z",
+            total: 3,
+            compliant: 0,
+            nonCompliant: 0,
+            indeterminate: 2,
+            errors: 1,
+          },
+        }),
+      ).toMatchObject({
+        audited: false,
+        unknown: 3,
+        ratio: null,
+        category: "not-audited",
+      });
+    });
+
+    it("excludes indeterminate resource statuses from the fallback denominator", () => {
+      expect(
+        getManifestCompliance({
+          Name: "fallback",
+          Source: "user",
+          Resources: [
+            {
+              name: "A",
+              type: "T",
+              properties: {},
+              compliance: { status: "Compliant", reason: "" },
+            },
+            {
+              name: "B",
+              type: "T",
+              properties: {},
+              compliance: { status: "Compliant", reason: "" },
+            },
+            {
+              name: "C",
+              type: "T",
+              properties: {},
+              compliance: { status: "NonCompliant", reason: "" },
+            },
+            {
+              name: "D",
+              type: "T",
+              properties: {},
+              compliance: { status: "Could not read", reason: "" },
+            },
+            {
+              name: "E",
+              type: "T",
+              properties: {},
+              compliance: { status: "Indeterminate", reason: "" },
+            },
+            { name: "F", type: "T", properties: {}, compliance: { status: "Error", reason: "" } },
+          ],
+        }),
+      ).toMatchObject({
+        audited: true,
+        compliant: 2,
+        unknown: 3,
+        total: 3,
+        ratio: 2 / 3,
+        category: "partially-compliant",
+      });
+    });
+
+    it("does not report All compliant when unknown results remain", () => {
+      expect(
+        getManifestCompliance({
+          Name: "incomplete",
+          Source: "user",
+          Compliance: {
+            auditedAt: "2026-07-15T10:00:00.000Z",
+            total: 2,
+            compliant: 1,
+            nonCompliant: 0,
+            indeterminate: 1,
+            errors: 0,
+          },
+        }),
+      ).toMatchObject({
+        audited: true,
+        ratio: 1,
+        unknown: 1,
+        category: "partially-compliant",
+      });
+    });
+  });
+
   it('memoised platformByName has correct entries', async () => {
     installMocks();
     const { result } = renderHook(() => useManifestList());
@@ -90,6 +209,7 @@ describe('useManifestList — happy path', () => {
         },
       ],
     });
+
     installMocks({ list });
 
     const { result } = renderHook(() => useManifestList());
@@ -105,6 +225,63 @@ describe('useManifestList — happy path', () => {
       Deployed: false,
       LastAppliedAt: null,
     });
+  });
+
+  it('uses cached compliance only when it matches the current registration revision', async () => {
+    sessionStorage.setItem(
+      'configforge-compliance-revisioned',
+      JSON.stringify({
+        name: 'revisioned',
+        revision: 'old-revision',
+        resources: [
+          {
+            name: 'Stale',
+            type: 'T',
+            compliance: { status: 'Compliant', reason: '' },
+          },
+        ],
+      }),
+    );
+    installMocks({
+      list: vi.fn().mockResolvedValue({
+        data: [
+          {
+            Name: 'revisioned',
+            Source: 'user',
+            Revision: 'new-revision',
+            Resources: [],
+            Compliance: null,
+          },
+        ],
+      }),
+    });
+
+    const { result } = renderHook(() => useManifestList());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    expect(result.current.manifests[0]?.Resources).toEqual([]);
+    expect(getManifestCompliance(result.current.manifests[0])).toMatchObject({
+      audited: false,
+      category: 'not-audited',
+    });
+
+    sessionStorage.setItem(
+      'configforge-compliance-revisioned',
+      JSON.stringify({
+        name: 'revisioned',
+        revision: 'new-revision',
+        resources: [
+          {
+            name: 'Current',
+            type: 'T',
+            compliance: { status: 'Compliant', reason: '' },
+          },
+        ],
+      }),
+    );
+    await act(async () => {
+      await result.current.fetchManifests({ force: true });
+    });
+    expect(result.current.manifests[0]?.Resources?.[0]?.name).toBe('Current');
   });
 
   it('normalizes LastModifiedAt, Validation, Compliance, and display metadata', async () => {
@@ -228,7 +405,9 @@ describe('useManifestList — listTokenRef race-guard (v0.1.14)', () => {
 
     // Second resolves OK.
     await act(async () => {
-      second.resolve({ data: [{ Name: 'ok', Source: 'user', Platform: 'windows', Resources: [] }] });
+      second.resolve({
+        data: [{ Name: 'ok', Source: 'user', Platform: 'windows', Resources: [] }],
+      });
       await Promise.resolve();
       await Promise.resolve();
     });
@@ -308,7 +487,14 @@ describe('useManifestList — search filter', () => {
           Resources: [],
           LastModifiedAt: new Date(now).toISOString(),
           Validation: { issues: [] },
-          Compliance: { auditedAt: new Date(now).toISOString(), total: 10, compliant: 10, nonCompliant: 0, indeterminate: 0, errors: 0 },
+          Compliance: {
+            auditedAt: new Date(now).toISOString(),
+            total: 10,
+            compliant: 10,
+            nonCompliant: 0,
+            indeterminate: 0,
+            errors: 0,
+          },
         },
         {
           Name: 'linux-issues',
@@ -317,7 +503,14 @@ describe('useManifestList — search filter', () => {
           Resources: [],
           LastModifiedAt: new Date(now - 4 * 24 * 60 * 60 * 1000).toISOString(),
           Validation: { issues: ['Schema warning', 'Missing value'] },
-          Compliance: { auditedAt: new Date(now).toISOString(), total: 10, compliant: 7, nonCompliant: 2, indeterminate: 1, errors: 0 },
+          Compliance: {
+            auditedAt: new Date(now).toISOString(),
+            total: 10,
+            compliant: 7,
+            nonCompliant: 2,
+            indeterminate: 1,
+            errors: 0,
+          },
         },
         {
           Name: 'old-unaudited',
@@ -395,8 +588,76 @@ describe('useManifestList — search filter', () => {
 
     expect(result.current.filterOptions.lastModified).toContain('unknown');
     act(() => result.current.setLastModifiedFilter('unknown'));
+    expect(result.current.filteredManifests.map((manifest) => manifest.Name)).toEqual(['legacy']);
+  });
+
+  it("resets active filters whose options disappear after a refresh", async () => {
+    const list = vi.fn().mockResolvedValue({
+      data: [
+        {
+          Name: "old-linux-issues",
+          Source: "user",
+          Platform: "linux",
+          Resources: [],
+          LastModifiedAt: new Date(Date.now() - 45 * 24 * 60 * 60 * 1000).toISOString(),
+          Validation: { issues: ["Missing value"] },
+          Compliance: {
+            auditedAt: new Date().toISOString(),
+            total: 2,
+            compliant: 1,
+            nonCompliant: 1,
+            indeterminate: 0,
+            errors: 0,
+          },
+        },
+      ],
+    });
+    installMocks({ list });
+
+    const { result } = renderHook(() => useManifestList());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    act(() => {
+      result.current.setOperatingSystemFilter("linux");
+      result.current.setIssuesFilter("has-issues");
+      result.current.setComplianceFilter("partially-compliant");
+      result.current.setLastModifiedFilter("older-than-30-days");
+    });
     expect(result.current.filteredManifests.map((manifest) => manifest.Name)).toEqual([
-      'legacy',
+      "old-linux-issues",
+    ]);
+
+    list.mockResolvedValueOnce({
+      data: [
+        {
+          Name: "current-windows-clean",
+          Source: "user",
+          Platform: "windows",
+          Resources: [],
+          LastModifiedAt: new Date().toISOString(),
+          Validation: { issues: [] },
+          Compliance: {
+            auditedAt: new Date().toISOString(),
+            total: 1,
+            compliant: 1,
+            nonCompliant: 0,
+            indeterminate: 0,
+            errors: 0,
+          },
+        },
+      ],
+    });
+    await act(async () => {
+      await result.current.fetchManifests();
+    });
+
+    await waitFor(() => {
+      expect(result.current.operatingSystemFilter).toBe("all");
+      expect(result.current.issuesFilter).toBe("all");
+      expect(result.current.complianceFilter).toBe("all");
+      expect(result.current.lastModifiedFilter).toBe("all");
+    });
+    expect(result.current.filteredManifests.map((manifest) => manifest.Name)).toEqual([
+      "current-windows-clean",
     ]);
   });
 });

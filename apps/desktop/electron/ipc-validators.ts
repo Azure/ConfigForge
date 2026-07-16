@@ -168,6 +168,17 @@ export function validateRestoreManifestRequest(v: unknown): string | null {
   return validateOptionalString(o.sourceId, 'sourceId', MAX_FILENAME_LEN);
 }
 
+export function validateDeleteManifestRequest(v: unknown): string | null {
+  if (typeof v !== 'object' || v === null) return 'payload must be an object';
+  const o = v as Record<string, unknown>;
+  const nameError = validateNonEmptyString(o.name, 'name', MAX_MANIFEST_NAME_LEN);
+  if (nameError) return nameError;
+  if (o.requireRecovery !== undefined && typeof o.requireRecovery !== 'boolean') {
+    return 'requireRecovery must be a boolean when provided';
+  }
+  return null;
+}
+
 /**
  * v0.2.21 (CF-SEC-018): validator for `cfs:manifests:list` payload.
  *

@@ -36,6 +36,7 @@ import type {
   RegisterManifestResult,
   RestoreManifestRequest,
   RestoreManifestResult,
+  DeleteManifestOptions,
   DeleteManifestResult,
   ImportRequest,
   ImportResult,
@@ -229,8 +230,8 @@ const cfsApi = {
      */
     fetchUri: (uri: string): Promise<{ content: string }> =>
       call('cfs:manifests:fetch-uri', { uri }),
-    delete: (name: string): Promise<DeleteManifestResult> =>
-      call('cfs:manifests:delete', { name }),
+    delete: (name: string, options: DeleteManifestOptions = {}): Promise<DeleteManifestResult> =>
+      call('cfs:manifests:delete', { name, ...options }),
     status: (name: string) => call<unknown>('cfs:manifests:status', { name }),
     /**
      * v0.2.16: registered manifest's source YAML (what the user wrote
@@ -260,6 +261,7 @@ const cfsApi = {
           Deployed: boolean;
           LastAppliedAt: string | null;
           LastAuditedAt: string | null;
+          Revision: string | null;
           Platform: string | null;
           ResourceCount: number;
           Validation: unknown;

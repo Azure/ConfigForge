@@ -24,6 +24,32 @@ type ParsedGroups =
   | { kind: "ready"; groups: ReturnType<typeof groupVisualSettings> }
   | { kind: "error" };
 
+const YAML_INTEGER_PATTERN =
+  /^[+-]?(?:[0-9]+|0b[01]+|0o[0-7]+|0x[0-9a-fA-F]+)$/;
+
+function constructLosslessInteger(source: string): number | bigint {
+  const negative = source.startsWith("-");
+  const unsigned = source.startsWith("-") || source.startsWith("+") ? source.slice(1) : source;
+  const integer = BigInt(unsigned) * (negative ? -1n : 1n);
+  return integer >= BigInt(Number.MIN_SAFE_INTEGER) && integer <= BigInt(Number.MAX_SAFE_INTEGER)
+    ? Number(integer)
+    : integer;
+}
+
+// The default js-yaml integer constructor rounds QWord values through an
+// IEEE-754 number. Override only !!int for this display-only parser: existing
+// booleans/null/objects keep their visual behavior while unsafe integers stay
+// exact as bigint. This schema is browser-safe and never touches editor state.
+const LOSSLESS_DISPLAY_SCHEMA = yaml.DEFAULT_SCHEMA.extend({
+  implicit: [
+    new yaml.Type("tag:yaml.org,2002:int", {
+      kind: "scalar",
+      resolve: (value: unknown) => typeof value === "string" && YAML_INTEGER_PATTERN.test(value),
+      construct: (value: string) => constructLosslessInteger(value),
+    }),
+  ],
+});
+
 function categoryName(resourceType: string): string {
   const slash = resourceType.lastIndexOf("/");
   return slash >= 0 && slash < resourceType.length - 1
@@ -45,7 +71,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     try {
       return {
         kind: "ready",
-        groups: groupVisualSettings(yaml.load(source)),
+        groups: groupVisualSettings(yaml.load(source, { schema: LOSSLESS_DISPLAY_SCHEMA })),
       };
     } catch {
       return { kind: "error" };
