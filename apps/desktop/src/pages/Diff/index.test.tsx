@@ -20,10 +20,13 @@
  * and asserting the selects do NOT carry the `disabled` attribute.
  */
 import { afterEach, describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
-import { MemoryRouter } from 'react-router-dom';
+import { MemoryRouter, useLocation } from 'react-router-dom';
 import { getI18n } from '../../locales';
+
+const useDiffMatrixSpy = vi.hoisted(() => vi.fn());
+const reconcileMatrixSelectionSpy = vi.hoisted(() => vi.fn());
 
 vi.mock('../../components/manifest-editor', () => ({
   ManifestEditor: () => <div data-testid="mock-manifest-editor" />,
@@ -42,24 +45,36 @@ vi.mock('./components/CisDiffTab', () => ({
   CisDiffTab: () => <div data-testid="mock-cis-diff-tab" />,
 }));
 vi.mock('./state/useDiffMatrix', () => ({
-  useDiffMatrix: () => ({
-    matrixSelected: new Set<string>(),
-    matrixData: null,
-    matrixLoading: false,
-    matrixError: null,
-    toggleMatrixSelection: vi.fn(),
-    runMatrixCompare: vi.fn(),
-    downloadMatrixXlsx: vi.fn(),
-  }),
+  useDiffMatrix: (options?: { initialSelected?: string[] }) => {
+    useDiffMatrixSpy(options);
+    return {
+      matrixSelected: new Set<string>(options?.initialSelected ?? []),
+      matrixData: null,
+      matrixLoading: false,
+      matrixError: null,
+      toggleMatrixSelection: vi.fn(),
+      reconcileMatrixSelection: reconcileMatrixSelectionSpy,
+      runMatrixCompare: vi.fn(),
+      downloadMatrixXlsx: vi.fn(),
+    };
+  },
 }));
 
 import { DiffPage } from './index';
 
-function renderDiff() {
+function LocationStateProbe() {
+  const location = useLocation();
+  return <output aria-label="location-state">{JSON.stringify(location.state)}</output>;
+}
+
+function renderDiff(
+  entry: string | { pathname: string; state: unknown } = '/diff',
+) {
   return render(
     <FluentProvider theme={webLightTheme}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[entry]}>
         <DiffPage />
+        <LocationStateProbe />
       </MemoryRouter>
     </FluentProvider>,
   );
@@ -67,6 +82,8 @@ function renderDiff() {
 
 beforeEach(async () => {
   await getI18n().changeLanguage('en');
+  useDiffMatrixSpy.mockClear();
+  reconcileMatrixSelectionSpy.mockClear();
   // Replace the manifest namespace with a list() that never resolves —
   // simulates a wedged main-process IPC handler so we can assert the
   // UI does not lock up around it.
@@ -80,6 +97,64 @@ afterEach(async () => {
 });
 
 describe('DiffPage — dropdown stability (v0.3.53)', () => {
+  it('safely activates Matrix N-way and consumes route-provided preselection', async () => {
+    renderDiff({
+      pathname: '/diff',
+      state: {
+        configForgeDiff: {
+          version: 1,
+          tab: 'matrix',
+          baselineNames: ['alpha', 'beta'],
+        },
+      },
+    });
+
+    expect(useDiffMatrixSpy).toHaveBeenCalledWith({
+      initialSelected: ['alpha', 'beta'],
+    });
+    expect(screen.getByText('Pick 2–10 baselines to compare')).toBeInTheDocument();
+    expect(screen.queryByTestId('mock-manifest-editor')).not.toBeInTheDocument();
+    await waitFor(() =>
+      expect(screen.getByLabelText('location-state')).toHaveTextContent('null'),
+    );
+  });
+
+  it('reconciles route preselection against the authoritative manifest list', async () => {
+    (window as unknown as { cfs: Record<string, unknown> }).cfs.manifests = {
+      list: vi.fn().mockResolvedValue({
+        data: [
+          { Name: 'alpha', Source: 'user', Resources: [] },
+          { Name: 'beta', Source: 'user', Resources: [] },
+        ],
+      }),
+    };
+    renderDiff({
+      pathname: '/diff',
+      state: {
+        configForgeDiff: {
+          version: 1,
+          tab: 'matrix',
+          baselineNames: [
+            'alpha',
+            'missing-1',
+            'missing-2',
+            'missing-3',
+            'missing-4',
+            'missing-5',
+            'missing-6',
+            'missing-7',
+            'missing-8',
+            'missing-9',
+          ],
+        },
+      },
+    });
+
+    await waitFor(() =>
+      expect(reconcileMatrixSelectionSpy).toHaveBeenCalledWith(['alpha', 'beta']),
+    );
+  });
+
   it('Pairwise "Before" select stays interactive while manifest list IPC is pending', () => {
     renderDiff();
     // Two manifest pickers render on the Pairwise tab (Before + After).

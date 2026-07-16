@@ -21,6 +21,30 @@ describe("useDiffMatrix", () => {
     expect(result.current.matrixError).toBeNull();
   });
 
+  it("safely seeds a unique Matrix selection capped at ten", () => {
+    const initialSelected = [
+      "alpha",
+      "alpha",
+      ...Array.from({ length: 15 }, (_, index) => `baseline-${index}`),
+    ];
+    const { result } = renderHook(() =>
+      useDiffMatrix({ diffClient: makeClient(), initialSelected }),
+    );
+
+    expect(Array.from(result.current.matrixSelected)).toEqual([
+      "alpha",
+      "baseline-0",
+      "baseline-1",
+      "baseline-2",
+      "baseline-3",
+      "baseline-4",
+      "baseline-5",
+      "baseline-6",
+      "baseline-7",
+      "baseline-8",
+    ]);
+  });
+
   it("toggleMatrixSelection adds a name on first click and removes it on second", () => {
     const { result } = renderHook(() => useDiffMatrix({ diffClient: makeClient() }));
     act(() => {
@@ -59,6 +83,36 @@ describe("useDiffMatrix", () => {
     });
     expect(result.current.matrixError).toBeNull();
     expect(result.current.matrixSelected.size).toBe(MATRIX_MAX_SELECTION - 1);
+  });
+
+  it("prunes missing route selections after the authoritative manifest list loads", () => {
+    const initialSelected = [
+      "alpha",
+      "missing-1",
+      "missing-2",
+      "beta",
+      "missing-3",
+      "missing-4",
+      "missing-5",
+      "missing-6",
+      "missing-7",
+      "missing-8",
+    ];
+    const { result } = renderHook(() =>
+      useDiffMatrix({ diffClient: makeClient(), initialSelected }),
+    );
+
+    act(() => {
+      result.current.reconcileMatrixSelection(["alpha", "beta", "gamma"]);
+    });
+
+    expect(Array.from(result.current.matrixSelected)).toEqual(["alpha", "beta"]);
+    act(() => result.current.toggleMatrixSelection("gamma"));
+    expect(Array.from(result.current.matrixSelected)).toEqual([
+      "alpha",
+      "beta",
+      "gamma",
+    ]);
   });
 
   it("runMatrixCompare with fewer than 2 selections is a no-op", async () => {

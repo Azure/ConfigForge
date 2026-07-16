@@ -29,6 +29,7 @@ export {
 export type { ConcurrencyOptions, RetryHandle, RetryOptions, TaskResult } from './concurrency';
 export {
   saveRegistration,
+  saveRegistrationIfAbsent,
   getRegistration,
   getRegistrationSource,
   deleteRegistration,

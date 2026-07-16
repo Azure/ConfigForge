@@ -106,6 +106,64 @@ describe('useManifestList — happy path', () => {
       LastAppliedAt: null,
     });
   });
+
+  it('normalizes LastModifiedAt, Validation, Compliance, and display metadata', async () => {
+    const list = vi.fn().mockResolvedValue({
+      data: [
+        {
+          Name: 'normalized',
+          DisplayName: 'Normalized Baseline',
+          Source: 'user',
+          Platform: 'windows',
+          ResourceCount: 12,
+          Resources: [],
+          RegisteredAt: '2026-07-14T10:00:00.000Z',
+          LastModifiedAt: '2026-07-15T10:00:00.000Z',
+          Validation: {
+            hasSchema: true,
+            hasEnforcementValues: true,
+            hasComplianceCriteria: true,
+            issues: ['Missing description'],
+          },
+          Compliance: {
+            auditedAt: '2026-07-15T11:00:00.000Z',
+            total: 12,
+            compliant: 9,
+            nonCompliant: 2,
+            indeterminate: 1,
+            errors: 0,
+          },
+        },
+      ],
+    });
+    installMocks({ list });
+
+    const { result } = renderHook(() => useManifestList());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.manifests[0]).toMatchObject({
+      Name: 'normalized',
+      DisplayName: 'Normalized Baseline',
+      ResourceCount: 12,
+      RegisteredAt: '2026-07-14T10:00:00.000Z',
+      LastModifiedAt: '2026-07-15T10:00:00.000Z',
+      Validation: { issues: ['Missing description'] },
+      Compliance: { total: 12, compliant: 9 },
+    });
+  });
+
+  it('uses the supported force option for an explicit refresh', async () => {
+    const { list } = installMocks();
+    const { result } = renderHook(() => useManifestList());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    await act(async () => {
+      await result.current.fetchManifests({ force: true });
+    });
+
+    expect(list).toHaveBeenNthCalledWith(1, {});
+    expect(list).toHaveBeenNthCalledWith(2, { force: true });
+  });
 });
 
 describe('useManifestList — listTokenRef race-guard (v0.1.14)', () => {
@@ -237,6 +295,109 @@ describe('useManifestList — search filter', () => {
       result.current.setSearchQuery('');
     });
     await waitFor(() => expect(result.current.filteredManifests).toHaveLength(2));
+  });
+
+  it('combines functional OS, issues, compliance, and last-modified filters', async () => {
+    const now = Date.now();
+    const list = vi.fn().mockResolvedValue({
+      data: [
+        {
+          Name: 'windows-clean',
+          Source: 'user',
+          Platform: 'windows',
+          Resources: [],
+          LastModifiedAt: new Date(now).toISOString(),
+          Validation: { issues: [] },
+          Compliance: { auditedAt: new Date(now).toISOString(), total: 10, compliant: 10, nonCompliant: 0, indeterminate: 0, errors: 0 },
+        },
+        {
+          Name: 'linux-issues',
+          Source: 'user',
+          Platform: 'linux',
+          Resources: [],
+          LastModifiedAt: new Date(now - 4 * 24 * 60 * 60 * 1000).toISOString(),
+          Validation: { issues: ['Schema warning', 'Missing value'] },
+          Compliance: { auditedAt: new Date(now).toISOString(), total: 10, compliant: 7, nonCompliant: 2, indeterminate: 1, errors: 0 },
+        },
+        {
+          Name: 'old-unaudited',
+          Source: 'user',
+          Platform: 'cross-platform',
+          Resources: [],
+          LastModifiedAt: new Date(now - 45 * 24 * 60 * 60 * 1000).toISOString(),
+          Validation: { issues: [] },
+          Compliance: null,
+        },
+      ],
+    });
+    installMocks({ list });
+
+    const { result } = renderHook(() => useManifestList());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => result.current.setOperatingSystemFilter('linux'));
+    expect(result.current.filteredManifests.map((m) => m.Name)).toEqual(['linux-issues']);
+
+    act(() => {
+      result.current.setOperatingSystemFilter('all');
+      result.current.setIssuesFilter('has-issues');
+    });
+    expect(result.current.filteredManifests.map((m) => m.Name)).toEqual(['linux-issues']);
+
+    act(() => {
+      result.current.setIssuesFilter('all');
+      result.current.setComplianceFilter('not-audited');
+    });
+    expect(result.current.filteredManifests.map((m) => m.Name)).toEqual(['old-unaudited']);
+
+    act(() => {
+      result.current.setComplianceFilter('all');
+      result.current.setLastModifiedFilter('older-than-30-days');
+    });
+    expect(result.current.filteredManifests.map((m) => m.Name)).toEqual(['old-unaudited']);
+
+    expect(result.current.filterOptions.operatingSystems).toEqual([
+      'cross-platform',
+      'linux',
+      'windows',
+    ]);
+    expect(result.current.filterOptions.issues).toEqual(['no-issues', 'has-issues']);
+    expect(result.current.filterOptions.compliance).toEqual([
+      'all-compliant',
+      'partially-compliant',
+      'not-audited',
+    ]);
+  });
+
+  it('classifies malformed legacy LastModifiedAt metadata as unavailable', async () => {
+    const list = vi.fn().mockResolvedValue({
+      data: [
+        {
+          Name: 'legacy',
+          Source: 'user',
+          Platform: 'windows',
+          Resources: [],
+          LastModifiedAt: 'not-a-real-timestamp',
+        },
+        {
+          Name: 'current',
+          Source: 'user',
+          Platform: 'windows',
+          Resources: [],
+          LastModifiedAt: new Date().toISOString(),
+        },
+      ],
+    });
+    installMocks({ list });
+
+    const { result } = renderHook(() => useManifestList());
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(result.current.filterOptions.lastModified).toContain('unknown');
+    act(() => result.current.setLastModifiedFilter('unknown'));
+    expect(result.current.filteredManifests.map((manifest) => manifest.Name)).toEqual([
+      'legacy',
+    ]);
   });
 });
 

@@ -23,6 +23,7 @@ import {
   NavigationRegular,
   DismissRegular,
 } from "@fluentui/react-icons";
+import { useBaselineWorkspace } from './BaselineWorkspace';
 
 // Each nav item declares both Outline and Filled variants. Per Fluent
 // v2 design guidance the Filled variant is reserved for the active
@@ -53,6 +54,7 @@ const navItems = [
 export function Sidebar() {
   const [collapsed, setCollapsed] = useState(false);
   const { t } = useTranslation(['sidebar', 'common']);
+  const { myBaselineCount, microsoftBaselineCount } = useBaselineWorkspace();
 
   return (
     <>
@@ -127,10 +129,19 @@ export function Sidebar() {
                 // is subtle but reinforces the blue tint cue and brings
                 // the sidebar in line with WinUI 3 Gallery's behavior.
                 const NavIcon = isActive ? IconActive : Icon;
+                const count =
+                  href === '/manifests'
+                    ? myBaselineCount
+                    : href === '/library'
+                      ? microsoftBaselineCount
+                      : null;
                 return (
                   <>
                     <NavIcon size={18} className={isActive ? 'text-blue-400' : ''} />
-                    {t(labelKey)}
+                    <span>
+                      {t(labelKey)}
+                      {count !== null ? ` (${count})` : ''}
+                    </span>
                   </>
                 );
               }}

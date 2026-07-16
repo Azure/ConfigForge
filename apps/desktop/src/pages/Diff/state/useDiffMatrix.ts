@@ -17,6 +17,21 @@ export const MATRIX_MAX_SELECTION = 10;
 export interface UseDiffMatrixOptions {
   /** Optional IPC override for tests. */
   diffClient?: { matrix: (names: string) => Promise<unknown>; matrixXlsxSave?: (names: string) => Promise<unknown> };
+  /** Validated baseline names supplied by route navigation state. */
+  initialSelected?: Iterable<string>;
+}
+
+function normalizeInitialSelection(value: Iterable<string> | undefined): Set<string> {
+  const selected = new Set<string>();
+  if (!value) return selected;
+  for (const candidate of value) {
+    if (typeof candidate !== "string") continue;
+    const name = candidate.trim();
+    if (!name) continue;
+    selected.add(name);
+    if (selected.size === MATRIX_MAX_SELECTION) break;
+  }
+  return selected;
 }
 
 /**
@@ -32,7 +47,9 @@ export interface UseDiffMatrixOptions {
 export function useDiffMatrix(options: UseDiffMatrixOptions = {}) {
   const diffClient = options.diffClient ?? cfs.diff;
 
-  const [matrixSelected, setMatrixSelected] = useState<Set<string>>(() => new Set());
+  const [matrixSelected, setMatrixSelected] = useState<Set<string>>(() =>
+    normalizeInitialSelection(options.initialSelected),
+  );
   const [matrixData, setMatrixData] = useState<MatrixApiResponse | null>(null);
   const [matrixLoading, setMatrixLoading] = useState(false);
   const [matrixError, setMatrixError] = useState<string | null>(null);
@@ -41,6 +58,37 @@ export function useDiffMatrix(options: UseDiffMatrixOptions = {}) {
   // Previously a slow fetch for selection A could resolve AFTER a fast
   // fetch for selection B and overwrite matrixData with the wrong rows.
   const matrixLoadTokenRef = useRef(0);
+
+  const reconcileMatrixSelection = useCallback(
+    (availableNames: Iterable<string>) => {
+      const available = new Set(
+        Array.from(availableNames)
+          .filter((name): name is string => typeof name === "string")
+          .map((name) => name.trim())
+          .filter(Boolean),
+      );
+      setMatrixSelected((previous) => {
+        const next = new Set(
+          Array.from(previous).filter((name) => available.has(name)),
+        );
+        if (
+          next.size === previous.size &&
+          Array.from(next).every((name) => previous.has(name))
+        ) {
+          return previous;
+        }
+
+        // Pruning invalidates results based on a missing registration and
+        // cancels any compare response that was already in flight.
+        matrixLoadTokenRef.current += 1;
+        setMatrixData(null);
+        setMatrixLoading(false);
+        setMatrixError(null);
+        return next;
+      });
+    },
+    [],
+  );
 
   const toggleMatrixSelection = useCallback((name: string) => {
     setMatrixSelected((prev) => {
@@ -103,6 +151,7 @@ export function useDiffMatrix(options: UseDiffMatrixOptions = {}) {
     matrixError,
     setMatrixError,
     toggleMatrixSelection,
+    reconcileMatrixSelection,
     runMatrixCompare,
     downloadMatrixXlsx,
     MATRIX_MAX_SELECTION,

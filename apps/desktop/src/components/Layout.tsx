@@ -1,8 +1,8 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { Outlet } from 'react-router-dom';
-import { useState } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Sidebar } from './Sidebar';
 import { HealthIndicator } from './HealthIndicator';
@@ -10,6 +10,11 @@ import { UpdateBanner } from './UpdateBanner';
 import { CliRequiredModal } from './CliRequiredModal';
 import { useCliPresence } from '../hooks/useCliPresence';
 import { HAS_HEALTH } from '../lib/flavor';
+import { useBaselineWorkspace } from './BaselineWorkspace';
+import {
+  BaselineWorkspaceTabs,
+  isBaselineWorkspacePath,
+} from './BaselineWorkspaceTabs';
 // v0.1.11 fix — wire the footer version label to the actual installed
 // version. Previously a hardcoded `v0.1.0` literal that lied through
 // every release since (v0.1.1 → v0.1.10). resolveJsonModule is already
@@ -38,6 +43,20 @@ import pkg from '../../package.json';
  */
 export function Layout() {
   const { t } = useTranslation('common');
+  const location = useLocation();
+  const { refresh } = useBaselineWorkspace();
+  const workspaceRoute = isBaselineWorkspacePath(location.pathname);
+  const workspaceListRoute = location.pathname === '/manifests';
+
+  // Counts and persisted-tab pruning follow route entry rather than a
+  // one-time app bootstrap. This picks up registrations changed by another
+  // window/process while preserving the provider's stale-response guard.
+  useEffect(() => {
+    void refresh().catch(() => {
+      // Page-level list surfaces its own actionable error. The shared chrome
+      // keeps the last known counts/tabs during a transient IPC failure.
+    });
+  }, [location.key, refresh]);
 
   return (
     <div className="flex h-screen flex-col overflow-hidden">
@@ -47,15 +66,32 @@ export function Layout() {
         <Sidebar />
 
         <div className="flex flex-col flex-1 overflow-hidden">
-          <main className="flex-1 overflow-y-auto p-6 lg:p-8">
-            <Outlet />
-          </main>
+          {workspaceRoute && <BaselineWorkspaceTabs />}
 
-          <footer
-            className={`flex items-center border-t border-slate-200 dark:border-slate-800 px-6 py-3 text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 ${
-              HAS_HEALTH ? 'justify-between' : 'justify-end'
-            }`}
-          >
+          {workspaceRoute ? (
+            <main className="min-h-0 flex-1 overflow-hidden">
+              <div
+                className={
+                  workspaceListRoute
+                    ? 'h-full overflow-hidden'
+                    : 'h-full overflow-y-auto p-6 lg:p-8'
+                }
+              >
+                <Outlet />
+              </div>
+            </main>
+          ) : (
+            <main className="flex-1 overflow-y-auto p-6 lg:p-8">
+              <Outlet />
+            </main>
+          )}
+
+          {!workspaceRoute && (
+            <footer
+              className={`flex items-center border-t border-slate-200 dark:border-slate-800 px-6 py-3 text-xs text-slate-500 dark:text-slate-400 bg-white dark:bg-slate-900 ${
+                HAS_HEALTH ? 'justify-between' : 'justify-end'
+              }`}
+            >
             {/*
              * Full flavor always shows the HealthIndicator on the right
              * (oscfg version + admin status), so the footer is laid
@@ -71,9 +107,10 @@ export function Layout() {
              * layout — the alignment difference is invisible here
              * because the indicator always renders.
              */}
-            <span>{t('footer.app-version', { version: pkg.version })}</span>
-            {HAS_HEALTH && <FooterHealth />}
-          </footer>
+              <span>{t('footer.app-version', { version: pkg.version })}</span>
+              {HAS_HEALTH && <FooterHealth />}
+            </footer>
+          )}
         </div>
       </div>
     </div>

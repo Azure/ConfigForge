@@ -9,6 +9,7 @@ import {
   webDarkTheme,
 } from '@fluentui/react-components';
 import { Layout } from './components/Layout';
+import { BaselineWorkspaceProvider } from './components/BaselineWorkspace';
 import { WelcomeDialog } from './components/WelcomeDialog';
 import { HomePage } from './pages/Home';
 import { LibraryPage } from './pages/Library';
@@ -73,32 +74,34 @@ export function App() {
   return (
     <FluentProvider theme={theme === 'dark' ? webDarkTheme : webLightTheme}>
       <HashRouter>
-        {/*
-         * v0.2.0 first-run experience. Renders the two-card Welcome
-         * dialog on first launch; persists dismissal to localStorage
-         * (cfs.welcome.dismissedAt). MUST live inside <HashRouter>
-         * because it calls useNavigate() to land users on /library
-         * when they pick "Author baselines anywhere".
-         */}
-        <WelcomeDialog />
-        <Routes>
-          <Route element={<Layout />}>
-            <Route index element={<HomePage />} />
-            <Route path="library" element={<LibraryPage />} />
-            <Route path="manifests" element={<ManifestsPage />} />
-            <Route path="manifests/new" element={<ManifestNewPage />} />
-            <Route path="manifests/:id" element={<ManifestDetailPage />} />
-            <Route path="manifests/:id/audit-pack" element={<AuditPackPage />} />
-            <Route path="manifests/:id/compliance" element={<ManifestCompliancePage />} />
-            <Route path="manifests/:id/history" element={<ManifestHistoryPage />} />
-            <Route path="manifests/:id/rationale" element={<RationaleLogPage />} />
-            <Route path="compliance" element={<CompliancePage />} />
-            <Route path="cis" element={<CisCatalogPage />} />
-            <Route path="diff" element={<DiffPage />} />
-            <Route path="settings" element={<SettingsPage />} />
-            <Route path="*" element={<NotFoundPage />} />
-          </Route>
-        </Routes>
+        <BaselineWorkspaceProvider>
+          {/*
+           * v0.2.0 first-run experience. Renders the two-card Welcome
+           * dialog on first launch; persists dismissal to localStorage
+           * (cfs.welcome.dismissedAt). MUST live inside <HashRouter>
+           * because it calls useNavigate() to land users on /library
+           * when they pick "Author baselines anywhere".
+           */}
+          <WelcomeDialog />
+          <Routes>
+            <Route element={<Layout />}>
+              <Route index element={<HomePage />} />
+              <Route path="library" element={<LibraryPage />} />
+              <Route path="manifests" element={<ManifestsPage />} />
+              <Route path="manifests/new" element={<ManifestNewPage />} />
+              <Route path="manifests/:id" element={<ManifestDetailPage />} />
+              <Route path="manifests/:id/audit-pack" element={<AuditPackPage />} />
+              <Route path="manifests/:id/compliance" element={<ManifestCompliancePage />} />
+              <Route path="manifests/:id/history" element={<ManifestHistoryPage />} />
+              <Route path="manifests/:id/rationale" element={<RationaleLogPage />} />
+              <Route path="compliance" element={<CompliancePage />} />
+              <Route path="cis" element={<CisCatalogPage />} />
+              <Route path="diff" element={<DiffPage />} />
+              <Route path="settings" element={<SettingsPage />} />
+              <Route path="*" element={<NotFoundPage />} />
+            </Route>
+          </Routes>
+        </BaselineWorkspaceProvider>
       </HashRouter>
     </FluentProvider>
   );

@@ -43,6 +43,16 @@ describe('useBulkSelection — toggleSelectAll', () => {
     act(() => result.current.toggleSelectAll(pool));
     expect(result.current.selected.size).toBe(0);
   });
+
+  it('selects or deselects only the supplied filtered rows', () => {
+    const { result } = renderHook(() => useBulkSelection());
+    act(() => result.current.toggleSelect('c'));
+    act(() => result.current.toggleSelectAll(pool.slice(0, 2)));
+    expect(Array.from(result.current.selected).sort()).toEqual(['a', 'b', 'c']);
+
+    act(() => result.current.toggleSelectAll(pool.slice(0, 2)));
+    expect(Array.from(result.current.selected)).toEqual(['c']);
+  });
 });
 
 describe('useBulkSelection — removeFromSelection (v0.1.13)', () => {

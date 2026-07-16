@@ -18,15 +18,27 @@
  *      testable in a sandbox).
  */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { mkdtemp, readdir, readFile, rm, writeFile } from 'fs/promises';
+import {
+  mkdir,
+  mkdtemp,
+  open,
+  readdir,
+  readFile,
+  rm,
+  unlink,
+  utimes,
+  writeFile,
+} from 'fs/promises';
 import { tmpdir } from 'os';
 import path from 'path';
 import {
   deleteRegistration,
+  _removeAbandonedRegistrationLock,
   getRegistration,
   getRegistrationSource,
   listRegistrations,
   saveRegistration,
+  saveRegistrationIfAbsent,
   updateRegistration,
   type ManifestRegistration,
 } from './registry';
@@ -45,6 +57,15 @@ function makeReg(
     source: 'user',
     ...overrides,
   };
+}
+
+function lockIdentityHash(identity: string): string {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < identity.length; index += 1) {
+    hash ^= identity.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16);
 }
 
 beforeEach(async () => {
@@ -91,6 +112,7 @@ describe('saveRegistration (PR18 atomic)', () => {
     await saveRegistration(makeReg('clean'), 'resources: []');
     const files = await readdir(path.join(SANDBOX, 'manifests'));
     expect(files.filter((f) => f.includes('.tmp'))).toEqual([]);
+    expect(files.filter((f) => f.endsWith('.lock'))).toEqual([]);
   });
 
   it('listRegistrations ignores .tmp leftovers from a prior crash', async () => {
@@ -157,6 +179,256 @@ describe('saveRegistration concurrency (PR18 mutex)', () => {
       expect(r?.displayName).toBe(`n${i}`);
       expect(await getRegistrationSource(`ns-${i}`)).toBe(`value: ${i}`);
     }
+  });
+});
+
+describe('saveRegistrationIfAbsent', () => {
+  it('creates a missing registration without changing its display name or source YAML', async () => {
+    const restored = makeReg('restore-me', { displayName: 'Original Display Name' });
+
+    await expect(
+      saveRegistrationIfAbsent(restored, 'original source yaml'),
+    ).resolves.toBe(true);
+    await expect(getRegistration('restore-me')).resolves.toMatchObject({
+      namespace: 'restore-me',
+      displayName: 'Original Display Name',
+    });
+    await expect(getRegistrationSource('restore-me')).resolves.toBe(
+      'original source yaml',
+    );
+  });
+
+  it('atomically refuses to overwrite a registration recreated during undo', async () => {
+    const recreated = makeReg('collision', { displayName: 'Recreated Baseline' });
+    const undoBackup = makeReg('collision', { displayName: 'Deleted Baseline' });
+
+    const [createResult, restoreResult] = await Promise.all([
+      saveRegistrationIfAbsent(recreated, 'recreated source'),
+      saveRegistrationIfAbsent(undoBackup, 'deleted source'),
+    ]);
+
+    expect([createResult, restoreResult].filter(Boolean)).toHaveLength(1);
+    const winner = await getRegistration('collision');
+    const source = await getRegistrationSource('collision');
+    expect(
+      (winner?.displayName === 'Recreated Baseline' && source === 'recreated source') ||
+        (winner?.displayName === 'Deleted Baseline' && source === 'deleted source'),
+    ).toBe(true);
+  });
+
+  it('returns false and preserves an existing registration exactly', async () => {
+    await saveRegistration(
+      makeReg('collision', { displayName: 'Recreated Baseline' }),
+      'recreated source',
+    );
+
+    await expect(
+      saveRegistrationIfAbsent(
+        makeReg('collision', { displayName: 'Deleted Baseline' }),
+        'deleted source',
+      ),
+    ).resolves.toBe(false);
+    await expect(getRegistration('collision')).resolves.toMatchObject({
+      displayName: 'Recreated Baseline',
+    });
+    await expect(getRegistrationSource('collision')).resolves.toBe(
+      'recreated source',
+    );
+  });
+
+  it('serializes the absence check against a concurrent normal registration', async () => {
+    const registration = saveRegistration(
+      makeReg('register-race', { displayName: 'Recreated Baseline' }),
+      'recreated source',
+    );
+    const undo = saveRegistrationIfAbsent(
+      makeReg('register-race', { displayName: 'Deleted Baseline' }),
+      'deleted source',
+    );
+
+    await registration;
+    await expect(undo).resolves.toBe(false);
+    await expect(getRegistration('register-race')).resolves.toMatchObject({
+      displayName: 'Recreated Baseline',
+    });
+    await expect(getRegistrationSource('register-race')).resolves.toBe(
+      'recreated source',
+    );
+  });
+
+  it('waits for another process lock before deciding whether restore is absent', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'external-race.lock');
+    await writeFile(
+      lockPath,
+      JSON.stringify({ pid: process.pid, createdAt: new Date().toISOString() }),
+      'utf-8',
+    );
+
+    const undo = saveRegistrationIfAbsent(
+      makeReg('external-race', { displayName: 'Deleted Baseline' }),
+      'deleted source',
+    );
+    await new Promise((resolve) => setTimeout(resolve, 75));
+    await expect(getRegistration('external-race')).resolves.toBeNull();
+
+    const recreated = makeReg('external-race', {
+      displayName: 'Recreated Baseline',
+    });
+    await writeFile(
+      path.join(root, 'external-race.source.yaml'),
+      'recreated source',
+      'utf-8',
+    );
+    await writeFile(
+      path.join(root, 'external-race.json'),
+      JSON.stringify(recreated, null, 2),
+      'utf-8',
+    );
+    await unlink(lockPath);
+
+    await expect(undo).resolves.toBe(false);
+    await expect(getRegistration('external-race')).resolves.toMatchObject({
+      displayName: 'Recreated Baseline',
+    });
+    await expect(getRegistrationSource('external-race')).resolves.toBe(
+      'recreated source',
+    );
+  });
+
+  it('elects only one reaper for concurrent stale-lock cleanup', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'stale.lock');
+    await writeFile(lockPath, '', 'utf-8');
+    const old = new Date(Date.now() - 10 * 60_000);
+    await utimes(lockPath, old, old);
+
+    const results = await Promise.all([
+      _removeAbandonedRegistrationLock(lockPath),
+      _removeAbandonedRegistrationLock(lockPath),
+    ]);
+
+    expect(results).toContain(true);
+    await expect(readFile(lockPath, 'utf-8')).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
+    expect(
+      (await readdir(root)).filter((name) => name.includes('.reaper-')),
+    ).toEqual([]);
+  });
+
+  it('advances the election generation when a previous reaper crashed', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'reaper-crash.lock');
+    const identity = 'crashed-lock-owner';
+    await writeFile(
+      lockPath,
+      JSON.stringify({ owner: identity, createdAt: new Date().toISOString() }),
+      'utf-8',
+    );
+    const electionPath = `${lockPath}.reaper-${lockIdentityHash(identity)}-0`;
+    await writeFile(electionPath, '', 'utf-8');
+    const old = new Date(Date.now() - 10 * 60_000);
+    await utimes(lockPath, old, old);
+    await utimes(electionPath, old, old);
+
+    await expect(
+      _removeAbandonedRegistrationLock(lockPath),
+    ).resolves.toBe(true);
+    await expect(readFile(lockPath, 'utf-8')).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
+    expect(
+      (await readdir(root)).filter((name) => name.includes('.reaper-')),
+    ).toEqual([]);
+  });
+
+  it('treats a fresh incomplete election record as active', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'incomplete-election.lock');
+    const identity = 'incomplete-election-owner';
+    await writeFile(
+      lockPath,
+      JSON.stringify({ owner: identity, createdAt: new Date().toISOString() }),
+      'utf-8',
+    );
+    const old = new Date(Date.now() - 10 * 60_000);
+    await utimes(lockPath, old, old);
+    const electionPath = `${lockPath}.reaper-${lockIdentityHash(identity)}-0`;
+    await writeFile(electionPath, '', 'utf-8');
+
+    await expect(
+      _removeAbandonedRegistrationLock(lockPath),
+    ).resolves.toBe(false);
+    await expect(readFile(lockPath, 'utf-8')).resolves.toContain(identity);
+
+    await utimes(electionPath, old, old);
+    await expect(
+      _removeAbandonedRegistrationLock(lockPath),
+    ).resolves.toBe(true);
+  });
+
+  it('honors a persisted abandonment marker even while its former owner PID is live', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'release-failure.lock');
+    const identity = 'failed-release-owner';
+    await writeFile(
+      lockPath,
+      JSON.stringify({
+        pid: process.pid,
+        owner: identity,
+        createdAt: new Date().toISOString(),
+      }),
+      'utf-8',
+    );
+    const lockHandle = await open(lockPath, 'r');
+    const lockInfo = await lockHandle.stat();
+    await lockHandle.close();
+    await writeFile(
+      `${lockPath}.abandoned`,
+      JSON.stringify({
+        fileIdentity: `${lockInfo.dev}-${lockInfo.ino}-${Math.trunc(lockInfo.birthtimeMs)}`,
+        owner: identity,
+      }),
+      'utf-8',
+    );
+
+    await expect(
+      _removeAbandonedRegistrationLock(lockPath),
+    ).resolves.toBe(true);
+    await expect(readFile(lockPath, 'utf-8')).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
+  });
+
+  it('uses the file identity marker to recover an unreadable owned lock', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'unreadable-release.lock');
+    await writeFile(lockPath, '{incomplete', 'utf-8');
+    const lockHandle = await open(lockPath, 'r');
+    const lockInfo = await lockHandle.stat();
+    await lockHandle.close();
+    await writeFile(
+      `${lockPath}.abandoned`,
+      JSON.stringify({
+        fileIdentity: `${lockInfo.dev}-${lockInfo.ino}-${Math.trunc(lockInfo.birthtimeMs)}`,
+        owner: 'expected-owner',
+      }),
+      'utf-8',
+    );
+
+    await expect(
+      _removeAbandonedRegistrationLock(lockPath),
+    ).resolves.toBe(true);
+    await expect(readFile(lockPath, 'utf-8')).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
   });
 });
 
