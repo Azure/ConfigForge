@@ -512,6 +512,91 @@ describe('useManifestEditorState — format tabs', () => {
     expect(result.current.isEditable).toBe(false);
   });
 
+  it('enters Visual Builder from MOF using authoritative cached YAML without dropping other caches', async () => {
+    const yamlSource = 'resources:\n  - name: Canonical YAML\n';
+    const jsonSource = '{"resources":[{"name":"Canonical YAML"}]}';
+    const mofSource = 'instance of Canonical_YAML {}';
+    const exportGet = vi.fn();
+    exportGet.mockResolvedValueOnce({ body: yamlSource });
+    exportGet.mockResolvedValueOnce({ body: jsonSource });
+    exportGet.mockResolvedValueOnce({ body: mofSource });
+    installCfsMocks({ exportGet });
+
+    const { result } = renderHook(() => useManifestEditorState('sample'));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+    await act(async () => {
+      await result.current.handleFormatChange('json');
+    });
+    await act(async () => {
+      await result.current.handleFormatChange('mof');
+    });
+
+    expect(result.current.activeFormat).toBe('mof');
+    expect(result.current.isEditable).toBe(false);
+
+    act(() => {
+      result.current.beginEditing('visual');
+    });
+
+    expect(result.current.editing).toBe(true);
+    expect(result.current.editView).toBe('visual');
+    expect(result.current.activeFormat).toBe('yaml');
+    expect(result.current.editedContent).toBe(yamlSource);
+    expect(result.current.savedContent).toBe(yamlSource);
+    expect(result.current.formatCache.current).toEqual({
+      yaml: yamlSource,
+      json: jsonSource,
+      mof: mofSource,
+    });
+    expect(result.current.isEditable).toBe(true);
+    expect(result.current.isReadOnly).toBe(false);
+    expect(result.current.hasUnsavedChanges).toBe(false);
+  });
+
+  it('does not let an in-flight MOF fetch overwrite a Visual Builder edit session', async () => {
+    const yamlSource = 'resources:\n  - name: Canonical YAML\n';
+    const mofSource = 'instance of Late_Mof {}';
+    const pendingMof = deferred<{ body: string }>();
+    const exportGet = vi.fn();
+    exportGet.mockResolvedValueOnce({ body: yamlSource });
+    exportGet.mockReturnValueOnce(pendingMof);
+    installCfsMocks({ exportGet });
+
+    const { result } = renderHook(() => useManifestEditorState('sample'));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    let formatChange!: Promise<void>;
+    act(() => {
+      formatChange = result.current.handleFormatChange('mof');
+    });
+    await waitFor(() => expect(result.current.formatLoading).toBe(true));
+
+    act(() => {
+      result.current.beginEditing('visual');
+    });
+    expect(result.current.editing).toBe(true);
+    expect(result.current.editView).toBe('visual');
+    expect(result.current.activeFormat).toBe('yaml');
+    expect(result.current.editedContent).toBe(yamlSource);
+
+    await act(async () => {
+      pendingMof.resolve({ body: mofSource });
+      await formatChange;
+    });
+
+    expect(result.current.editing).toBe(true);
+    expect(result.current.editView).toBe('visual');
+    expect(result.current.activeFormat).toBe('yaml');
+    expect(result.current.editedContent).toBe(yamlSource);
+    expect(result.current.formatCache.current).toEqual({
+      yaml: yamlSource,
+      mof: mofSource,
+    });
+    expect(result.current.formatLoading).toBe(false);
+    expect(result.current.isEditable).toBe(true);
+    expect(result.current.isReadOnly).toBe(false);
+  });
+
   it('does not switch to a persisted derived format during an edit session', async () => {
     const exportGet = vi.fn().mockResolvedValue({ body: 'resources: []\n' });
     installCfsMocks({ exportGet });

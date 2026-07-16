@@ -13,6 +13,7 @@ import { HAS_HEALTH } from '../lib/flavor';
 import { useBaselineWorkspace } from './BaselineWorkspace';
 import {
   BaselineWorkspaceTabs,
+  baselineNameFromPath,
   isBaselineWorkspacePath,
 } from './BaselineWorkspaceTabs';
 // v0.1.11 fix — wire the footer version label to the actual installed
@@ -47,6 +48,9 @@ export function Layout() {
   const { refresh } = useBaselineWorkspace();
   const workspaceRoute = isBaselineWorkspacePath(location.pathname);
   const workspaceListRoute = location.pathname === '/manifests';
+  const workspaceDetailRoute =
+    baselineNameFromPath(location.pathname) !== null &&
+    /^\/manifests\/[^/]+\/?$/.test(location.pathname);
 
   // Counts and persisted-tab pruning follow route entry rather than a
   // one-time app bootstrap. This picks up registrations changed by another
@@ -74,7 +78,9 @@ export function Layout() {
                 className={
                   workspaceListRoute
                     ? 'h-full overflow-hidden'
-                    : 'h-full overflow-y-auto p-6 lg:p-8'
+                    : workspaceDetailRoute
+                      ? 'h-full overflow-hidden'
+                      : 'h-full overflow-y-auto p-6 lg:p-8'
                 }
               >
                 <Outlet />
