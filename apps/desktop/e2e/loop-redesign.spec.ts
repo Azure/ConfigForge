@@ -207,6 +207,40 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await settingName.click();
     await expect(settingName.locator("xpath=..")).not.toHaveAttribute("aria-sort");
 
+    const registryScrollArea = visual.getByTestId("visual-table-scroll").first();
+    await page.setViewportSize({ width: 900, height: 900 });
+    await expect(registryScrollArea).toBeVisible();
+    const narrowLayout = await registryScrollArea.evaluate((element) => {
+      element.scrollLeft = element.scrollWidth;
+      const container = element.getBoundingClientRect();
+      const row = element.querySelector("tbody tr");
+      const cells = row ? Array.from(row.querySelectorAll("td")) : [];
+      const visibleRects = cells
+        .map((cell) => {
+          const rect = cell.getBoundingClientRect();
+          return { left: rect.left, right: rect.right };
+        })
+        .filter((rect) => rect.right > container.left && rect.left < container.right)
+        .sort((left, right) => left.left - right.left);
+      const overlaps = visibleRects.some(
+        (rect, index) =>
+          index > 0 && visibleRects[index - 1].right > rect.left + 1,
+      );
+      const stickyCells = cells.filter(
+        (cell) => getComputedStyle(cell).position === "sticky",
+      ).length;
+      return {
+        clientWidth: element.clientWidth,
+        scrollWidth: element.scrollWidth,
+        overlaps,
+        stickyCells,
+      };
+    });
+    expect(narrowLayout.scrollWidth).toBeGreaterThan(narrowLayout.clientWidth);
+    expect(narrowLayout.stickyCells).toBe(0);
+    expect(narrowLayout.overlaps).toBe(false);
+    await page.setViewportSize({ width: 1440, height: 1000 });
+
     await page.getByRole("button", { name: "Edit" }).click();
     const footer = page.getByTestId("manifest-detail-footer");
     await expect(footer.getByRole("button", { name: "Save" })).toBeVisible();
@@ -216,9 +250,11 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(visual.getByRole("checkbox")).toHaveCount(3);
     await expect(visual.getByRole("button", { name: "Add setting" })).toBeVisible();
 
-    await visual.getByRole("button", { name: "Edit value for AlphaSetting" }).click();
+    await visual
+      .getByRole("button", { name: "Edit Applied value for AlphaSetting" })
+      .click();
     const valueEditor = visual.getByRole("textbox", {
-      name: "Edit value for AlphaSetting",
+      name: "Edit Applied value for AlphaSetting",
     });
     await valueEditor.fill("5");
     // Save directly while the cell still has focus. Blur must commit the

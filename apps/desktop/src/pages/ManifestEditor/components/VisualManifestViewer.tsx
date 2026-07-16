@@ -72,6 +72,83 @@ function isStructuredValue(value: unknown): boolean {
   return value !== null && typeof value === "object";
 }
 
+function visualColumnMinimumWidth(column: string): number {
+  if (column === SETTING_NAME_COLUMN) return 400;
+  if (column === DESIRED_VALUE_COLUMN || column === "value") return 128;
+  if (["keyPath", "path", "omaUri"].includes(column)) return 260;
+  if (["valueName", "subcategory", "find", "replace"].includes(column)) return 156;
+  if (["valueType", "type", "mode", "owner", "group", "gid"].includes(column)) return 112;
+  if (["content", "details", "description"].includes(column)) return 220;
+  return 148;
+}
+
+function visualTableMinimumWidth(columns: readonly string[], canEdit: boolean): number {
+  return (
+    (canEdit ? 44 : 0) +
+    columns.reduce((total, column) => total + visualColumnMinimumWidth(column), 0)
+  );
+}
+
+function visualColumnWidth(
+  columns: readonly string[],
+  column: string,
+  canEdit: boolean,
+): string {
+  const total =
+    (canEdit ? 44 : 0) +
+    columns.reduce(
+      (sum, candidate) => sum + visualColumnMinimumWidth(candidate),
+      0,
+    );
+  const ratio = (visualColumnMinimumWidth(column) / total) * 100;
+  return `${ratio}%`;
+}
+
+function visualSelectionColumnWidth(columns: readonly string[]): string {
+  const total =
+    44 +
+    columns.reduce(
+      (sum, candidate) => sum + visualColumnMinimumWidth(candidate),
+      0,
+    );
+  return `${(44 / total) * 100}%`;
+}
+
+const VISUAL_COLUMN_LABEL_KEYS: Record<string, string> = {
+  append: "viewer.columns.append",
+  content: "viewer.columns.content",
+  exists: "viewer.columns.exists",
+  find: "viewer.columns.find",
+  gid: "viewer.columns.gid",
+  group: "viewer.columns.group",
+  ignoreCase: "viewer.columns.ignoreCase",
+  keyPath: "viewer.columns.registryPath",
+  loaded: "viewer.columns.loaded",
+  mode: "viewer.columns.mode",
+  name: "viewer.columns.name",
+  owner: "viewer.columns.owner",
+  path: "viewer.columns.path",
+  replace: "viewer.columns.replace",
+  subcategory: "viewer.columns.subcategory",
+  type: "viewer.columns.valueType",
+  valueName: "viewer.columns.valueName",
+  valueType: "viewer.columns.valueType",
+};
+
+function visualColumnLabelKey(
+  _resourceType: string,
+  columns: readonly string[],
+  column: string,
+): string | null {
+  if (column === DESIRED_VALUE_COLUMN) return "viewer.columns.expectedValue";
+  if (column === "value") {
+    return columns.includes(DESIRED_VALUE_COLUMN)
+      ? "viewer.columns.appliedValue"
+      : "viewer.columns.expectedValue";
+  }
+  return VISUAL_COLUMN_LABEL_KEYS[column] ?? null;
+}
+
 interface AddSettingMenuProps {
   platform?: "windows" | "linux";
   onAdd: (type: string) => void;
@@ -376,6 +453,8 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
             const sort = sortByType[group.resourceType] ?? null;
             const rows = sortVisualSettings(group.settings, sort);
             const shortName = categoryName(group.resourceType);
+            const groupId = group.resourceType.replace(/[^a-zA-Z0-9_-]/g, "-");
+            const tableMinimumWidth = visualTableMinimumWidth(group.columns, canEdit);
             const selectedInGroup = group.settings.filter((setting) =>
               selected.has(setting.id),
             ).length;
@@ -383,10 +462,10 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
               group.settings.length > 0 && selectedInGroup === group.settings.length;
 
             return (
-              <section key={group.resourceType} aria-labelledby={`visual-group-${shortName}`}>
+              <section key={group.resourceType} aria-labelledby={`visual-group-${groupId}`}>
                 <div className="mb-2 flex min-w-0 flex-wrap items-center gap-x-3 gap-y-2">
                   <h3
-                    id={`visual-group-${shortName}`}
+                    id={`visual-group-${groupId}`}
                     className="text-sm font-semibold text-slate-950 dark:text-slate-100"
                   >
                     {shortName}
@@ -412,17 +491,41 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                   )}
                 </div>
 
-                <div className="overflow-x-auto rounded-md border border-slate-200 dark:border-slate-700">
+                <div
+                  data-testid="visual-table-scroll"
+                  role="region"
+                  aria-label={t("viewer.horizontalScrollLabel", { category: shortName })}
+                  tabIndex={0}
+                  className="isolate overflow-x-auto overscroll-x-contain rounded-md border border-slate-200 [scrollbar-color:theme(colors.slate.400)_transparent] [scrollbar-width:thin] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-slate-700 dark:[scrollbar-color:theme(colors.slate.600)_transparent]"
+                >
                   <table
                     aria-label={t("viewer.categoryTableLabel", { category: shortName })}
-                    className="min-w-max border-collapse text-left text-sm"
+                    className="w-full table-fixed border-collapse text-left text-sm"
+                    style={{ minWidth: `${tableMinimumWidth}px` }}
                   >
+                    <colgroup>
+                      {canEdit && (
+                        <col
+                          style={{
+                            width: visualSelectionColumnWidth(group.columns),
+                          }}
+                        />
+                      )}
+                      {group.columns.map((column) => (
+                        <col
+                          key={column}
+                          style={{
+                            width: visualColumnWidth(group.columns, column, canEdit),
+                          }}
+                        />
+                      ))}
+                    </colgroup>
                     <thead className="bg-slate-100 dark:bg-slate-800">
                       <tr>
                         {canEdit && (
                           <th
                             scope="col"
-                            className="sticky left-0 z-[2] w-11 border-b border-r border-slate-200 bg-slate-100 px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
+                            className="w-11 border-b border-r border-slate-200 bg-slate-100 px-3 py-2 dark:border-slate-700 dark:bg-slate-800"
                           >
                             <input
                               type="checkbox"
@@ -449,19 +552,20 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                           const label =
                             column === SETTING_NAME_COLUMN
                               ? t("viewer.settingName")
-                              : column === DESIRED_VALUE_COLUMN
-                                ? t("resourceDetails.desiredValue")
-                                : column;
+                              : (() => {
+                                  const key = visualColumnLabelKey(
+                                    group.resourceType,
+                                    group.columns,
+                                    column,
+                                  );
+                                  return key ? t(key) : humanize(column);
+                                })();
                           return (
                             <th
                               key={column}
                               scope="col"
                               aria-sort={active ? sort.direction : undefined}
-                              className={`border-b border-r border-slate-200 px-0 font-semibold text-slate-700 last:border-r-0 dark:border-slate-700 dark:text-slate-200 ${
-                                column === SETTING_NAME_COLUMN
-                                  ? `sticky ${canEdit ? "left-11" : "left-0"} z-[1] bg-slate-100 dark:bg-slate-800`
-                                  : ""
-                              }`}
+                              className="border-b border-r border-slate-200 bg-slate-100 px-0 font-semibold text-slate-700 last:border-r-0 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200"
                             >
                               <button
                                 type="button"
@@ -475,9 +579,9 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                     ),
                                   }));
                                 }}
-                                className="flex min-h-10 w-full min-w-40 items-center justify-between gap-3 px-3 py-2 text-left outline-none hover:bg-slate-200/70 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600 dark:hover:bg-slate-700/70"
+                                className="flex min-h-10 w-full items-center justify-between gap-2 px-3 py-2 text-left outline-none hover:bg-slate-200/70 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600 dark:hover:bg-slate-700/70"
                               >
-                                <span>{label}</span>
+                                <span className="min-w-0 break-words">{label}</span>
                                 {active && (
                                   <span data-testid="sort-direction-icon" aria-hidden="true">
                                     {sort.direction === "ascending" ? (
@@ -493,19 +597,22 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                         })}
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-200 bg-white dark:divide-slate-800 dark:bg-slate-900">
-                      {rows.map((setting) => {
+                    <tbody className="divide-y divide-slate-200 dark:divide-slate-700/80">
+                      {rows.map((setting, rowIndex) => {
                         const isSelected = selected.has(setting.id);
+                        const rowSurface = isSelected
+                          ? "bg-blue-50 dark:bg-blue-950/35"
+                          : rowIndex % 2 === 0
+                            ? "bg-white dark:bg-slate-900"
+                            : "bg-slate-50/70 dark:bg-slate-800/35";
                         return (
                           <tr
                             key={setting.id}
                             data-setting-id={setting.id}
-                            className={`align-top ${
-                              isSelected ? "bg-blue-50/70 dark:bg-blue-950/20" : ""
-                            }`}
+                            className={`align-top ${rowSurface}`}
                           >
                             {canEdit && (
-                              <td className="sticky left-0 z-[1] border-r border-slate-100 bg-inherit px-3 py-2.5 dark:border-slate-800">
+                              <td className="border-r border-slate-100 px-3 py-2.5 dark:border-slate-700/80">
                                 <input
                                   type="checkbox"
                                   checked={isSelected}
@@ -544,11 +651,16 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                               const cellLabel =
                                 column === SETTING_NAME_COLUMN
                                   ? t("viewer.settingName")
-                                  : column === DESIRED_VALUE_COLUMN
-                                    ? t("resourceDetails.desiredValue")
-                                    : column;
+                                  : (() => {
+                                      const key = visualColumnLabelKey(
+                                        group.resourceType,
+                                        group.columns,
+                                        column,
+                                      );
+                                      return key ? t(key) : humanize(column);
+                                    })();
                               const editorClass =
-                                "w-full min-w-36 rounded border border-blue-500 bg-white px-2 py-1.5 text-sm text-slate-950 outline-none ring-2 ring-blue-200 dark:bg-slate-950 dark:text-slate-100 dark:ring-blue-900";
+                                "w-full rounded border border-blue-500 bg-white px-2 py-1.5 text-sm text-slate-950 outline-none ring-2 ring-blue-200 dark:bg-slate-950 dark:text-slate-100 dark:ring-blue-900";
                               const requiredMissing = validationIssueKeys.has(
                                 `${setting.id}:${column}`,
                               );
@@ -557,9 +669,9 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                 <td
                                   key={column}
                                   title={!isEditing && formatted ? formatted : undefined}
-                                  className={`max-w-[34rem] min-w-40 border-r border-slate-100 p-0 text-slate-700 last:border-r-0 dark:border-slate-800 dark:text-slate-300 ${
+                                  className={`border-r border-slate-100 p-0 text-slate-700 last:border-r-0 dark:border-slate-700/80 dark:text-slate-300 ${
                                     column === SETTING_NAME_COLUMN
-                                      ? `sticky ${canEdit ? "left-11" : "left-0"} bg-inherit font-medium text-slate-950 dark:text-slate-100`
+                                      ? "font-medium text-slate-950 dark:text-slate-100"
                                       : ""
                                   }`}
                                 >
@@ -642,12 +754,12 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                           : ""
                                       }`}
                                     >
-                                      <span className="block whitespace-pre-wrap break-words">
+                                      <span className="block whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
                                         {visibleValue}
                                       </span>
                                     </button>
                                   ) : (
-                                    <span className="block whitespace-pre-wrap break-words px-3 py-2.5">
+                                    <span className="block whitespace-pre-wrap break-words px-3 py-2.5 [overflow-wrap:anywhere]">
                                       {visibleValue}
                                     </span>
                                   )}

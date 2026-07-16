@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.74] - 2026-07-16
+
+### Fixed
+- **Visual tables no longer overlap while scrolling horizontally.** Removed the transparent sticky checkbox/name cells that allowed later columns to paint through them, replaced natural `min-content` sizing with a fit-first proportional column model, and added controlled wrapping for long CIS setting names and Registry paths. Wide windows now use the available workspace with little or no horizontal travel; narrow windows retain an accessible horizontal scroll region with no intersecting cells.
+
+### Changed
+- **Visual table headers now use customer-facing labels** such as Registry path, Value name, Value type, Expected value, and Applied value. Alternating opaque row surfaces improve scanability in both light and dark themes.
+
+### Localization
+- Added French, German, and Spanish translations for the revised Visual table headers and accessible horizontal-scroll labels.
+
 ## [0.3.73] - 2026-07-16
 
 ### Changed

@@ -1,6 +1,6 @@
 {
   "name": "configforge",
-  "version": "0.3.73-author.1",
+  "version": "0.3.74-author.1",
   "private": true,
   "description": "ConfigForge \u2014 Cross-platform Electron desktop app for OSConfig security baseline authoring",
   "engines": {
