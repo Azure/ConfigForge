@@ -512,7 +512,7 @@ describe('useManifestEditorState — format tabs', () => {
     expect(result.current.isEditable).toBe(false);
   });
 
-  it('enters Visual Builder from MOF using authoritative cached YAML without dropping other caches', async () => {
+  it('enters Visual editing from MOF using authoritative cached YAML without dropping other caches', async () => {
     const yamlSource = 'resources:\n  - name: Canonical YAML\n';
     const jsonSource = '{"resources":[{"name":"Canonical YAML"}]}';
     const mofSource = 'instance of Canonical_YAML {}';
@@ -553,7 +553,7 @@ describe('useManifestEditorState — format tabs', () => {
     expect(result.current.hasUnsavedChanges).toBe(false);
   });
 
-  it('does not let an in-flight MOF fetch overwrite a Visual Builder edit session', async () => {
+  it('does not let an in-flight MOF fetch overwrite a Visual edit session', async () => {
     const yamlSource = 'resources:\n  - name: Canonical YAML\n';
     const mofSource = 'instance of Late_Mof {}';
     const pendingMof = deferred<{ body: string }>();

@@ -17,6 +17,12 @@ import { cfs } from "../lib/cfs";
 
 export const BASELINE_WORKSPACE_STORAGE_KEY = "cfs.baseline-workspace.open-baselines.v1";
 
+export type BaselineWorkspacePlatform =
+  | "windows"
+  | "linux"
+  | "mixed"
+  | "cross-platform";
+
 /**
  * Recoverable portion of a deleted registration. The delete API also removes
  * deployment, history, rationale, and audit state; those are intentionally
@@ -55,8 +61,18 @@ function readPersistedBaselines(): string[] {
   }
 }
 
+function normalizePlatform(value: unknown): BaselineWorkspacePlatform | undefined {
+  return value === "windows" ||
+    value === "linux" ||
+    value === "mixed" ||
+    value === "cross-platform"
+    ? value
+    : undefined;
+}
+
 export interface BaselineWorkspaceValue {
   openBaselines: string[];
+  baselinePlatforms: Record<string, BaselineWorkspacePlatform | undefined>;
   myBaselineCount: number;
   microsoftBaselineCount: number;
   lastDeletedBatch: DeletedBaselineRegistrationBackup[] | null;
@@ -77,6 +93,9 @@ const BaselineWorkspaceContext = createContext<BaselineWorkspaceValue | null>(nu
 
 export function BaselineWorkspaceProvider({ children }: { children: ReactNode }) {
   const [openBaselines, setOpenBaselines] = useState<string[]>(readPersistedBaselines);
+  const [baselinePlatforms, setBaselinePlatforms] = useState<
+    Record<string, BaselineWorkspacePlatform | undefined>
+  >({});
   const [myBaselineCount, setMyBaselineCount] = useState(0);
   const [microsoftBaselineCount, setMicrosoftBaselineCount] = useState(BASELINE_CATALOG.length);
   // Deliberately memory-only: Undo applies to the most recent delete batch
@@ -145,10 +164,19 @@ export function BaselineWorkspaceProvider({ children }: { children: ReactNode })
   const refresh = useCallback(async () => {
     const token = ++refreshTokenRef.current;
     const response = await cfs.manifests.list({ lite: true });
+    const entries = Array.isArray(response.data) ? response.data : [];
     const names = normalizeNames(
-      (Array.isArray(response.data) ? response.data : []).map((entry) => entry?.Name),
+      entries.map((entry) => entry?.Name),
     );
     if (token !== refreshTokenRef.current) return names;
+    const nextPlatforms: Record<string, BaselineWorkspacePlatform | undefined> = {};
+    for (const entry of entries) {
+      if (typeof entry?.Name !== "string") continue;
+      const name = entry.Name.trim();
+      if (!name) continue;
+      nextPlatforms[name] = normalizePlatform(entry.Platform);
+    }
+    setBaselinePlatforms(nextPlatforms);
     setMyBaselineCount(names.length);
     setMicrosoftBaselineCount(BASELINE_CATALOG.length);
     pruneOpenBaselines(names);
@@ -165,6 +193,7 @@ export function BaselineWorkspaceProvider({ children }: { children: ReactNode })
   const value = useMemo<BaselineWorkspaceValue>(
     () => ({
       openBaselines,
+      baselinePlatforms,
       myBaselineCount,
       microsoftBaselineCount,
       lastDeletedBatch,
@@ -178,6 +207,7 @@ export function BaselineWorkspaceProvider({ children }: { children: ReactNode })
     }),
     [
       openBaselines,
+      baselinePlatforms,
       myBaselineCount,
       microsoftBaselineCount,
       lastDeletedBatch,

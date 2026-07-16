@@ -31,8 +31,7 @@
     "mofReadOnly": "MOF es de solo lectura",
     "sectionTitle": "Baseline Contenido",
     "unsavedFormatChanges": "Tienes cambios no guardados en {{format}}. Cambiar de pestaña los preserva; Guarda antes de navegar y alejarte.",
-    "visualEditUnavailable": "La edición requiere YAML canónico, que no está disponible actualmente.",
-    "visualBuilderView": "Constructor Visual"
+    "visualEditUnavailable": "La edición requiere YAML canónico, que no está disponible actualmente."
   },
   "cspTroubleshooting": {
     "declaredConfig": "La configuración de CSP (Proveedor de Servicios de Configuración) requiere la infraestructura de Configuración Declarada",
@@ -171,6 +170,8 @@
   "viewer": {
     "categoryTableLabel": "Configuraciones de {{category}}",
     "code": "Code",
+    "editModeLabel": "Modo de edición de baseline",
+    "editing": "Editando",
     "empty": "No hay configuraciones que mostrar.",
     "emptyValue": "—",
     "formatLabel": "Formatos de origen de la baseline",
@@ -185,6 +186,34 @@
     "visualRegionLabel": "Configuración de la baseline en Visual"
   },
   "visual": {
+    "addRow": "Añadir fila",
+    "addSetting": "Añadir configuración",
+    "deleteSelected": "Eliminar {{count}} seleccionados",
+    "editCell": "Editar {{field}} para {{name}}",
+    "editHint": "Haga clic en cualquier celda para editarla. Presione Entrar para aplicar o Escape para cancelar.",
+    "editToolbar": "Acciones de edición de hoja de cálculo",
+    "errors": {
+      "boolean": "Introduzca true o false.",
+      "desiredPath": "La ruta del valor deseado ya no existe.",
+      "desiredReadOnly": "Este valor deseado no se puede editar visualmente.",
+      "invalidJson": "La edición JSON está incompleta o no es válida. Corríjala antes de cambiar a Visual.",
+      "invalidYaml": "El YAML de la baseline no es válido.",
+      "missingSetting": "La configuración ya no existe.",
+      "number": "Introduzca un número.",
+      "object": "Introduzca un valor de objeto.",
+      "objectDocument": "La baseline debe ser un objeto YAML.",
+      "serialize": "No se pudo serializar la baseline editada.",
+      "structured": "Introduzca YAML o JSON válido.",
+      "wholeNumber": "Introduzca un número entero."
+    },
+    "fixValidationBeforeSave": "Complete o corrija las celdas resaltadas antes de guardar.",
+    "requiredCells_one": "Complete {{count}} celda obligatoria antes de guardar.",
+    "requiredCells_other": "Complete {{count}} celdas obligatorias antes de guardar.",
+    "selectAllInCategory": "Seleccionar todas las configuraciones de {{category}}",
+    "selectRow": "Seleccionar {{name}}",
+    "selectedCount_one": "{{count}} configuración seleccionada",
+    "selectedCount_other": "{{count}} configuraciones seleccionadas",
+    "spreadsheetTitle": "Editar configuraciones en la tabla",
     "addResource": "Añadir Ambientación",
     "currentResources": "Configuración actual ({{count}})",
     "groupCount": "Grupo · {{count}}",

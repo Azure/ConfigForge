@@ -31,8 +31,7 @@
     "mofReadOnly": "MOF is read-only",
     "sectionTitle": "Baseline Content",
     "unsavedFormatChanges": "You have unsaved changes in {{format}}. Switching tabs preserves them; save before navigating away.",
-    "visualEditUnavailable": "Editing requires canonical YAML, which is currently unavailable.",
-    "visualBuilderView": "Visual Builder"
+    "visualEditUnavailable": "Editing requires canonical YAML, which is currently unavailable."
   },
   "cspTroubleshooting": {
     "declaredConfig": "CSP (Configuration Service Provider) settings need the Declared Configuration infrastructure",
@@ -171,6 +170,8 @@
   "viewer": {
     "categoryTableLabel": "{{category}} settings",
     "code": "Code",
+    "editModeLabel": "Baseline editor mode",
+    "editing": "Editing",
     "empty": "No settings to display.",
     "emptyValue": "—",
     "formatLabel": "Baseline source formats",
@@ -185,13 +186,33 @@
     "visualRegionLabel": "Visual baseline settings"
   },
   "visual": {
-    "addResource": "Add Setting",
-    "currentResources": "Current Settings ({{count}})",
-    "groupCount": "Group · {{count}}",
-    "noResources": "No settings in baseline.",
-    "parseError": "Could not parse baseline YAML. Switch to Editor view to fix syntax errors.",
-    "resourceFallback": "Setting {{index}}",
-    "unknown": "unknown",
-    "usePicker": "Use the picker to add settings."
+    "addRow": "Add row",
+    "addSetting": "Add setting",
+    "deleteSelected": "Delete {{count}} selected",
+    "editCell": "Edit {{field}} for {{name}}",
+    "editHint": "Click any cell to edit it. Press Enter to apply or Escape to cancel.",
+    "editToolbar": "Spreadsheet editing actions",
+    "errors": {
+      "boolean": "Enter true or false.",
+      "desiredPath": "The desired-value path no longer exists.",
+      "desiredReadOnly": "This desired value cannot be edited visually.",
+      "invalidJson": "The JSON edit is incomplete or invalid. Fix it before switching to Visual.",
+      "invalidYaml": "The baseline YAML is invalid.",
+      "missingSetting": "The setting no longer exists.",
+      "number": "Enter a number.",
+      "object": "Enter an object value.",
+      "objectDocument": "The baseline must be a YAML object.",
+      "serialize": "The edited baseline could not be serialized.",
+      "structured": "Enter valid YAML or JSON.",
+      "wholeNumber": "Enter a whole number."
+    },
+    "fixValidationBeforeSave": "Complete or correct the highlighted cells before saving.",
+    "requiredCells_one": "Complete {{count}} required cell before saving.",
+    "requiredCells_other": "Complete {{count}} required cells before saving.",
+    "selectAllInCategory": "Select all {{category}} settings",
+    "selectRow": "Select {{name}}",
+    "selectedCount_one": "{{count}} setting selected",
+    "selectedCount_other": "{{count}} settings selected",
+    "spreadsheetTitle": "Edit settings in the table"
   }
 }

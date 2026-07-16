@@ -49,7 +49,6 @@ describe("ManifestContent read-only Visual mode", () => {
           manifestName="sample"
           viewerMode="visual"
           onViewerModeChange={vi.fn()}
-          onResourceAdd={vi.fn()}
         />
       </FluentProvider>,
     );

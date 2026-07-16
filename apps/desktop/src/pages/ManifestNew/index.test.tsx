@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { getI18n } from '../../locales';
@@ -14,9 +14,6 @@ vi.mock('../../components/BaselineWorkspace', () => ({
 }));
 vi.mock('../../components/manifest-editor', () => ({
   ManifestEditor: () => <div data-testid="manifest-editor" />,
-}));
-vi.mock('../../components/resource-picker', () => ({
-  ResourcePicker: () => <div data-testid="resource-picker" />,
 }));
 vi.mock('../../components/use-cis-available', () => ({
   useCisAvailable: () => false,
@@ -66,6 +63,43 @@ beforeEach(async () => {
 });
 
 describe('ManifestNewPage post-registration refresh', () => {
+  it('uses the editable spreadsheet for Visual authoring', async () => {
+    renderPage();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Visual' }));
+
+    expect(
+      await screen.findByRole('region', { name: 'Visual baseline settings' }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Add setting' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /Edit Setting Name/ })).toBeInTheDocument();
+    expect(screen.queryByTestId('resource-picker')).not.toBeInTheDocument();
+  });
+
+  it('blocks registration until an added spreadsheet row is complete', async () => {
+    renderPage();
+    fireEvent.change(screen.getByLabelText('Baseline Name'), {
+      target: { value: 'baseline' },
+    });
+    fireEvent.click(screen.getByRole('button', { name: 'Visual' }));
+    const registrySection = (await screen.findByRole('heading', { name: 'Registry' })).closest(
+      'section',
+    );
+    expect(registrySection).not.toBeNull();
+
+    fireEvent.click(within(registrySection!).getByRole('button', { name: 'Add row' }));
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Complete 3 required cells before saving.',
+    );
+    const register = screen.getByRole('button', { name: 'Register Baseline' });
+    expect(register).toBeDisabled();
+    expect(register).toHaveAttribute(
+      'title',
+      'Complete or correct the highlighted Visual cells before registering.',
+    );
+  });
+
   it('navigates after successful registration even when workspace refresh never settles', async () => {
     renderPage();
 

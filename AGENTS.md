@@ -13,7 +13,7 @@ ConfigForge is an Electron 42 + React 18 + FluentUI v9 desktop app for authoring
 
 The renderer is built with Vite and routes through a typed IPC bridge (`window.cfs.*`) to a Node main process. The same pure handlers in `packages/core/src/handlers/` power Electron IPC; the Next.js host was retired in Phase 10. Any reference to `src/app/api/` or `Microsoft.OSConfig` PowerShell modules in older commits is **historical**.
 
-**v0.3.61 (current dev line):** BYO-CLI + page split + hardened security still apply. New since v0.2.1: full CIS data integration (XCCDF + OVAL + Azure Policy JSON, all user-supplied per licensing — see `apps/desktop/src/pages/CisCatalog.tsx`), form-based Visual Builder Edit mode covering Test wrappers + Group resources for all WS2019/2022/2025 + Linux baselines, CSP-aware Azure Policy fuzzy matcher, Linux-aware fuzzy matcher with cross-format normalization, diff-page value canonicalization (Windows paths, booleans, empty arrays). Recent deltas: v0.3.46 tightened CIS fuzzy matching and added the Azure Policy fuzzy smoke script; v0.3.47 added History change summaries plus Compare auto-scroll; v0.3.48 updated CIS Mapping copy to point users to the Diff > CIS tab; **v0.3.50 added `linuxFuzzyMatch` (Linux SFF baseline coverage 7% → 83% resource hit, no Windows regression — verified against Server 2025 Member Server XCCDF at 75.10%)**; **v0.3.51 fixed the CIS Diff per-row "CIS Rule" display column to fall back to `benchmarkMatch` when legacy `lookupCisRule` returns null**; **v0.3.52 removed the Windows Secure Shell (SSH) baseline from the library**; **v0.3.54–v0.3.61 shipped full-UI localization** (English / Français / Deutsch / Español) via `react-i18next` with OS-locale auto-detect, machine-translated FR/DE/ES catalogs pending native-speaker review, and `Intl`-based date/number formatters in `apps/desktop/src/lib/format.ts` — see the Localization section below and `CHANGELOG.md`.
+**v0.3.61 (current dev line):** BYO-CLI + page split + hardened security still apply. New since v0.2.1: full CIS data integration (XCCDF + OVAL + Azure Policy JSON, all user-supplied per licensing — see `apps/desktop/src/pages/CisCatalog.tsx`), spreadsheet-style visual editing covering Test wrappers + Group resources for all WS2019/2022/2025 + Linux baselines, CSP-aware Azure Policy fuzzy matcher, Linux-aware fuzzy matcher with cross-format normalization, diff-page value canonicalization (Windows paths, booleans, empty arrays). Recent deltas: v0.3.46 tightened CIS fuzzy matching and added the Azure Policy fuzzy smoke script; v0.3.47 added History change summaries plus Compare auto-scroll; v0.3.48 updated CIS Mapping copy to point users to the Diff > CIS tab; **v0.3.50 added `linuxFuzzyMatch` (Linux SFF baseline coverage 7% → 83% resource hit, no Windows regression — verified against Server 2025 Member Server XCCDF at 75.10%)**; **v0.3.51 fixed the CIS Diff per-row "CIS Rule" display column to fall back to `benchmarkMatch` when legacy `lookupCisRule` returns null**; **v0.3.52 removed the Windows Secure Shell (SSH) baseline from the library**; **v0.3.54–v0.3.61 shipped full-UI localization** (English / Français / Deutsch / Español) via `react-i18next` with OS-locale auto-detect, machine-translated FR/DE/ES catalogs pending native-speaker review, and `Intl`-based date/number formatters in `apps/desktop/src/lib/format.ts` — see the Localization section below and `CHANGELOG.md`.
 
 Targeted upstream CLI version: **`oscfg 1.3.9-preview11`**.
 
@@ -96,13 +96,13 @@ npm run format:check            # prettier --check (not gated in CI; advisory)
 | `apps/desktop/src/components/CliRequiredModal.tsx` | Shared install dialog | Single component opened by Manifests, ManifestEditor, Layout, WelcomeDialog |
 | `apps/desktop/src/components/WelcomeDialog.tsx` | First-run two-card welcome | Persists dismissal via `localStorage['cfs.welcome.dismissedAt']` |
 | `apps/desktop/src/components/HealthIndicator.tsx` | Footer pill | Drives off `useCliPresence`; clickable when amber |
-| `apps/desktop/src/components/resource-picker.tsx` | Visual builder Add **and** Edit form (one component, two modes via `initialResource` prop) | ~1200 LOC. Add new resource types here. Test wrappers auto-unwrap in `useEffect`; submit re-wraps. `TYPES_WITH_FORM` set gates form-vs-YAML render |
+| `apps/desktop/src/pages/ManifestEditor/components/VisualManifestViewer.tsx` | Shared read-only + editable visual table | Inline cell editing, selection/delete, and direct row addition; reused by Baseline Detail and Register New Baseline |
+| `apps/desktop/src/pages/ManifestEditor/visual-viewer.ts` | Pure visual projection and mutation helpers | Lossless QWord parsing/dumping, Test/Group source paths, typed cell coercion, add/delete helpers |
 | `apps/desktop/src/components/use-rationale-prompt.tsx` | Rationale modal hook + component | `requestSave(beforeYaml, afterYaml)` compares; "before" must come from `savedContent`, NOT `formatCache.current.yaml` |
 | `apps/desktop/src/components/use-cis-available.ts` | Renderer cache for CIS data presence | Module-level `_cached` boolean; 3s warmup-deferral on `cfs.cis.warmup()`; invalidate via `_resetCisAvailableCacheForTests()` after recheck |
 | `apps/desktop/src/components/conflict-detector.tsx` | Cross-manifest conflict UI | Fixed-height scrollable (max-h 400px); count badge in header |
 | `apps/desktop/src/pages/CisCatalog.tsx` | CIS Mapping page (sidebar tab) | Lists detected CIS files, Re-check button (calls `_resetCisAvailableCacheForTests()` after `cfs.cis.recheck()` so Diff tab appears without app restart) |
 | `apps/desktop/src/pages/Diff/components/CisDiffTab.tsx` | CIS Diff tab inside `/diff` | Sortable Status column (tri-state); red filled X / green ✓ icons; whitespace-nowrap source badge |
-| `apps/desktop/src/pages/ManifestEditor/components/ResourceEditDialog.tsx` | Per-resource edit modal | Thin wrapper around `<ResourcePicker initialResource={r} onCancel={close} />` |
 | `packages/core/src/cis/xccdf-parser.ts` | XCCDF + OVAL XML parser (~900 LOC) | Owns `splitPascalCase`, `tokenizeXccdfTitle`, `extractCspPathWords`, `stripCspCategoryPrefix`, `fuzzyMatchXccdfTitle`, `OSCONFIG_USER_RIGHT_ALIASES` (14-entry table), `lookupNonRegistryInXccdf` (two-pass across catalogs) |
 | `packages/core/src/cis/azure-policy-cis.ts` | Azure Policy JSON parser | Name-only matching; no registry/CSP paths in JSON |
 | `packages/core/src/cis/data.ts` | CIS data dir resolver + lazy-loaders | `getCisDataDir()` is the public path; `clearAllCisDataCaches()` powers the recheck IPC |
@@ -150,7 +150,7 @@ Reference implementations (most → least mature):
 
 | Page | Hooks (tests) | Sub-components |
 | --- | --- | --- |
-| `ManifestEditor/` | `useManifestEditorState` (13), `useDeployFlow` (11), `useDocsModal` (7) | `DocsModal`, `ManifestContent`, `DeployResultPanel`, `ComplianceTable`, `ManifestHeader`, `ResourceEditDialog` (v0.3.39+) |
+| `ManifestEditor/` | `useManifestEditorState` (13), `useDeployFlow` (11), `useDocsModal` (7) | `DocsModal`, `ManifestContent`, `VisualManifestViewer`, `DeployResultPanel`, `ComplianceTable`, `ManifestHeader` |
 | `Diff/` | `useDiffMatrix` (9, includes race-guard regression) | `CisDiffTab` (CIS Diff tab inside /diff), plus inline `ResourceChangesPanel` and `ResourceChangesSection` (module-scope hoist for stable identity across expand/collapse) |
 | `Manifests/` | `useManifestList` (6), `useFlashMessage` (5), `useBulkSelection` (6) | (visual extraction queued) |
 | `ManifestNew/` | `useNewManifestForm` (14) | (visual extraction queued) |
@@ -441,34 +441,21 @@ When you add a new matcher, **wire it into BOTH paths** or the counter and the p
 
 ---
 
-## Visual Builder Edit mode (v0.3.41+)
+## Spreadsheet visual editing
 
-`apps/desktop/src/components/resource-picker.tsx` supports both Add and Edit via an `initialResource` prop. The Edit dialog (`apps/desktop/src/pages/ManifestEditor/components/ResourceEditDialog.tsx`) mounts the picker in a modal wrapper.
+`VisualManifestViewer.tsx` is the canonical visual surface for both viewing and authoring. Edit mode adds inline cell editors, category-level row creation, a compact setting-type menu, multi-row selection, and delete. The retired tile/form picker and per-setting modal must not be reintroduced.
 
-### Per-type form coverage (10 types in `TYPES_WITH_FORM`)
-- `Microsoft.Windows/Registry`, `/CSP`, `/AccountPolicy`, `/AuditPolicy`, `/UserRightsAssignment`
-- `Linux/FilePermission`, `/KernelModule`, `/User`
-- `Microsoft.OSConfig/File`, `/FileLine`
+### Structure and value safety
 
-### Test wrapper handling
-
-`Microsoft.OSConfig/Test` wrappers (~300 in WS2022/2025 baselines) auto-unwrap in the picker's bootstrap useEffect. The form shows the inner Registry/CSP form pre-populated from `properties.resource.properties`. On submit, the picker re-wraps the inner into a `Test` envelope with `properties.schema` preserved verbatim. The picker tracks this via the `testWrapperOriginal` state.
-
-### Group resource handling (v0.3.45+)
-
-`Microsoft.OSConfig/Group` resources expand inline in the visual builder's resource list. The parent card shows a "Group · N" badge; nested resources render as indented sub-cards with their own Edit/Remove buttons. **Visual builder uses number-array paths**: `[i]` for top-level, `[i, j]` for nested-in-Group. Helpers `resolveAtPath` / `setAtPath` / `handleResourceRemove` (all in `ManifestContent.tsx`) traverse the tree at arbitrary depth.
-
-### Edit-mode submit safety
-- **Merge, don't rebuild**: edit submit overlays form values into `initialResource.properties`, preserving unknown fields (custom `valueType`, security descriptors, nested arrays).
-- **`coerceLikeOriginal()`**: keeps original JS type on edit. `"Administrators"` stays a string instead of being parsed to int by the add-flow's `parseInt(...) || s` trick.
+- `visual-viewer.ts` assigns stable source paths through nested `Microsoft.OSConfig/Group` arrays and `Microsoft.OSConfig/Test` wrappers. A Test row edits the inner resource properties while its logical name and desired schema remain bound to the wrapper.
+- Mutations parse and dump with `LOSSLESS_MANIFEST_SCHEMA`; QWord integers above `Number.MAX_SAFE_INTEGER` remain exact.
+- Cell coercion follows existing values and resource metadata (`Registry.valueType`, CSP `type`) instead of turning every edit into a string.
+- Unknown top-level, wrapper, leaf, property, and schema fields survive edits. Visual row deletion removes the logical Test wrapper or exact Group child rather than rebuilding the resource tree.
+- Add-row templates cover the ten concrete writable types; Group/Test construction remains available in Code because those structures are not safely representable as one blank flat row.
 
 ### Rationale prompt baseline
 
-`apps/desktop/src/pages/ManifestEditor/index.tsx`'s `handleSaveClick` reads the "before" snapshot from `savedContent` (the on-disk baseline, only refreshed on load + successful save), **not** `formatCache.current.yaml`. Visual-builder Add/Edit/Remove handlers overwrite `formatCache.current.yaml` to the edited buffer, which would make `before === editedContent` and skip the rationale prompt. Using `savedContent` ensures every accumulated visual-builder edit triggers a single rationale modal on manifest Save.
-
-### YAML fallback
-
-For resource types that aren't in `TYPES_WITH_FORM` (none of our current baselines hit this, but safety net for exotic types), the picker renders a YAML textarea editor that emits the full resource on parse-validate. Group resources used to hit this; v0.3.45 expanded them inline so Group never reaches the YAML fallback either.
+`apps/desktop/src/pages/ManifestEditor/index.tsx`'s `handleSaveClick` reads the "before" snapshot from `savedContent` (the on-disk baseline, only refreshed on load + successful save), **not** `formatCache.current.yaml`. Spreadsheet edits update the cached YAML buffer, which would make `before === editedContent` and skip the rationale prompt. Using `savedContent` ensures accumulated visual edits trigger one rationale modal on Save.
 
 ---
 

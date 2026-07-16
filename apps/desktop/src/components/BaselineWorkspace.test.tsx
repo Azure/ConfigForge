@@ -15,6 +15,7 @@ function WorkspaceProbe() {
   return (
     <div>
       <output aria-label="tabs">{workspace.openBaselines.join('|')}</output>
+      <output aria-label="alpha-platform">{workspace.baselinePlatforms.alpha ?? ''}</output>
       <output aria-label="my-count">{workspace.myBaselineCount}</output>
       <output aria-label="microsoft-count">{workspace.microsoftBaselineCount}</output>
       <button type="button" onClick={() => workspace.openBaseline('beta')}>
@@ -44,7 +45,10 @@ describe('BaselineWorkspaceProvider', () => {
     Object.assign(window.cfs!, {
       manifests: {
         list: vi.fn().mockResolvedValue({
-          data: [{ Name: 'alpha' }, { Name: 'beta' }],
+          data: [
+            { Name: 'alpha', Platform: 'windows' },
+            { Name: 'beta', Platform: 'linux' },
+          ],
         }),
       },
     });
@@ -61,6 +65,7 @@ describe('BaselineWorkspaceProvider', () => {
     await waitFor(() => expect(screen.getByLabelText('tabs')).toHaveTextContent('alpha'));
     expect(screen.getByLabelText('tabs')).not.toHaveTextContent('deleted');
     expect(screen.getByLabelText('my-count')).toHaveTextContent('2');
+    expect(screen.getByLabelText('alpha-platform')).toHaveTextContent('windows');
     expect(screen.getByLabelText('microsoft-count')).toHaveTextContent(
       String(BASELINE_CATALOG.length),
     );

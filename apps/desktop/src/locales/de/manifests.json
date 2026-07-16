@@ -254,7 +254,7 @@
       "text57": "Content",
       "text58": "YAML",
       "text59": "JSON",
-      "text60": "Visueller Builder",
+      "text60": "Visuell",
       "text61": "Yaml",
       "text62": "Json",
       "text63": "Einstellung hinzufügen",
@@ -271,7 +271,8 @@
       "text74": "Kopiert",
       "text75": "Kopieren",
       "text76": "Herunterladen .md"
-    }
+    },
+    "visualValidationError": "Vervollständigen oder korrigieren Sie die markierten visuellen Zellen vor dem Registrieren der Baseline."
   },
   "library": {
     "extracted": {

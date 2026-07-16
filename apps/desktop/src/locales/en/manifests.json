@@ -254,7 +254,7 @@
       "text57": "content",
       "text58": "YAML",
       "text59": "JSON",
-      "text60": "Visual Builder",
+      "text60": "Visual",
       "text61": "yaml",
       "text62": "json",
       "text63": "Add Setting",
@@ -271,7 +271,8 @@
       "text74": "Copied",
       "text75": "Copy",
       "text76": "Download .md"
-    }
+    },
+    "visualValidationError": "Complete or correct the highlighted Visual cells before registering."
   },
   "library": {
     "extracted": {

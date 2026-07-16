@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.3.73] - 2026-07-16
+
+### Changed
+- **Replaced the legacy tile/form Visual Builder with direct spreadsheet editing.** The grouped Visual tables are now the single visual surface in both Baseline Detail and Register New Baseline. Edit cells inline, add blank rows by category or setting type, select rows, and delete directly in the table. Test wrappers and Group children stay bound to their original source paths; unknown fields and schema constraints are preserved; Registry/CSP values retain their declared types; and QWord integers above `Number.MAX_SAFE_INTEGER` round-trip exactly.
+- **Kept editor actions anchored.** Entering Edit no longer hides the bottom action row or moves Save into the header. The footer remains visible and its Edit action changes to Save; Cancel stays in the header.
+- **Added platform marks to opened baseline tabs.** Windows tabs use the four-color Microsoft mark, Linux tabs use the penguin, and the icons are restored from authoritative baseline metadata after restart.
+
+### Fixed
+- **Benchmark Mapping no longer flags valid SCAP sidecars as unrecognized.** A detected XCCDF bundle now recognizes its primary OVAL file plus standard `-cpe-oval.xml`, `-cpe-dictionary.xml`, and `-ocil.xml` companions. Unrelated files still appear in diagnostics.
+
+### Localization
+- Added French, German, and Spanish strings for spreadsheet editing, selection, typed-value errors, and the new Visual label.
+
 ## [0.3.72] - 2026-06-19
 
 ### Security

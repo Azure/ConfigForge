@@ -41,7 +41,7 @@ The five Phase A-E lighthouse pages are directory-based:
 
 | Page directory | State/hooks | Components |
 | --- | --- | --- |
-| `ManifestEditor/` | `useManifestEditorState`, `useDeployFlow`, `useDocsModal` (+ tests) | `ComplianceTable`, `DeployResultPanel`, `DocsModal`, `ManifestContent`, `ManifestHeader`, `ResourceEditDialog` |
+| `ManifestEditor/` | `useManifestEditorState`, `useDeployFlow`, `useDocsModal` (+ tests) | `ComplianceTable`, `DeployResultPanel`, `DocsModal`, `ManifestContent`, `ManifestHeader`, `VisualManifestViewer` |
 | `Manifests/` | `useManifestList`, `useFlashMessage`, `useBulkSelection` (+ tests) | none extracted yet |
 | `ManifestNew/` | `useNewManifestForm` (+ tests) | none extracted yet |
 | `Library/` | `useLibraryFilters` (+ tests) | none extracted yet |
@@ -56,7 +56,6 @@ Routes are wired in `apps/desktop/src/App.tsx`; sidebar labels are wired in `app
 | File | Role |
 | --- | --- |
 | `manifest-editor.tsx` | Monaco-based YAML/JSON editor + inline validator. Validates against `data/osc-manifest-schema.json` (Monaco JSON mode) AND a custom inline validator that's tighter (e.g. enforces `keyPath` + `valueName` + `valueType` for Registry resources). |
-| `resource-picker.tsx` | Visual builder for the YAML/JSON/Visual tabs in ManifestEditor / ManifestNew. |
 | `diff-viewer.tsx` | Pairwise diff component used by the Diff page. |
 | `ai-analysis-panel.tsx` | AI changelog generation panel (Diff page). |
 | `conflict-detector.tsx` | AI-driven conflict detection across selected manifests. |
@@ -66,6 +65,10 @@ Routes are wired in `apps/desktop/src/App.tsx`; sidebar labels are wired in `app
 | `Layout.tsx` | Top-level layout: sidebar, header, footer, route outlet. Wires HealthIndicator.onInstallClick → CliRequiredModal. |
 | `ExternalLink.tsx` | Anchor wrapper that routes through `cfs.shell.openExternal()` so external URLs open in the user's default browser. |
 | `AuditProgressCounter.tsx` | Stable-width progress counter for audit operations. Uses monospace digit rendering to prevent layout shift as numbers increment. |
+
+`pages/ManifestEditor/components/VisualManifestViewer.tsx` is shared by
+ManifestEditor and ManifestNew. Its pure projection/mutation layer lives in
+`pages/ManifestEditor/visual-viewer.ts`.
 | `Breadcrumb.tsx` | Breadcrumb navigation component. Renders the current page path as clickable segments for quick navigation between parent views. |
 
 ## `packages/core/src/handlers/` -- Pure handler functions

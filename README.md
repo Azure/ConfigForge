@@ -28,11 +28,11 @@ YAML / JSON / Visual triple-format editor with live validation, deploy/audit dro
 
 ![Baseline editor: YAML/JSON/Visual tabs, deploy + audit, history, and Audit Pack button](./docs/images/screenshots/manifest-detail.png)
 
-### Visual Builder: form-based setting authoring
+### Visual spreadsheet: edit settings in place
 
-Switch to **Visual Builder** mode to add, edit, or remove settings via per-type forms — no YAML wrangling. Registry settings get key path / value name / expected value / enforcement value fields. CSP, AccountPolicy, UserRights, AuditPolicy, Linux FilePermission, KernelModule, and File / FileLine all have dedicated forms. Edit is form-based too: click **Edit** on any setting card to open the same form pre-populated with current values, including a rename field. All visual edits batch into the editor buffer; one Save → one rationale prompt covering every change.
+Switch to **Visual** mode and click **Edit** to work directly in the grouped setting tables. Click a cell to change it, add a blank row in any category, add a known Windows/Linux setting type from the compact menu, or select rows for deletion. Test wrappers and Group children stay bound to their original YAML structure, typed values remain typed, and QWord integers retain full precision. All visual edits batch into the editor buffer; one Save produces one rationale prompt covering every change.
 
-![Visual Builder: form-based setting authoring with per-type inputs](./docs/images/screenshots/visual-builder.png)
+![Visual spreadsheet with inline setting editing](./docs/images/screenshots/visual-builder.png)
 
 ### Audit pack: the auditor deliverable
 
@@ -144,7 +144,7 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.70** (current) | Benchmark Mapping back-arrow; the v0.3.69 UI overhaul — 4-color Microsoft Windows logo + 🐧 Linux, **Microsoft Baselines** nav moved under **My Baselines**, "View" → "Open", redundant "Source" label removed, editor format-strip swap, audit-pack PDF heading alignment; FR/DE/ES re-translated via Azure Translator |
+| **0.3.73** (current) | Spreadsheet-style Visual editing shared by Baseline Detail and Register New Baseline; anchored Edit/Save footer; Benchmark Mapping recognizes CPE OVAL / CPE dictionary / OCIL sidecars; exact QWord round-trips; FR/DE/ES coverage |
 | **0.3.62 – 0.3.68** | Rebrand **ConfigForge Spark → ConfigForge**; vocabulary refresh (**Manifests → My Baselines**, **Library → Microsoft Baselines**, **Validation → Export Readiness**, **CIS Mapping → Benchmark Mapping**, *resource* → *setting*, **OSConfig vNext → Gen 2**); unsigned OSS release pipeline with `SHA256SUMS` + SBOM verification; MOF export targets the `Microsoft.OSConfig` module; Monaco overflow-widget dropdown root-cause fix; "Could not read" compliance bucket on baseline cards |
 | **0.3.54 – 0.3.61** | Localization rollout (FR / DE / ES) — five extraction waves, machine-translation + review tooling, `Intl` date/number/relative-time formatters, and length/overflow visual QA |
 | **0.3.45 – 0.3.53** | Benchmark (CIS) Mapping subtitle + Diff › CIS tab; real History change summaries + auto-scroll Compare; CIS fuzzy-matching tightening; Group resources expand inline in Visual Builder; Diff "Select baseline" dropdown stability (Monaco overflow fix) |

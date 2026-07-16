@@ -3,6 +3,13 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.73 — 2026-07-16
+
+- **Visual editing is now a spreadsheet.** The old tile/form builder is gone. Baseline Detail and Register New Baseline share grouped tables with inline cell editing, direct row addition, selection, and deletion while preserving Test/Group structure, typed values, unknown fields, and exact QWord integers.
+- **Editor actions stay anchored.** Edit changes to Save in the persistent bottom footer; Cancel remains in the header.
+- **Opened baseline tabs show their platform.** Windows and Linux marks now appear beside persisted tab names.
+- **Benchmark Mapping recognizes complete SCAP bundles.** Valid CPE OVAL, CPE dictionary, and OCIL sidecars tied to a detected XCCDF no longer appear under Unrecognized files.
+
 ## v0.3.72 — 2026-06-19
 
 - **Security: completed the `undici` dependency update.** A follow-up to v0.3.71 that also patches a deeper, build-time-only copy of `undici` used by the native-module build tooling. `npm audit` now reports zero vulnerabilities. As with v0.3.71, these are build/test dependencies only — none of them ship inside the installed app.

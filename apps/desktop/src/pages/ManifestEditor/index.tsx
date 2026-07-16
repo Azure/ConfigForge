@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useNavigate, useParams } from "react-router-dom";
 import { useNavigationGuard } from "../../lib/use-navigation-guard";
@@ -27,6 +27,11 @@ import { ComplianceTable } from "./components/ComplianceTable";
 import { ManifestHeader } from "./components/ManifestHeader";
 import { ManifestDetailFooter } from "./components/ManifestDetailFooter";
 import { Breadcrumb } from "../../components/Breadcrumb";
+import {
+  flattenVisualSettings,
+  parseVisualManifest,
+  validateVisualSettings,
+} from "./visual-viewer";
 
 export function ManifestDetailPage() {
   const params = useParams<{ id: string }>();
@@ -37,6 +42,8 @@ export function ManifestDetailPage() {
   const { closeBaseline, refresh: refreshWorkspace } = useBaselineWorkspace();
 
   const [deleting, setDeleting] = useState(false);
+  const [visualDraftValid, setVisualDraftValid] = useState(true);
+  const visualDraftValidRef = useRef(true);
   const [viewerSelection, setViewerSelection] = useState<{
     manifestName: string;
     mode: ManifestViewerMode;
@@ -84,16 +91,42 @@ export function ManifestDetailPage() {
     setEditing,
     cancelEditing,
     editedContent,
-    setEditedContent,
     savedContent,
     setSavedContent,
     setSaving,
     activeFormat,
-    setActiveFormat,
     formatCache,
     currentDisplayContent,
     hasUnsavedChanges,
   } = editorState;
+
+  const visualSourceValid = useMemo(() => {
+    if (!editing || activeFormat !== "yaml") return true;
+    try {
+      return (
+        validateVisualSettings(
+          flattenVisualSettings(parseVisualManifest(editedContent)),
+        ).length === 0
+      );
+    } catch {
+      return false;
+    }
+  }, [activeFormat, editedContent, editing]);
+  const visualEditValid = visualSourceValid && visualDraftValid;
+
+  const handleVisualDraftValidityChange = useCallback((valid: boolean) => {
+    visualDraftValidRef.current = valid;
+    setVisualDraftValid(valid);
+  }, []);
+
+  const handleCancelEditing = useCallback(() => {
+    handleVisualDraftValidityChange(true);
+    cancelEditing();
+  }, [cancelEditing, handleVisualDraftValidityChange]);
+
+  useEffect(() => {
+    handleVisualDraftValidityChange(true);
+  }, [handleVisualDraftValidityChange, manifestName]);
 
   // Detect platform — prefer the stored platform from the API response,
   // fall back to parsing the YAML content (which has the full resource
@@ -209,14 +242,14 @@ export function ManifestDetailPage() {
   });
 
   const handleSaveClick = useCallback(async () => {
+    if (!visualSourceValid || !visualDraftValidRef.current) return;
     // Use `savedContent` (the last on-disk baseline) as 'before', NOT
-    // `formatCache.current.yaml`. The visual-builder Add/Edit/Remove
-    // handlers overwrite formatCache.current.yaml with the edited
-    // buffer, which would make `before === editedContent` and skip
-    // the rationale prompt entirely after visual-builder-only edits.
+    // `formatCache.current.yaml`. Spreadsheet edits update the cached YAML
+    // buffer, which would otherwise make `before === editedContent` and
+    // skip the rationale prompt after visual-only edits.
     const before = savedContent || formatCache.current.yaml || "";
     await rationale.requestSave(before, editedContent);
-  }, [rationale, editedContent, savedContent, formatCache]);
+  }, [rationale, editedContent, savedContent, formatCache, visualSourceValid]);
 
   // v0.1.13 / v0.1.15 — unsaved-changes navigation guard.
   //
@@ -240,55 +273,6 @@ export function ManifestDetailPage() {
   // nag them on navigation in that case. The flag is computed by
   // `useManifestEditorState` (Phase A.3) — destructured above.
   useNavigationGuard(hasUnsavedChanges, t("actions.leaveUnsavedConfirm", { name: manifestName }));
-
-  const handleResourceAdd = (resource: {
-    name: string;
-    type: string;
-    properties: Record<string, unknown>;
-    compliance?: { equals: unknown };
-  }) => {
-    try {
-      const parsed = yaml.load(editedContent) as Record<string, unknown> | null;
-      const doc =
-        parsed && typeof parsed === "object"
-          ? parsed
-          : { $schema: "https://aka.ms/osc/schemas/prerelease/document.json" };
-      const existingResources = Array.isArray(doc.resources)
-        ? (doc.resources as Record<string, unknown>[])
-        : [];
-
-      const newResource: Record<string, unknown> = {
-        name: resource.name,
-        type: resource.type,
-        properties: resource.properties,
-      };
-      if (resource.compliance) {
-        newResource.compliance = resource.compliance;
-      }
-
-      doc.resources = [...existingResources, newResource];
-      const newYaml = yaml.dump(doc, { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false });
-      setEditedContent(newYaml);
-      formatCache.current = { yaml: newYaml };
-      setActiveFormat("yaml");
-    } catch {
-      // Fallback: append raw YAML
-      const resourceYaml = `  - name: "${resource.name}"\n    type: ${resource.type}\n    properties:\n${Object.entries(
-        resource.properties,
-      )
-        .map(([k, v]) => `      ${k}: ${JSON.stringify(v)}`)
-        .join("\n")}`;
-      setEditedContent(editedContent.trimEnd() + "\n" + resourceYaml + "\n");
-      // v0.1.14: the fallback path appends raw YAML, but if the user
-      // was on the JSON or MOF tab when they clicked Add Resource,
-      // they wouldn't see the appended snippet — the visible editor
-      // is a different format. Switching to the YAML tab guarantees
-      // the new content is visible. The happy path already does
-      // this above; this just keeps both paths consistent. (UX
-      // medium from the v0.1.13 edge-case backlog.)
-      setActiveFormat("yaml");
-    }
-  };
 
   const handleExport = async (format: "yaml" | "json" | "mof" | "excel" | "azurepolicy") => {
     setExportOpen(false);
@@ -361,9 +345,8 @@ export function ManifestDetailPage() {
             cls: "bg-slate-100 text-slate-600 dark:bg-slate-700/30 dark:text-slate-400",
             platform: detectedPlatform,
           };
-  // ResourcePicker expects narrow 'windows' | 'linux' | undefined; treat
-  // mixed manifests as "show everything" (same as cross-platform) so users
-  // can continue editing either side.
+  // Mixed and cross-platform manifests expose all spreadsheet row templates
+  // so either platform's settings remain editable.
   const editorPlatform =
     detectedPlatform === "cross-platform" || detectedPlatform === "mixed"
       ? undefined
@@ -416,9 +399,7 @@ export function ManifestDetailPage() {
             manifest={manifest}
             platformBadge={platformBadge}
             editorState={editorState}
-            rationaleBusy={rationale.state.busy}
-            onSaveClick={handleSaveClick}
-            onCancelEdit={cancelEditing}
+            onCancelEdit={handleCancelEditing}
           />
 
           {/* Deploy result (Phase C.3 — see components/DeployResultPanel.tsx) */}
@@ -472,7 +453,7 @@ export function ManifestDetailPage() {
             manifestName={manifestName}
             viewerMode={viewerMode}
             onViewerModeChange={handleViewerModeChange}
-            onResourceAdd={handleResourceAdd}
+            onVisualDraftValidityChange={handleVisualDraftValidityChange}
           />
 
           {/* Compliance Status (Phase C.4 — see components/ComplianceTable.tsx) */}
@@ -486,24 +467,25 @@ export function ManifestDetailPage() {
         </div>
       </div>
 
-      {!editing && (
-        <ManifestDetailFooter
-          manifestName={manifestName}
-          manifest={manifest}
-          editorState={editorState}
-          deploy={deploy}
-          viewerMode={viewerMode}
-          exportOpen={exportOpen}
-          setExportOpen={setExportOpen}
-          duplicating={duplicating}
-          deleting={deleting}
-          onClose={handleClose}
-          onDuplicate={handleDuplicate}
-          onExport={handleExport}
-          onExportDocs={handleExportDocs}
-          onDelete={handleDelete}
-        />
-      )}
+      <ManifestDetailFooter
+        manifestName={manifestName}
+        manifest={manifest}
+        editorState={editorState}
+        deploy={deploy}
+        viewerMode={viewerMode}
+        exportOpen={exportOpen}
+        setExportOpen={setExportOpen}
+        duplicating={duplicating}
+        deleting={deleting}
+        rationaleBusy={rationale.state.busy}
+        saveBlocked={!visualEditValid}
+        onClose={handleClose}
+        onDuplicate={handleDuplicate}
+        onExport={handleExport}
+        onExportDocs={handleExportDocs}
+        onDelete={handleDelete}
+        onSaveClick={handleSaveClick}
+      />
 
       {/* PR27: Rationale prompt — appears on Save when content has changed */}
       <RationalePromptModal

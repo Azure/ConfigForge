@@ -25,6 +25,7 @@ import {
   EditRegular,
   HistoryRegular,
   PlayRegular,
+  SaveRegular,
   ShieldCheckmarkRegular,
 } from "@fluentui/react-icons";
 import { useTranslation } from "react-i18next";
@@ -46,11 +47,14 @@ export interface ManifestDetailFooterProps {
   setExportOpen: (open: boolean) => void;
   duplicating: boolean;
   deleting: boolean;
+  rationaleBusy: boolean;
+  saveBlocked: boolean;
   onClose: () => void;
   onDuplicate: () => void;
   onExport: (format: "yaml" | "json" | "mof" | "excel" | "azurepolicy") => void;
   onExportDocs: () => void;
   onDelete: () => void;
+  onSaveClick: () => void;
 }
 
 const footerLinkClass =
@@ -66,14 +70,17 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   setExportOpen,
   duplicating,
   deleting,
+  rationaleBusy,
+  saveBlocked,
   onClose,
   onDuplicate,
   onExport,
   onExportDocs,
   onDelete,
+  onSaveClick,
 }: ManifestDetailFooterProps) {
   const { t } = useTranslation(["manifest-editor", "common", "manifests"]);
-  const { isEditable, saving, beginEditing, formatCache } = editorState;
+  const { editing, isEditable, saving, beginEditing, formatCache } = editorState;
   const {
     deploying,
     deployProgress,
@@ -83,13 +90,14 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
     handleDeploy,
     handleRevert,
   } = deploy;
-  const busy = deleting || deploying || reverting || saving;
+  const busy = deleting || deploying || reverting || saving || editing;
   const deployApi = hasCfsNamespace("deploy") ? safeCfs("deploy") : undefined;
   const revertApi = hasCfsNamespace("revert") ? safeCfs("revert") : undefined;
   const canDeploy = HAS_DEPLOY && typeof deployApi?.run === "function";
   const canRevert = HAS_DEPLOY && typeof revertApi?.apply === "function";
   const canEdit =
     viewerMode === "visual" ? formatCache.current.yaml !== undefined : isEditable;
+  const disabledLinkClass = editing ? "pointer-events-none opacity-50" : "";
 
   return (
     <footer
@@ -141,8 +149,13 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
 
             <Link
               to={`/manifests/${encodeURIComponent(manifestName)}/audit-pack`}
-              className={footerLinkClass}
+              className={`${footerLinkClass} ${disabledLinkClass}`}
               title={t("actions.auditPackTitle")}
+              aria-disabled={editing}
+              tabIndex={editing ? -1 : undefined}
+              onClick={(event) => {
+                if (editing) event.preventDefault();
+              }}
             >
               <ClipboardCheckmarkRegular aria-hidden="true" />
               {t("actions.auditPack")}
@@ -153,6 +166,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               size="small"
               icon={<DocumentRegular />}
               onClick={onExportDocs}
+              disabled={busy}
               className="shrink-0"
               title={t("actions.generateDocsTitle")}
             >
@@ -161,18 +175,29 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
 
             <Link
               to={`/manifests/${encodeURIComponent(manifestName)}/history`}
-              className={footerLinkClass}
+              className={`${footerLinkClass} ${disabledLinkClass}`}
+              aria-disabled={editing}
+              tabIndex={editing ? -1 : undefined}
+              onClick={(event) => {
+                if (editing) event.preventDefault();
+              }}
             >
               <HistoryRegular aria-hidden="true" />
               {t("actions.history")}
             </Link>
 
-            <Menu open={exportOpen} onOpenChange={(_event, data) => setExportOpen(data.open)}>
+            <Menu
+              open={!editing && exportOpen}
+              onOpenChange={(_event, data) => {
+                if (!editing) setExportOpen(data.open);
+              }}
+            >
               <MenuTrigger disableButtonEnhancement>
                 <Button
                   appearance="subtle"
                   size="small"
                   icon={<ArrowDownloadRegular />}
+                  disabled={busy}
                   className="shrink-0"
                 >
                   {t("actions.export")}
@@ -202,8 +227,10 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
 
             {canDeploy && (
               <Menu
-                open={deployMenuOpen}
-                onOpenChange={(_event, data) => setDeployMenuOpen(data.open)}
+                open={!editing && deployMenuOpen}
+                onOpenChange={(_event, data) => {
+                  if (!editing) setDeployMenuOpen(data.open);
+                }}
               >
                 <MenuTrigger disableButtonEnhancement>
                   <Button
@@ -269,28 +296,42 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
 
         <div className="h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
 
-        <Button
-          appearance="primary"
-          size="medium"
-          icon={<EditRegular />}
-          onClick={() => {
-            if (viewerMode === "visual") beginEditing("visual");
-            else beginEditing();
-          }}
-          disabled={!canEdit}
-          title={
-            !canEdit
-              ? t(
-                  viewerMode === "visual"
-                    ? "content.visualEditUnavailable"
-                    : "content.mofEditUnsupported",
-                )
-              : undefined
-          }
-          className="shrink-0"
-        >
-          {t("actions.edit")}
-        </Button>
+        {editing ? (
+          <Button
+            appearance="primary"
+            size="medium"
+            icon={saving || rationaleBusy ? <Spinner size="tiny" /> : <SaveRegular />}
+            onClick={onSaveClick}
+            disabled={saving || rationaleBusy || saveBlocked}
+            title={saveBlocked ? t("visual.fixValidationBeforeSave") : undefined}
+            className="shrink-0"
+          >
+            {t("common:buttons.save")}
+          </Button>
+        ) : (
+          <Button
+            appearance="primary"
+            size="medium"
+            icon={<EditRegular />}
+            onClick={() => {
+              if (viewerMode === "visual") beginEditing("visual");
+              else beginEditing();
+            }}
+            disabled={!canEdit}
+            title={
+              !canEdit
+                ? t(
+                    viewerMode === "visual"
+                      ? "content.visualEditUnavailable"
+                      : "content.mofEditUnsupported",
+                  )
+                : undefined
+            }
+            className="shrink-0"
+          >
+            {t("actions.edit")}
+          </Button>
+        )}
       </div>
     </footer>
   );
