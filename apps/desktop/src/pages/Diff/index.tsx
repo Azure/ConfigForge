@@ -435,8 +435,15 @@ export function DiffPage() {
       )}
 
       {/* Tab nav */}
-      <div className="flex gap-1 border-b border-slate-200 dark:border-slate-800">
+      <div
+        role="tablist"
+        aria-label={t("page.title")}
+        className="flex gap-1 border-b border-slate-200 dark:border-slate-800"
+      >
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "pairwise"}
           onClick={() => setActiveTab("pairwise")}
           className={`inline-flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
             activeTab === "pairwise"
@@ -448,6 +455,9 @@ export function DiffPage() {
           {t('tabs.pairwise')}
         </button>
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "matrix"}
           onClick={() => setActiveTab("matrix")}
           className={`inline-flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
             activeTab === "matrix"
@@ -460,6 +470,9 @@ export function DiffPage() {
         </button>
         {cisAvailable && (
           <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "cis-diff"}
             onClick={() => setActiveTab("cis-diff")}
             className={`inline-flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === "cis-diff"
