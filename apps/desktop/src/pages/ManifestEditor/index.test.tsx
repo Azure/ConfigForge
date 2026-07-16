@@ -530,9 +530,11 @@ describe("ManifestDetailPage Loop viewer", () => {
     mocks.editView = "visual";
     renderEditor();
 
-    await user.click(screen.getByRole("button", { name: "Edit value for PasswordPolicy" }));
+    await user.click(
+      screen.getByRole("button", { name: "Edit Applied value for PasswordPolicy" }),
+    );
     const editor = screen.getByRole("textbox", {
-      name: "Edit value for PasswordPolicy",
+      name: "Edit Applied value for PasswordPolicy",
     });
     await user.clear(editor);
     await user.type(editor, "not-a-number");

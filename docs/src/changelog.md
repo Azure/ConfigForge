@@ -3,6 +3,11 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.74 — 2026-07-16
+
+- **Fixed overlapping Visual table columns.** Large CIS baselines now use proportional fit-first columns with opaque alternating rows and controlled wrapping. Horizontal scrolling remains available on narrow windows without sticky cells painting over other values.
+- **Clearer table vocabulary.** Registry path, Value name, Value type, Expected value, and Applied value replace raw property keys.
+
 ## v0.3.73 — 2026-07-16
 
 - **Visual editing is now a spreadsheet.** The old tile/form builder is gone. Baseline Detail and Register New Baseline share grouped tables with inline cell editing, direct row addition, selection, and deletion while preserving Test/Group structure, typed values, unknown fields, and exact QWord integers.

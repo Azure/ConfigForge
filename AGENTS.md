@@ -70,6 +70,12 @@ npm run format                  # prettier (added v0.2.1; no mass-format run shi
 npm run format:check            # prettier --check (not gated in CI; advisory)
 ```
 
+**Electron launch prerequisite:** `build:renderer` runs Vite with an empty
+output directory and removes `apps/desktop/dist/electron/main.js`. Never run
+the renderer-only build immediately before launching Electron, Playwright, or
+an installer smoke check. Run `npm run desktop:build` so the Electron main and
+preload bundles are restored after Vite.
+
 **Windows note:** the preview `oscfg` opens its log file in a protected directory on every invocation, including read-only audits, so Deploy / Audit require an elevated PowerShell session. The in-app footer pill and Settings panel surface this as "admin required."
 
 **npm install caveat:** the lockfile carries optional rollup binaries for both Windows and Linux. **DO NOT regenerate `package-lock.json` with `npm install` on a fresh Windows machine without `--include=optional`** — npm bug [#4828](https://github.com/npm/cli/issues/4828) silently drops the Linux binary, which breaks CI on `ubuntu-latest`. The safe path: use `npm ci` (read-only on lockfile) for routine work, or `npm install <pkg> --save-exact` (which preserves other entries).

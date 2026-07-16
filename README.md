@@ -144,7 +144,7 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.73** (current) | Spreadsheet-style Visual editing shared by Baseline Detail and Register New Baseline; anchored Edit/Save footer; Benchmark Mapping recognizes CPE OVAL / CPE dictionary / OCIL sidecars; exact QWord round-trips; FR/DE/ES coverage |
+| **0.3.74** (current) | Responsive Visual tables with no horizontal-scroll overlap; fit-first Registry columns and customer-facing headers; spreadsheet editing shared by Baseline Detail and Register New Baseline; anchored Edit/Save footer; full FR/DE/ES coverage |
 | **0.3.62 – 0.3.68** | Rebrand **ConfigForge Spark → ConfigForge**; vocabulary refresh (**Manifests → My Baselines**, **Library → Microsoft Baselines**, **Validation → Export Readiness**, **CIS Mapping → Benchmark Mapping**, *resource* → *setting*, **OSConfig vNext → Gen 2**); unsigned OSS release pipeline with `SHA256SUMS` + SBOM verification; MOF export targets the `Microsoft.OSConfig` module; Monaco overflow-widget dropdown root-cause fix; "Could not read" compliance bucket on baseline cards |
 | **0.3.54 – 0.3.61** | Localization rollout (FR / DE / ES) — five extraction waves, machine-translation + review tooling, `Intl` date/number/relative-time formatters, and length/overflow visual QA |
 | **0.3.45 – 0.3.53** | Benchmark (CIS) Mapping subtitle + Diff › CIS tab; real History change summaries + auto-scroll Compare; CIS fuzzy-matching tightening; Group resources expand inline in Visual Builder; Diff "Select baseline" dropdown stability (Monaco overflow fix) |
