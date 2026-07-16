@@ -18,11 +18,15 @@ import React from "react";
 import yaml from "js-yaml";
 import { useTranslation } from "react-i18next";
 import { Spinner, MessageBar, MessageBarBody } from "@fluentui/react-components";
+import { CodeRegular, TableRegular } from "@fluentui/react-icons";
 import { ManifestEditor } from "../../../components/manifest-editor";
 import { ResourcePicker } from "../../../components/resource-picker";
 import { ResourceEditDialog } from "./ResourceEditDialog";
+import { VisualManifestViewer } from "./VisualManifestViewer";
 import { FORMAT_TABS, EDITOR_LANGUAGE } from "../helpers";
 import type { ManifestEditorState } from "../state/useManifestEditorState";
+
+export type ManifestViewerMode = "code" | "visual";
 
 export interface ManifestContentProps {
   editorState: ManifestEditorState;
@@ -31,6 +35,8 @@ export interface ManifestContentProps {
   editorPlatform: "windows" | "linux" | undefined;
   cisAvailable: boolean | undefined;
   manifestName: string;
+  viewerMode: ManifestViewerMode;
+  onViewerModeChange: (mode: ManifestViewerMode) => void;
   onResourceAdd: (resource: {
     name: string;
     type: string;
@@ -44,6 +50,8 @@ export const ManifestContent = React.memo(function ManifestContent({
   editorPlatform,
   cisAvailable,
   manifestName,
+  viewerMode,
+  onViewerModeChange,
   onResourceAdd,
 }: ManifestContentProps) {
   const {
@@ -68,24 +76,31 @@ export const ManifestContent = React.memo(function ManifestContent({
   // This lets Group resources expand inline and edit their nested resources
   // through the same dialog flow.
   const [editingResourcePath, setEditingResourcePath] = React.useState<number[] | null>(null);
-  const [editingResource, setEditingResource] = React.useState<Record<string, unknown> | null>(null);
+  const [editingResource, setEditingResource] = React.useState<Record<string, unknown> | null>(
+    null,
+  );
 
   // Walk into a resources tree along the given path. Returns the nested
   // resource OR null if any segment doesn't exist.
-  const resolveAtPath = React.useCallback((doc: Record<string, unknown>, path: number[]): Record<string, unknown> | null => {
-    let arr = Array.isArray(doc.resources) ? (doc.resources as Record<string, unknown>[]) : [];
-    let current: Record<string, unknown> | null = null;
-    for (let depth = 0; depth < path.length; depth++) {
-      const idx = path[depth];
-      if (idx < 0 || idx >= arr.length) return null;
-      current = arr[idx] ?? null;
-      if (depth < path.length - 1) {
-        const props = (current?.properties ?? {}) as Record<string, unknown>;
-        arr = Array.isArray(props.resources) ? (props.resources as Record<string, unknown>[]) : [];
+  const resolveAtPath = React.useCallback(
+    (doc: Record<string, unknown>, path: number[]): Record<string, unknown> | null => {
+      let arr = Array.isArray(doc.resources) ? (doc.resources as Record<string, unknown>[]) : [];
+      let current: Record<string, unknown> | null = null;
+      for (let depth = 0; depth < path.length; depth++) {
+        const idx = path[depth];
+        if (idx < 0 || idx >= arr.length) return null;
+        current = arr[idx] ?? null;
+        if (depth < path.length - 1) {
+          const props = (current?.properties ?? {}) as Record<string, unknown>;
+          arr = Array.isArray(props.resources)
+            ? (props.resources as Record<string, unknown>[])
+            : [];
+        }
       }
-    }
-    return current;
-  }, []);
+      return current;
+    },
+    [],
+  );
 
   const handleResourceEdit = React.useCallback(
     (path: number[]) => {
@@ -113,7 +128,9 @@ export const ManifestContent = React.memo(function ManifestContent({
         const parent = arr[idx];
         if (!parent) return;
         const parentProps = (parent.properties ?? {}) as Record<string, unknown>;
-        arr = Array.isArray(parentProps.resources) ? [...(parentProps.resources as Record<string, unknown>[])] : [];
+        arr = Array.isArray(parentProps.resources)
+          ? [...(parentProps.resources as Record<string, unknown>[])]
+          : [];
         parentProps.resources = arr;
         parent.properties = parentProps;
       }
@@ -157,7 +174,9 @@ export const ManifestContent = React.memo(function ManifestContent({
           const parent = arr[idx];
           if (!parent) return;
           const parentProps = (parent.properties ?? {}) as Record<string, unknown>;
-          arr = Array.isArray(parentProps.resources) ? [...(parentProps.resources as Record<string, unknown>[])] : [];
+          arr = Array.isArray(parentProps.resources)
+            ? [...(parentProps.resources as Record<string, unknown>[])]
+            : [];
           parentProps.resources = arr;
           parent.properties = parentProps;
         }
@@ -186,10 +205,12 @@ export const ManifestContent = React.memo(function ManifestContent({
   }, []);
 
   return (
-    <div className="rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+    <div className="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
       <div className="border-b border-slate-200 px-6 py-4 dark:border-slate-800">
         <div className="flex items-center justify-between">
-          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t("content.sectionTitle")}</h2>
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+            {t("content.sectionTitle")}
+          </h2>
           {activeFormat === "mof" && editing && (
             <span className="text-xs text-slate-400">{t("content.mofReadOnly")}</span>
           )}
@@ -209,12 +230,14 @@ export const ManifestContent = React.memo(function ManifestContent({
             </MessageBar>
           </div>
         )}
-        {/* Edit View Toggle + Format Tabs */}
+        {/* Read-only viewer toggle / existing edit toggle + format tabs */}
         <div className="mt-3 flex items-center justify-between">
-          {editing && (
-            <div className="flex gap-1 rounded-lg bg-slate-100 p-0.5 dark:bg-slate-800">
+          {editing ? (
+            <div className="flex gap-1 rounded-md bg-slate-100 p-0.5 dark:bg-slate-800">
               <button
+                type="button"
                 onClick={() => setEditView("editor")}
+                aria-pressed={editView === "editor"}
                 className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
                   editView === "editor"
                     ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
@@ -224,7 +247,9 @@ export const ManifestContent = React.memo(function ManifestContent({
                 {t("content.editorView")}
               </button>
               <button
+                type="button"
                 onClick={() => setEditView("visual")}
+                aria-pressed={editView === "visual"}
                 className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
                   editView === "visual"
                     ? "bg-white text-slate-900 shadow-sm dark:bg-slate-700 dark:text-white"
@@ -234,32 +259,79 @@ export const ManifestContent = React.memo(function ManifestContent({
                 {t("content.visualBuilderView")}
               </button>
             </div>
-          )}
-          {!editing && <div />}
-          <div className="flex gap-1">
-            {FORMAT_TABS.map(({ key }) => (
+          ) : (
+            <div
+              role="group"
+              aria-label={t("viewer.modeLabel")}
+              className="inline-flex rounded-md border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-950"
+            >
               <button
-                key={key}
-                onClick={() => {
-                  handleFormatChange(key);
-                  setEditView("editor");
-                }}
-                disabled={formatLoading || editing}
-                title={editing ? t("content.unsavedFormatChanges", { format: activeFormat.toUpperCase() }) : undefined}
-                className={`rounded-md px-3 py-1.5 text-sm font-medium transition-colors ${
-                  activeFormat === key && editView === "editor"
-                    ? "bg-blue-600 text-white"
-                    : "text-slate-500 hover:bg-slate-100 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-300"
-                } disabled:opacity-50`}
+                type="button"
+                onClick={() => onViewerModeChange("code")}
+                aria-pressed={viewerMode === "code"}
+                className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
+                  viewerMode === "code"
+                    ? "bg-white text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"
+                    : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
+                }`}
               >
-                {t(`tabs.${key}`)}
+                <CodeRegular className="h-4 w-4" aria-hidden="true" />
+                {t("viewer.code")}
               </button>
-            ))}
-          </div>
+              <button
+                type="button"
+                onClick={() => onViewerModeChange("visual")}
+                aria-pressed={viewerMode === "visual"}
+                className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
+                  viewerMode === "visual"
+                    ? "bg-white text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"
+                    : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
+                }`}
+              >
+                <TableRegular className="h-4 w-4" aria-hidden="true" />
+                {t("viewer.visual")}
+              </button>
+            </div>
+          )}
+          {(editing || viewerMode === "code") && (
+            <div
+              role="tablist"
+              aria-label={t("viewer.formatLabel")}
+              className="flex gap-0.5 rounded-md bg-slate-100 p-0.5 dark:bg-slate-800"
+            >
+              {FORMAT_TABS.map(({ key }) => (
+                <button
+                  key={key}
+                  type="button"
+                  role="tab"
+                  aria-selected={activeFormat === key && editView === "editor"}
+                  onClick={() => {
+                    void handleFormatChange(key);
+                    setEditView("editor");
+                  }}
+                  disabled={formatLoading || editing}
+                  title={
+                    editing
+                      ? t("content.unsavedFormatChanges", { format: activeFormat.toUpperCase() })
+                      : undefined
+                  }
+                  className={`rounded px-3 py-1.5 text-sm font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
+                    activeFormat === key && editView === "editor"
+                      ? "bg-white text-blue-700 shadow-sm dark:bg-slate-700 dark:text-blue-300"
+                      : "text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200"
+                  } disabled:opacity-50`}
+                >
+                  {t(`tabs.${key}`)}
+                </button>
+              ))}
+            </div>
+          )}
         </div>
       </div>
 
-      {editing && editView === "visual" ? (
+      {!editing && viewerMode === "visual" ? (
+        <VisualManifestViewer source={formatCache.current.yaml ?? ""} />
+      ) : editing && editView === "visual" ? (
         <div className="p-6">
           <div className="grid gap-6 lg:grid-cols-2">
             {/* Add resource */}
@@ -306,14 +378,20 @@ export const ManifestContent = React.memo(function ManifestContent({
                       {resources.map((r, i) => {
                         const isGroup = (r.type ?? r.Type) === "Microsoft.OSConfig/Group";
                         const groupResources = isGroup
-                          ? (((r.properties ?? {}) as Record<string, unknown>).resources as Record<string, unknown>[] | undefined) ?? []
+                          ? ((((r.properties ?? {}) as Record<string, unknown>).resources as
+                              | Record<string, unknown>[]
+                              | undefined) ?? [])
                           : [];
                         return (
                           <div key={i}>
                             <div className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800">
                               <div className="min-w-0 flex-1">
                                 <p className="truncate text-sm font-medium text-slate-900 dark:text-white">
-                                  {String(r.name ?? r.Name ?? t("visual.resourceFallback", { index: i + 1 }))}
+                                  {String(
+                                    r.name ??
+                                      r.Name ??
+                                      t("visual.resourceFallback", { index: i + 1 }),
+                                  )}
                                   {isGroup && (
                                     <span className="ml-2 rounded-full bg-purple-100 px-2 py-0.5 text-[10px] font-medium text-purple-700 dark:bg-purple-900/30 dark:text-purple-300">
                                       {t("visual.groupCount", { count: groupResources.length })}
@@ -356,8 +434,13 @@ export const ManifestContent = React.memo(function ManifestContent({
                                       </p>
                                       <p className="truncate text-[11px] text-slate-400 dark:text-slate-500">
                                         {(() => {
-                                          const p = (nested.properties ?? {}) as Record<string, unknown>;
-                                          return String(p.path ?? p.name ?? p.find ?? p.keyPath ?? "");
+                                          const p = (nested.properties ?? {}) as Record<
+                                            string,
+                                            unknown
+                                          >;
+                                          return String(
+                                            p.path ?? p.name ?? p.find ?? p.keyPath ?? "",
+                                          );
                                         })()}
                                       </p>
                                     </div>
@@ -398,7 +481,7 @@ export const ManifestContent = React.memo(function ManifestContent({
           </div>
         </div>
       ) : (
-        <div className="relative h-[calc(100vh-340px)] min-h-[520px] p-4">
+        <div className="relative h-[min(62vh,48rem)] min-h-[32rem] p-4">
           {formatLoading && (
             <div className="absolute inset-0 z-10 flex items-center justify-center bg-white/60 dark:bg-slate-900/60">
               <Spinner size="medium" />

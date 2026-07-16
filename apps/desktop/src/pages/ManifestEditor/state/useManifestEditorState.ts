@@ -43,7 +43,7 @@ export interface ManifestEditorState {
   // ── Edit lifecycle ─────────────────────────────────────────────
   editing: boolean;
   setEditing: React.Dispatch<React.SetStateAction<boolean>>;
-  beginEditing: () => void;
+  beginEditing: (view?: "editor" | "visual") => void;
   cancelEditing: () => void;
   editedContent: string;
   setEditedContent: React.Dispatch<React.SetStateAction<string>>;
@@ -312,10 +312,37 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
     [activeFormat, editing, fetchFormatContent, t],
   );
 
-  const beginEditing = useCallback(() => {
-    setEditBaselineContent(editedContent);
-    setEditing(true);
-  }, [editedContent]);
+  const beginEditing = useCallback(
+    (view: "editor" | "visual" = "editor") => {
+      // A derived-format IPC request may still be in flight while the user
+      // switches to Visual and enters Edit. Invalidate that request before
+      // establishing the edit buffer so its late result can be cached but
+      // cannot replace active YAML/JSON content mid-session.
+      latestFormatRequestRef.current = null;
+      setFormatLoading(false);
+
+      if (view === "visual") {
+        const yamlContent = formatCache.current.yaml;
+        if (yamlContent === undefined) return;
+
+        // Read-only Visual mode is always backed by canonical YAML, even
+        // when its hidden Code tab is JSON or read-only MOF. Move the edit
+        // session onto that authoritative buffer without replacing the
+        // cache object, so derived JSON/MOF representations remain available.
+        setActiveFormat("yaml");
+        setEditedContent(yamlContent);
+        setEditBaselineContent(yamlContent);
+        setEditView("visual");
+        setEditing(true);
+        return;
+      }
+
+      setEditBaselineContent(editedContent);
+      setEditView("editor");
+      setEditing(true);
+    },
+    [editedContent],
+  );
 
   const cancelEditing = useCallback(() => {
     setEditing(false);

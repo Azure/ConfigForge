@@ -70,7 +70,25 @@ describe('Layout baseline workspace shell', () => {
       'true',
     );
     expect(screen.getByText('Baseline detail')).toBeInTheDocument();
+    expect(screen.getByText('Baseline detail').parentElement).toHaveClass(
+      'overflow-y-auto',
+      'p-6',
+    );
     expect(screen.queryByText('Health')).not.toBeInTheDocument();
+  });
+
+  it('gives the baseline viewer a fixed-height shell for its own scroll region and footer', async () => {
+    renderLayout('/manifests/alpha');
+
+    expect(await screen.findByRole('tab', { name: 'alpha' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    expect(screen.getByText('Baseline detail').parentElement).toHaveClass(
+      'h-full',
+      'overflow-hidden',
+    );
+    expect(screen.getByText('Baseline detail').parentElement).not.toHaveClass('p-6');
   });
 
   it('excludes create and preserves the app footer outside workspace pages', async () => {
