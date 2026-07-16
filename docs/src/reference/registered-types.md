@@ -70,7 +70,7 @@ field, and unaffected resources still apply.
 | --- | --- |
 | `registerManifest()` (`packages/core/src/handlers/manifests.ts`) | Walks the manifest's resource types. Anything not in `REGISTERED_{WINDOWS,LINUX}_TYPES` produces a soft warning **only when the manifest targets this host's platform** (so a Linux manifest registered on Windows doesn't spam Windows-only-type false positives). |
 | `detectManifestPlatform()` (`packages/core/src/platform.ts`) | Looks up each type's platform tag (`Microsoft.Windows/*` → windows, `Linux/*` → linux). `'mixed'` falls out of seeing both Windows and Linux tags. |
-| Editor form (`apps/desktop/src/components/resource-picker.tsx`) | Renders inputs based on per-type property hints. |
+| Visual spreadsheet (`apps/desktop/src/pages/ManifestEditor/visual-viewer.ts`) | Supplies safe blank-row templates and typed inline editing hints. |
 | CIS cross-reference (`packages/core/src/cis/`) | Filters which CIS rules can match against which types (only when CIS data is available locally - see the [glossary](./glossary.md#cis)). |
 
 ## Updating the whitelist

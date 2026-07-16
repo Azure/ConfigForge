@@ -91,14 +91,14 @@ it('classifies AccountPolicy as windows', () => {
 });
 ```
 
-## 6. Update editor form (optional)
+## 6. Update the Visual row template (optional)
 
-The type picker reads from `packages/core/src/oscfg/registered-types.ts`,
-but form-based Add/Edit support is gated in
-`apps/desktop/src/components/resource-picker.tsx` by `TYPES_WITH_FORM`.
-If the new type needs structured fields, add the form controls there and
-cover both Add and Edit paths. Otherwise the YAML fallback is acceptable
-for rare or advanced resource types.
+Inline editing works automatically for any existing resource. To offer the
+type in **Add setting**, add a `VisualResourceTemplate` entry to
+`apps/desktop/src/pages/ManifestEditor/visual-viewer.ts` with safe initial
+property values and a platform tag. Add pure-helper and component coverage
+for typed values. Complex container/wrapper types such as Group and Test
+should remain Code-only unless they can be represented as one safe flat row.
 
 ## 7. Update the changelog
 

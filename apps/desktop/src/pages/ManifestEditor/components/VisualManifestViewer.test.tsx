@@ -1,10 +1,12 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { describe, expect, it } from "vitest";
+import React, { useState } from "react";
+import { describe, expect, it, vi } from "vitest";
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
+import { parseVisualManifest } from "../visual-viewer";
 import { VisualManifestViewer } from "./VisualManifestViewer";
 
 const source = `resources:
@@ -35,6 +37,46 @@ function renderViewer(yamlSource = source) {
   return render(
     <FluentProvider theme={webLightTheme}>
       <VisualManifestViewer source={yamlSource} />
+    </FluentProvider>,
+  );
+}
+
+function EditableHarness({
+  initialSource = source,
+  onChange,
+  onValidityChange,
+}: {
+  initialSource?: string;
+  onChange?: (source: string) => void;
+  onValidityChange?: (valid: boolean) => void;
+}) {
+  const [current, setCurrent] = useState(initialSource);
+  return (
+    <VisualManifestViewer
+      source={current}
+      editable
+      platform="windows"
+      onDraftValidityChange={onValidityChange}
+      onSourceChange={(next) => {
+        setCurrent(next);
+        onChange?.(next);
+      }}
+    />
+  );
+}
+
+function renderEditable(
+  initialSource = source,
+  onChange?: (source: string) => void,
+  onValidityChange?: (valid: boolean) => void,
+) {
+  return render(
+    <FluentProvider theme={webLightTheme}>
+      <EditableHarness
+        initialSource={initialSource}
+        onChange={onChange}
+        onValidityChange={onValidityChange}
+      />
     </FluentProvider>,
   );
 }
@@ -175,5 +217,130 @@ describe("VisualManifestViewer", () => {
     }
     expect(screen.queryByText(/Could not parse/i)).not.toBeInTheDocument();
     expect(screen.queryByText("18446744073709552000")).not.toBeInTheDocument();
+  });
+
+  it("edits spreadsheet cells inline and synchronizes canonical YAML", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(source, onChange);
+
+    await user.click(
+      screen.getByRole("button", { name: "Edit Setting Name for Later" }),
+    );
+    const input = screen.getByRole("textbox", {
+      name: "Edit Setting Name for Later",
+    });
+    await user.clear(input);
+    await user.type(input, "Renamed setting");
+    await user.keyboard("{Enter}");
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(screen.getByText("Renamed setting")).toBeInTheDocument();
+    const document = parseVisualManifest(onChange.mock.calls[0][0]) as {
+      resources: Array<{ name: string }>;
+    };
+    expect(document.resources[0].name).toBe("Renamed setting");
+  });
+
+  it("adds blank rows directly in the table and opens the new name cell", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(source, onChange);
+    const category = screen.getByRole("heading", { name: "Category" }).closest("section");
+    expect(category).not.toBeNull();
+
+    await user.click(within(category!).getByRole("button", { name: "Add row" }));
+
+    expect(onChange).toHaveBeenCalledTimes(1);
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Setting Name for Unnamed setting",
+      }),
+    ).toBeInTheDocument();
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Complete 1 required cell before saving.",
+    );
+    const document = parseVisualManifest(onChange.mock.calls[0][0]) as {
+      resources: Array<{ type: string; properties: Record<string, unknown> }>;
+    };
+    expect(document.resources.at(-1)).toMatchObject({
+      type: "Example/Category",
+      properties: {
+        priority: "",
+        details: "",
+      },
+    });
+  });
+
+  it("adds a known resource type without opening the retired form picker", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable("resources: []\n", onChange);
+
+    await user.click(screen.getByRole("button", { name: "Add setting" }));
+    await user.click(
+      screen.getByRole("menuitem", { name: /Registry[\s\S]*Microsoft\.Windows\/Registry/ }),
+    );
+
+    const document = parseVisualManifest(onChange.mock.calls[0][0]) as {
+      resources: Array<{ type: string; properties: Record<string, unknown> }>;
+    };
+    expect(document.resources[0]).toMatchObject({
+      type: "Microsoft.Windows/Registry",
+      properties: {
+        keyPath: "",
+        valueName: "",
+        valueType: "String",
+        value: "",
+      },
+    });
+    expect(screen.queryByText("Manage Windows registry keys and values")).not.toBeInTheDocument();
+  });
+
+  it("bulk-deletes selected rows from the spreadsheet", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(source, onChange);
+
+    await user.click(screen.getByRole("checkbox", { name: "Select First equal" }));
+    await user.click(screen.getByRole("button", { name: "Delete 1 selected" }));
+
+    expect(screen.queryByText("First equal")).not.toBeInTheDocument();
+    const document = parseVisualManifest(onChange.mock.calls[0][0]) as {
+      resources: Array<{ name: string }>;
+    };
+    expect(document.resources.map((resource) => resource.name)).toEqual([
+      "Later",
+      "Second equal",
+      "Other category",
+    ]);
+  });
+
+  it("keeps invalid typed edits in the cell and does not mutate source", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const onValidityChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: File state
+    type: Microsoft.OSConfig/File
+    properties:
+      path: /tmp/configforge
+      exists: true
+`,
+      onChange,
+      onValidityChange,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Edit exists for File state" }));
+    const input = screen.getByRole("textbox", { name: "Edit exists for File state" });
+    await user.clear(input);
+    await user.type(input, "sometimes");
+    await user.keyboard("{Enter}");
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Enter true or false.");
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(onChange).not.toHaveBeenCalled();
+    expect(onValidityChange).toHaveBeenLastCalledWith(false);
   });
 });

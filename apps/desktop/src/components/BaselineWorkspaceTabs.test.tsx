@@ -34,7 +34,10 @@ describe('BaselineWorkspaceTabs', () => {
     Object.assign(window.cfs!, {
       manifests: {
         list: vi.fn().mockResolvedValue({
-          data: [{ Name: 'alpha' }, { Name: 'beta' }],
+          data: [
+            { Name: 'alpha', Platform: 'windows' },
+            { Name: 'beta', Platform: 'linux' },
+          ],
         }),
       },
     });
@@ -44,10 +47,14 @@ describe('BaselineWorkspaceTabs', () => {
     renderAt('/manifests/alpha');
 
     expect(screen.getByRole('tab', { name: 'All Baselines' })).toBeInTheDocument();
-    expect(await screen.findByRole('tab', { name: 'alpha' })).toHaveAttribute(
+    const alpha = await screen.findByRole('tab', { name: 'alpha' });
+    expect(alpha).toHaveAttribute(
       'aria-selected',
       'true',
     );
+    await waitFor(() => {
+      expect(alpha.querySelector('[data-platform="windows"]')).toBeInTheDocument();
+    });
     await waitFor(() =>
       expect(JSON.parse(localStorage.getItem(BASELINE_WORKSPACE_STORAGE_KEY) ?? '[]')).toEqual([
         'alpha',
@@ -61,7 +68,10 @@ describe('BaselineWorkspaceTabs', () => {
       JSON.stringify(['alpha', 'beta']),
     );
     renderAt('/manifests/alpha/history');
-    await screen.findByRole('tab', { name: 'beta' });
+    const beta = await screen.findByRole('tab', { name: 'beta' });
+    await waitFor(() => {
+      expect(beta.querySelector('[data-platform="linux"]')).toBeInTheDocument();
+    });
 
     fireEvent.click(screen.getByRole('tab', { name: 'beta' }));
     expect(screen.getByLabelText('current-path')).toHaveTextContent('/manifests/beta');

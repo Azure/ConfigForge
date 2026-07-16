@@ -1,24 +1,47 @@
 # Changelog
 
-## [0.3.72-author.1] - 2026-06-19
+## [0.3.73] - 2026-07-16
+
+### Changed
+- **Replaced the legacy tile/form Visual Builder with direct spreadsheet editing.** The grouped Visual tables are now the single visual surface in both Baseline Detail and Register New Baseline. Edit cells inline, add blank rows by category or setting type, select rows, and delete directly in the table. Test wrappers and Group children stay bound to their original source paths; unknown fields and schema constraints are preserved; Registry/CSP values retain their declared types; and QWord integers above `Number.MAX_SAFE_INTEGER` round-trip exactly.
+- **Kept editor actions anchored.** Entering Edit no longer hides the bottom action row or moves Save into the header. The footer remains visible and its Edit action changes to Save; Cancel stays in the header.
+- **Added platform marks to opened baseline tabs.** Windows tabs use the four-color Microsoft mark, Linux tabs use the penguin, and the icons are restored from authoritative baseline metadata after restart.
+
+### Fixed
+- **Benchmark Mapping no longer flags valid SCAP sidecars as unrecognized.** A detected XCCDF bundle now recognizes its primary OVAL file plus standard `-cpe-oval.xml`, `-cpe-dictionary.xml`, and `-ocil.xml` companions. Unrelated files still appear in diagnostics.
+
+### Localization
+- Added French, German, and Spanish strings for spreadsheet editing, selection, typed-value errors, and the new Visual label.
+
+## [0.3.72] - 2026-06-19
 
 ### Security
-- **Completed the `undici` fix — also bumped node-gyp's nested `undici` 6.25.0 → 6.27.0.** v0.3.71 patched the top-level `undici` (7.28.0) but left node-gyp's transitive `undici` at 6.25.0, still flagged HIGH by `npm audit` (affecting `<6.27.0`). Added an `undici@6` override (`^6.27.0`) alongside the existing `undici@7` one. `npm audit` now reports **0 vulnerabilities**. Still build/test-only — not bundled into the app.
+- **Completed the `undici` fix — also bumped node-gyp's nested `undici` 6.25.0 → 6.27.0.** v0.3.71 patched the top-level `undici` (7.28.0) but left node-gyp's transitive `undici` at 6.25.0, still flagged HIGH by `npm audit` (GHSA-vxpw-j846-p89q et al, affecting `<6.27.0`). Added an `undici@6` override (`^6.27.0`) alongside the existing `undici@7` one; 6.27.0 satisfies node-gyp's `^6.25.0` requirement. `npm audit` now reports **0 vulnerabilities**. Still build/test-only — not bundled into the app.
 
-## [0.3.71-author.1] - 2026-06-19
+## [0.3.71] - 2026-06-19
 
 ### Security
 - **Bumped `undici` to 7.28.0** (Dependabot #14 medium, #15 high) via a targeted override (`undici@>=7.0.0 <7.28.0` → `^7.28.0`), resolving both advisories. `undici` is a build/test-only dependency (electron-builder, `@electron/get`, jsdom) and is **not bundled** into the shipped app; node-gyp's non-vulnerable `undici` 6.25.0 is left untouched. `npm audit`: 0 vulnerabilities.
 
-## [0.3.70-author.1] - 2026-06-18
+### Changed
+- Bumped `dompurify` (dev dependency) 3.4.9 → 3.4.11 (Dependabot).
+
+### Docs
+- Regenerated all 9 README screenshots and refreshed the Release-history table for the current UI (My Baselines / Microsoft Baselines / Export Readiness / Benchmark Mapping nav, "setting" terminology, 4-color Windows logo + penguin, OSConfig Gen 2).
+
+## [0.3.70] - 2026-06-18
 
 ### Fixed
 - **Benchmark Mapping: the "Back to My Baselines" button now shows a back arrow**, matching the other back buttons across the app (added the `ArrowLeftRegular` icon to the link in `CisCatalog.tsx`).
 
-## [0.3.69-author.1] - 2026-06-18
+## [0.3.69] - 2026-06-18
 
 ### Changed
-- **UI polish across My Baselines, Microsoft Baselines, and the Baseline Editor.** Replaced the Windows emoji and the FluentUI desktop icon with a 4-color Microsoft Windows logo on baseline cards, Microsoft Baselines filters/cards, the setting picker, and the editor header; Linux now uses the penguin consistently. Moved the **Microsoft Baselines** nav item directly under **My Baselines**, renamed the baseline-card action **"View" to "Open"**, removed the redundant **"Source: oscfg"** label from cards and the editor header, and swapped the editor format strip so the Editor/Visual Builder toggle is on the left and the YAML/JSON/MOF tabs are on the right. Renamed the Benchmark Mapping **"CIS data folder" to "Benchmark data folder"** and fixed the License-note spacing.
+- **UI polish across My Baselines, Microsoft Baselines, and the Baseline Editor.**
+  - Replaced the Windows emoji and the FluentUI desktop icon with a 4-color Microsoft Windows logo on baseline cards, Microsoft Baselines filters/cards, the setting picker, and the editor header; Linux now uses the penguin consistently.
+  - Moved the **Microsoft Baselines** nav item directly under **My Baselines** and renamed the baseline-card action **"View" to "Open"**.
+  - Removed the redundant **"Source: oscfg"** label from cards and the editor header.
+  - Swapped the editor format strip so the Editor/Visual Builder toggle is on the left and the YAML/JSON/MOF tabs are on the right; renamed the Benchmark Mapping **"CIS data folder" to "Benchmark data folder"**; and fixed the License-note spacing.
 - **Deprecated the duplicate toolbar "Docs" button** in the Baseline Editor (use Export → Docs); removed the now-dead docs-preview modal and hook.
 
 ### Fixed
@@ -27,10 +50,10 @@
 ### Localization
 - Re-translated the changed FR/DE/ES keys via Azure Translator and hand-corrected the high-visibility **"Open"** button to the proper imperative form (Ouvrir / Öffnen / Abrir).
 
-## [0.3.68-author.1] - 2026-06-10
+## [0.3.68] - 2026-06-10
 
 ### Changed
-- **Removed all code-signing from CI; release builds are now unsigned by design (OSS migration).** Ahead of the open-source repo move, the Release workflow no longer signs Windows installers: dropped the Azure Trusted Signing step, the legacy `.pfx`/`CSC_*` path, the signing gate, and the `allow_unsigned` dispatch input (plus all `WIN_CSC_*`, `AZURE_*`, and `TRUSTED_SIGNING_*` secret/variable references). `release.yml`/`release-mac.yml` still build the full installer matrix (NSIS/zip/AppImage/deb/rpm/tar.gz/.dmg) with SBOM + SHA256SUMS and publish to a draft release — just **unsigned**. The trust path is building from source; an optional **local** self-sign helper (`apps/desktop/scripts/generate-dev-cert.ps1`) is retained but never runs in CI.
+- **Removed all code-signing from CI; release builds are now unsigned by design (OSS migration).** Ahead of the open-source repo move, the Release workflow no longer signs Windows installers: dropped the Azure Trusted Signing step, the legacy `.pfx`/`CSC_*` path, the signing gate, and the `allow_unsigned` dispatch input (plus all `WIN_CSC_*`, `AZURE_*`, and `TRUSTED_SIGNING_*` secret/variable references). `release.yml`/`release-mac.yml` still build the full installer matrix (NSIS/zip/AppImage/deb/rpm/tar.gz/.dmg) with SBOM + SHA256SUMS and publish to a draft release — just **unsigned**. **Verification workflow:** before installing, download artifacts only from the GitHub release, verify each file against `SHA256SUMS`, and review attached provenance/SBOM artifacts; for high-assurance environments, build from source at the tagged commit and compare resulting hashes where reproducible. The trust path is building from source; an optional **local** self-sign helper (`apps/desktop/scripts/generate-dev-cert.ps1`) is retained but never runs in CI.
 - **Moved the `npm audit --omit=dev --audit-level=high` supply-chain gate into `pr-check.yml`** so it runs on every PR (previously only at release). The release pipeline keeps its copy as a pre-ship gate.
 
 ### Docs
@@ -39,63 +62,69 @@
 ### Notes
 - App code unchanged except comments; the main-process logger's secret-redaction patterns (incl. `WIN_CSC_*`) are intentionally retained as defense-in-depth.
 
-## [0.3.67-author.1] - 2026-06-10
+## [0.3.67] - 2026-06-10
 
 ### Fixed
 - **MOF export now produces a package the Azure Machine Configuration cmdlets can build.** `exportToMof` stamped `ModuleName = "OSConfig"` / `ModuleVersion = "1.0.0"`, but the OSConfig DSC resource ships in the **`Microsoft.OSConfig`** PSGallery module, and `New-GuestConfigurationPackage` requires the MOF's `ModuleVersion` to match an *installed* version exactly. The result: packaging a ConfigForge-exported MOF failed with *"Failed to find a module with the name 'OSConfig' and the version '1.0.0'."* The export now emits `ModuleName = "Microsoft.OSConfig"` and **omits `ModuleVersion`**, so the packaging cmdlet binds to whatever `Microsoft.OSConfig` (1.2.0 or later) is installed. Verified end-to-end: Export → MOF → `New-GuestConfigurationPackage -Type AuditAndSet` now produces a valid `.zip` with no manual edits (against GuestConfiguration 4.11.0 + Microsoft.OSConfig 1.3.11). The DSC resource class (`instance of OSConfig`) and the configuration footer are unchanged.
+  - **If you exported MOFs before 0.3.67, re-export them before packaging.** Manual fallback: update `ModuleName` to `Microsoft.OSConfig` and remove the `ModuleVersion` line in the existing MOF, then rerun `New-GuestConfigurationPackage`.
   - Documented the one-time prerequisites (`Install-Module GuestConfiguration` + `Install-Module Microsoft.OSConfig`) in the manifest-editor export guide and added 4 regression tests (`import-export/index.test.ts`).
 
 ### Tests
 - Full vitest suite passing; `npm run desktop:build` clean; `npm run lint` 0 errors; MOF→package validated end-to-end via the Azure Machine Configuration cmdlets.
 
-## [0.3.66-author.1] - 2026-06-10
+## [0.3.66] - 2026-06-10
 
 ### Changed
 - **Shortened the desktop app package description** shown in the Windows executable / installer metadata: "ConfigForge — Electron desktop app. Cross-platform (Windows + Linux) with Fluent-inspired desktop polish." → "ConfigForge — OSConfig Baseline Editing tool". The source is the `description` field in `apps/desktop/package.json`, which electron-builder embeds in the built artifact. No functional change.
 
 ### Fixed
-- **Manifests list card stat labels no longer look cramped.** The 4-up Resources / Compliant / Issues / Could not read grid used wide letter-spacing (`tracking-wider`) plus large side padding (`px-3`), leaving only ~70px for text, so the three-word "Could not read" label wrapped to three tight lines and crowded the tile edges. Tightened the label tracking and trimmed the stat-box horizontal padding so the label wraps cleanly to two lines — tile size and the other three stats are unchanged.
+- **Manifests list card stat labels no longer look cramped.**
+  - The 4-up Resources / Compliant / Issues / Could not read grid used wide letter-spacing (`tracking-wider`) plus large side padding (`px-3`), leaving only ~70px for text, so the three-word "Could not read" label wrapped to three tight lines and crowded the tile edges.
+  - Tightened the label tracking and trimmed the stat-box horizontal padding so the label wraps cleanly to two lines — tile size and the other three stats are unchanged.
 
-## [0.3.65-author.1] - 2026-06-10
+## [0.3.65] - 2026-06-10
 
 ### Fixed
 - **Diff "Select manifest" dropdown could freeze until app restart (definitive fix).** Rapidly navigating between pages that mount and dispose Monaco editors (Manifests, the manifest editor, CIS Mapping, Diff) could leave an orphaned `position: fixed` Monaco overflow widget parented on `document.body`. The invisible overlay sat over the Pairwise "Select manifest" `<select>`, swallowed clicks, and froze the dropdown until restart. v0.3.53 mitigated the symptom (removed a stuck-loading guard, added an IPC timeout); this is the root-cause fix — Monaco's overflow widgets are now hosted in a node ConfigForge owns via `overflowWidgetsDomNode`: created with `document.createElement`, appended to `<body>` for the editor's lifetime, and **removed on unmount**, so no orphan can survive a dispose/navigation race.
-  - The host is deliberately a non-React `document.createElement` node rather than JSX. A React-rendered node carries `__reactFiber$…` expando properties that point into the cyclic Fiber tree, and Monaco deep-clones the editor options (which include this node); cloning a React-owned node recurses through the entire Fiber graph and crashes the renderer with "Maximum call stack size exceeded" on a later editor mount.
 - Covered by a strengthened Playwright e2e (`e2e/diff-dropdown-no-orphan.spec.ts`): it churns editors, then switches the Pairwise side to "from manifest" mode and asserts the dropdown has no overlay, accepts a real pointer click, and actually changes value when a manifest is selected.
+
+### Notes
+- The overflow-widget host is deliberately a non-React `document.createElement` node rather than JSX. A React-rendered node carries `__reactFiber$…` expando properties that point into the cyclic Fiber tree, and Monaco deep-clones the editor options (which include this node); cloning a React-owned node recurses through the entire Fiber graph and crashes the renderer with "Maximum call stack size exceeded" on a later editor mount.
 
 ### Tests
 - Full vitest suite **1254 passing, 0 failing**; full Playwright e2e **61 passing** (1 known-flaky `conflict-detection` retry); `npm run desktop:build` clean; `npm run lint` 0 errors.
 
-## [0.3.64-author.1] - 2026-06-09
+## [0.3.64] - 2026-06-09
 
 ### Fixed
-- **Manifests list card now surfaces the "Could not read" bucket** (author-flavor port of v0.3.64). The amber indeterminate/error count renders alongside Resources / Compliant / Issues so the card totals match the manifest detail view. Covered by new unit + Playwright e2e tests.
+- **Manifests list card now surfaces the "Could not read" bucket.**
+  - Each per-manifest card showed only Resources / Compliant / Issues and silently dropped indeterminate/error resources, so the card totals disagreed with the manifest detail view — e.g. a 265-resource manifest showing 66 Compliant + 192 Issues with 7 unreadable resources invisible (66 + 192 = 258 ≠ 265).
+  - Added the amber **Could not read** stat (indeterminate + error, mirroring `DeployResultPanel`) so Compliant + Issues + Could not read add up to the audited total. Never-audited resources are not counted as unreadable.
+  - Covered by new unit tests (`Manifests/index.test.tsx`) and a Playwright e2e (`e2e/manifest-card-could-not-read.spec.ts`).
 - **Welcome splash no longer hard-codes a version.** "ConfigForge v0.2.0 works in two modes…" → "ConfigForge works in two modes…" across en/fr/de/es.
 
-## [0.3.63-author.2] - 2026-06-08
+## [0.3.63] - 2026-06-08
 
 ### Changed
-- **UI label "OSConfig vNext" → "OSConfig Gen 2"** (author-flavor port). Sidebar footer, Home description, and Settings docs-link + section description across en/fr/de/es.
+- **UI label "OSConfig vNext" → "OSConfig Gen 2".** Renamed the product/version label across the sidebar footer, Home page description, and Settings (docs-link label + section description) in all four locales (en/fr/de/es), kept identical as a product label (localized `vSuivant`/`vWeiter`/`vSiguiente` variants folded into "Gen 2").
+  - Left unchanged: the MS Learn URL `…concept-osc-vnext-redux` in `Settings.tsx` (real external link) and the internal i18n key name.
 
-## [0.3.63-author.1] - 2026-06-08
+## [0.3.62] - 2026-06-08
 
 ### Changed
-- **Rebrand port: "ConfigForge Spark" → "ConfigForge".** Author-flavor port of the rename shipped on `main` as v0.3.62 (105 files).
-  - **Author identity:** `appId` `community.configforge.spark.author` → `community.configforge.author`; `productName` "ConfigForge Spark Author" → "ConfigForge Author"; `executableName` `configforge-spark-author` → `configforge-author`; mac artifact `ConfigForgeSpark-Author-${version}` → `ConfigForge-Author-${version}`; installed bundle now `ConfigForge Author.app`.
-  - **Shared identity** (mirrored from main): `appId` `community.configforge.spark` → `community.configforge`; `configforge-spark` → `configforge`; repo URLs → `github.com/ABMFST/ConfigForge`.
-  - **Preserved:** the `__CFS_FLAVOR__` esbuild define + `HAS_*` flavor conditionals (untouched), and the unrelated `SparkleRegular` FluentUI icon.
+- **Rebrand: "ConfigForge Spark" → "ConfigForge".** Dropped the "Spark" suffix across the entire codebase, build configuration, and documentation (112 files).
+  - **App identity (clean rebrand):** `appId` `community.configforge.spark` → `community.configforge`; `executableName` / npm package `name` `configforge-spark` → `configforge`; `productName` / `shortcutName` "ConfigForge Spark" → "ConfigForge". The Windows install path and `%APPDATA%` data folder move from `configforge-spark` to `configforge`, so preview users' local settings do not carry over (acceptable pre-GA).
+  - **Installer artifacts:** `ConfigForgeSpark-Setup-${version}` → `ConfigForge-Setup-${version}`.
+  - **Repo URLs:** `github.com/ABMFST/ConfigForgeSpark` → `github.com/ABMFST/ConfigForge` (repo already renamed; old URLs auto-redirect). Local git remote updated to match.
+  - **Author flavor (mac):** "ConfigForge Spark Author" → "ConfigForge Author"; `appId` `community.configforge.spark.author` → `community.configforge.author`. Ported on `mac-author-build` separately.
+  - **Preserved:** the unrelated `SparkleRegular` FluentUI icon in `ai-analysis-panel.tsx` (false-positive match on "spark").
 
 ### Tests
-- No behavioral change. `npm run build:author` + `npm test` clean.
+- No behavioral change. Full vitest suite **1251 passing, 0 failing**; `npm run desktop:build` clean; `npm run lint` 0 errors.
 
-## [0.3.62-author.1] - 2026-05-29
+### Follow-ups
+- The Azure Trusted Signing service principal documented as `ConfigForgeSparkSigner` is now written as `ConfigForgeSigner`; rename the actual Azure SP to match (the doc is aspirational until then — signing itself is driven by secrets, not the SP display name).
 
-### Changed
-- **Ported main localization v0.3.54-v0.3.61 plus the English apostrophe fix to the macOS author flavor.** The author build now carries the same `react-i18next` plumbing, 13-namespace EN/FR/DE/ES catalogs, Settings language picker, formatter hooks, translation tooling, and localization QA docs as main.
-- **Preserved author-flavor feature gates.** Deploy, elevation, device-audit, footer health, and activity-feed surfaces remain behind build-time flavor flags so the macOS author build keeps dead-code-stripping full-flavor paths.
-
-### Notes
-- Mac translations remain pending Amir review using `apps/desktop/src/locales/REVIEW.md` and `apps/desktop/src/locales/VISUAL-QA.md`.
 ## [0.3.61] - 2026-05-28
 
 ### Added
@@ -132,7 +161,7 @@
 - `npx eslint scripts/translate-locales.mjs scripts/review-locales.mjs` has no root config to load; rerun with the existing desktop config succeeded with 0 errors and 1 existing-style complexity warning in the report analyzer.
 
 ### Notes
-- **Honest disclosure:** this autopilot run had no Azure Translator or DeepL API keys, so the FR/DE/ES strings were produced directly by the autopilot LLM and curated heuristically rather than by the `translate-locales.mjs` paid-provider adapters. The adapter script is ready for future reruns when `AZURE_TRANSLATOR_KEY` / `AZURE_TRANSLATOR_REGION` or `DEEPL_API_KEY` is available.
+- **Honest disclosure:** this autopilot run had no Azure Translator or DeepL API keys, so the FR/DE/ES strings were produced directly by the autopilot LLM and curated heuristically rather than by the `translate-locales.mjs` paid-provider adapters. These machine-assisted translations are **draft quality only** and must be reviewed/corrected by native speakers (or qualified product linguists) before any production/customer-facing release; do not treat them as final professional translations until that sign-off is complete. The adapter script is ready for future reruns when `AZURE_TRANSLATOR_KEY` / `AZURE_TRANSLATOR_REGION` or `DEEPL_API_KEY` is available.
 - **Critical note for Amir:** machine-assisted translations are first-pass product text. Per the `review-amir` follow-up, review at least the high-traffic surfaces (sidebar, common buttons, settings, home, manifest editor toolbar) before any external/customer-facing release. The review workflow is documented in `apps/desktop/src/locales/REVIEW.md`.
 
 ## [0.3.59] - 2026-05-28
@@ -222,6 +251,17 @@
 - `apps/desktop/src/lib/locale.test.ts` — 10 cases covering `resolveLocale` for concrete + system preferences, navigator subtag stripping, unsupported-locale fallback, malformed-input safety, storage round-trip, and `initializeLocale` precedence rules.
 - `apps/desktop/src/locales/index.test.ts` — 6 cases covering namespace load, populated key lookup, missing-key returns key, language switching across all four locales, English fallback for partially translated namespaces, and `{{interpolation}}` pipeline.
 - `vitest.setup.ts` now boots i18next in English before each suite so the existing 1217 tests pass unchanged.
+
+## [0.3.53] - 2026-05-26
+
+### Fixed
+- **Diff page "Select manifest" dropdown stability.** Clicking the Pairwise Before/After manifest picker sometimes did nothing — no popup, no error — and the failure persisted across page navigation until the app was restarted. Three independent defensive fixes:
+  - **Removed `disabled={loadingManifests}`** from both Pairwise selects (`Diff/index.tsx`). If the `cfs.manifests.list({})` IPC ever stalled, `loadingManifests` stayed `true` forever, leaving the `<select>` permanently uninteractive even after navigating away and back. Loading is now communicated only via the placeholder option text.
+  - **10s timeout on the manifest list IPC.** New `apps/desktop/src/lib/with-timeout.ts` helper wraps the call; a stuck handler now surfaces a recoverable banner error instead of hanging silently.
+  - **Monaco editor hygiene** (`manifest-editor.tsx`): the capture-phase `pointerdown` listener attached in `handleEditorMount` is now removed on `editor.onDidDispose` instead of leaking on every unmount, and `fixedOverflowWidgets: true` keeps the find/suggest/hover widgets inside the editor's own DOM so they cannot become body-level orphans that intercept clicks on other UI after the editor is disposed.
+
+### Added
+- New tests `apps/desktop/src/lib/with-timeout.test.ts` (5 cases) and `apps/desktop/src/pages/Diff/index.test.tsx` (2 cases) pinning the contract that the Pairwise selects stay interactive while the manifest IPC is pending.
 
 ## [0.3.52] - 2026-05-26
 

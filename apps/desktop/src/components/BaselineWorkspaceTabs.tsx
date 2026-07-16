@@ -12,8 +12,47 @@ import {
   MenuPopover,
   MenuTrigger,
 } from "@fluentui/react-components";
-import { DismissRegular, MoreHorizontalRegular } from "@fluentui/react-icons";
-import { useBaselineWorkspace } from "./BaselineWorkspace";
+import {
+  DesktopRegular,
+  DismissRegular,
+  DocumentMultipleRegular,
+  MoreHorizontalRegular,
+} from "@fluentui/react-icons";
+import {
+  useBaselineWorkspace,
+  type BaselineWorkspacePlatform,
+} from "./BaselineWorkspace";
+import { WindowsLogo } from "./WindowsLogo";
+
+function BaselineTabPlatformIcon({
+  platform,
+}: {
+  platform: BaselineWorkspacePlatform | undefined;
+}) {
+  if (platform === "windows") {
+    return (
+      <span aria-hidden="true" data-platform="windows" className="inline-flex shrink-0">
+        <WindowsLogo className="h-4 w-4" />
+      </span>
+    );
+  }
+  if (platform === "linux") {
+    return (
+      <span
+        aria-hidden="true"
+        data-platform="linux"
+        className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-sm leading-none"
+      >
+        🐧
+      </span>
+    );
+  }
+  return (
+    <span aria-hidden="true" data-platform={platform ?? "unknown"} className="inline-flex shrink-0">
+      <DesktopRegular className="h-4 w-4" />
+    </span>
+  );
+}
 
 export function baselineNameFromPath(pathname: string): string | null {
   const match = /^\/manifests\/([^/]+)(?:\/|$)/.exec(pathname);
@@ -33,7 +72,8 @@ export function BaselineWorkspaceTabs() {
   const { t } = useTranslation("manifests");
   const location = useLocation();
   const navigate = useNavigate();
-  const { openBaselines, openBaseline, closeBaseline } = useBaselineWorkspace();
+  const { openBaselines, baselinePlatforms, openBaseline, closeBaseline } =
+    useBaselineWorkspace();
   const activeBaseline = baselineNameFromPath(location.pathname);
   const allActive = location.pathname === "/manifests";
 
@@ -66,12 +106,13 @@ export function BaselineWorkspaceTabs() {
             role="tab"
             aria-selected={allActive}
             onClick={() => navigate("/manifests")}
-            className={`shrink-0 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+            className={`inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
               allActive
                 ? "border-blue-600 text-blue-700 dark:border-blue-400 dark:text-blue-300"
                 : "border-transparent text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
             }`}
           >
+            <DocumentMultipleRegular className="h-4 w-4" aria-hidden="true" />
             {t("workspace.allBaselines")}
           </button>
 
@@ -93,13 +134,14 @@ export function BaselineWorkspaceTabs() {
                   role="tab"
                   aria-selected={active}
                   onClick={() => goToBaseline(name)}
-                  className={`max-w-56 px-3 py-2 text-left text-sm font-medium ${
+                  className={`inline-flex max-w-56 items-center gap-1.5 px-3 py-2 text-left text-sm font-medium ${
                     active
                       ? "text-slate-950 dark:text-white"
                       : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
                   }`}
                   title={name}
                 >
+                  <BaselineTabPlatformIcon platform={baselinePlatforms[name]} />
                   <span className="block truncate">{name}</span>
                 </button>
                 <button
@@ -135,6 +177,7 @@ export function BaselineWorkspaceTabs() {
                     key={name}
                     onClick={() => goToBaseline(name)}
                     aria-current={activeBaseline === name ? "page" : undefined}
+                    icon={<BaselineTabPlatformIcon platform={baselinePlatforms[name]} />}
                   >
                     <span className="max-w-80 truncate" title={name}>
                       {name}

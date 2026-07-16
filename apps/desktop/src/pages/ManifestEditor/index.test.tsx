@@ -14,6 +14,7 @@ const sampleYaml = `resources:
     properties:
       keyPath: HKLM:\\Software\\Example
       valueName: Enabled
+      valueType: Dword
       value: 1
 `;
 
@@ -21,6 +22,7 @@ const mocks = vi.hoisted(() => ({
   editing: false,
   editView: "editor" as "editor" | "visual",
   activeFormat: "yaml" as "yaml" | "json" | "mof",
+  editedContent: "",
   isEditable: true,
   currentDisplayContent: "",
   formatCache: {
@@ -31,6 +33,7 @@ const mocks = vi.hoisted(() => ({
   cancelEditing: vi.fn(),
   setError: vi.fn(),
   setEditView: vi.fn(),
+  requestSave: vi.fn(),
   closeBaseline: vi.fn(),
   refreshWorkspace: vi.fn().mockResolvedValue([]),
   deleteManifest: vi.fn().mockResolvedValue({ ok: true }),
@@ -67,10 +70,6 @@ vi.mock("../../components/manifest-editor", () => ({
   ),
 }));
 
-vi.mock("../../components/resource-picker", () => ({
-  ResourcePicker: () => <div data-testid="existing-resource-picker">Resource picker</div>,
-}));
-
 vi.mock("../../components/BaselineWorkspace", () => ({
   useBaselineWorkspace: () => ({
     closeBaseline: mocks.closeBaseline,
@@ -89,7 +88,7 @@ vi.mock("../../hooks/useCliPresence", () => ({
 vi.mock("../../components/use-rationale-prompt", () => ({
   useRationalePrompt: () => ({
     state: { open: false, busy: false },
-    requestSave: vi.fn(),
+    requestSave: mocks.requestSave,
     submitReason: vi.fn(),
     skip: vi.fn(),
     cancel: vi.fn(),
@@ -187,7 +186,7 @@ vi.mock("./state/useManifestEditorState", () => ({
       }
     },
     cancelEditing: mocks.cancelEditing,
-    editedContent: sampleYaml,
+    editedContent: mocks.editedContent,
     setEditedContent: vi.fn(),
     savedContent: sampleYaml,
     setSavedContent: vi.fn(),
@@ -255,6 +254,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     mocks.editing = false;
     mocks.editView = "editor";
     mocks.activeFormat = "yaml";
+    mocks.editedContent = sampleYaml;
     mocks.isEditable = true;
     mocks.currentDisplayContent = sampleYaml;
     mocks.formatCache.current = { yaml: sampleYaml };
@@ -346,7 +346,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(screen.getByTestId("mock-monaco-model")).toBeInTheDocument();
   });
 
-  it("keeps Edit available in Visual mode after MOF and opens the YAML Visual Builder", async () => {
+  it("keeps Edit available in Visual mode after MOF and opens the YAML spreadsheet", async () => {
     const user = userEvent.setup();
     const mofSource = "instance of Hidden_Mof {}";
     const jsonSource = '{"resources":[]}';
@@ -374,8 +374,10 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(mocks.beginEditing).toHaveBeenCalledWith("visual");
 
     rerender(editorShell());
-    expect(screen.getByTestId("existing-resource-picker")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Current Settings (1)" })).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Visual baseline settings" })).toBeInTheDocument();
+    expect(screen.getByRole("toolbar", { name: "Spreadsheet editing actions" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add setting" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Edit Setting Name/ })).toBeInTheDocument();
     expect(mocks.activeFormat).toBe("yaml");
     expect(mocks.formatCache.current).toEqual({
       yaml: sampleYaml,
@@ -502,30 +504,85 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(within(footer).queryByRole("button", { name: "Revert" })).not.toBeInTheDocument();
   });
 
-  it("retains existing Save/Cancel and Editor/Visual Builder editing chrome", () => {
+  it("keeps Cancel in the header and toggles the anchored footer action to Save", async () => {
+    const user = userEvent.setup();
     mocks.editing = true;
     mocks.editView = "editor";
     renderEditor();
 
-    expect(screen.getByRole("button", { name: "Save" })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Cancel" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Editor" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Visual Builder" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Code" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Visual" })).toBeInTheDocument();
     expect(screen.getByTestId("mock-monaco-model")).toHaveAttribute("data-read-only", "false");
-    expect(screen.queryByTestId("manifest-detail-footer")).not.toBeInTheDocument();
+    const footer = screen.getByTestId("manifest-detail-footer");
+    expect(within(footer).getByRole("button", { name: "Save" })).toBeInTheDocument();
+    expect(within(footer).queryByRole("button", { name: "Edit" })).not.toBeInTheDocument();
+    expect(screen.getByText("Editing")).toBeInTheDocument();
     expect(screen.getByRole("heading", { name: "Compliance Status" })).toBeInTheDocument();
+
+    await user.click(within(footer).getByRole("button", { name: "Save" }));
+    expect(mocks.requestSave).toHaveBeenCalledWith(sampleYaml, sampleYaml);
   });
 
-  it("retains the existing Visual Builder edit experience", () => {
+  it("blocks Save while a spreadsheet cell contains an invalid typed draft", async () => {
+    const user = userEvent.setup();
     mocks.editing = true;
     mocks.editView = "visual";
     renderEditor();
 
-    expect(screen.getByTestId("existing-resource-picker")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Add Setting" })).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Current Settings (1)" })).toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Code" })).not.toBeInTheDocument();
-    expect(screen.queryByRole("button", { name: "Visual" })).not.toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Edit value for PasswordPolicy" }));
+    const editor = screen.getByRole("textbox", {
+      name: "Edit value for PasswordPolicy",
+    });
+    await user.clear(editor);
+    await user.type(editor, "not-a-number");
+
+    const save = within(screen.getByTestId("manifest-detail-footer")).getByRole("button", {
+      name: "Save",
+    });
+    await waitFor(() => expect(save).toBeDisabled());
+    expect(save).toHaveAttribute(
+      "title",
+      "Complete or correct the highlighted cells before saving.",
+    );
+    await user.click(save);
+    expect(mocks.requestSave).not.toHaveBeenCalled();
+  });
+
+  it("blocks Save for incomplete rows added to the spreadsheet", () => {
+    mocks.editing = true;
+    mocks.editView = "visual";
+    mocks.editedContent = `resources:
+  - name: ""
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: ""
+      valueName: ""
+      valueType: String
+      value: ""
+`;
+    renderEditor();
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Complete 3 required cells before saving.",
+    );
+    expect(
+      within(screen.getByTestId("manifest-detail-footer")).getByRole("button", {
+        name: "Save",
+      }),
+    ).toBeDisabled();
+  });
+
+  it("uses the grouped spreadsheet as the visual edit experience", () => {
+    mocks.editing = true;
+    mocks.editView = "visual";
+    renderEditor();
+
+    expect(screen.getByRole("region", { name: "Visual baseline settings" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add setting" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /Edit Setting Name/ })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Code" })).toHaveAttribute("aria-pressed", "false");
+    expect(screen.getByRole("button", { name: "Visual" })).toHaveAttribute("aria-pressed", "true");
   });
 });
 
@@ -535,6 +592,7 @@ describe("ManifestDetailPage localization", () => {
     mocks.editing = false;
     mocks.editView = "editor";
     mocks.activeFormat = "yaml";
+    mocks.editedContent = sampleYaml;
     mocks.isEditable = true;
     mocks.currentDisplayContent = sampleYaml;
     mocks.formatCache.current = { yaml: sampleYaml };

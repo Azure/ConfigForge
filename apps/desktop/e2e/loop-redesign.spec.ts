@@ -164,7 +164,9 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
 
     await page.getByRole("button", { name: "Open selected baselines" }).click();
     const tablist = page.getByRole("tablist", { name: "Open baselines" });
-    await expect(tablist.getByRole("tab", { name: BASELINE_A })).toBeVisible();
+    const baselineATab = tablist.getByRole("tab", { name: BASELINE_A });
+    await expect(baselineATab).toBeVisible();
+    await expect(baselineATab.locator('[data-platform="windows"]')).toBeVisible();
     await expect(tablist.getByRole("tab", { name: BASELINE_B })).toBeVisible();
 
     await page.getByRole("button", { name: "Diff selected baselines" }).click();
@@ -206,10 +208,32 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(settingName.locator("xpath=..")).not.toHaveAttribute("aria-sort");
 
     await page.getByRole("button", { name: "Edit" }).click();
-    await expect(page.getByRole("button", { name: "Save" })).toBeVisible();
+    const footer = page.getByTestId("manifest-detail-footer");
+    await expect(footer.getByRole("button", { name: "Save" })).toBeVisible();
+    await expect(footer.getByRole("button", { name: "Edit" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
-    await expect(page.getByRole("button", { name: "Visual Builder" })).toBeVisible();
-    await page.getByRole("button", { name: "Cancel" }).click();
+    await expect(page.getByText("Editing", { exact: true })).toBeVisible();
+    await expect(visual.getByRole("checkbox")).toHaveCount(3);
+    await expect(visual.getByRole("button", { name: "Add setting" })).toBeVisible();
+
+    await visual.getByRole("button", { name: "Edit value for AlphaSetting" }).click();
+    const valueEditor = visual.getByRole("textbox", {
+      name: "Edit value for AlphaSetting",
+    });
+    await valueEditor.fill("5");
+    // Save directly while the cell still has focus. Blur must commit the
+    // valid draft before the footer's Save handler reads editedContent.
+    await footer.getByRole("button", { name: "Save" }).click();
+    const rationale = page.getByRole("dialog", { name: "Why this change?" });
+    await expect(rationale).toBeVisible();
+    await rationale.getByRole("button", { name: "Skip" }).click();
+    await expect(page.getByText("Viewing", { exact: true })).toBeVisible();
+    await expect(visual.getByRole("checkbox")).toHaveCount(0);
+
+    const saved = await page.evaluate(async (name) => {
+      return window.cfs!.manifests.getSource(name);
+    }, BASELINE_A);
+    expect(saved.data).toContain("value: 5");
 
     await page.getByRole("button", { name: "Close baseline" }).click();
     await expect(page.getByRole("heading", { name: "My Baselines" })).toBeVisible();
@@ -276,12 +300,37 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       }),
       "utf8",
     );
+    const xccdfPrefix =
+      "CIS_Azure_Compute_Microsoft_Windows_Server_2022_Benchmark_v1.0.0";
+    await Promise.all([
+      writeFile(
+        path.join(dataDir, `${xccdfPrefix}-xccdf.xml`),
+        "<Benchmark><title>CIS Azure Compute Microsoft Windows Server 2022 Benchmark</title></Benchmark>",
+        "utf8",
+      ),
+      writeFile(
+        path.join(dataDir, `${xccdfPrefix}-oval.xml`),
+        "<oval_definitions />",
+        "utf8",
+      ),
+      writeFile(
+        path.join(dataDir, `${xccdfPrefix}-cpe-oval.xml`),
+        "<oval_definitions />",
+        "utf8",
+      ),
+    ]);
 
     await page.getByRole("button", { name: "Re-check catalog" }).click();
     await expect(page.getByText("CIS data found")).toBeVisible();
     const detected = page.getByRole("region", { name: "Detected CIS catalogs" });
     await expect(detected).toContainText("CIS Windows Server Loop E2E Benchmark");
+    await expect(detected).toContainText(
+      "CIS Azure Compute Microsoft Windows Server 2022 Benchmark",
+    );
+    await expect(detected).toContainText("OVAL companion found");
     await expect(detected).toContainText("1 rule");
+    await expect(page.getByText("Unrecognized files")).toHaveCount(0);
+    await expect(page.getByText(`${xccdfPrefix}-cpe-oval.xml`)).toHaveCount(0);
     await expect(steps).toHaveText([
       /Step 1: Download CIS baselines/,
       /Step 2: Import the CIS baseline files/,
@@ -306,6 +355,12 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       page.getByRole("tablist", { name: "Open baselines" }).getByRole("tab", {
         name: BASELINE_LINUX,
       }),
+    ).toBeVisible();
+    await expect(
+      page
+        .getByRole("tablist", { name: "Open baselines" })
+        .getByRole("tab", { name: BASELINE_LINUX })
+        .locator('[data-platform="linux"]'),
     ).toBeVisible();
   });
 });

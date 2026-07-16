@@ -255,12 +255,13 @@ A timestamped + content-addressed copy of a manifest's source
 YAML, stored under `~/.configforge/history/<ns>/`. Created on
 every save. Pruned by retention.
 
-## Visual Builder
+## Visual spreadsheet
 
-The form-based resource editor in the manifest editor. It supports Add
-and Edit flows for the registered resource forms, unwraps
-`Microsoft.OSConfig/Test` wrappers for editing, and expands
-`Microsoft.OSConfig/Group` resources inline.
+The table-based resource editor shared by the manifest editor and new-baseline
+flow. It supports inline cell edits, row addition, selection, and deletion.
+It projects `Microsoft.OSConfig/Test` wrappers and
+`Microsoft.OSConfig/Group` children into editable rows while preserving their
+original YAML structure.
 
 ## Soft warning
 

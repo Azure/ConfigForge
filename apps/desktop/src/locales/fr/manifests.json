@@ -254,7 +254,7 @@
       "text57": "Content",
       "text58": "YAML",
       "text59": "JSON",
-      "text60": "Constructeur Visuel",
+      "text60": "Visuel",
       "text61": "Yaml",
       "text62": "Json",
       "text63": "Ajouter un paramètre",
@@ -271,7 +271,8 @@
       "text74": "Copié",
       "text75": "Copier",
       "text76": "Télécharger .md"
-    }
+    },
+    "visualValidationError": "Complétez ou corrigez les cellules Visuelles mises en évidence avant d'enregistrer la baseline."
   },
   "library": {
     "extracted": {

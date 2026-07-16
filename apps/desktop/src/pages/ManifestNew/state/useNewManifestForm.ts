@@ -5,6 +5,12 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import yaml from "js-yaml";
 import { type Platform, getValidTypesForPlatform } from "@configforge/core/platform";
 import { cfs } from "../../../lib/cfs";
+import {
+  dumpVisualManifest,
+  parseLosslessJson,
+  parseVisualManifest,
+  stringifyLosslessJson,
+} from "../../ManifestEditor/visual-viewer";
 
 export const WINDOWS_DEFAULT_YAML = `$schema: https://aka.ms/osc/schemas/prerelease/document.json
 resources:
@@ -34,13 +40,6 @@ resources:
 export type SourceType = "content" | "uri";
 export type BuilderTab = "yaml" | "json" | "visual";
 
-export interface VisualResource {
-  name: string;
-  type: string;
-  properties: Record<string, unknown>;
-  compliance?: { equals: unknown };
-}
-
 export interface ImportResult {
   type: string;
   filename: string;
@@ -53,9 +52,9 @@ export interface UseNewManifestFormOptions {
 }
 
 /**
- * Owns the new-manifest form: name, platform, yaml/json/visual content
- * buffers, sync between them, platform switching, file import, and
- * resource-picker integration.
+ * Owns the new-manifest form: name, platform, YAML/JSON content buffers,
+ * sync between them, platform switching, and file import. The spreadsheet
+ * visual editor writes directly to the canonical YAML buffer.
  *
  * Submit, docs modal, navigation guard, and post-register banner remain
  * page-level because they depend on routing / shared infra.
@@ -68,7 +67,7 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
   const [yamlContent, setYamlContent] = useState(WINDOWS_DEFAULT_YAML);
   // jsonContent is a separate edit buffer for the JSON tab. yamlContent
   // remains the canonical source of truth used by submit, docs gen,
-  // platform switch, and the visual builder sync; jsonContent is
+  // platform switch, and the visual editor; jsonContent is
   // derived from yamlContent on tab-switch and any valid edit in JSON
   // is propagated back to yamlContent immediately so the rest of the
   // flow stays consistent.
@@ -76,7 +75,6 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
   const [uri, setUri] = useState("");
   const [sourceType, setSourceType] = useState<SourceType>("content");
   const [activeTab, setActiveTab] = useState<BuilderTab>("yaml");
-  const [visualResources, setVisualResources] = useState<VisualResource[]>([]);
   const [platformWarning, setPlatformWarning] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -85,29 +83,10 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
   const [importing, setImporting] = useState(false);
   const [importResult, setImportResult] = useState<ImportResult | null>(null);
 
-  const syncResourcesToVisual = useCallback(() => {
-    try {
-      const parsed = yaml.load(yamlContent) as Record<string, unknown> | null;
-      if (parsed && Array.isArray(parsed.resources)) {
-        const resources = (parsed.resources as Record<string, unknown>[])
-          .map((r) => ({
-            name: String(r.name ?? r.Name ?? ""),
-            type: String(r.type ?? r.Type ?? ""),
-            properties: (r.properties ?? r.Properties ?? {}) as Record<string, unknown>,
-            compliance: r.compliance as { equals: unknown } | undefined,
-          }))
-          .filter((r) => r.name || r.type);
-        setVisualResources(resources);
-      }
-    } catch {
-      // If YAML can't be parsed, keep existing visual resources
-    }
-  }, [yamlContent]);
-
   const syncYamlToJson = useCallback(() => {
     try {
-      const parsed = yaml.load(yamlContent);
-      setJsonContent(JSON.stringify(parsed ?? {}, null, 2));
+      const parsed = parseVisualManifest(yamlContent);
+      setJsonContent(stringifyLosslessJson(parsed ?? {}, 2) ?? "{}");
     } catch {
       // Invalid YAML: keep whatever was in jsonContent.
     }
@@ -115,103 +94,23 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
 
   const handleTabSwitch = useCallback(
     (tab: BuilderTab) => {
-      if (tab === "visual" && activeTab !== "visual") {
-        syncResourcesToVisual();
-      }
       if (tab === "json" && activeTab !== "json") {
         syncYamlToJson();
       }
       setActiveTab(tab);
     },
-    [activeTab, syncResourcesToVisual, syncYamlToJson],
+    [activeTab, syncYamlToJson],
   );
 
   const handleJsonChange = useCallback((newJson: string) => {
     setJsonContent(newJson);
     try {
-      const parsed = JSON.parse(newJson);
-      setYamlContent(
-        yaml.dump(parsed, { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false }),
-      );
+      const parsed = parseLosslessJson(newJson);
+      setYamlContent(dumpVisualManifest(parsed));
     } catch {
       // Mid-edit invalid JSON: leave yamlContent at last valid state.
     }
   }, []);
-
-  const handleResourceAdd = useCallback(
-    (resource: VisualResource) => {
-      setVisualResources((prev) => [...prev, resource]);
-      try {
-        const parsed = yaml.load(yamlContent) as Record<string, unknown> | null;
-        const doc =
-          parsed && typeof parsed === "object"
-            ? parsed
-            : { $schema: "https://aka.ms/osc/schemas/prerelease/document.json" };
-        const existingResources = Array.isArray(doc.resources)
-          ? (doc.resources as Record<string, unknown>[])
-          : [];
-
-        const newResource: Record<string, unknown> = {
-          name: resource.name,
-          type: resource.type,
-          properties: resource.properties,
-        };
-        if (resource.compliance) {
-          newResource.compliance = resource.compliance;
-        }
-
-        doc.resources = [...existingResources, newResource];
-        setYamlContent(yaml.dump(doc, { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false }));
-      } catch {
-        // Fallback: append resource YAML as a string to the end of content.
-        const resourceYaml = `  - name: "${resource.name}"\n    type: ${resource.type}\n    properties:\n${Object.entries(
-          resource.properties,
-        )
-          .map(([k, v]) => `      ${k}: ${JSON.stringify(v)}`)
-          .join("\n")}${
-          resource.compliance ? `\n    compliance:\n      equals: ${JSON.stringify(resource.compliance.equals)}` : ""
-        }`;
-
-        if (yamlContent.includes("resources:")) {
-          setYamlContent(yamlContent.trimEnd() + "\n" + resourceYaml + "\n");
-        } else {
-          setYamlContent(
-            `$schema: https://aka.ms/osc/schemas/prerelease/document.json\nresources:\n${resourceYaml}\n`,
-          );
-        }
-      }
-    },
-    [yamlContent],
-  );
-
-  /**
-   * Remove a resource from BOTH the visual-builder state AND the YAML
-   * source. Previously the Remove button only updated visualResources,
-   * so switching to the YAML tab showed the original (stale) content
-   * and any save would include the removed resource. Mirrors
-   * handleResourceAdd's dual-write pattern.
-   */
-  const handleResourceRemove = useCallback(
-    (index: number) => {
-      setVisualResources((prev) => prev.filter((_, i) => i !== index));
-      try {
-        const parsed = yaml.load(yamlContent) as Record<string, unknown> | null;
-        if (!parsed || typeof parsed !== "object") return;
-        const existing = Array.isArray(parsed.resources)
-          ? (parsed.resources as Record<string, unknown>[])
-          : [];
-        if (index < 0 || index >= existing.length) return;
-        parsed.resources = existing.filter((_, i) => i !== index);
-        setYamlContent(
-          yaml.dump(parsed, { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false }),
-        );
-      } catch {
-        // YAML couldn't be parsed cleanly — leave it alone and let the
-        // user inspect manually. Visual state is still updated above.
-      }
-    },
-    [yamlContent],
-  );
 
   const handlePlatformSwitch = useCallback(
     (newPlatform: Platform) => {
@@ -244,7 +143,6 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
       const isDefaultLinux = yamlContent.trim() === LINUX_DEFAULT_YAML.trim();
       if (isDefaultWindows || isDefaultLinux) {
         setYamlContent(newPlatform === "windows" ? WINDOWS_DEFAULT_YAML : LINUX_DEFAULT_YAML);
-        setVisualResources([]);
         setPlatformWarning(null);
       }
     },
@@ -322,9 +220,8 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
       name.trim() !== "" ||
       (yamlContent.trim() !== WINDOWS_DEFAULT_YAML.trim() &&
         yamlContent.trim() !== LINUX_DEFAULT_YAML.trim()) ||
-      visualResources.length > 0 ||
       uri.trim() !== "",
-    [name, yamlContent, visualResources, uri],
+    [name, yamlContent, uri],
   );
 
   // (Re-using the same ref guard pattern as ManifestEditor/Manifests
@@ -348,8 +245,6 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
     sourceType,
     setSourceType,
     activeTab,
-    visualResources,
-    setVisualResources,
     platformWarning,
     setPlatformWarning,
     // import
@@ -362,11 +257,8 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
     // handlers
     handleTabSwitch,
     handleJsonChange,
-    handleResourceAdd,
-    handleResourceRemove,
     handlePlatformSwitch,
     handleImport,
-    syncResourcesToVisual,
     syncYamlToJson,
     hydrateFromLibraryTemplate,
     hasUserContent,

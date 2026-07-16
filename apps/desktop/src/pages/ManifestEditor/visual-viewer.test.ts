@@ -8,12 +8,21 @@ import { describe, expect, it } from "vitest";
 import {
   DESIRED_VALUE_COLUMN,
   SETTING_NAME_COLUMN,
+  addVisualSettingSource,
   compareVisualValues,
+  dumpVisualManifest,
   flattenVisualSettings,
   formatVisualValue,
   groupVisualSettings,
   nextVisualSort,
+  parseLosslessJson,
+  parseVisualManifest,
+  parseVisualCellInput,
+  removeVisualSettingsSource,
   sortVisualSettings,
+  stringifyLosslessJson,
+  updateVisualCellSource,
+  validateVisualSettings,
 } from "./visual-viewer";
 
 describe("visual viewer helpers", () => {
@@ -411,5 +420,294 @@ describe("visual viewer helpers", () => {
       }),
     ]);
     expect(groupVisualSettings({ resources: [] })).toEqual([]);
+  });
+
+  it("round-trips unsafe QWord integers without precision loss", () => {
+    const source = `resources:
+  - name: Exact QWord
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM:\\Software\\ConfigForge
+      valueName: Exact
+      valueType: QWord
+      value: 18446744073709551615
+`;
+    const document = parseVisualManifest(source);
+    const dumped = dumpVisualManifest(document);
+
+    expect(dumped).toContain("18446744073709551615");
+    expect(dumped).not.toContain("18446744073709552000");
+    expect(flattenVisualSettings(parseVisualManifest(dumped))[0].properties.value).toBe(
+      18446744073709551615n,
+    );
+  });
+
+  it("round-trips unsafe integers through strict JSON without quoting them", () => {
+    const value = {
+      safe: 42,
+      maximumQWord: 18446744073709551615n,
+      nested: [9007199254740993n],
+      text: "18446744073709551615",
+    };
+    const json = stringifyLosslessJson(value, 2);
+
+    expect(json).toContain('"maximumQWord": 18446744073709551615');
+    expect(json).toContain("9007199254740993");
+    expect(json).toContain('"text": "18446744073709551615"');
+    expect(parseLosslessJson(json ?? "")).toEqual(value);
+    expect(() => parseLosslessJson("{unquoted: true}")).toThrow();
+  });
+
+  it("keeps nested QWord tokens numeric when a structured cell is opened and committed", () => {
+    const source = `resources:
+  - name: Structured bounds
+    type: Microsoft.OSConfig/Test
+    properties:
+      schema:
+        minimum: 9007199254740993
+        maximum: 18446744073709551615
+      resource:
+        type: Example/Inner
+        properties:
+          path: example
+`;
+    const [setting] = flattenVisualSettings(parseVisualManifest(source));
+    const draft = formatVisualValue(setting.desiredValue);
+    const result = updateVisualCellSource(source, setting, DESIRED_VALUE_COLUMN, draft);
+
+    expect(draft).toContain('"minimum": 9007199254740993');
+    expect(draft).not.toContain('"9007199254740993"');
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const [updated] = flattenVisualSettings(parseVisualManifest(result.source));
+    expect(updated.desiredValue).toEqual({
+      minimum: 9007199254740993n,
+      maximum: 18446744073709551615n,
+    });
+  });
+
+  it("edits Test wrapper names, inner properties, and schema desired values in place", () => {
+    const source = `metadata:
+  owner: security-team
+resources:
+  - name: Outer setting
+    type: Microsoft.OSConfig/Test
+    customWrapperField: preserved
+    properties:
+      schema:
+        const: 2
+        description: Keep this constraint
+      resource:
+        name: Inner implementation
+        type: Microsoft.Windows/Registry
+        customLeafField: preserved
+        properties:
+          keyPath: HKLM:\\Software\\Example
+          valueName: Mode
+          valueType: Dword
+          value: 1
+`;
+    let current = source;
+    let setting = flattenVisualSettings(parseVisualManifest(current))[0];
+    expect(setting.settingName).toBe("Outer setting");
+
+    const renamed = updateVisualCellSource(current, setting, SETTING_NAME_COLUMN, "Renamed outer");
+    if (!renamed.ok) throw new Error(renamed.error);
+    current = renamed.source;
+
+    setting = flattenVisualSettings(parseVisualManifest(current))[0];
+    const propertyEdit = updateVisualCellSource(current, setting, "value", "5");
+    expect(propertyEdit.ok).toBe(true);
+    if (!propertyEdit.ok) return;
+    current = propertyEdit.source;
+
+    setting = flattenVisualSettings(parseVisualManifest(current))[0];
+    const desiredEdit = updateVisualCellSource(current, setting, DESIRED_VALUE_COLUMN, "7");
+    expect(desiredEdit.ok).toBe(true);
+    if (!desiredEdit.ok) return;
+
+    const document = parseVisualManifest(desiredEdit.source) as {
+      metadata: { owner: string };
+      resources: Array<{
+        name: string;
+        customWrapperField: string;
+        properties: {
+          schema: { const: number; description: string };
+          resource: {
+            name: string;
+            customLeafField: string;
+            properties: { value: number };
+          };
+        };
+      }>;
+    };
+    const wrapper = document.resources[0];
+    expect(document.metadata.owner).toBe("security-team");
+    expect(wrapper.name).toBe("Renamed outer");
+    expect(wrapper.customWrapperField).toBe("preserved");
+    expect(wrapper.properties.resource.name).toBe("Inner implementation");
+    expect(wrapper.properties.resource.customLeafField).toBe("preserved");
+    expect(wrapper.properties.resource.properties.value).toBe(5);
+    expect(wrapper.properties.schema).toEqual({
+      const: 7,
+      description: "Keep this constraint",
+    });
+  });
+
+  it("removes selected top-level and nested Group settings without shifting the wrong rows", () => {
+    const source = `resources:
+  - name: Keep top
+    type: Example/Type
+    properties:
+      value: 1
+  - name: Group
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:
+        - name: Remove child
+          type: Example/Type
+          properties:
+            value: 2
+        - name: Keep child
+          type: Example/Type
+          properties:
+            value: 3
+  - name: Remove top
+    type: Example/Type
+    properties:
+      value: 4
+`;
+    const settings = flattenVisualSettings(parseVisualManifest(source));
+    const selected = settings.filter((setting) =>
+      ["Remove child", "Remove top"].includes(setting.settingName),
+    );
+    const result = removeVisualSettingsSource(source, selected);
+
+    if (!result.ok) throw new Error(result.error);
+    expect(
+      flattenVisualSettings(parseVisualManifest(result.source)).map(
+        (setting) => setting.settingName,
+      ),
+    ).toEqual(["Keep top", "Keep child"]);
+  });
+
+  it("adds a typed blank row template and preserves custom category columns", () => {
+    const result = addVisualSettingSource(
+      "metadata:\n  owner: security\nresources: []\n",
+      "Microsoft.Windows/Registry",
+      [SETTING_NAME_COLUMN, "customProperty"],
+    );
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const document = parseVisualManifest(result.source) as {
+      metadata: { owner: string };
+      resources: Array<{
+        name: string;
+        type: string;
+        properties: Record<string, unknown>;
+      }>;
+    };
+    expect(document.metadata.owner).toBe("security");
+    expect(document.resources[0]).toMatchObject({
+      name: "",
+      type: "Microsoft.Windows/Registry",
+      properties: {
+        keyPath: "",
+        valueName: "",
+        valueType: "String",
+        value: "",
+        customProperty: "",
+      },
+    });
+  });
+
+  it("identifies incomplete required cells in newly added top-level rows", () => {
+    const added = addVisualSettingSource(
+      "resources: []\n",
+      "Microsoft.Windows/Registry",
+    );
+    expect(added.ok).toBe(true);
+    if (!added.ok) return;
+
+    const settings = flattenVisualSettings(parseVisualManifest(added.source));
+    expect(validateVisualSettings(settings)).toEqual([
+      { settingId: "0", column: SETTING_NAME_COLUMN },
+      { settingId: "0", column: "keyPath" },
+      { settingId: "0", column: "valueName" },
+    ]);
+  });
+
+  it("does not reject unnamed nested Group children from existing baselines", () => {
+    const settings = flattenVisualSettings({
+      resources: [
+        {
+          name: "Group",
+          type: "Microsoft.OSConfig/Group",
+          properties: {
+            resources: [
+              {
+                type: "Microsoft.OSConfig/File",
+                properties: { path: "/etc/example", exists: true },
+              },
+            ],
+          },
+        },
+      ],
+    });
+
+    expect(settings[0].hasExplicitName).toBe(false);
+    expect(validateVisualSettings(settings)).toEqual([]);
+  });
+
+  it("rejects invalid typed spreadsheet values without changing source", () => {
+    const [setting] = flattenVisualSettings({
+      resources: [
+        {
+          name: "Boolean",
+          type: "Microsoft.OSConfig/File",
+          properties: { path: "/tmp/example", exists: true },
+        },
+      ],
+    });
+
+    expect(parseVisualCellInput("sometimes", true, setting, "exists")).toEqual({
+      ok: false,
+      error: "boolean",
+    });
+    expect(
+      updateVisualCellSource(
+        `resources:
+  - name: Boolean
+    type: Microsoft.OSConfig/File
+    properties:
+      path: /tmp/example
+      exists: true
+`,
+        setting,
+        "exists",
+        "sometimes",
+      ),
+    ).toEqual({ ok: false, error: "boolean" });
+  });
+
+  it("updates unwrapped typed desired values without replacing their wrapper", () => {
+    const source = `resources:
+  - name: Typed value
+    type: Example/Typed
+    properties:
+      path: example
+      desired:
+        integer: 4
+`;
+    const [setting] = flattenVisualSettings(parseVisualManifest(source));
+    const result = updateVisualCellSource(source, setting, DESIRED_VALUE_COLUMN, "9");
+
+    expect(result.ok).toBe(true);
+    if (!result.ok) return;
+    const document = parseVisualManifest(result.source) as {
+      resources: Array<{ properties: { desired: { integer: number } } }>;
+    };
+    expect(document.resources[0].properties.desired).toEqual({ integer: 9 });
   });
 });

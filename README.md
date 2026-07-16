@@ -28,11 +28,11 @@ YAML / JSON / Visual triple-format editor with live validation, deploy/audit dro
 
 ![Manifest editor: YAML/JSON/Visual tabs, deploy + audit, history, and Audit Pack button](./docs/images/screenshots/manifest-detail.png)
 
-### Visual Builder: form-based resource authoring
+### Visual spreadsheet: edit settings in place
 
-Switch to **Visual Builder** mode to add, edit, or remove resources via per-type forms — no YAML wrangling. Registry resources get key path / value name / expected value / enforcement value fields. CSP, AccountPolicy, UserRights, AuditPolicy, Linux FilePermission, KernelModule, and File / FileLine all have dedicated forms. Edit is form-based too: click **Edit** on any resource card to open the same form pre-populated with current values, including a rename field. All visual edits batch into the editor buffer; one Save → one rationale prompt covering every change.
+Switch to **Visual** mode and click **Edit** to work directly in the grouped setting tables. Click a cell to change it, add a blank row in any category, add a known Windows/Linux setting type from the compact menu, or select rows for deletion. Test wrappers and Group children stay bound to their original YAML structure, typed values remain typed, and QWord integers retain full precision. All visual edits batch into the editor buffer; one Save produces one rationale prompt covering every change.
 
-![Visual Builder: form-based resource authoring with per-type inputs](./docs/images/screenshots/visual-builder.png)
+![Visual spreadsheet with inline setting editing](./docs/images/screenshots/visual-builder.png)
 
 ### Audit pack: the auditor deliverable
 
@@ -144,7 +144,10 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.48** (current) | CIS Mapping subtitle mentions the Diff > CIS tab; v0.3.47 adds real History change summaries and auto-scrolls Compare results; v0.3.46 tightens CIS fuzzy matching; v0.3.45 expands Group resources inline in Visual Builder |
+| **0.3.73-author.1** (current) | macOS author flavor with spreadsheet-style Visual editing shared by Baseline Detail and Register New Baseline; anchored Edit/Save footer; Benchmark Mapping recognizes CPE OVAL / CPE dictionary / OCIL sidecars; exact QWord round-trips; FR/DE/ES coverage |
+| **0.3.62 – 0.3.68** | Rebrand **ConfigForge Spark → ConfigForge**; vocabulary refresh (**Manifests → My Baselines**, **Library → Microsoft Baselines**, **Validation → Export Readiness**, **CIS Mapping → Benchmark Mapping**, *resource* → *setting*, **OSConfig vNext → Gen 2**); unsigned OSS release pipeline with `SHA256SUMS` + SBOM verification; MOF export targets the `Microsoft.OSConfig` module; Monaco overflow-widget dropdown root-cause fix; "Could not read" compliance bucket on baseline cards |
+| **0.3.54 – 0.3.61** | Localization rollout (FR / DE / ES) — five extraction waves, machine-translation + review tooling, `Intl` date/number/relative-time formatters, and length/overflow visual QA |
+| **0.3.45 – 0.3.53** | Benchmark (CIS) Mapping subtitle + Diff › CIS tab; real History change summaries + auto-scroll Compare; CIS fuzzy-matching tightening; Group resources expand inline in Visual Builder; Diff "Select baseline" dropdown stability (Monaco overflow fix) |
 | **0.3.27 – 0.3.36** | CIS matcher quality pass (CSP UserRights, alias table, XCCDF fuzzy fallback, 36/36 mappable UserRights match WS2025 CIS); 100x cis.status() perf fix; 3-second warmup deferral eliminates manifest-open regression; ResourceChangesPanel and Resource-level diff stats; AI summary numbers consistent across panels |
 | **0.3.14 – 0.3.26** | CIS Mapping page (Azure Policy JSON + XCCDF/OVAL XML auto-detect), CIS cross-reference drawer in the manifest editor, CIS Diff tab on the Diff page, settings store with history retention, deploy recovery banner, breadcrumb navigation |
 | **0.2.1** | Phase A-E renderer-page split; 15/15 security audit findings closed; typed main-process logger with secret redaction; Prettier config; CSV-import schema fix |
