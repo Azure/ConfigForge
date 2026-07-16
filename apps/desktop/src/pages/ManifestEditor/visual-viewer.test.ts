@@ -8,6 +8,7 @@ import { describe, expect, it } from "vitest";
 import {
   DESIRED_VALUE_COLUMN,
   SETTING_NAME_COLUMN,
+  compareVisualValues,
   flattenVisualSettings,
   formatVisualValue,
   groupVisualSettings,
@@ -140,11 +141,7 @@ describe("visual viewer helpers", () => {
       ],
     });
 
-    expect(groups[0].columns).toEqual([
-      SETTING_NAME_COLUMN,
-      DESIRED_VALUE_COLUMN,
-      "path",
-    ]);
+    expect(groups[0].columns).toEqual([SETTING_NAME_COLUMN, DESIRED_VALUE_COLUMN, "path"]);
     expect(groups[1].columns).toEqual([SETTING_NAME_COLUMN, "path"]);
   });
 
@@ -310,6 +307,75 @@ describe("visual viewer helpers", () => {
       "Second equal",
     ]);
     expect(sortVisualSettings(settings, unsorted)).toEqual(settings);
+  });
+
+  it("uses a transitive fixed type precedence for mixed visual values", () => {
+    const ordered: unknown[] = [null, false, true, -1, 2, 10n, "10", "2", [1], { rank: 1 }];
+
+    for (let leftIndex = 0; leftIndex < ordered.length; leftIndex += 1) {
+      for (let rightIndex = 0; rightIndex < ordered.length; rightIndex += 1) {
+        const leftToRight = Math.sign(compareVisualValues(ordered[leftIndex], ordered[rightIndex]));
+        const rightToLeft = Math.sign(compareVisualValues(ordered[rightIndex], ordered[leftIndex]));
+        expect(leftToRight + rightToLeft).toBe(0);
+        expect(leftToRight).toBe(leftIndex === rightIndex ? 0 : leftIndex < rightIndex ? -1 : 1);
+      }
+    }
+
+    for (let first = 0; first < ordered.length; first += 1) {
+      for (let second = first; second < ordered.length; second += 1) {
+        for (let third = second; third < ordered.length; third += 1) {
+          expect(compareVisualValues(ordered[first], ordered[second])).toBeLessThanOrEqual(0);
+          expect(compareVisualValues(ordered[second], ordered[third])).toBeLessThanOrEqual(0);
+          expect(compareVisualValues(ordered[first], ordered[third])).toBeLessThanOrEqual(0);
+        }
+      }
+    }
+  });
+
+  it("sorts numbers, numeric strings, booleans, null, and objects deterministically then restores source order", () => {
+    const settings = flattenVisualSettings({
+      resources: [
+        { name: "Object two", type: "Example/Type", properties: { value: { rank: 2 } } },
+        { name: "String ten", type: "Example/Type", properties: { value: "10" } },
+        { name: "True", type: "Example/Type", properties: { value: true } },
+        { name: "Null", type: "Example/Type", properties: { value: null } },
+        { name: "Number two", type: "Example/Type", properties: { value: 2 } },
+        { name: "String two", type: "Example/Type", properties: { value: "2" } },
+        { name: "False", type: "Example/Type", properties: { value: false } },
+        { name: "Object one", type: "Example/Type", properties: { value: { rank: 1 } } },
+        { name: "Number ten", type: "Example/Type", properties: { value: 10 } },
+      ],
+    });
+    const sourceOrder = settings.map((setting) => setting.settingName);
+    const ascending = nextVisualSort(null, "value");
+    const descending = nextVisualSort(ascending, "value");
+    const unsorted = nextVisualSort(descending, "value");
+
+    expect(sortVisualSettings(settings, ascending).map((setting) => setting.settingName)).toEqual([
+      "Null",
+      "False",
+      "True",
+      "Number two",
+      "Number ten",
+      "String ten",
+      "String two",
+      "Object one",
+      "Object two",
+    ]);
+    expect(sortVisualSettings(settings, descending).map((setting) => setting.settingName)).toEqual([
+      "Object two",
+      "Object one",
+      "String two",
+      "String ten",
+      "Number ten",
+      "Number two",
+      "True",
+      "False",
+      "Null",
+    ]);
+    expect(sortVisualSettings(settings, unsorted).map((setting) => setting.settingName)).toEqual(
+      sourceOrder,
+    );
   });
 
   it("returns no rows for empty or malformed resources and skips malformed wrappers safely", () => {

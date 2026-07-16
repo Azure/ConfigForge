@@ -56,7 +56,7 @@ let app: ElectronApplication;
 let page: Page;
 let configHome: string;
 let browserProfile: string;
-let cisFixturePath: string | null = null;
+let publicRoot: string;
 
 async function launchApp(): Promise<void> {
   app = await _electron.launch({
@@ -66,6 +66,8 @@ async function launchApp(): Promise<void> {
     env: {
       ...process.env,
       CONFIGFORGE_HOME: configHome,
+      CONFIGFORGE_PUBLIC_ROOT: publicRoot,
+      CONFIGFORGE_TEST_MODE: "1",
       NODE_ENV: "production",
       LC_ALL: "en_US.UTF-8",
       LANG: "en_US.UTF-8",
@@ -97,6 +99,7 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
   test.beforeAll(async () => {
     configHome = await mkdtemp(path.join(os.tmpdir(), "configforge-loop-home-"));
     browserProfile = await mkdtemp(path.join(os.tmpdir(), "configforge-loop-profile-"));
+    publicRoot = await mkdtemp(path.join(os.tmpdir(), "configforge-loop-public-"));
     await launchApp();
     await page.evaluate(() => {
       localStorage.setItem("cfs.welcome.dismissedAt", new Date().toISOString());
@@ -110,22 +113,15 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
 
   test.afterAll(async () => {
     try {
-      if (cisFixturePath) {
-        await rm(cisFixturePath, { force: true });
-        await page.evaluate(async () => {
-          await window.cfs!.cis.recheck();
-        });
-      }
-    } catch {
-      // Best-effort fixture cleanup; isolated app/profile cleanup follows.
-    }
-    try {
       await app.close();
     } catch {
       // App may already be closed by the persistence test.
     }
-    await rm(configHome, { recursive: true, force: true });
-    await rm(browserProfile, { recursive: true, force: true });
+    await Promise.all([
+      rm(configHome, { recursive: true, force: true }),
+      rm(browserProfile, { recursive: true, force: true }),
+      rm(publicRoot, { recursive: true, force: true }),
+    ]);
   });
 
   test("navigation counts and My Baselines table reflect authoritative data", async () => {
@@ -257,8 +253,9 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       return status.dataDir;
     });
     if (!dataDir) throw new Error("CIS data directory was not reported");
+    expect(path.resolve(dataDir)).toBe(path.join(publicRoot, "_baselines", "cis", "_data"));
     await mkdir(dataDir, { recursive: true });
-    cisFixturePath = path.join(dataDir, "loop-e2e-cis.json");
+    const cisFixturePath = path.join(dataDir, "loop-e2e-cis.json");
     await writeFile(
       cisFixturePath,
       JSON.stringify({

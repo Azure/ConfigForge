@@ -75,6 +75,7 @@
     "showing": "Se muestran {{filtered}} de {{total}}",
     "status": {
       "allCompliant": "Todas conformes",
+      "complianceIncompleteTitle": "{{compliant}} de {{total}} configuraciones evaluadas cumplen los requisitos; {{unknown}} configuraciones no se pudieron evaluar",
       "complianceTitle": "{{compliant}} de {{total}} configuraciones auditadas cumplen los requisitos",
       "issueCount_one": "{{count}} problema",
       "issueCount_other": "{{count}} problemas",

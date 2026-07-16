@@ -15,8 +15,21 @@ import {
   type PathStrategy,
 } from './paths';
 
+const originalPublicRoot = process.env.CONFIGFORGE_PUBLIC_ROOT;
+const originalTestMode = process.env.CONFIGFORGE_TEST_MODE;
+
 afterEach(() => {
   resetPathStrategy();
+  if (originalPublicRoot === undefined) {
+    delete process.env.CONFIGFORGE_PUBLIC_ROOT;
+  } else {
+    process.env.CONFIGFORGE_PUBLIC_ROOT = originalPublicRoot;
+  }
+  if (originalTestMode === undefined) {
+    delete process.env.CONFIGFORGE_TEST_MODE;
+  } else {
+    process.env.CONFIGFORGE_TEST_MODE = originalTestMode;
+  }
 });
 
 describe('PathStrategy default', () => {
@@ -32,6 +45,29 @@ describe('PathStrategy default', () => {
     expect(a).toBe(b);
     expect(a).toBe(c);
     expect(a).toBe(path.resolve(process.cwd(), 'public', '_baselines', 'x.yaml'));
+  });
+
+  it('uses CONFIGFORGE_PUBLIC_ROOT only in explicit test mode', () => {
+    const isolatedRoot = path.join(os.tmpdir(), 'configforge-isolated-public-assets');
+    process.env.CONFIGFORGE_PUBLIC_ROOT = isolatedRoot;
+    process.env.CONFIGFORGE_TEST_MODE = '1';
+
+    expect(resolvePublicAsset('/_baselines/cis/_data/catalog.json')).toBe(
+      path.resolve(isolatedRoot, '_baselines', 'cis', '_data', 'catalog.json'),
+    );
+
+    delete process.env.CONFIGFORGE_PUBLIC_ROOT;
+    expect(resolvePublicAsset('/_baselines/x.yaml')).toBe(
+      path.resolve(process.cwd(), 'public', '_baselines', 'x.yaml'),
+    );
+  });
+
+  it('ignores CONFIGFORGE_PUBLIC_ROOT outside test mode', () => {
+    process.env.CONFIGFORGE_PUBLIC_ROOT = path.join(os.tmpdir(), 'untrusted-public-assets');
+    delete process.env.CONFIGFORGE_TEST_MODE;
+    expect(resolvePublicAsset('/_baselines/x.yaml')).toBe(
+      path.resolve(process.cwd(), 'public', '_baselines', 'x.yaml'),
+    );
   });
 
   it('resolveTempDir uses os.tmpdir()', () => {

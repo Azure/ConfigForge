@@ -16,6 +16,7 @@ import * as oscfg from '../oscfg';
 import * as history from '../history';
 import * as system from '../system';
 import * as platform from '../platform';
+import * as auditResultsStore from '../manifest/audit-results-store';
 import {
   runDeploy,
   withDeployLock,
@@ -35,6 +36,7 @@ vi.mock('../oscfg', async () => {
     getResources: vi.fn(),
     getRegistration: vi.fn(),
     getRegistrationSource: vi.fn(),
+    getRegistrationSnapshot: vi.fn(),
     updateRegistration: vi.fn(),
     execResource: vi.fn(),
     // Phase B: deploy preflight calls resolveOscfgBinary. Default mock
@@ -58,6 +60,10 @@ vi.mock('../system', () => ({
   getSystemInfo: vi.fn(),
 }));
 
+vi.mock('../manifest/audit-results-store', () => ({
+  writeAuditResult: vi.fn().mockResolvedValue(null),
+}));
+
 vi.mock('node:fs/promises', () => ({
   writeFile: vi.fn().mockResolvedValue(undefined),
   mkdir: vi.fn().mockResolvedValue(undefined),
@@ -65,7 +71,9 @@ vi.mock('node:fs/promises', () => ({
   readdir: vi.fn().mockResolvedValue([] as string[]),
   unlink: vi.fn().mockResolvedValue(undefined),
   rm: vi.fn().mockResolvedValue(undefined),
-  stat: vi.fn().mockResolvedValue({ isFile: () => true, isDirectory: () => false, mtimeMs: 0, size: 0 }),
+  stat: vi
+    .fn()
+    .mockResolvedValue({ isFile: () => true, isDirectory: () => false, mtimeMs: 0, size: 0 }),
 }));
 
 const mocked = oscfg as unknown as {
@@ -73,6 +81,7 @@ const mocked = oscfg as unknown as {
   getResources: ReturnType<typeof vi.fn>;
   getRegistration: ReturnType<typeof vi.fn>;
   getRegistrationSource: ReturnType<typeof vi.fn>;
+  getRegistrationSnapshot: ReturnType<typeof vi.fn>;
   updateRegistration: ReturnType<typeof vi.fn>;
   execResource: ReturnType<typeof vi.fn>;
   resolveOscfgBinary: ReturnType<typeof vi.fn>;
@@ -85,6 +94,10 @@ const mockedHistory = history as unknown as {
 
 const mockedSystem = system as unknown as {
   getSystemInfo: ReturnType<typeof vi.fn>;
+};
+
+const mockedAuditResults = auditResultsStore as unknown as {
+  writeAuditResult: ReturnType<typeof vi.fn>;
 };
 
 // Map process.platform to the platform helper's returned values.
@@ -109,6 +122,14 @@ function makeRegistration(overrides: Record<string, unknown> = {}) {
 function setHappyPath() {
   mocked.getRegistration.mockResolvedValue(makeRegistration());
   mocked.getRegistrationSource.mockResolvedValue(SAMPLE_YAML);
+  mocked.getRegistrationSnapshot.mockImplementation(async (namespace: string) => {
+    const registration = await mocked.getRegistration(namespace);
+    if (!registration) return null;
+    return {
+      registration,
+      sourceYaml: await mocked.getRegistrationSource(namespace),
+    };
+  });
   mocked.getResources.mockResolvedValue({
     success: true,
     data: [{ name: 'r1', type: SAMPLE_RESOURCE.type, properties: { foo: 'bar' } }],
@@ -294,10 +315,7 @@ describe('runDeploy — audit mode', () => {
   it('emits validate, audit (with progress), finalize events', async () => {
     setHappyPath();
     const events: DeployProgressEvent[] = [];
-    await runDeploy(
-      { name: 'sample', mode: 'audit' },
-      { onProgress: (e) => events.push(e) },
-    );
+    await runDeploy({ name: 'sample', mode: 'audit' }, { onProgress: (e) => events.push(e) });
     const phases = events.map((e) => e.phase);
     expect(phases[0]).toBe('validate');
     expect(phases.includes('audit')).toBe(true);
@@ -327,6 +345,7 @@ describe('runDeploy — audit mode', () => {
     expect(mocked.updateRegistration).toHaveBeenCalledWith(
       'sample',
       expect.objectContaining({ lastAuditedAt: expect.any(String) }),
+      { expectedRevision: null },
     );
   });
 });
@@ -342,13 +361,69 @@ describe('runDeploy — enforce mode', () => {
     expect(r.data.DeployError).toBeNull();
   });
 
+  describe('runDeploy — registration revision persistence', () => {
+    it('applies the source captured atomically with the registration revision', async () => {
+      setHappyPath();
+      mocked.getRegistrationSnapshot.mockResolvedValue({
+        registration: makeRegistration({ revision: 'captured-revision' }),
+        sourceYaml: SAMPLE_YAML,
+      });
+      mocked.getRegistrationSource.mockResolvedValue(
+        SAMPLE_YAML.replace('foo: bar', 'foo: concurrently-saved'),
+      );
+
+      await runDeploy({ name: 'sample', mode: 'enforce' });
+
+      expect(mocked.applyManifest).toHaveBeenCalledWith({
+        content: SAMPLE_YAML,
+        namespace: 'sample',
+      });
+      expect(mocked.getRegistrationSource).not.toHaveBeenCalled();
+    });
+
+    it('associates audit and enforce results with the revision captured before work', async () => {
+      setHappyPath();
+      mocked.getRegistration.mockResolvedValue(
+        makeRegistration({ revision: 'revision-before-work' }),
+      );
+
+      await runDeploy({ name: 'sample', mode: 'audit' });
+      expect(mockedAuditResults.writeAuditResult).toHaveBeenLastCalledWith(
+        'sample',
+        'audit',
+        expect.any(Object),
+        'revision-before-work',
+      );
+      expect(mocked.updateRegistration).toHaveBeenLastCalledWith(
+        'sample',
+        expect.objectContaining({ lastAuditedAt: expect.any(String) }),
+        { expectedRevision: 'revision-before-work' },
+      );
+
+      mockedAuditResults.writeAuditResult.mockClear();
+      mocked.updateRegistration.mockClear();
+      await runDeploy({ name: 'sample', mode: 'enforce' });
+      expect(mockedAuditResults.writeAuditResult).toHaveBeenLastCalledWith(
+        'sample',
+        'enforce',
+        expect.any(Object),
+        'revision-before-work',
+      );
+      expect(mocked.updateRegistration).toHaveBeenLastCalledWith(
+        'sample',
+        expect.objectContaining({
+          lastAppliedAt: expect.any(String),
+          lastAuditedAt: expect.any(String),
+        }),
+        { expectedRevision: 'revision-before-work' },
+      );
+    });
+  });
+
   it('emits validate, apply, audit, snapshot, finalize phases', async () => {
     setHappyPath();
     const events: DeployProgressEvent[] = [];
-    await runDeploy(
-      { name: 'sample', mode: 'enforce' },
-      { onProgress: (e) => events.push(e) },
-    );
+    await runDeploy({ name: 'sample', mode: 'enforce' }, { onProgress: (e) => events.push(e) });
     const seen = new Set(events.map((e) => e.phase));
     expect(seen).toEqual(new Set(['validate', 'apply', 'audit', 'snapshot', 'finalize']));
   });
@@ -389,6 +464,7 @@ describe('runDeploy — enforce mode', () => {
         lastAuditedAt: expect.any(String),
         resourceSummary: [{ type: SAMPLE_RESOURCE.type, name: 'r1' }],
       }),
+      { expectedRevision: null },
     );
   });
 });
@@ -424,10 +500,7 @@ describe('runDeploy — cancellation', () => {
       ac.abort();
       return { success: true };
     });
-    const r = await runDeploy(
-      { name: 'sample', mode: 'enforce' },
-      { signal: ac.signal },
-    );
+    const r = await runDeploy({ name: 'sample', mode: 'enforce' }, { signal: ac.signal });
     expect(r.cancelRequested).toBe(true);
     expect(r.cancelled).toBe(false); // never aborted commit
     expect(r.data.Deployed).toBe(true);
@@ -453,10 +526,7 @@ describe('runDeploy — cancellation', () => {
   it('cancelRequested=false in events when no signal supplied', async () => {
     setHappyPath();
     const events: DeployProgressEvent[] = [];
-    await runDeploy(
-      { name: 'sample', mode: 'enforce' },
-      { onProgress: (e) => events.push(e) },
-    );
+    await runDeploy({ name: 'sample', mode: 'enforce' }, { onProgress: (e) => events.push(e) });
     expect(events.every((e) => e.cancelRequested === false)).toBe(true);
   });
 });
@@ -635,11 +705,6 @@ describe('withDeployLock', () => {
 
     releaseFirst();
     await Promise.all([first, second]);
-    expect(order).toEqual([
-      'apply1-start',
-      'apply1-end',
-      'apply2-start',
-      'apply2-end',
-    ]);
+    expect(order).toEqual(['apply1-start', 'apply1-end', 'apply2-start', 'apply2-end']);
   });
 });

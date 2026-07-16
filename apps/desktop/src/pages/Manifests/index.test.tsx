@@ -99,10 +99,36 @@ function installCfs(data: OscManifest[]) {
   getSourceMock = vi.fn().mockImplementation(async (name: string) => ({
     data: `resources:\n  - name: ${name}-setting\n    type: Microsoft.Windows/Registry\n`,
   }));
-  deleteMock = vi.fn().mockImplementation(async (name: string) => {
-    currentData = currentData.filter((manifest) => manifest.Name !== name);
-    return { message: 'deleted', data: { namespace: name } };
-  });
+  deleteMock = vi
+    .fn()
+    .mockImplementation(async (name: string, options?: { requireRecovery?: boolean }) => {
+      const manifest = currentData.find((candidate) => candidate.Name === name);
+      if (!manifest) throw new Error(`Missing registration for "${name}"`);
+      const sourceYaml =
+        `resources:\n  - name: ${name}-setting\n` +
+        `    type: Microsoft.Windows/Registry\n`;
+      currentData = currentData.filter((candidate) => candidate.Name !== name);
+      return {
+        message: 'deleted',
+        data: {
+          namespace: name,
+          recovery:
+            options?.requireRecovery === true
+              ? {
+                  namespace: name,
+                  displayName: manifest.DisplayName || name,
+                  sourceYaml,
+                  source:
+                    manifest.RegistrationSource ??
+                    (manifest.Source === 'library' ? 'library' : 'user'),
+                  ...(manifest.RegistrationSourceId
+                    ? { sourceId: manifest.RegistrationSourceId }
+                    : {}),
+                }
+              : null,
+        },
+      };
+    });
   restoreMock = vi.fn().mockImplementation(
     async (request: {
       namespace: string;
@@ -214,7 +240,7 @@ describe('ManifestsPage administrative table', () => {
     const linuxRow = screen.getByRole('row', { name: /linux-beta/ });
     expect(linuxRow).toHaveTextContent('Linux');
     expect(linuxRow).toHaveTextContent('2 issues');
-    expect(linuxRow).toHaveTextContent('70% compliant');
+    expect(linuxRow).toHaveTextContent('74% compliant');
 
     expect(screen.getByRole('row', { name: /unaudited/ })).toHaveTextContent('Not audited');
   });
@@ -260,7 +286,7 @@ describe('ManifestsPage administrative table', () => {
     expect(screen.getByRole('tab', { name: 'linux-beta' })).toBeInTheDocument();
   });
 
-  it('captures every authoritative source before delete and restores registration YAML on undo', async () => {
+  it('uses atomic recovery delete results and restores registration YAML on undo', async () => {
     localStorage.setItem(
       'cfs.baseline-workspace.open-baselines.v1',
       JSON.stringify(['alpha']),
@@ -279,10 +305,13 @@ describe('ManifestsPage administrative table', () => {
     );
     await waitFor(() => expect(deleteMock).toHaveBeenCalledTimes(2));
     await waitFor(() => expect(screen.getByLabelText('workspace-count')).toHaveTextContent('1'));
-    expect(getSourceMock).toHaveBeenCalledTimes(2);
-    expect(Math.max(...getSourceMock.mock.invocationCallOrder)).toBeLessThan(
-      Math.min(...deleteMock.mock.invocationCallOrder),
-    );
+    expect(getSourceMock).not.toHaveBeenCalled();
+    expect(deleteMock).toHaveBeenCalledWith('alpha', {
+      requireRecovery: true,
+    });
+    expect(deleteMock).toHaveBeenCalledWith('linux-beta', {
+      requireRecovery: true,
+    });
     expect(screen.queryByRole('tab', { name: 'alpha' })).not.toBeInTheDocument();
 
     const undo = screen.getByRole('button', { name: 'Undo delete' });
@@ -318,7 +347,11 @@ describe('ManifestsPage administrative table', () => {
 
     fireEvent.click(screen.getByRole('checkbox', { name: 'Select baseline alpha' }));
     fireEvent.click(screen.getByRole('button', { name: 'Delete selected baselines' }));
-    await waitFor(() => expect(deleteMock).toHaveBeenCalledWith('alpha'));
+    await waitFor(() =>
+      expect(deleteMock).toHaveBeenCalledWith('alpha', {
+        requireRecovery: true,
+      }),
+    );
 
     currentData = [
       ...currentData,
@@ -335,21 +368,28 @@ describe('ManifestsPage administrative table', () => {
     expect(screen.getByRole('button', { name: 'Undo delete' })).toBeEnabled();
   });
 
-  it('aborts the entire delete when any recovery source cannot be captured', async () => {
-    getSourceMock.mockImplementation(async (name: string) => ({
-      data: name === 'linux-beta' ? null : 'resources: []',
-    }));
+  it('leaves an unrecoverable baseline untouched when recovery is required', async () => {
+    deleteMock.mockImplementationOnce(async () => {
+      throw new Error(
+        'Manifest "linux-beta" was not deleted because its recovery source YAML is unavailable.',
+      );
+    });
     renderManifests();
     await screen.findByRole('button', { name: 'Open baseline alpha' });
 
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Select baseline alpha' }));
     fireEvent.click(screen.getByRole('checkbox', { name: 'Select baseline linux-beta' }));
     fireEvent.click(screen.getByRole('button', { name: 'Delete selected baselines' }));
 
     expect(
-      await screen.findByText(/No baselines were deleted because recovery content could not be captured/),
+      await screen.findByText(
+        /No baselines were deleted because recovery content could not be captured/,
+      ),
     ).toBeInTheDocument();
-    expect(deleteMock).not.toHaveBeenCalled();
+    expect(deleteMock).toHaveBeenCalledWith('linux-beta', {
+      requireRecovery: true,
+    });
+    expect(currentData.some((manifest) => manifest.Name === 'linux-beta')).toBe(true);
+    expect(getSourceMock).not.toHaveBeenCalled();
   });
 
   it('navigates Diff with Matrix preselection and disables Diff above ten selections', async () => {

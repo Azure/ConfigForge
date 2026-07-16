@@ -31,10 +31,10 @@ const source = `resources:
       completeValue: This value must remain completely visible
 `;
 
-function renderViewer() {
+function renderViewer(yamlSource = source) {
   return render(
     <FluentProvider theme={webLightTheme}>
-      <VisualManifestViewer source={source} />
+      <VisualManifestViewer source={yamlSource} />
     </FluentProvider>,
   );
 }
@@ -123,5 +123,57 @@ describe("VisualManifestViewer", () => {
     expect(
       within(informationalTable).queryByRole("columnheader", { name: "Desired Value" }),
     ).not.toBeInTheDocument();
+  });
+
+  it("displays QWord integers above Number.MAX_SAFE_INTEGER exactly", () => {
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <VisualManifestViewer
+          source={`resources:
+  - name: First QWord
+    type: Microsoft.Windows/Registry
+    properties:
+      valueName: First
+      valueType: QWord
+      value: 9007199254740993
+  - name: Maximum QWord
+    type: Microsoft.Windows/Registry
+    properties:
+      valueName: Maximum
+      valueType: QWord
+      value: 18446744073709551615
+`}
+        />
+      </FluentProvider>,
+    );
+
+    expect(screen.getAllByTitle("9007199254740993")).toHaveLength(2);
+    expect(screen.getAllByTitle("18446744073709551615")).toHaveLength(2);
+    for (const cell of screen.getAllByTitle("9007199254740993")) {
+      expect(cell).toHaveTextContent("9007199254740993");
+    }
+    for (const cell of screen.getAllByTitle("18446744073709551615")) {
+      expect(cell).toHaveTextContent("18446744073709551615");
+    }
+    expect(screen.queryByText("9007199254740992")).not.toBeInTheDocument();
+  });
+
+  it("retains default js-yaml support for leading-zero decimal integers", () => {
+    renderViewer(`resources:
+  - name: Leading Zero
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\\\\Software\\\\ConfigForge
+      valueName: LeadingZero
+      valueType: Dword
+      value: 012
+`);
+
+    expect(screen.getAllByTitle("12")).toHaveLength(2);
+    for (const cell of screen.getAllByTitle("12")) {
+      expect(cell).toHaveTextContent("12");
+    }
+    expect(screen.queryByText(/Could not parse/i)).not.toBeInTheDocument();
+    expect(screen.queryByText("18446744073709552000")).not.toBeInTheDocument();
   });
 });

@@ -33,6 +33,8 @@ export interface OscManifest {
   RegisteredAt?: string | null;
   /** Alias of RegisteredAt for list sorting/filtering semantics. */
   LastModifiedAt?: string | null;
+  /** Opaque registration revision used to bind audit/compliance results. */
+  Revision?: string | null;
   /** True when the registration has a recorded successful deployment. */
   Deployed?: boolean;
   /** ISO timestamp of the most recent successful deployment. */

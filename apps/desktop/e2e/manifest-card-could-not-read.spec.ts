@@ -66,7 +66,9 @@ test.beforeAll(async () => {
     async ({ n, c }: { n: string; c: string }) => {
       const cfs = (
         window as unknown as {
-          cfs: { manifests: { register: (req: { name: string; content: string }) => Promise<unknown> } };
+          cfs: {
+            manifests: { register: (req: { name: string; content: string }) => Promise<unknown> };
+          };
         }
       ).cfs;
       return await cfs.manifests.register({ name: n, content: c });
@@ -82,7 +84,7 @@ test.beforeAll(async () => {
   // manifest carries no inline compliance: 2 compliant, 1 non-compliant,
   // and 3 in the "could not read" bucket (could-not-read / indeterminate /
   // error). 2 + 1 + 3 = 6 resources.
-  await win.evaluate((name: string) => {
+  await win.evaluate(async (name: string) => {
     const resources = [
       { name: 'A', type: 'Microsoft.Windows/Registry', compliance: { status: 'Compliant' } },
       { name: 'B', type: 'Microsoft.Windows/Registry', compliance: { status: 'Compliant' } },
@@ -91,9 +93,14 @@ test.beforeAll(async () => {
       { name: 'E', type: 'Microsoft.Windows/Registry', compliance: { status: 'Indeterminate' } },
       { name: 'F', type: 'Microsoft.Windows/Registry', compliance: { status: 'Error' } },
     ];
+    const manifest = await window.cfs!.manifests.get(name);
     window.sessionStorage.setItem(
       `configforge-compliance-${name}`,
-      JSON.stringify({ name, resources }),
+      JSON.stringify({
+        name,
+        revision: manifest.data?.Revision ?? null,
+        resources,
+      }),
     );
   }, MANIFEST_NAME);
 });
@@ -102,7 +109,9 @@ test.afterAll(async () => {
   // Best-effort cleanup; never let teardown mask a real failure.
   try {
     await win.evaluate(async (name: string) => {
-      const cfs = (window as unknown as { cfs: { manifests: { delete: (n: string) => Promise<unknown> } } }).cfs;
+      const cfs = (
+        window as unknown as { cfs: { manifests: { delete: (n: string) => Promise<unknown> } } }
+      ).cfs;
       try {
         await cfs.manifests.delete(name);
       } catch {
@@ -115,23 +124,21 @@ test.afterAll(async () => {
   await app?.close();
 });
 
-test('manifest card surfaces the amber "Could not read" bucket so totals add up', async () => {
-  // Navigate to the Manifests page (a fresh mount reads the seeded cache).
-  await win.locator('aside').getByRole('link', { name: 'My Baselines' }).click();
+test('baseline table excludes indeterminate reads from compliance percentage', async () => {
+  await win
+    .locator('aside')
+    .getByRole('link', { name: /My Baselines/ })
+    .click();
+  await win.getByRole('textbox', { name: 'Search Baselines' }).fill(MANIFEST_NAME);
 
-  // Filter down to our throwaway manifest so we assert a single card.
-  await win.getByPlaceholder('Search baselines…').fill(MANIFEST_NAME);
+  const row = win.getByRole('row', { name: new RegExp(MANIFEST_NAME) });
+  await expect(row).toBeVisible({ timeout: 10_000 });
 
-  const heading = win.getByRole('heading', { name: MANIFEST_NAME });
-  await expect(heading).toBeVisible({ timeout: 10_000 });
-
-  const card = win.locator('div.group', { has: heading });
-
-  // All four buckets render, and they add up to the resource total:
-  // Resources 6 = Compliant 2 + Issues 1 + Could not read 3.
-  await expect(card.locator('.bg-slate-50 > p').first()).toHaveText('6');
-  await expect(card.locator('.bg-emerald-50 > p').first()).toHaveText('2');
-  await expect(card.locator('.bg-red-50 > p').first()).toHaveText('1');
-  await expect(card.getByText('Could not read', { exact: true })).toBeVisible();
-  await expect(card.locator('.bg-amber-50 > p').first()).toHaveText('3');
+  // Determinate results are 2 compliant + 1 non-compliant. The 3
+  // indeterminate/error reads must not lower the percentage to 33%.
+  await expect(row.getByText('67% compliant', { exact: true })).toBeVisible();
+  await expect(
+    row.getByTitle('2 of 3 evaluated settings are compliant; 3 settings could not be evaluated'),
+  ).toBeVisible();
+  await expect(row.getByText('1 issue', { exact: true })).toBeVisible();
 });
