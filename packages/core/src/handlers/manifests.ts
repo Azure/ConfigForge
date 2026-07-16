@@ -40,6 +40,7 @@ import {
   REGISTERED_WINDOWS_TYPES,
   sanitizeNamespace,
   saveRegistration,
+  saveRegistrationIfAbsent,
   type ManifestRegistration,
 } from '../oscfg';
 import {
@@ -55,8 +56,12 @@ import {
 import { createSnapshot } from '../history';
 import { resolveAuthor } from '../history/author';
 import { deleteRationale } from '../manifest/rationale-store';
-import { deleteAuditResult } from '../manifest/audit-results-store';
+import {
+  deleteAuditResult,
+  readAuditResult,
+} from '../manifest/audit-results-store';
 import { deleteHistoryForManifest } from '../history';
+import type { OscComplianceSummary } from '../types';
 import { HandlerError } from './errors';
 
 // ─── caching for list ────────────────────────────────────────────────
@@ -198,7 +203,7 @@ export function normalizeManifestContent(content: string): NormalizeResult {
 
 // ─── GET (list) ─────────────────────────────────────────────────────
 
-interface ListManifestsOptions {
+export interface ListManifestsOptions {
   /** Include namespaces visible in the live CLI (slower). */
   live?: boolean;
   /**
@@ -224,6 +229,32 @@ interface ListManifestsOptions {
    * caller has been audited.
    */
   lite?: boolean;
+  /**
+   * Bypass both 60-second list caches and any older in-flight read.
+   * Intended for explicit user Refresh so newly persisted audit state is
+   * visible immediately.
+   */
+  force?: boolean;
+}
+
+export interface ManifestListEntry {
+  Name: string;
+  DisplayName: string;
+  Source: 'library' | 'oscfg';
+  RegistrationSource: 'user' | 'library' | 'import' | null;
+  RegistrationSourceId: string | null;
+  Deployed: boolean;
+  LastAppliedAt: string | null;
+  LastAuditedAt: string | null;
+  Platform: string | null;
+  ResourceCount: number;
+  Validation: ValidationSummary | null;
+  Compliance: OscComplianceSummary | null;
+  /** Registration timestamp; null for namespaces visible only to the CLI. */
+  RegisteredAt: string | null;
+  /** Updated on every registration/save and therefore the list's modified time. */
+  LastModifiedAt: string | null;
+  Resources?: { name: string; type: string }[];
 }
 
 async function readSourceYaml(namespace: string): Promise<string | null> {
@@ -232,6 +263,42 @@ async function readSourceYaml(namespace: string): Promise<string | null> {
   } catch {
     return null;
   }
+}
+
+function nonNegativeNumber(value: unknown): number | null {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0
+    ? value
+    : null;
+}
+
+async function readComplianceSummary(
+  namespace: string,
+): Promise<OscComplianceSummary | null> {
+  const audit = await readAuditResult(namespace);
+  if (!audit || !audit.result || typeof audit.result !== 'object') return null;
+  const result = audit.result as Record<string, unknown>;
+  const total = nonNegativeNumber(result.TotalResources);
+  const compliant = nonNegativeNumber(result.Compliant);
+  const nonCompliant = nonNegativeNumber(result.NonCompliant);
+  const indeterminate = nonNegativeNumber(result.Indeterminate);
+  const errors = nonNegativeNumber(result.Errors);
+  if (
+    total === null ||
+    compliant === null ||
+    nonCompliant === null ||
+    indeterminate === null ||
+    errors === null
+  ) {
+    return null;
+  }
+  return {
+    auditedAt: audit.recordedAt,
+    total,
+    compliant,
+    nonCompliant,
+    indeterminate,
+    errors,
+  };
 }
 
 async function readCliNamespaces(): Promise<string[]> {
@@ -245,7 +312,7 @@ async function readCliNamespaces(): Promise<string[]> {
 async function buildManifestList(
   includeLive: boolean,
   includeResources: boolean,
-): Promise<unknown[]> {
+): Promise<ManifestListEntry[]> {
   const [regs, cliNamespaces] = await Promise.all([
     listRegistrations(),
     includeLive ? readCliNamespaces() : Promise.resolve<string[]>([]),
@@ -262,6 +329,7 @@ async function buildManifestList(
       const deployed = Boolean(reg?.lastAppliedAt) || cliVisible;
 
       if (reg) {
+        const compliance = await readComplianceSummary(name);
         let summary = reg.resourceSummary;
         let validation: ValidationSummary | undefined = reg.validationSummary;
         if (!summary || !validation) {
@@ -284,45 +352,64 @@ async function buildManifestList(
           }
         }
         const resources = (summary ?? []).map((r) => ({ name: r.name, type: r.type }));
-        const base = {
+        // Contextual typing keeps discriminator fields such as Source narrow
+        // and makes the core build a compile-time regression guard for every
+        // list field added to the shared renderer contract.
+        const base: Omit<ManifestListEntry, 'Resources'> = {
           Name: name,
           DisplayName: reg.displayName ?? name,
           Source: reg.source === 'library' ? 'library' : 'oscfg',
+          RegistrationSource: reg.source,
+          RegistrationSourceId: reg.sourceId ?? null,
           Deployed: deployed,
           LastAppliedAt: reg.lastAppliedAt ?? null,
           LastAuditedAt: reg.lastAuditedAt ?? null,
           Platform: reg.platform ?? null,
           ResourceCount: resources.length,
           Validation: validation ?? null,
+          Compliance: compliance,
+          RegisteredAt: reg.registeredAt ?? null,
+          LastModifiedAt: reg.registeredAt ?? null,
         };
         return includeResources ? { ...base, Resources: resources } : base;
       }
 
-      const cliBase = {
+      const cliBase: Omit<ManifestListEntry, 'Resources'> = {
         Name: name,
         DisplayName: name,
         Source: 'oscfg' as const,
+        RegistrationSource: null,
+        RegistrationSourceId: null,
         Deployed: true,
         LastAppliedAt: null,
         LastAuditedAt: null,
+        Platform: null,
         ResourceCount: 0,
         Validation: null,
+        Compliance: null,
+        RegisteredAt: null,
+        LastModifiedAt: null,
       };
       return includeResources ? { ...cliBase, Resources: [] as { name: string; type: string }[] } : cliBase;
     }),
   );
 }
 
-export async function listManifests(opts: ListManifestsOptions = {}): Promise<{ data: unknown[] }> {
+export async function listManifests(
+  opts: ListManifestsOptions = {},
+): Promise<{ data: ManifestListEntry[] }> {
+  if (opts.force === true) {
+    invalidateCache();
+  }
   const live = opts.live === true;
   // `lite: true` always strips Resources, regardless of includeResources.
   // Otherwise the legacy default (Resources included) holds.
   const includeResources = opts.lite === true ? false : opts.includeResources !== false;
 
   const bucket = live ? liveManifestCache : manifestCache;
-  let baseData: unknown[];
+  let baseData: ManifestListEntry[];
   if (bucket && Date.now() - bucket.fetchedAt < CACHE_TTL_MS) {
-    baseData = bucket.data as unknown[];
+    baseData = bucket.data as ManifestListEntry[];
   } else {
     if (!inFlight || inFlight.live !== live) {
       const generation = cacheGeneration;
@@ -342,14 +429,14 @@ export async function listManifests(opts: ListManifestsOptions = {}): Promise<{ 
       });
       inFlight = { generation, live, promise };
     }
-    baseData = (await inFlight.promise) as unknown[];
+    baseData = (await inFlight.promise) as ManifestListEntry[];
   }
 
   if (!includeResources) {
     return {
       data: baseData.map((entry) => {
-        if (entry && typeof entry === 'object' && 'Resources' in entry) {
-          const { Resources: _r, ...rest } = entry as Record<string, unknown>;
+        if ('Resources' in entry) {
+          const { Resources: _r, ...rest } = entry;
           void _r;
           return rest;
         }
@@ -372,12 +459,17 @@ export interface GetManifestResult {
     Name: string;
     DisplayName: string;
     Source: 'library' | 'oscfg';
+    RegistrationSource: 'user' | 'library' | 'import' | null;
+    RegistrationSourceId: string | null;
     Deployed: boolean;
     LastAppliedAt: string | null;
     LastAuditedAt: string | null;
     Platform: string | null;
     ResourceCount: number;
     Validation: ValidationSummary | null;
+    Compliance: OscComplianceSummary | null;
+    RegisteredAt: string | null;
+    LastModifiedAt: string | null;
     Resources?: { name: string; type: string }[];
   } | null;
   warning?: string;
@@ -440,16 +532,22 @@ export async function getManifest(
   }
 
   const resources = (summary ?? []).map((r) => ({ name: r.name, type: r.type }));
+  const compliance = await readComplianceSummary(namespace);
   const data = {
     Name: namespace,
     DisplayName: reg.displayName ?? namespace,
     Source: (reg.source === 'library' ? 'library' : 'oscfg') as 'library' | 'oscfg',
+    RegistrationSource: reg.source,
+    RegistrationSourceId: reg.sourceId ?? null,
     Deployed: Boolean(reg.lastAppliedAt),
     LastAppliedAt: reg.lastAppliedAt ?? null,
     LastAuditedAt: reg.lastAuditedAt ?? null,
     Platform: reg.platform ?? null,
     ResourceCount: resources.length,
     Validation: validation ?? null,
+    Compliance: compliance,
+    RegisteredAt: reg.registeredAt ?? null,
+    LastModifiedAt: reg.registeredAt ?? null,
     ...(includeResources ? { Resources: resources } : {}),
   };
 
@@ -796,6 +894,101 @@ export async function registerManifest(
     message: `Manifest '${req.name}' registered`,
     data: { namespace, platform: manifestPlatform },
     warnings,
+  };
+}
+
+// ─── RESTORE IF ABSENT ─────────────────────────────────────────────
+
+export interface RestoreManifestRequest {
+  /** Exact sanitized namespace that was deleted. */
+  namespace: string;
+  /** Original user-facing name stored in registration metadata. */
+  displayName: string;
+  /** Authoritative source YAML captured before deletion. */
+  content: string;
+  source: 'user' | 'library' | 'import';
+  sourceId?: string;
+}
+
+export interface RestoreManifestResult {
+  message: string;
+  data: {
+    namespace: string;
+    platform: Platform | 'mixed' | 'cross-platform' | 'unknown';
+  };
+}
+
+/**
+ * Restore only the recoverable registration baseline.
+ *
+ * Deployment pointers, history snapshots, rationale entries, and audit
+ * records are deliberately not reconstructed. The registry layer performs
+ * the absence check and write under one namespace lock so this operation can
+ * never overwrite a registration recreated after deletion.
+ */
+export async function restoreManifest(
+  req: RestoreManifestRequest,
+): Promise<RestoreManifestResult> {
+  if (!req || typeof req !== 'object') {
+    throw new HandlerError(400, 'restore request is required');
+  }
+  if (typeof req.namespace !== 'string' || !req.namespace) {
+    throw new HandlerError(400, 'namespace is required');
+  }
+  const namespace = sanitizeNamespace(req.namespace);
+  if (!namespace || namespace !== req.namespace) {
+    throw new HandlerError(400, 'namespace must be a sanitized manifest namespace');
+  }
+  if (typeof req.displayName !== 'string' || !req.displayName.trim()) {
+    throw new HandlerError(400, 'displayName is required');
+  }
+  if (typeof req.content !== 'string' || !req.content.trim()) {
+    throw new HandlerError(400, 'content is required');
+  }
+  if (!['user', 'library', 'import'].includes(req.source)) {
+    throw new HandlerError(400, 'source must be user, library, or import');
+  }
+  if (req.sourceId !== undefined && typeof req.sourceId !== 'string') {
+    throw new HandlerError(400, 'sourceId must be a string when provided');
+  }
+
+  const normalized = normalizeManifestContent(req.content);
+  if (!normalized.ok || !normalized.yaml) {
+    throw new HandlerError(400, normalized.error ?? 'normalize failed');
+  }
+  const parsed = parseYamlDocument(normalized.yaml) as { resources?: unknown[] };
+  const schemaErrors = validateManifestSchema(parsed);
+  if (schemaErrors.length) {
+    throw new HandlerError(400, `Invalid manifest schema:\n${schemaErrors.join('\n')}`);
+  }
+
+  const resources = parsed.resources ?? [];
+  const platform = detectManifestPlatform(resources);
+  const restored = await saveRegistrationIfAbsent(
+    {
+      namespace,
+      displayName: req.displayName,
+      platform,
+      registeredAt: new Date().toISOString(),
+      source: req.source,
+      ...(req.sourceId ? { sourceId: req.sourceId } : {}),
+      resourceSummary: extractResourceSummary(resources),
+      validationSummary: extractValidationSummary(parsed as Record<string, unknown>),
+    },
+    normalized.yaml,
+  );
+
+  if (!restored) {
+    throw new HandlerError(
+      409,
+      `Cannot undo delete for "${req.displayName}" because namespace "${namespace}" is already registered. The existing baseline was not changed; Undo remains available.`,
+    );
+  }
+  invalidateCache();
+
+  return {
+    message: `Manifest '${req.displayName}' restored from captured source`,
+    data: { namespace, platform },
   };
 }
 

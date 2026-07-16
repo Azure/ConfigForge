@@ -33,6 +33,7 @@ import { cfs } from "../../lib/cfs";
 import { useNewManifestForm } from "./state/useNewManifestForm";
 import { useTranslation } from "react-i18next";
 import { useNumberFormatter } from "../../lib/format";
+import { useBaselineWorkspace } from "../../components/BaselineWorkspace";
 
 export function ManifestNewPage() {
   const { t } = useTranslation("manifests");
@@ -53,6 +54,7 @@ function NewManifestPage() {
   const { t } = useTranslation("manifests");
   const fileSizeFormatter = useNumberFormatter({ minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const navigate = useNavigate();
+  const { refresh: refreshWorkspace } = useBaselineWorkspace();
   const [searchParams] = useSearchParams();
   const cisAvailable = useCisAvailable();
 
@@ -208,6 +210,11 @@ function NewManifestPage() {
       }
 
       const json = await cfs.manifests.register(body);
+      void refreshWorkspace().catch(() => {
+        // Registration already succeeded. Never turn a transient shared-count
+        // refresh failure into a duplicate-registration retry; route entry
+        // performs the same refresh again.
+      });
 
       const warnings: string[] = Array.isArray((json as { warnings?: string[] }).warnings)
         ? (json as { warnings: string[] }).warnings
@@ -390,6 +397,11 @@ function NewManifestPage() {
                       }
                     }),
                   );
+
+                  void refreshWorkspace().catch(() => {
+                    // Registration results remain authoritative; route-entry
+                    // refresh retries a transient count/pruning failure.
+                  });
 
                   if (errors.length === 0) {
                     setTimeout(() => navigate("/manifests"), 1500);

@@ -38,10 +38,14 @@ export function useBulkSelection(): BulkSelectionState {
 
   const toggleSelectAll = useCallback((pool: { Name: string }[]) => {
     setSelected((prev) => {
-      if (prev.size === pool.length && pool.every((m) => prev.has(m.Name))) {
-        return new Set();
+      const allPoolSelected = pool.length > 0 && pool.every((m) => prev.has(m.Name));
+      const next = new Set(prev);
+      if (allPoolSelected) {
+        for (const manifest of pool) next.delete(manifest.Name);
+      } else {
+        for (const manifest of pool) next.add(manifest.Name);
       }
-      return new Set(pool.map((m) => m.Name));
+      return next;
     });
   }, []);
 

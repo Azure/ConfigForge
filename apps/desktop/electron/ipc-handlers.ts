@@ -38,6 +38,7 @@ import {
   validateImportRequest,
   validateListManifestsRequest,
   validateRegisterManifestRequest,
+  validateRestoreManifestRequest,
   validateRevertRequest,
   validateSaveSnapshotRequest,
 } from './ipc-validators';
@@ -86,10 +87,12 @@ import {
   // Phase 4 pass B2 (manifests CRUD) — hot path
   listManifests,
   registerManifest,
+  restoreManifest,
   fetchManifestFromUri,
   deleteManifest,
   getManifest,
   type RegisterManifestRequest,
+  type RestoreManifestRequest,
   // Phase 4 pass E (deploy) — hot path
   runDeploy,
   type DeployRequest,
@@ -660,7 +663,13 @@ export function registerCfsIpcHandlers(): void {
     const verr = validateListManifestsRequest(req);
     if (verr) return envelope(new Error(verr));
     try {
-      const opts = (req as { live?: boolean; includeResources?: boolean; lite?: boolean }) ?? {};
+      const opts =
+        (req as {
+          live?: boolean;
+          includeResources?: boolean;
+          lite?: boolean;
+          force?: boolean;
+        }) ?? {};
       return await listManifests(opts);
     } catch (err) {
       return envelope(err);
@@ -695,6 +704,16 @@ export function registerCfsIpcHandlers(): void {
     if (verr) return envelope(new Error(verr));
     try {
       return await registerManifest(req as RegisterManifestRequest);
+    } catch (err) {
+      return envelope(err);
+    }
+  });
+
+  ipcMain.handle('cfs:manifests:restore', async (_evt, req: unknown) => {
+    const verr = validateRestoreManifestRequest(req);
+    if (verr) return envelope(new Error(verr));
+    try {
+      return await restoreManifest(req as RestoreManifestRequest);
     } catch (err) {
       return envelope(err);
     }
@@ -1260,4 +1279,3 @@ const importDialogOptions: Electron.OpenDialogOptions = {
     { name: 'All files', extensions: ['*'] },
   ],
 };
-

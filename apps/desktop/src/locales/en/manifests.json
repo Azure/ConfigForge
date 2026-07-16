@@ -3,6 +3,101 @@
     "title": "My Baselines",
     "description": "Registered OSConfig security baselines"
   },
+  "administration": {
+    "actions": {
+      "create": "Create new baseline",
+      "delete": "Delete",
+      "deleteAria": "Delete selected baselines",
+      "diff": "Diff",
+      "diffAria": "Diff selected baselines",
+      "diffMaximum": "Matrix Diff supports at most 10 selected baselines.",
+      "open": "Open",
+      "openAria": "Open selected baselines",
+      "undo": "Undo",
+      "undoAria": "Undo delete"
+    },
+    "filters": {
+      "compliance": {
+        "all": "Compliance",
+        "label": "Compliance",
+        "options": {
+          "all-compliant": "All compliant",
+          "not-audited": "Not audited",
+          "partially-compliant": "Partially compliant"
+        }
+      },
+      "issues": {
+        "all": "Issues",
+        "label": "Issues",
+        "options": {
+          "has-issues": "Has issues",
+          "no-issues": "No issues"
+        }
+      },
+      "lastModified": {
+        "all": "Date Last Modified",
+        "label": "Date Last Modified",
+        "options": {
+          "older-than-30-days": "More than 30 days ago",
+          "previous-30-days": "Previous 30 days",
+          "previous-7-days": "Previous 7 days",
+          "today": "Today",
+          "unknown": "Date unavailable"
+        }
+      },
+      "operatingSystem": {
+        "all": "Operating System",
+        "label": "Operating System",
+        "options": {
+          "cross-platform": "Cross-platform",
+          "linux": "Linux",
+          "mixed": "Mixed",
+          "unknown": "Unknown",
+          "windows": "Windows"
+        }
+      }
+    },
+    "loading": "Loading baselines…",
+    "messages": {
+      "captureFailed": "No baselines were deleted because recovery content could not be captured. {{error}}",
+      "deletePartial": "Deleted {{deleted}} baselines; {{failed}} could not be deleted.",
+      "deleteSuccess_one": "Deleted {{count}} baseline. Undo is available for this session.",
+      "deleteSuccess_other": "Deleted {{count}} baselines. Undo is available for this session.",
+      "undoPartial": "Restored {{restored}} baseline registrations; {{failed}} could not be restored. {{error}}",
+      "undoSuccess_one": "Restored {{count}} baseline registration from captured source YAML. Deployment, history, rationale, and audit data were not restored.",
+      "undoSuccess_other": "Restored {{count}} baseline registrations from captured source YAML. Deployment, history, rationale, and audit data were not restored.",
+      "unknownError": "Unknown error"
+    },
+    "search": {
+      "label": "Search Baselines",
+      "placeholder": "Search Baselines"
+    },
+    "showing": "Showing {{filtered}} of {{total}}",
+    "status": {
+      "allCompliant": "All compliant",
+      "complianceTitle": "{{compliant}} of {{total}} audited settings are compliant",
+      "issueCount_one": "{{count}} issue",
+      "issueCount_other": "{{count}} issues",
+      "noIssues": "No issues",
+      "noValidationIssues": "No validation issues",
+      "notAudited": "Not audited",
+      "notAuditedTitle": "No audit data is available for this baseline",
+      "percentCompliant": "{{percent}} compliant"
+    },
+    "table": {
+      "baseline": "Baseline",
+      "compliant": "Compliant",
+      "issues": "Issues",
+      "lastModifiedTitle": "Last modified {{date}}",
+      "lastModifiedUnknown": "Last modified date unavailable",
+      "noMatches": "No baselines match the current search and filters.",
+      "openBaseline": "Open baseline {{name}}",
+      "operatingSystem": "Operating System",
+      "selectAll": "Select all filtered baselines",
+      "selectBaseline": "Select baseline {{name}}",
+      "settings": "Settings"
+    }
+  },
   "features": {
     "audit": "Audit",
     "bulkDeploy": "Bulk deploy",
@@ -28,8 +123,10 @@
     "deploy": "Deploy \"{{name}}\" in {{mode}} mode?",
     "bulkDeploy_one": "Deploy {{count}} baseline to this device?",
     "bulkDeploy_other": "Deploy {{count}} baselines to this device?",
-    "bulkDelete_one": "Delete {{count}} baseline? This action cannot be undone.",
-    "bulkDelete_other": "Delete {{count}} baselines? This action cannot be undone.",
+    "bulkDeleteBaselineContentOnly_one": "Delete {{count}} baseline? Undo restores baseline content only during this session. Deployment, history, rationale, and audit records are deleted and not restored.",
+    "bulkDeleteBaselineContentOnly_other": "Delete {{count}} baselines? Undo restores baseline content only during this session. Deployment, history, rationale, and audit records are deleted and not restored.",
+    "bulkDelete_one": "Delete {{count}} baseline? Its registration source will be captured so this batch can be undone during the current session.",
+    "bulkDelete_other": "Delete {{count}} baselines? Their registration sources will be captured so this batch can be undone during the current session.",
     "revert": "Revert \"{{name}}\"?\n\nIf a pre-deploy snapshot exists, your prior settings will be re-applied to this device. If no snapshot exists, OSConfig enforcement will be removed and the baseline will be unregistered. Either way, this baseline will no longer be actively enforced."
   },
   "messages": {
@@ -58,6 +155,13 @@
     "selectAll": "Select all",
     "deselectAll": "Deselect all",
     "selected": "{{count}} selected"
+  },
+  "workspace": {
+    "allBaselines": "All Baselines",
+    "closeTab": "Close {{name}}",
+    "moreTabs": "More open baselines",
+    "navigationLabel": "Baseline workspace",
+    "openTabsLabel": "Open baselines"
   },
   "card": {
     "localSource": "Local",

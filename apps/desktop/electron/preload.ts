@@ -34,6 +34,8 @@ import type {
   BaselineCsvResult,
   RegisterManifestRequest,
   RegisterManifestResult,
+  RestoreManifestRequest,
+  RestoreManifestResult,
   DeleteManifestResult,
   ImportRequest,
   ImportResult,
@@ -44,6 +46,7 @@ import type {
   DeployResponse,
   DeployProgressEvent,
   UserSettings,
+  ManifestListEntry,
 } from '@configforge/core/handlers';
 
 /**
@@ -208,10 +211,17 @@ const cfsApi = {
   },
 
   manifests: {
-    list: (opts?: { live?: boolean; includeResources?: boolean; lite?: boolean }) =>
-      call<{ data: unknown[] }>('cfs:manifests:list', opts ?? {}),
+    list: (opts?: {
+      live?: boolean;
+      includeResources?: boolean;
+      lite?: boolean;
+      force?: boolean;
+    }) =>
+      call<{ data: ManifestListEntry[] }>('cfs:manifests:list', opts ?? {}),
     register: (req: RegisterManifestRequest): Promise<RegisterManifestResult> =>
       call('cfs:manifests:register', req),
+    restore: (req: RestoreManifestRequest): Promise<RestoreManifestResult> =>
+      call('cfs:manifests:restore', req),
     /**
      * v0.2.15: fetch a remote manifest's source YAML *without*
      * registering it. The renderer uses this to load a URL into the
@@ -245,12 +255,24 @@ const cfsApi = {
           Name: string;
           DisplayName: string;
           Source: 'library' | 'oscfg';
+          RegistrationSource: 'user' | 'library' | 'import' | null;
+          RegistrationSourceId: string | null;
           Deployed: boolean;
           LastAppliedAt: string | null;
           LastAuditedAt: string | null;
           Platform: string | null;
           ResourceCount: number;
           Validation: unknown;
+          Compliance: {
+            auditedAt: string;
+            total: number;
+            compliant: number;
+            nonCompliant: number;
+            indeterminate: number;
+            errors: number;
+          } | null;
+          RegisteredAt: string | null;
+          LastModifiedAt: string | null;
           Resources?: { name: string; type: string }[];
         } | null;
         warning?: string;
