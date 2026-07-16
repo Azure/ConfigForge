@@ -1,4 +1,145 @@
 {
+  "actions": {
+    "catalogActionComplete": "Acción del catálogo completada",
+    "catalogActionFailed": "Error en la acción del catálogo",
+    "copied": "Copiado",
+    "copiedPath": "Se copió la ruta de la carpeta de datos.",
+    "copyPath": "Copiar ruta",
+    "copyPathAria": "Copiar la ruta de la carpeta de datos",
+    "copyPathError": "No se pudo copiar la ruta de la carpeta de datos.",
+    "folderActionComplete": "Acción de carpeta completada",
+    "folderActionFailed": "Error en la acción de carpeta",
+    "openFolder": "Abrir carpeta",
+    "openFolderError": "No se pudo abrir la carpeta de datos.",
+    "openedFolder": "Carpeta de datos abierta: {{path}}",
+    "openingFolder": "Abriendo carpeta…",
+    "pathCopiedAria": "Ruta copiada",
+    "recheck": "Volver a comprobar el catálogo",
+    "recheckDetected": "Comprobación del catálogo completada. Se detectaron archivos, pero todavía se necesita un archivo OVAL complementario utilizable o un catálogo JSON con reglas positivas.",
+    "recheckLoaded": "Comprobación del catálogo completada. Los datos de CIS están listos.",
+    "recheckMappingsMissing": "Comprobación del catálogo completada. Se detectaron catálogos de reglas; agregue un archivo cis-mappings.json válido para completar la configuración heredada.",
+    "recheckPartial": "Comprobación del catálogo completada. Algunos catálogos CIS están listos; otros aún necesitan un archivo OVAL complementario o reglas utilizables.",
+    "recheckPartialMappingsMissing": "Comprobación del catálogo completada. Algunos catálogos CIS están listos; los catálogos de reglas heredados aún requieren un archivo cis-mappings.json válido.",
+    "rechecking": "Volviendo a comprobar el catálogo…",
+    "recheckUnavailable": "Comprobación del catálogo completada. No se encontraron datos de CIS.",
+    "statusError": "No se pudo cargar el estado del catálogo CIS."
+  },
+  "detected": {
+    "ariaLabel": "Catálogos CIS detectados",
+    "azurePolicy": "Azure Policy",
+    "description": "Estos catálogos están disponibles para la Correspondencia de benchmarks, el editor y Diff.",
+    "limitedDescription": "Se detectaron estos archivos, pero aún no se pueden usar para referencias cruzadas en el editor ni para Diff.",
+    "partialDescription": "Algunos catálogos detectados están listos; las entradas marcadas con limitaciones no están disponibles para referencias cruzadas en el editor ni para Diff.",
+    "json": "JSON",
+    "legacyMetadata": "Esta fuente no proporciona metadatos por archivo.",
+    "legacyMappingsMissing": "Se detectaron catálogos de reglas, pero el archivo cis-mappings.json no se encuentra o no es válido.",
+    "legacyReady_one": "Las asignaciones globales y {{count}} catálogo de reglas per-OS están disponibles.",
+    "legacyReady_other": "Las asignaciones globales y {{count}} catálogos de reglas per-OS están disponibles.",
+    "legacyRulesMissing": "Las asignaciones globales están cargadas; agregue al menos un catálogo de reglas per-OS válido.",
+    "legacyTitle": "Catálogo JSON heredado",
+    "noMetadata": "Los datos de CIS están disponibles, pero no se proporcionaron metadatos de catálogo por archivo.",
+    "notReported": "No notificado",
+    "noUsableRules": "No se detectaron reglas utilizables",
+    "ovalFound": "Se encontró el archivo OVAL complementario",
+    "ovalMissing": "No se encontró el archivo OVAL complementario",
+    "platform": {
+      "linux": "Linux",
+      "unknown": "Plataforma desconocida",
+      "windows": "Windows"
+    },
+    "ruleCount_one": "{{formattedCount}} regla",
+    "ruleCount_other": "{{formattedCount}} reglas",
+    "title": "Catálogos detectados",
+    "version": "Versión {{version}}",
+    "xccdf": "XCCDF"
+  },
+  "diagnostics": {
+    "didYouMean": "¿Quiso decir {{suggestion}}?",
+    "schemaTitle": "Esquema CIS incorrecto o no compatible",
+    "title": "Diagnóstico del catálogo",
+    "unexpectedDescription": "Cambie el nombre de los archivos cuando se muestre un nombre de archivo sugerido y, después, vuelva a comprobar el catálogo.",
+    "unexpectedTitle": "Archivos no reconocidos"
+  },
+  "header": {
+    "capabilities": "Una vez cargados los datos de CIS, también habrá una pestaña CIS en la página Diff para evaluar la cobertura completa de la baseline.",
+    "description": "Compare la configuración de OSConfig con los datos de CIS Benchmark proporcionados por el usuario.",
+    "title": "Correspondencia de benchmarks"
+  },
+  "status": {
+    "ariaLabel": "Estado del catálogo CIS",
+    "detected": {
+      "description": "Se detectaron archivos de catálogo, pero la correspondencia aún requiere un archivo OVAL complementario para XCCDF o un catálogo JSON que contenga reglas.",
+      "legacyMappingsDescription": "Se detectaron catálogos de reglas heredados, pero la correspondencia requiere un archivo cis-mappings.json válido.",
+      "title": "Archivos CIS detectados — configuración incompleta"
+    },
+    "loaded": {
+      "description": "Se encontraron datos de CIS. Las referencias cruzadas del editor y las funciones de Diff están disponibles.",
+      "title": "Datos de CIS encontrados"
+    },
+    "loading": {
+      "description": "Se está comprobando si la carpeta de datos local contiene archivos de baseline CIS compatibles.",
+      "title": "Comprobando el catálogo CIS"
+    },
+    "partial": {
+      "description": "Algunos catálogos CIS están listos, mientras que otros archivos detectados aún necesitan un archivo OVAL complementario o reglas utilizables.",
+      "legacyMappingsDescription": "Algunos catálogos CIS están listos; los catálogos de reglas heredados detectados aún requieren un archivo cis-mappings.json válido.",
+      "title": "Datos de CIS parcialmente listos"
+    },
+    "schemaDetails": "Detalles del esquema:",
+    "unavailable": {
+      "description": "Agregue el archivo JSON de baseline CIS de Azure Policy o archivos XML CIS XCCDF + OVAL y, después, seleccione Volver a comprobar el catálogo.",
+      "optional": "Los datos de CIS son opcionales; todas las demás características de ConfigForge siguen disponibles.",
+      "title": "No se encontraron datos de CIS"
+    }
+  },
+  "steps": {
+    "download": {
+      "alternate": "Alternativa",
+      "azure": {
+        "description": "En Azure Policy, vaya a Machine Configuration > CIS y descargue el archivo JSON de baseline para cada sistema operativo de destino.",
+        "link": "Abrir Azure Portal",
+        "title": "JSON de baseline CIS de Azure Policy"
+      },
+      "description": "Elija la fuente compatible que mejor se adapte a su entorno. Solo se necesita una fuente.",
+      "license": {
+        "ariaLabel": "Aviso de licencia de CIS",
+        "description": "El contenido de CIS Benchmark es propiedad intelectual del Center for Internet Security y se licencia por separado. ConfigForge incluye la lógica de correspondencia, pero no incluye datos con licencia de CIS.",
+        "title": "Aviso de licencia:"
+      },
+      "recommended": "Recomendado",
+      "title": "Descargar baselines de CIS",
+      "xccdf": {
+        "description": "Descargue el archivo XML XCCDF del benchmark y su archivo XML OVAL complementario para mejorar la correspondencia de reglas y del Registro.",
+        "link": "Abrir CIS Workbench",
+        "title": "CIS XCCDF + OVAL XML"
+      }
+    },
+    "import": {
+      "description": "Abra la carpeta de datos o coloque los archivos compatibles en la ruta completa que se muestra a continuación.",
+      "guidance": {
+        "ariaLabel": "Instrucciones para importar archivos CIS",
+        "azureDescription": "Mantenga los archivos JSON descargados sin cambios. Puede agregar varios archivos, uno por sistema operativo, y los nombres de archivo no tienen que seguir ningún patrón especial.",
+        "azureLabel": "JSON de Azure Policy:",
+        "title": "Preparar los archivos",
+        "xccdfDescription": "Conserve cada archivo *-xccdf.xml junto a su archivo *-oval.xml complementario correspondiente. El prefijo compartido del nombre de archivo los empareja y OVAL permite una correspondencia exacta con el Registro de Windows.",
+        "xccdfLabel": "XCCDF + OVAL:"
+      },
+      "pathAriaLabel": "Ruta de la carpeta de datos de CIS",
+      "pathLabel": "Carpeta de datos de CIS",
+      "pathUnavailable": "La ruta de la carpeta de datos no está disponible.",
+      "pathUnavailableHint": "Use Abrir carpeta o Volver a comprobar el catálogo para volver a intentarlo.",
+      "title": "Importar los archivos de baseline de CIS"
+    },
+    "recheck": {
+      "description": "Vuelva a examinar la carpeta de datos después de agregar, reemplazar o cambiar el nombre de los archivos.",
+      "title": "Volver a comprobar el catálogo"
+    }
+  },
+  "workflow": {
+    "ariaLabel": "Configuración del catálogo CIS",
+    "stepHeading": "Paso {{number}}: {{title}}",
+    "stepLabel": "Paso {{number}}:"
+  },
   "extracted": {
     "text1": "Asignación de referencias",
     "text2": "Contrasta tus ajustes de OSConfig con las reglas de CIS Benchmark. Coloca tus archivos CIS en la carpeta de abajo y el editor mostrará las reglas correspondientes mientras navegas por la YAML.",

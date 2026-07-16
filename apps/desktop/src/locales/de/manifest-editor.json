@@ -3,6 +3,8 @@
     "auditPack": "Audit Pack",
     "auditPackTitle": "Erstelle prüferbereite PDF-/Markdown-Lieferergebnisse",
     "back": "Zurück",
+    "closeBaseline": "Baseline schließen",
+    "deleteBaseline": "Baseline löschen",
     "docs": "Docs",
     "duplicate": "Duplikat",
     "duplicateTitle": "Dupliziere dieses baseline",
@@ -29,6 +31,7 @@
     "mofReadOnly": "MOF ist nur lesegeschützt",
     "sectionTitle": "Baseline Inhalt",
     "unsavedFormatChanges": "Du hast in {{format}} nicht gespeicherte Änderungen. Das Wechseln der Tabs bewahrt sie; Speichere, bevor du wegnavigierst.",
+    "visualEditUnavailable": "Zum Bearbeiten ist kanonisches YAML erforderlich, das derzeit nicht verfügbar ist.",
     "visualBuilderView": "Visueller Builder"
   },
   "cspTroubleshooting": {
@@ -164,6 +167,22 @@
     "json": "JSON",
     "mof": "MOF",
     "yaml": "YAML"
+  },
+  "viewer": {
+    "categoryTableLabel": "{{category}}-Einstellungen",
+    "code": "Code",
+    "empty": "Keine Einstellungen zum Anzeigen.",
+    "emptyValue": "—",
+    "formatLabel": "Quellformate der Baseline",
+    "modeLabel": "Schreibgeschützter Anzeigemodus",
+    "settingCount_one": "{{count}} Einstellung",
+    "settingCount_other": "{{count}} Einstellungen",
+    "settingName": "Einstellungsname",
+    "unnamedSetting": "Unbenannte Einstellung",
+    "viewing": "Anzeige",
+    "visual": "Visual",
+    "visualParseError": "Die Baselinequelle konnte für die Visual-Anzeige nicht analysiert werden. Wechseln Sie zu Code, um die Quelle zu überprüfen.",
+    "visualRegionLabel": "Baselineeinstellungen in Visual"
   },
   "visual": {
     "addResource": "Einstellung hinzufügen",

@@ -1,4 +1,145 @@
 {
+  "actions": {
+    "catalogActionComplete": "Action sur le catalogue terminée",
+    "catalogActionFailed": "Échec de l’action sur le catalogue",
+    "copied": "Copié",
+    "copiedPath": "Chemin du dossier de données copié.",
+    "copyPath": "Copier le chemin",
+    "copyPathAria": "Copier le chemin du dossier de données",
+    "copyPathError": "Impossible de copier le chemin du dossier de données.",
+    "folderActionComplete": "Action sur le dossier terminée",
+    "folderActionFailed": "Échec de l’action sur le dossier",
+    "openFolder": "Ouvrir le dossier",
+    "openFolderError": "Impossible d’ouvrir le dossier de données.",
+    "openedFolder": "Dossier de données ouvert : {{path}}",
+    "openingFolder": "Ouverture du dossier…",
+    "pathCopiedAria": "Chemin copié",
+    "recheck": "Revérifier le catalogue",
+    "recheckDetected": "Vérification du catalogue terminée. Des fichiers ont été détectés, mais un fichier OVAL associé utilisable ou un catalogue JSON contenant des règles positives est toujours requis.",
+    "recheckLoaded": "Vérification du catalogue terminée. Les données CIS sont prêtes.",
+    "recheckMappingsMissing": "Vérification du catalogue terminée. Des catalogues de règles ont été détectés ; ajoutez un fichier cis-mappings.json valide pour terminer la configuration héritée.",
+    "recheckPartial": "Vérification du catalogue terminée. Certains catalogues CIS sont prêts ; d’autres nécessitent encore un fichier OVAL associé ou des règles utilisables.",
+    "recheckPartialMappingsMissing": "Vérification du catalogue terminée. Certains catalogues CIS sont prêts ; les catalogues de règles hérités nécessitent toujours un fichier cis-mappings.json valide.",
+    "rechecking": "Nouvelle vérification du catalogue…",
+    "recheckUnavailable": "Vérification du catalogue terminée. Aucune donnée CIS n’a été trouvée.",
+    "statusError": "Impossible de charger l’état du catalogue CIS."
+  },
+  "detected": {
+    "ariaLabel": "Catalogues CIS détectés",
+    "azurePolicy": "Azure Policy",
+    "description": "Ces catalogues sont disponibles pour la Correspondance des référentiels, l’éditeur et Diff.",
+    "limitedDescription": "Ces fichiers ont été détectés, mais ils ne peuvent pas encore être utilisés pour les références croisées dans l’éditeur ni pour Diff.",
+    "partialDescription": "Certains catalogues détectés sont prêts ; les entrées signalées comme limitées ne sont pas disponibles pour les références croisées dans l’éditeur ni pour Diff.",
+    "json": "JSON",
+    "legacyMetadata": "Cette source ne fournit pas de métadonnées par fichier.",
+    "legacyMappingsMissing": "Des catalogues de règles ont été détectés, mais le fichier cis-mappings.json est manquant ou non valide.",
+    "legacyReady_one": "Les mappages globaux et {{count}} catalogue de règles per-OS sont disponibles.",
+    "legacyReady_other": "Les mappages globaux et {{count}} catalogues de règles per-OS sont disponibles.",
+    "legacyRulesMissing": "Les mappages globaux sont chargés ; ajoutez au moins un catalogue de règles per-OS valide.",
+    "legacyTitle": "Catalogue JSON hérité",
+    "noMetadata": "Les données CIS sont disponibles, mais aucune métadonnée de catalogue par fichier n’a été fournie.",
+    "notReported": "Non indiqué",
+    "noUsableRules": "Aucune règle utilisable détectée",
+    "ovalFound": "Fichier OVAL associé trouvé",
+    "ovalMissing": "Fichier OVAL associé introuvable",
+    "platform": {
+      "linux": "Linux",
+      "unknown": "Plateforme inconnue",
+      "windows": "Windows"
+    },
+    "ruleCount_one": "{{formattedCount}} règle",
+    "ruleCount_other": "{{formattedCount}} règles",
+    "title": "Catalogues détectés",
+    "version": "Version {{version}}",
+    "xccdf": "XCCDF"
+  },
+  "diagnostics": {
+    "didYouMean": "Vouliez-vous dire {{suggestion}} ?",
+    "schemaTitle": "Schéma CIS incorrect ou non pris en charge",
+    "title": "Diagnostics du catalogue",
+    "unexpectedDescription": "Renommez les fichiers lorsqu’un nom de fichier suggéré est affiché, puis revérifiez le catalogue.",
+    "unexpectedTitle": "Fichiers non reconnus"
+  },
+  "header": {
+    "capabilities": "Une fois les données CIS chargées, un onglet CIS sera également disponible sur la page Diff pour calculer le score de couverture de la baseline complète.",
+    "description": "Mettez en correspondance les paramètres OSConfig avec les données CIS Benchmark fournies par l’utilisateur.",
+    "title": "Correspondance des référentiels"
+  },
+  "status": {
+    "ariaLabel": "État du catalogue CIS",
+    "detected": {
+      "description": "Des fichiers de catalogue ont été détectés, mais la mise en correspondance nécessite encore un fichier OVAL associé pour XCCDF ou un catalogue JSON contenant des règles.",
+      "legacyMappingsDescription": "Des catalogues de règles hérités ont été détectés, mais la mise en correspondance nécessite un fichier cis-mappings.json valide.",
+      "title": "Fichiers CIS détectés — configuration incomplète"
+    },
+    "loaded": {
+      "description": "Des données CIS ont été trouvées. Les références croisées de l’éditeur et les fonctionnalités de Diff sont disponibles.",
+      "title": "Données CIS trouvées"
+    },
+    "loading": {
+      "description": "Recherche de fichiers de baseline CIS pris en charge dans le dossier de données local.",
+      "title": "Vérification du catalogue CIS"
+    },
+    "partial": {
+      "description": "Certains catalogues CIS sont prêts, tandis que d’autres fichiers détectés nécessitent encore un fichier OVAL associé ou des règles utilisables.",
+      "legacyMappingsDescription": "Certains catalogues CIS sont prêts ; les catalogues de règles hérités détectés nécessitent toujours un fichier cis-mappings.json valide.",
+      "title": "Données CIS partiellement prêtes"
+    },
+    "schemaDetails": "Détails du schéma :",
+    "unavailable": {
+      "description": "Ajoutez un fichier JSON de baseline CIS Azure Policy ou des fichiers XML CIS XCCDF + OVAL, puis sélectionnez Revérifier le catalogue.",
+      "optional": "Les données CIS sont facultatives ; toutes les autres fonctionnalités de ConfigForge restent disponibles.",
+      "title": "Aucune donnée CIS trouvée"
+    }
+  },
+  "steps": {
+    "download": {
+      "alternate": "Autre option",
+      "azure": {
+        "description": "Dans Azure Policy, accédez à Machine Configuration > CIS et téléchargez le fichier JSON de baseline pour chaque système d’exploitation cible.",
+        "link": "Ouvrir Azure Portal",
+        "title": "JSON de la baseline CIS Azure Policy"
+      },
+      "description": "Choisissez la source prise en charge adaptée à votre environnement. Une seule source est requise.",
+      "license": {
+        "ariaLabel": "Avis de licence CIS",
+        "description": "Le contenu CIS Benchmark est la propriété intellectuelle du Center for Internet Security et fait l’objet d’une licence distincte. ConfigForge inclut la logique de correspondance, mais pas les données sous licence CIS.",
+        "title": "Avis de licence :"
+      },
+      "recommended": "Recommandé",
+      "title": "Télécharger les baselines CIS",
+      "xccdf": {
+        "description": "Téléchargez le fichier XML XCCDF du référentiel et le fichier XML OVAL associé pour obtenir une correspondance plus précise des règles et du Registre.",
+        "link": "Ouvrir CIS Workbench",
+        "title": "CIS XCCDF + OVAL XML"
+      }
+    },
+    "import": {
+      "description": "Ouvrez le dossier de données ou déposez les fichiers pris en charge dans le chemin complet indiqué ci-dessous.",
+      "guidance": {
+        "ariaLabel": "Instructions d’importation des fichiers CIS",
+        "azureDescription": "Conservez les fichiers JSON téléchargés tels quels. Vous pouvez ajouter plusieurs fichiers, un par système d’exploitation, sans qu’un modèle de nom particulier soit requis.",
+        "azureLabel": "Azure Policy JSON :",
+        "title": "Préparer les fichiers",
+        "xccdfDescription": "Conservez chaque fichier *-xccdf.xml à côté du fichier *-oval.xml associé correspondant. Leur préfixe de nom de fichier commun permet de les associer, et OVAL permet une correspondance exacte avec le Registre Windows.",
+        "xccdfLabel": "XCCDF + OVAL :"
+      },
+      "pathAriaLabel": "Chemin du dossier de données CIS",
+      "pathLabel": "Dossier de données CIS",
+      "pathUnavailable": "Le chemin du dossier de données n’est pas disponible.",
+      "pathUnavailableHint": "Utilisez Ouvrir le dossier ou Revérifier le catalogue pour réessayer.",
+      "title": "Importer les fichiers de baseline CIS"
+    },
+    "recheck": {
+      "description": "Analysez à nouveau le dossier de données après avoir ajouté, remplacé ou renommé des fichiers.",
+      "title": "Revérifier le catalogue"
+    }
+  },
+  "workflow": {
+    "ariaLabel": "Configuration du catalogue CIS",
+    "stepHeading": "Étape {{number}} : {{title}}",
+    "stepLabel": "Étape {{number}} :"
+  },
   "extracted": {
     "text1": "Correspondance des référentiels",
     "text2": "Recoupez vos paramètres de OSConfig avec CIS règles de benchmark. Déposez vos fichiers CIS dans le dossier ci-dessous et l’éditeur affichera les règles correspondantes pendant que vous naviguez dans le YAML.",

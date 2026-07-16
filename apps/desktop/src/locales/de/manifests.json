@@ -3,6 +3,101 @@
     "title": "Meine Baselines",
     "description": "Registriert OSConfig Sicherheitsbaselines"
   },
+  "administration": {
+    "actions": {
+      "create": "Neue Baseline erstellen",
+      "delete": "Löschen",
+      "deleteAria": "Ausgewählte Baselines löschen",
+      "diff": "Diff",
+      "diffAria": "Diff für ausgewählte Baselines",
+      "diffMaximum": "Matrix Diff unterstützt maximal 10 ausgewählte Baselines.",
+      "open": "Öffnen",
+      "openAria": "Ausgewählte Baselines öffnen",
+      "undo": "Rückgängig",
+      "undoAria": "Löschen rückgängig machen"
+    },
+    "filters": {
+      "compliance": {
+        "all": "Konformität",
+        "label": "Konformität",
+        "options": {
+          "all-compliant": "Alle konform",
+          "not-audited": "Nicht auditiert",
+          "partially-compliant": "Teilweise konform"
+        }
+      },
+      "issues": {
+        "all": "Probleme",
+        "label": "Probleme",
+        "options": {
+          "has-issues": "Mit Problemen",
+          "no-issues": "Keine Probleme"
+        }
+      },
+      "lastModified": {
+        "all": "Datum der letzten Änderung",
+        "label": "Datum der letzten Änderung",
+        "options": {
+          "older-than-30-days": "Vor mehr als 30 Tagen",
+          "previous-30-days": "Letzte 30 Tage",
+          "previous-7-days": "Letzte 7 Tage",
+          "today": "Heute",
+          "unknown": "Datum nicht verfügbar"
+        }
+      },
+      "operatingSystem": {
+        "all": "Betriebssystem",
+        "label": "Betriebssystem",
+        "options": {
+          "cross-platform": "Plattformübergreifend",
+          "linux": "Linux",
+          "mixed": "Gemischt",
+          "unknown": "Unbekannt",
+          "windows": "Windows"
+        }
+      }
+    },
+    "loading": "Baselines werden geladen…",
+    "messages": {
+      "captureFailed": "Es wurden keine Baselines gelöscht, da der Wiederherstellungsinhalt nicht erfasst werden konnte. {{error}}",
+      "deletePartial": "{{deleted}} Baselines wurden gelöscht; {{failed}} konnten nicht gelöscht werden.",
+      "deleteSuccess_one": "{{count}} Baseline wurde gelöscht. Das Rückgängigmachen ist während dieser Sitzung verfügbar.",
+      "deleteSuccess_other": "{{count}} Baselines wurden gelöscht. Das Rückgängigmachen ist während dieser Sitzung verfügbar.",
+      "undoPartial": "{{restored}} Baseline-Registrierungen wurden wiederhergestellt; {{failed}} konnten nicht wiederhergestellt werden. {{error}}",
+      "undoSuccess_one": "{{count}} Baseline-Registrierung wurde aus dem erfassten YAML-Quellinhalt wiederhergestellt. Bereitstellungs-, Verlaufs-, Begründungs- und Auditdaten wurden nicht wiederhergestellt.",
+      "undoSuccess_other": "{{count}} Baseline-Registrierungen wurden aus dem erfassten YAML-Quellinhalt wiederhergestellt. Bereitstellungs-, Verlaufs-, Begründungs- und Auditdaten wurden nicht wiederhergestellt.",
+      "unknownError": "Unbekannter Fehler"
+    },
+    "search": {
+      "label": "Baselines durchsuchen",
+      "placeholder": "Baselines durchsuchen"
+    },
+    "showing": "{{filtered}} von {{total}} werden angezeigt",
+    "status": {
+      "allCompliant": "Alle konform",
+      "complianceTitle": "{{compliant}} von {{total}} auditierten Einstellungen sind konform",
+      "issueCount_one": "{{count}} Problem",
+      "issueCount_other": "{{count}} Probleme",
+      "noIssues": "Keine Probleme",
+      "noValidationIssues": "Keine Validierungsprobleme",
+      "notAudited": "Nicht auditiert",
+      "notAuditedTitle": "Für diese Baseline sind keine Auditdaten verfügbar",
+      "percentCompliant": "{{percent}} konform"
+    },
+    "table": {
+      "baseline": "Baseline",
+      "compliant": "Konform",
+      "issues": "Probleme",
+      "lastModifiedTitle": "Zuletzt geändert am {{date}}",
+      "lastModifiedUnknown": "Datum der letzten Änderung nicht verfügbar",
+      "noMatches": "Keine Baselines entsprechen der aktuellen Suche und den Filtern.",
+      "openBaseline": "Baseline {{name}} öffnen",
+      "operatingSystem": "Betriebssystem",
+      "selectAll": "Alle gefilterten Baselines auswählen",
+      "selectBaseline": "Baseline {{name}} auswählen",
+      "settings": "Einstellungen"
+    }
+  },
   "features": {
     "audit": "Audit durchführen",
     "bulkDeploy": "Bulk bereitstellen",
@@ -28,6 +123,8 @@
     "deploy": "Bereitstellen \"{{name}}\" in {{mode}} mode?",
     "bulkDeploy_one": "Soll ich {{count}} baseline auf dieses Gerät ausrichten?",
     "bulkDeploy_other": "Soll ich {{count}} baselines auf dieses Gerät ausrollen?",
+    "bulkDeleteBaselineContentOnly_one": "{{count}} Baseline löschen? Beim Rückgängigmachen wird während dieser Sitzung nur der Baselineinhalt wiederhergestellt. Datensätze zu Bereitstellung, Verlauf, Begründung und Audit werden gelöscht und nicht wiederhergestellt.",
+    "bulkDeleteBaselineContentOnly_other": "{{count}} Baselines löschen? Beim Rückgängigmachen werden während dieser Sitzung nur die Baselineinhalte wiederhergestellt. Datensätze zu Bereitstellung, Verlauf, Begründung und Audit werden gelöscht und nicht wiederhergestellt.",
     "bulkDelete_one": "{{count}} baseline löschen? Diese Maßnahme kann nicht rückgängig gemacht werden.",
     "bulkDelete_other": "{{count}} baselines löschen? Diese Maßnahme kann nicht rückgängig gemacht werden.",
     "revert": "\"Zurücksetzen\"-{{name}}\"?\n\nWenn ein Pre-Deploy-Snapshot vorhanden ist, werden deine vorherigen Einstellungen auf dieses Gerät erneut angewendet. Wenn kein Snapshot existiert, wird OSConfig Durchsetzung entfernt und der baseline wird nicht mehr registriert. So oder so wird dieses baseline nicht mehr aktiv durchgesetzt."
@@ -58,6 +155,13 @@
     "selectAll": "Alle auswählen",
     "deselectAll": "Auswahl aufheben",
     "selected": "{{count}} ausgewählt"
+  },
+  "workspace": {
+    "allBaselines": "Alle Baselines",
+    "closeTab": "{{name}} schließen",
+    "moreTabs": "Weitere geöffnete Baselines",
+    "navigationLabel": "Baseline-Arbeitsbereich",
+    "openTabsLabel": "Geöffnete Baselines"
   },
   "card": {
     "localSource": "Lokal",
