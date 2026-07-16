@@ -13,7 +13,7 @@
  * removing CIS files.
  */
 import { access, readdir, readFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { basename, join } from 'node:path';
 import {
   loadCisGlobalMappings,
   loadCisRuleCatalog,
@@ -123,6 +123,34 @@ async function detectSchemaMismatch(dataDir: string): Promise<string | null> {
   }
 }
 
+const SCAP_COMPANION_SUFFIXES = [
+  '-oval.xml',
+  '-cpe-oval.xml',
+  '-cpe-dictionary.xml',
+  '-ocil.xml',
+] as const;
+
+/**
+ * Return every filename that belongs to an already-detected XCCDF bundle.
+ * CIS SCAP downloads can include CPE applicability and OCIL sidecars in
+ * addition to the primary OVAL file used by ConfigForge for rule mapping.
+ */
+export function recognizedXccdfBundleFilenames(
+  xccdfFiles: readonly XccdfDiscovery[],
+): Set<string> {
+  const recognized = new Set<string>();
+  for (const discovery of xccdfFiles) {
+    recognized.add(discovery.filename);
+    if (discovery.ovalPath) recognized.add(basename(discovery.ovalPath));
+
+    const prefix = discovery.filename.replace(/-xccdf\.xml$/i, '');
+    for (const suffix of SCAP_COMPANION_SUFFIXES) {
+      recognized.add(`${prefix}${suffix}`);
+    }
+  }
+  return recognized;
+}
+
 export async function getCisStatus(): Promise<CisStatus> {
   if (cached !== null) return cached;
   const dataDir = getCisDataDir();
@@ -175,15 +203,10 @@ export async function getCisStatus(): Promise<CisStatus> {
 
   // Filter unexpected files: exclude anything successfully detected
   // as XCCDF or Azure Policy CIS (those aren't "unrecognized").
-  const recognizedFilenames = new Set([
-    ...xccdfFiles.map((xf) => xf.filename),
-    // Also include OVAL companions
-    ...xccdfFiles.filter((xf) => xf.ovalPath).map((xf) => {
-      const prefix = xf.filename.replace(/-xccdf\.xml$/, '');
-      return `${prefix}-oval.xml`;
-    }),
-    ...azurePolicyCisFiles.map((c) => c.filename),
-  ]);
+  const recognizedFilenames = recognizedXccdfBundleFilenames(xccdfFiles);
+  for (const catalog of azurePolicyCisFiles) {
+    recognizedFilenames.add(catalog.filename);
+  }
   const filteredUnexpected = unexpectedFiles.filter(
     (f) => !recognizedFilenames.has(f.name),
   );
