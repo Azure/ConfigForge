@@ -14,7 +14,13 @@
  */
 import { access, readdir, readFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { loadCisGlobalMappings, getCisDataDir, clearAllCisDataCaches, CIS_EXPECTED_FILES } from '../cis/data';
+import {
+  loadCisGlobalMappings,
+  loadCisRuleCatalog,
+  getCisDataDir,
+  clearAllCisDataCaches,
+  CIS_EXPECTED_FILES,
+} from '../cis/data';
 import { discoverXccdfFiles, clearXccdfCache, type XccdfDiscovery } from '../cis/xccdf-parser';
 import { discoverAzurePolicyCisFiles, _clearAzurePolicyDiscoveryCache, type AzurePolicyCisCatalog } from '../cis/azure-policy-cis';
 import type { CisStatus } from './contract';
@@ -208,6 +214,18 @@ export async function getCisStatus(): Promise<CisStatus> {
     title: xf.title,
     hasOval: xf.ovalPath !== null,
   }));
+  const legacyRuleCatalogs = await Promise.all(
+    ['2025', '2022', '2019', '2016'].map(async (version) => {
+      try {
+        return await loadCisRuleCatalog(version);
+      } catch {
+        return null;
+      }
+    }),
+  );
+  const legacyRuleCatalogCount = legacyRuleCatalogs.filter(
+    (catalog) => catalog && Array.isArray(catalog.rules) && catalog.rules.length > 0,
+  ).length;
 
   try {
     const m = await loadCisGlobalMappings();
@@ -226,6 +244,8 @@ export async function getCisStatus(): Promise<CisStatus> {
       unexpectedFiles: filteredUnexpected,
       schemaError,
       source,
+      legacyMappingsLoaded: jsonAvailable,
+      legacyRuleCatalogCount,
       xccdfFiles: xccdfSummary,
       azurePolicyCisFiles: azurePolicySummary,
     };
@@ -237,6 +257,8 @@ export async function getCisStatus(): Promise<CisStatus> {
       unexpectedFiles: filteredUnexpected,
       schemaError,
       source: xccdfFiles.length > 0 ? 'xccdf' : azurePolicyAvailable ? 'xccdf' : undefined,
+      legacyMappingsLoaded: false,
+      legacyRuleCatalogCount,
       xccdfFiles: xccdfSummary,
       azurePolicyCisFiles: azurePolicySummary,
     };

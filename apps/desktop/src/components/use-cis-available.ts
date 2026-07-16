@@ -10,6 +10,7 @@
  */
 
 import { useEffect, useState } from "react";
+import { getCisReadiness } from "@configforge/core/cis/readiness";
 import { cfs } from "../lib/cfs";
 
 let _inflight: Promise<boolean> | null = null;
@@ -21,7 +22,7 @@ async function fetchCisAvailable(): Promise<boolean> {
   _inflight = cfs.cis
     .status()
     .then((data) => {
-      _cached = !!(data as { available?: boolean })?.available;
+      _cached = getCisReadiness(data).usable;
       return _cached;
     })
     .catch(() => {
@@ -104,4 +105,3 @@ export function _resetCisAvailableCacheForTests(): void {
   _inflight = null;
   _warmupFired = false;
 }
-

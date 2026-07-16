@@ -378,7 +378,7 @@ describe('ManifestsPage administrative table', () => {
     expect(state.configForgeDiff.baselineNames).toHaveLength(10);
   });
 
-  it('uses the English baseline-only delete warning as fallback for stale locales', async () => {
+  it('uses the localized baseline-only delete warning in French', async () => {
     const i18n = getI18n();
     await i18n.changeLanguage('fr');
 
@@ -387,9 +387,7 @@ describe('ManifestsPage administrative table', () => {
         ns: 'manifests',
         count: 1,
       }),
-    ).toMatch(
-      /Undo restores baseline content only.*Deployment, history, rationale, and audit records.*not restored/i,
-    );
+    ).toMatch(/déploiement.*historique.*audit.*ne sont pas restaurés/i);
   });
 
   it('does not crash on malformed legacy LastModifiedAt metadata and shows unavailable', async () => {

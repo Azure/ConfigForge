@@ -1,66 +1,143 @@
 {
-  "extracted": {
-    "text1": "Benchmark Mapping",
-    "text2": "Cross-reference your OSConfig settings against CIS Benchmark rules. Drop your CIS files into the folder below and the editor will show matching rules as you navigate the YAML.",
-    "text3": "Once CIS data is loaded, a",
-    "text4": "CIS",
-    "text5": "tab will also be available on the",
-    "text6": "Diff",
-    "text7": "page for full-baseline coverage scoring.",
-    "text8": "Status",
-    "text9": "Checking…",
-    "text10": "CIS data loaded",
-    "text11": "xccdf",
-    "text12": "XCCDF",
-    "text13": "Azure Policy JSON",
-    "text14": "json",
-    "text15": "JSON catalog",
-    "text16": "XCCDF + JSON",
-    "text17": "The editor will show CIS rule cross-references as you navigate settings.",
-    "text18": "No CIS data found",
-    "text19": "Drop your CIS baseline JSON (from Azure Policy) or XCCDF+OVAL XML (from CIS Workbench) into the folder below and click",
-    "text20": "Re-check",
-    "text21": "Schema mismatch",
-    "text22": "How to set up",
-    "text23": "Click",
-    "text24": "Open folder",
-    "text25": "below, drop your CIS files in, then click",
-    "text26": "Re-check",
-    "text27": ". The app auto-detects the format and OS.",
-    "text28": "Azure Policy CIS baseline JSON",
-    "text29": "Recommended",
-    "text30": "Download CIS baselines from the",
-    "text31": "Azure portal",
-    "text32": "(Azure Policy > Machine Configuration > CIS). Drop the JSON as-is. The app detects the platform (Windows / Linux) and matches rules to your baseline settings by name.",
-    "text33": "You can drop multiple files (one per OS). Name them anything you like.",
-    "text34": "CIS XCCDF + OVAL XML",
-    "text35": "Alternative",
-    "text36": "Download from",
-    "text37": "CIS Workbench",
-    "text38": ". Drop the",
-    "text39": "and its companion",
-    "text40": ". The OVAL file enables exact registry-path matching for Windows baselines. No renaming needed.",
-    "text41": "License note:",
-    "text42": "CIS benchmark content is the intellectual property of the Center for Internet Security and is licensed separately. ConfigForge ships the matching logic but does not include any CIS-licensed data.",
-    "text43": "XCCDF Benchmarks detected (",
-    "text44": "OVAL companion found",
-    "text45": "No OVAL (limited matching)",
-    "text46": "Azure Policy CIS baselines detected (",
-    "text47": "v",
-    "text48": "rules",
-    "text49": "Benchmark data folder",
-    "text50": "Copy path",
-    "text51": "Copied",
-    "text52": "Copy",
-    "text53": "Opening…",
-    "text54": "Open folder",
-    "text55": "Re-checking…",
-    "text56": "Re-check catalog",
-    "text57": "Unrecognized files in folder",
-    "text58": "These files don't match any expected name. If it's a typo, rename and click Re-check.",
-    "text59": "did you mean",
-    "text60": "Back to My Baselines",
-    "text61": "This page is fully optional",
-    "text62": "All ConfigForge features except CIS cross-references work without any CIS data."
+  "actions": {
+    "catalogActionComplete": "Catalog action complete",
+    "catalogActionFailed": "Catalog action failed",
+    "copied": "Copied",
+    "copiedPath": "Copied the data folder path.",
+    "copyPath": "Copy path",
+    "copyPathAria": "Copy data folder path",
+    "copyPathError": "Could not copy the data folder path.",
+    "folderActionComplete": "Folder action complete",
+    "folderActionFailed": "Folder action failed",
+    "openFolder": "Open folder",
+    "openFolderError": "Could not open the data folder.",
+    "openedFolder": "Opened data folder: {{path}}",
+    "openingFolder": "Opening folder…",
+    "pathCopiedAria": "Path copied",
+    "recheck": "Re-check catalog",
+    "recheckDetected": "Catalog check complete. Files were detected, but a usable OVAL companion or positive-rule JSON catalog is still required.",
+    "recheckLoaded": "Catalog check complete. CIS data is ready.",
+    "recheckMappingsMissing": "Catalog check complete. Rule catalogs were detected; add a valid cis-mappings.json file to finish legacy setup.",
+    "recheckPartial": "Catalog check complete. Some CIS catalogs are ready; others still need a companion OVAL file or usable rules.",
+    "recheckPartialMappingsMissing": "Catalog check complete. Some CIS catalogs are ready; legacy rule catalogs still require a valid cis-mappings.json file.",
+    "rechecking": "Re-checking catalog…",
+    "recheckUnavailable": "Catalog check complete. No CIS data was found.",
+    "statusError": "Could not load CIS catalog status."
+  },
+  "detected": {
+    "ariaLabel": "Detected CIS catalogs",
+    "azurePolicy": "Azure Policy",
+    "description": "These catalogs are available to Benchmark Mapping, the editor, and Diff.",
+    "limitedDescription": "These files were detected, but they are not yet usable for editor cross-references or Diff.",
+    "partialDescription": "Some detected catalogs are ready; entries marked with limitations are not available to editor cross-references or Diff.",
+    "json": "JSON",
+    "legacyMetadata": "Per-file metadata is not reported by this source.",
+    "legacyMappingsMissing": "Rule catalogs were detected, but cis-mappings.json is missing or invalid.",
+    "legacyReady_one": "Global mappings and {{count}} per-OS rule catalog are ready.",
+    "legacyReady_other": "Global mappings and {{count}} per-OS rule catalogs are ready.",
+    "legacyRulesMissing": "Global mappings are loaded; add at least one valid per-OS rule catalog.",
+    "legacyTitle": "Legacy JSON catalog",
+    "noMetadata": "CIS data is available, but no per-file catalog metadata was reported.",
+    "notReported": "Not reported",
+    "noUsableRules": "No usable rules detected",
+    "ovalFound": "OVAL companion found",
+    "ovalMissing": "OVAL companion not found",
+    "platform": {
+      "linux": "Linux",
+      "unknown": "Unknown platform",
+      "windows": "Windows"
+    },
+    "ruleCount_one": "{{formattedCount}} rule",
+    "ruleCount_other": "{{formattedCount}} rules",
+    "title": "Detected catalogs",
+    "version": "Version {{version}}",
+    "xccdf": "XCCDF"
+  },
+  "diagnostics": {
+    "didYouMean": "Did you mean {{suggestion}}?",
+    "schemaTitle": "Malformed or unsupported CIS schema",
+    "title": "Catalog diagnostics",
+    "unexpectedDescription": "Rename files when a suggested filename is shown, then re-check the catalog.",
+    "unexpectedTitle": "Unrecognized files"
+  },
+  "header": {
+    "capabilities": "Once CIS data is loaded, a CIS tab will also be available on the Diff page for full-baseline coverage scoring.",
+    "description": "Cross-reference OSConfig settings against user-supplied CIS Benchmark data.",
+    "title": "Benchmark Mapping"
+  },
+  "status": {
+    "ariaLabel": "CIS catalog status",
+    "detected": {
+      "description": "Catalog files were detected, but mapping still requires an OVAL companion for XCCDF or a JSON catalog containing rules.",
+      "legacyMappingsDescription": "Legacy rule catalogs were detected, but mapping requires a valid cis-mappings.json file.",
+      "title": "CIS files detected — setup incomplete"
+    },
+    "loaded": {
+      "description": "CIS data was found. Editor cross-references and Diff capabilities are available.",
+      "title": "CIS data found"
+    },
+    "loading": {
+      "description": "Checking the local data folder for supported CIS baseline files.",
+      "title": "Checking CIS catalog"
+    },
+    "partial": {
+      "description": "Some CIS catalogs are ready, while other detected files still need a companion OVAL file or usable rules.",
+      "legacyMappingsDescription": "Some CIS catalogs are ready; the detected legacy rule catalogs still require a valid cis-mappings.json file.",
+      "title": "CIS data partially ready"
+    },
+    "schemaDetails": "Schema details:",
+    "unavailable": {
+      "description": "Add Azure Policy CIS baseline JSON or CIS XCCDF + OVAL XML files, then select Re-check catalog.",
+      "optional": "CIS data is optional; all other ConfigForge features remain available.",
+      "title": "No CIS data found"
+    }
+  },
+  "steps": {
+    "download": {
+      "alternate": "Alternate",
+      "azure": {
+        "description": "In Azure Policy, go to Machine Configuration > CIS and download the baseline JSON for each target operating system.",
+        "link": "Open Azure Portal",
+        "title": "Azure Policy CIS Baseline JSON"
+      },
+      "description": "Choose the supported source that fits your environment. Only one source is required.",
+      "license": {
+        "ariaLabel": "CIS license notice",
+        "description": "CIS Benchmark content is the intellectual property of the Center for Internet Security and is licensed separately. ConfigForge includes matching logic but does not include CIS-licensed data.",
+        "title": "License notice:"
+      },
+      "recommended": "Recommended",
+      "title": "Download CIS baselines",
+      "xccdf": {
+        "description": "Download the benchmark XCCDF XML and its companion OVAL XML for richer rule and registry matching.",
+        "link": "Open CIS Workbench",
+        "title": "CIS XCCDF + OVAL XML"
+      }
+    },
+    "import": {
+      "description": "Open the data folder or drop supported files into the full path shown below.",
+      "guidance": {
+        "ariaLabel": "CIS file import guidance",
+        "azureDescription": "Keep downloaded JSON files as-is. You can add multiple files, one per operating system, and filenames do not need a special pattern.",
+        "azureLabel": "Azure Policy JSON:",
+        "title": "Prepare the files",
+        "xccdfDescription": "Keep each *-xccdf.xml beside its matching *-oval.xml companion. The shared filename prefix pairs them, and OVAL enables exact Windows registry matching.",
+        "xccdfLabel": "XCCDF + OVAL:"
+      },
+      "pathAriaLabel": "CIS data folder path",
+      "pathLabel": "CIS data folder",
+      "pathUnavailable": "The data folder path is unavailable.",
+      "pathUnavailableHint": "Use Open folder or Re-check catalog to try again.",
+      "title": "Import the CIS baseline files"
+    },
+    "recheck": {
+      "description": "Scan the data folder again after adding, replacing, or renaming files.",
+      "title": "Re-check catalog"
+    }
+  },
+  "workflow": {
+    "ariaLabel": "CIS catalog setup",
+    "stepHeading": "Step {{number}}: {{title}}",
+    "stepLabel": "Step {{number}}:"
   }
 }

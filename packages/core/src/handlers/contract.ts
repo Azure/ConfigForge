@@ -86,6 +86,10 @@ export interface CisStatus {
    * 'xccdf' (auto-detected XCCDF files), or 'both'.
    */
   source?: 'json' | 'xccdf' | 'both';
+  /** True only when the legacy global mappings file parsed successfully. */
+  legacyMappingsLoaded?: boolean;
+  /** Number of legacy per-OS rule catalogs that parsed with at least one rule. */
+  legacyRuleCatalogCount?: number;
   /**
    * Discovered XCCDF benchmark files with metadata.
    */
