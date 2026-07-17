@@ -1,4 +1,12 @@
-# Bundled oscfg CLI binaries — tracked verbatim, never normalized.
+# Default to automatic text detection.
+* text=auto
+
+# Shell and repository scripts must retain LF endings for Linux/macOS runners.
+*.sh                                text eol=lf
+scripts/**                          text eol=lf
+
+# Dev-only oscfg binaries are never normalized if a contributor drops one
+# into the local convenience directory.
 resources/oscfg/win32-x64/oscfg.exe binary
 resources/oscfg/win32-x64/*.pdb     binary
 resources/oscfg/linux-x64/oscfg     binary
