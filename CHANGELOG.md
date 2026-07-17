@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.75] - 2026-07-17
+
+### Fixed
+- **My Baselines search now filters baseline identity instead of hidden setting metadata.** Namespace and display-name prefixes such as `Blank` and `windows` produce the expected rows immediately after the normal debounce. Shared setting names like “blank passwords” and resource types such as `Microsoft.Windows/Registry` no longer keep unrelated baselines visible.
+
 ## [0.3.74] - 2026-07-16
 
 ### Fixed
