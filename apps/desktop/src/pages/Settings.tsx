@@ -13,7 +13,7 @@ import {
   WrenchRegular,
 } from "@fluentui/react-icons";
 import { Button, MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components";
-import { cfs } from '../lib/cfs';
+import { cfs, safeCfs } from '../lib/cfs';
 import { ExternalLink } from '../components/ExternalLink';
 import { OSCONFIG_INSTALL_URL } from '../components/CliRequiredModal';
 import { useThemePreference, type ThemePreference } from '../lib/platform';
@@ -50,8 +50,14 @@ export function SettingsPage() {
 
   const fetchData = async () => {
     setLoading(true);
+    const healthApi = HAS_DEPLOY ? safeCfs('health') : undefined;
+    if (!healthApi) {
+      setHealth(null);
+      setLoading(false);
+      return;
+    }
     try {
-      const data = await cfs.health.check();
+      const data = await healthApi.check();
       setHealth(data as unknown as HealthData);
     } catch {
       setHealth(null);
@@ -73,8 +79,13 @@ export function SettingsPage() {
   const handleRecheck = async () => {
     setRechecking(true);
     setMessage(null);
+    const healthApi = HAS_DEPLOY ? safeCfs('health') : undefined;
+    if (!healthApi) {
+      setRechecking(false);
+      return;
+    }
     try {
-      const data = await cfs.health.recheck();
+      const data = await healthApi.recheck();
       setHealth(data as unknown as HealthData);
       if (data.installed) {
         setMessage({ text: t('messages.osconfigDetected', { version: data.version }), ok: true });
@@ -208,14 +219,16 @@ export function SettingsPage() {
             {HAS_DEPLOY ? t('page.description') : t('page.descriptionAuthor')}
           </p>
         </div>
-        <Button
-          appearance="secondary"
-          onClick={fetchData}
-          disabled={loading}
-          icon={loading ? <Spinner size="tiny" /> : <ArrowSyncRegular />}
-        >
-          {t('common:buttons.refresh')}
-        </Button>
+        {HAS_DEPLOY && (
+          <Button
+            appearance="secondary"
+            onClick={fetchData}
+            disabled={loading}
+            icon={loading ? <Spinner size="tiny" /> : <ArrowSyncRegular />}
+          >
+            {t('common:buttons.refresh')}
+          </Button>
+        )}
       </div>
 
       {message && (

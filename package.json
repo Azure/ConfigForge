@@ -15,7 +15,6 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "npm run lint -w @configforge/desktop",
-    "postinstall": "node scripts/chmod-oscfg.js",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
     "core:build": "npm run build -w @configforge/core",
