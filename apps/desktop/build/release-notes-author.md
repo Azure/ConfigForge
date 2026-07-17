@@ -1,4 +1,4 @@
-# ConfigForge Author 0.3.74 — macOS
+# ConfigForge Author 0.3.75 — macOS
 
 This is the **macOS author-only build**. Manifest authoring,
 Microsoft Baselines, cross-baseline comparison, Benchmark Mapping,
@@ -42,8 +42,9 @@ Release artifacts are unsigned by design.
 ## What's in this build
 
 - **My Baselines workspace** — open multiple baselines in persistent
-  tabs, filter the administration table, compare selections, and
-  restore deleted baseline content during the current session
+  tabs, search by namespace or display name, filter the administration
+  table, compare selections, and restore deleted baseline content
+  during the current session
 - **Author** — YAML / JSON editing plus spreadsheet-style Visual
   editing with inline cells, setting creation, multi-row deletion,
   Test-wrapper and Group support, typed values, and exact QWord

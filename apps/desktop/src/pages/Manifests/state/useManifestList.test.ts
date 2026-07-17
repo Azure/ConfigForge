@@ -425,20 +425,32 @@ describe('useManifestList — listTokenRef race-guard (v0.1.14)', () => {
 });
 
 describe('useManifestList — search filter', () => {
-  it('filters by name + resource type + resource name', async () => {
+  it('filters by namespace and display name without matching hidden resource fields', async () => {
     const list = vi.fn().mockResolvedValue({
       data: [
         {
-          Name: 'cis-baseline',
+          Name: 'Blankmanifest',
+          DisplayName: 'Blank baseline',
           Source: 'user',
           Platform: 'windows',
-          Resources: [{ name: 'PasswordPolicy', type: 'Microsoft.Windows/Registry' }],
+          Resources: [
+            {
+              name: 'AccountsLimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly',
+              type: 'Microsoft.Windows/Registry',
+            },
+          ],
         },
         {
-          Name: 'azure-config',
+          Name: 'Windows-Server-2025-Member-Server',
+          DisplayName: 'Windows Server 2025 Member Server',
           Source: 'user',
-          Platform: 'linux',
-          Resources: [{ name: 'Sshd', type: 'Linux/Sshd' }],
+          Platform: 'windows',
+          Resources: [
+            {
+              name: 'AccountsLimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly',
+              type: 'Microsoft.Windows/Registry',
+            },
+          ],
         },
       ],
     });
@@ -450,23 +462,34 @@ describe('useManifestList — search filter', () => {
     // Initial: both manifests visible
     expect(result.current.filteredManifests).toHaveLength(2);
 
-    // Match by manifest name
+    // "Blank" exists in a setting name shared by both baselines, but the
+    // visible list search must match only baseline identity.
     act(() => {
-      result.current.setSearchQuery('cis');
+      result.current.setSearchQuery('Blank');
     });
     await waitFor(() => {
       expect(result.current.filteredManifests).toHaveLength(1);
-      expect(result.current.filteredManifests[0]?.Name).toBe('cis-baseline');
+      expect(result.current.filteredManifests[0]?.Name).toBe('Blankmanifest');
     });
 
-    // Match by resource type (debounce is 200ms — waitFor needs to
-    // keep polling until the debounced value flips and the filter
-    // result is the EXPECTED manifest, not just any length-1 result).
+    // "windows" is also present in every resource type. It should return
+    // only the baseline whose namespace/display name contains the term.
     act(() => {
-      result.current.setSearchQuery('Sshd');
+      result.current.setSearchQuery('windows');
     });
     await waitFor(() => {
-      expect(result.current.filteredManifests[0]?.Name).toBe('azure-config');
+      expect(result.current.filteredManifests).toHaveLength(1);
+      expect(result.current.filteredManifests[0]?.Name).toBe(
+        'Windows-Server-2025-Member-Server',
+      );
+    });
+
+    // Resource-only terms are not list-search fields.
+    act(() => {
+      result.current.setSearchQuery('Registry');
+    });
+    await waitFor(() => {
+      expect(result.current.filteredManifests).toHaveLength(0);
     });
 
     // Empty query restores both

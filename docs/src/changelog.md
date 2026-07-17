@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.75-author.1 — 2026-07-17
+
+- **Fixed My Baselines search.** Search now matches baseline namespace and display name only, so shared hidden setting names and `Microsoft.Windows/*` resource types cannot make short prefixes appear unresponsive.
+
 ## v0.3.74 — 2026-07-16
 
 - **Fixed overlapping Visual table columns.** Large CIS baselines now use proportional fit-first columns with opaque alternating rows and controlled wrapping. Horizontal scrolling remains available on narrow windows without sticky cells painting over other values.
