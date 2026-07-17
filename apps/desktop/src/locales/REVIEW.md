@@ -11,9 +11,9 @@
 
 | Locale | Translated | Fallback/TODO | Total | Coverage |
 |---|---:|---:|---:|---:|
-| fr | 934 | 64 | 998 | 93.6% |
-| de | 932 | 66 | 998 | 93.4% |
-| es | 938 | 60 | 998 | 94.0% |
+| fr | 938 | 64 | 1002 | 93.6% |
+| de | 936 | 66 | 1002 | 93.4% |
+| es | 942 | 60 | 1002 | 94.0% |
 
 ## Placeholder integrity check
 
@@ -21,7 +21,7 @@
 
 ## Length analysis
 
-Layout warnings (>150% of English): **92**
+Layout warnings (>150% of English): **93**
 
 ### fr: 20 longest values
 
@@ -37,16 +37,16 @@ Layout warnings (>150% of English): **92**
 | manifest-editor | deployResult.couldNotReadTitle | 245 | 184 | 133% | Paramètres que la ligne de ligne de ligne ne pouvait pas lire (fournisseur non supporté, erreur de transport, ou chemin non pris en charge). Ces éléments ne sont PAS comptés comme  |
 | manifests | confirm.bulkDeleteBaselineContentOnly_one | 231 | 163 | 142% | Supprimer {{count}} baseline ? L’annulation restaure uniquement le contenu de la baseline pendant cette session. Les enregistrements de déploiement, d’historique, de justification  |
 | manifests | confirm.bulkDeleteBaselineContentOnly_other | 231 | 164 | 141% | Supprimer {{count}} baselines ? L’annulation restaure uniquement le contenu des baselines pendant cette session. Les enregistrements de déploiement, d’historique, de justification  |
+| settings | about.authorFlavor | 226 | 150 | 151% ⚠️ | Développez l’ambiance : auteur. Baseline uniquement pour l’édition, la comparaison de la bibliothèque, la comparaison de conformité et le pack d’audit en PDF. Utilisez la version W |
 | diff | info.oneManifest | 220 | 189 | 116% | Vous avez 1 baseline enregistré. Pour comparer deux baselines enregistrés, enregistrez d’abord un second, ou passez de chaque côté en mode <strong>Collage / Téléversement</strong>  |
 | cis-catalog | steps.download.license.description | 217 | 190 | 114% | Le contenu CIS Benchmark est la propriété intellectuelle du Center for Internet Security et fait l’objet d’une licence distincte. ConfigForge inclut la logique de correspondance, m |
 | cis-catalog | steps.import.guidance.xccdfDescription | 217 | 152 | 143% | Conservez chaque fichier *-xccdf.xml à côté du fichier *-oval.xml associé correspondant. Leur préfixe de nom de fichier commun permet de les associer, et OVAL permet une correspond |
 | audit-pack | extracted.text21 | 216 | 174 | 124% | Le audit pack est un document autonome. Partagez le PDF directement avec les auditeurs. Les téléchargements incluent un pied de page avec des numéros de page et une marque « Confid |
 | compliance | perManifest.extracted.text4 | 216 | 192 | 113% | ConfigForge ne redistribue pas CIS contenu Benchmark (restrictions de licence). Le rapport de pourcentage de conformité compare votre baseline à un CIS baseline, ce qui nécessite l |
 | home | firstRun.sectionDescription | 215 | 185 | 116% | ConfigForge va à l’encontre de OSConfig baselines. Parcourez les Baselines Microsoft inclus (WS2019/2022/2025 rôles serveur, Defender, LAPS) pour trouver du contenu prêt à utiliser |
+| welcome | authorIntro | 213 | 181 | 118% | Créez des baselines de sécurité OSConfig directement depuis votre Mac. La version auteur inclut la bibliothèque de baselines Microsoft, l’édition, la validation, la comparaison et  |
 | common | health.version-mismatch-hint | 198 | 162 | 122% | ConfigForge a été validé avec {{expectedVersion}}. Le CLI installé peut produire des erreurs inattendues pendant le déploiement ou l’audit. Mettez OSConfig à niveau si vous rencont |
 | manifest-editor | actions.revertTitle | 193 | 166 | 116% | Annulez le dernier déploiement de ce baseline depuis cet appareil. Si un instantané pré-déploiement existe, les réglages précédents sont réappliqués ; sinon, OSConfig application e |
-| manifests | administration.messages.undoSuccess_other | 192 | 134 | 143% | {{count}} enregistrements de baseline ont été restaurés à partir du contenu source YAML capturé. Les données de déploiement, d’historique, de justification et d’audit n’ont pas été |
-| diff | matrix.sectionDescription | 190 | 150 | 127% | Chaque ligne de la matrice résultante est un réglage ; chaque colonne est une baseline. Les cellules sont codées par couleur verte (identique), rouge (différent) ou jaune (seulemen |
 
 ### de: 20 longest values
 
@@ -67,11 +67,11 @@ Layout warnings (>150% of English): **92**
 | manifest-editor | actions.revertTitle | 216 | 166 | 130% | Die letzte Bereitstellung dieses baseline von diesem Gerät rückgängig machen. Wenn ein Pre-Deploy-Snapshot existiert, werden vorherige Einstellungen erneut angewendet; ansonsten wi |
 | home | firstRun.sectionDescription | 213 | 185 | 115% | ConfigForge wirkt gegen OSConfig baselines. Durchstöbern Sie das mitgelieferte Microsoft Baselines (WS2019/2022/2025 Serverrollen, Defender, LAPS) für einsatzbereite Inhalte oder r |
 | home | interrupted.description | 206 | 141 | 146% | Ihr Gerät befindet sich möglicherweise in einem teilweise angelegten state{{startedAt}}. Führen Sie ein Audit durch, um die aktuelle Compliance zu überprüfen, oder kehren Sie zum P |
+| welcome | authorIntro | 204 | 181 | 113% | Erstellen Sie OSConfig-Sicherheitsbaselines direkt auf Ihrem Mac. Die Author-Version enthält die Microsoft-Baselinebibliothek sowie Bearbeitung, Validierung, Vergleich und Export — |
 | audit-pack | extracted.text21 | 203 | 174 | 117% | Die audit pack ist ein in sich geschlossenes Dokument. Teile das PDF direkt mit den Prüfern. Downloads enthalten einen Footer mit Seitenzahlen und eine Markierung "Vertraulich – Nu |
 | compliance | perManifest.extracted.text4 | 201 | 192 | 105% | ConfigForge verbreitet keine CIS Benchmark-Inhalte (Lizenzeinschränkungen). Der Compliance-%-Bericht vergleicht Ihre baseline mit einer CIS baseline, die die Katalogdateien auf der |
 | cis-catalog | steps.download.license.description | 195 | 190 | 103% | Der Inhalt von CIS Benchmark ist geistiges Eigentum des Center for Internet Security und wird separat lizenziert. ConfigForge enthält die Zuordnungslogik, jedoch keine von CIS lize |
 | history | restore.warning | 195 | 149 | 131% | Das aktuelle baseline wird vor der Wiederherstellung automatisch aufgenommen, damit du zurücksetzen kannst. Eine Neuregistrierung kann den gewünschten Zustand auf verwaltete Geräte |
-| common | health.version-mismatch-hint | 194 | 162 | 120% | ConfigForge wurde mit {{expectedVersion}} validiert. Die installierte CLI kann während Bereitstellung oder Audit unerwartete Fehler erzeugen. Aktualisieren Sie OSConfig, wenn Probl |
 
 ### es: 20 longest values
 
@@ -92,11 +92,11 @@ Layout warnings (>150% of English): **92**
 | cis-catalog | steps.download.license.description | 208 | 190 | 109% | El contenido de CIS Benchmark es propiedad intelectual del Center for Internet Security y se licencia por separado. ConfigForge incluye la lógica de correspondencia, pero no incluy |
 | manifests | confirm.bulkDeleteBaselineContentOnly_one | 208 | 163 | 128% | ¿Eliminar {{count}} baseline? Deshacer restaura únicamente el contenido de la baseline durante esta sesión. Los registros de implementación, historial, justificación y auditoría se |
 | home | firstRun.sectionDescription | 206 | 185 | 111% | ConfigForge juega en contra de OSConfig baselines. Consulta el Baselines incluido de Microsoft (WS2019/2022/2025 roles de servidor, Defender, LAPS) para contenido listo para usar,  |
+| welcome | authorIntro | 200 | 181 | 110% | Cree baselines de seguridad de OSConfig directamente desde su Mac. La versión de autor incluye la biblioteca de baselines de Microsoft, edición, validación, comparación y exportaci |
 | manifest-editor | deployResult.couldNotReadTitle | 199 | 184 | 108% | Ajustes que la CLI no podía leer (proveedor no soportado, error de transporte o ruta no soportada). Estos NO se cuentan como no cumplientes. El dispositivo puede estar realmente en |
 | diff | info.oneManifest | 194 | 189 | 103% | Tienes 1 baseline registrado. Para comparar dos baselines registrados, primero regístra un segundo, o cambia a cada lado a modo <strong>Pegar / Subir</strong> abajo para pegar YAML |
 | history | restore.noCurrent | 188 | 140 | 134% | No se encontró ningún baseline registrado actualmente, por lo que no se creará una instantánea automática. La restauración registrará el contenido de la instantánea como un nuevo b |
 | settings | systemHealth.install.description | 188 | 153 | 123% | El editor, la biblioteca y las características de diferencia/comparación de ConfigForge funcionan sin la CLI. Instala OSConfig para habilitar Desplegar, Auditar y Revertir en esta  |
-| diff | matrix.sectionDescription | 186 | 150 | 124% | Cada fila en la matriz resultante es un ajuste; Cada columna es una baseline. Las celdas están codificadas por colores verde (idéntica), roja (diferente) o amarilla (solo en la ent |
 
 ## Glossary violations
 
