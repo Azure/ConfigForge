@@ -8,6 +8,7 @@ import path from 'path';
 import {
   writeAuditResult,
   readAuditResult,
+  readAuditResultForRegistration,
   deleteAuditResult,
 } from './audit-results-store';
 
@@ -41,13 +42,19 @@ describe('audit-results-store', () => {
         Indeterminate: 2,
         Hostname: 'TESTBOX',
       };
-      const written = await writeAuditResult('cis-ws2022-ms', 'audit', result);
+      const written = await writeAuditResult(
+        'cis-ws2022-ms',
+        'audit',
+        result,
+        'registration-revision-1',
+      );
       expect(written).not.toBeNull();
 
       const read = await readAuditResult('cis-ws2022-ms');
       expect(read).not.toBeNull();
       expect(read?.version).toBe(1);
       expect(read?.mode).toBe('audit');
+      expect(read?.registrationRevision).toBe('registration-revision-1');
       expect(read?.result).toEqual(result);
       // recordedAt must be a parseable ISO string.
       expect(() => new Date(read!.recordedAt).toISOString()).not.toThrow();
@@ -93,7 +100,12 @@ describe('audit-results-store', () => {
       const file = path.join(tmpHome, 'audit-results', 'future.json');
       await writeFile(
         file,
-        JSON.stringify({ version: 999, recordedAt: '2026-01-01T00:00:00Z', mode: 'audit', result: {} }),
+        JSON.stringify({
+          version: 999,
+          recordedAt: '2026-01-01T00:00:00Z',
+          mode: 'audit',
+          result: {},
+        }),
         'utf-8',
       );
       const r = await readAuditResult('future');
@@ -140,6 +152,28 @@ describe('audit-results-store', () => {
       await expect(deleteAuditResult('')).resolves.toBeUndefined();
       await expect(deleteAuditResult('..')).resolves.toBeUndefined();
     });
+
+    it('hides a revision-mismatched audit and exposes the current revision', async () => {
+      await writeAuditResult('revisioned', 'audit', { run: 'old' }, 'old');
+      const currentRegistration = {
+        modifiedAt: new Date().toISOString(),
+        revision: 'current',
+      };
+      expect(
+        await readAuditResultForRegistration('revisioned', currentRegistration),
+      ).toBeNull();
+      // The stale cache remains harmlessly on disk until a new audit replaces it.
+      expect(await readAuditResult('revisioned')).not.toBeNull();
+
+      await writeAuditResult('revisioned', 'audit', { run: 'current' }, 'current');
+      expect(
+        await readAuditResultForRegistration('revisioned', currentRegistration),
+      ).toMatchObject({
+        registrationRevision: 'current',
+        result: { run: 'current' },
+      });
+    });
+
   });
 
   describe('namespace sanitization', () => {

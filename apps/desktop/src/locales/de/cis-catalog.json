@@ -1,4 +1,145 @@
 {
+  "actions": {
+    "catalogActionComplete": "Katalogaktion abgeschlossen",
+    "catalogActionFailed": "Katalogaktion fehlgeschlagen",
+    "copied": "Kopiert",
+    "copiedPath": "Pfad des Datenordners kopiert.",
+    "copyPath": "Pfad kopieren",
+    "copyPathAria": "Pfad des Datenordners kopieren",
+    "copyPathError": "Der Pfad des Datenordners konnte nicht kopiert werden.",
+    "folderActionComplete": "Ordneraktion abgeschlossen",
+    "folderActionFailed": "Ordneraktion fehlgeschlagen",
+    "openFolder": "Ordner öffnen",
+    "openFolderError": "Der Datenordner konnte nicht geöffnet werden.",
+    "openedFolder": "Datenordner geöffnet: {{path}}",
+    "openingFolder": "Ordner wird geöffnet…",
+    "pathCopiedAria": "Pfad kopiert",
+    "recheck": "Katalog erneut überprüfen",
+    "recheckDetected": "Katalogüberprüfung abgeschlossen. Dateien wurden erkannt, es ist jedoch weiterhin eine verwendbare OVAL-Begleitdatei oder ein JSON-Katalog mit Positivregeln erforderlich.",
+    "recheckLoaded": "Katalogüberprüfung abgeschlossen. Die CIS-Daten sind bereit.",
+    "recheckMappingsMissing": "Katalogüberprüfung abgeschlossen. Regelkataloge wurden erkannt; fügen Sie eine gültige Datei namens cis-mappings.json hinzu, um die Legacy-Einrichtung abzuschließen.",
+    "recheckPartial": "Katalogüberprüfung abgeschlossen. Einige CIS-Kataloge sind bereit; andere benötigen weiterhin eine OVAL-Begleitdatei oder verwendbare Regeln.",
+    "recheckPartialMappingsMissing": "Katalogüberprüfung abgeschlossen. Einige CIS-Kataloge sind bereit; für die Legacy-Regelkataloge ist weiterhin eine gültige Datei namens cis-mappings.json erforderlich.",
+    "rechecking": "Katalog wird erneut überprüft…",
+    "recheckUnavailable": "Katalogüberprüfung abgeschlossen. Es wurden keine CIS-Daten gefunden.",
+    "statusError": "Der Status des CIS-Katalogs konnte nicht geladen werden."
+  },
+  "detected": {
+    "ariaLabel": "Erkannte CIS-Kataloge",
+    "azurePolicy": "Azure Policy",
+    "description": "Diese Kataloge stehen für die Benchmark-Zuordnung, den Editor und Diff zur Verfügung.",
+    "limitedDescription": "Diese Dateien wurden erkannt, können aber noch nicht für Querverweise im Editor oder Diff verwendet werden.",
+    "partialDescription": "Einige erkannte Kataloge sind bereit; als eingeschränkt markierte Einträge stehen für Querverweise im Editor oder Diff nicht zur Verfügung.",
+    "json": "JSON",
+    "legacyMetadata": "Metadaten pro Datei werden von dieser Quelle nicht gemeldet.",
+    "legacyMappingsMissing": "Regelkataloge wurden erkannt, aber die Datei cis-mappings.json fehlt oder ist ungültig.",
+    "legacyReady_one": "Die globalen Zuordnungen und {{count}} per-OS-Regelkatalog sind bereit.",
+    "legacyReady_other": "Die globalen Zuordnungen und {{count}} per-OS-Regelkataloge sind bereit.",
+    "legacyRulesMissing": "Die globalen Zuordnungen sind geladen. Fügen Sie mindestens einen gültigen per-OS-Regelkatalog hinzu.",
+    "legacyTitle": "Legacy-JSON-Katalog",
+    "noMetadata": "CIS-Daten sind verfügbar, aber es wurden keine Katalogmetadaten pro Datei gemeldet.",
+    "notReported": "Nicht gemeldet",
+    "noUsableRules": "Keine verwendbaren Regeln erkannt",
+    "ovalFound": "OVAL-Begleitdatei gefunden",
+    "ovalMissing": "OVAL-Begleitdatei nicht gefunden",
+    "platform": {
+      "linux": "Linux",
+      "unknown": "Unbekannte Plattform",
+      "windows": "Windows"
+    },
+    "ruleCount_one": "{{formattedCount}} Regel",
+    "ruleCount_other": "{{formattedCount}} Regeln",
+    "title": "Erkannte Kataloge",
+    "version": "Version {{version}}",
+    "xccdf": "XCCDF"
+  },
+  "diagnostics": {
+    "didYouMean": "Meinten Sie {{suggestion}}?",
+    "schemaTitle": "Fehlerhaftes oder nicht unterstütztes CIS-Schema",
+    "title": "Katalogdiagnose",
+    "unexpectedDescription": "Benennen Sie Dateien um, wenn ein vorgeschlagener Dateiname angezeigt wird, und überprüfen Sie den Katalog anschließend erneut.",
+    "unexpectedTitle": "Nicht erkannte Dateien"
+  },
+  "header": {
+    "capabilities": "Sobald CIS-Daten geladen sind, steht auf der Seite Diff auch eine CIS-Registerkarte zur Bewertung der Abdeckung der vollständigen Baseline zur Verfügung.",
+    "description": "Gleichen Sie OSConfig-Einstellungen mit den vom Benutzer bereitgestellten CIS Benchmark-Daten ab.",
+    "title": "Benchmark-Zuordnung"
+  },
+  "status": {
+    "ariaLabel": "Status des CIS-Katalogs",
+    "detected": {
+      "description": "Katalogdateien wurden erkannt, für die Zuordnung ist jedoch weiterhin eine OVAL-Begleitdatei für XCCDF oder ein JSON-Katalog mit Regeln erforderlich.",
+      "legacyMappingsDescription": "Legacy-Regelkataloge wurden erkannt, für die Zuordnung ist jedoch eine gültige Datei namens cis-mappings.json erforderlich.",
+      "title": "CIS-Dateien erkannt — Einrichtung unvollständig"
+    },
+    "loaded": {
+      "description": "CIS-Daten wurden gefunden. Querverweise im Editor und Funktionen in Diff sind verfügbar.",
+      "title": "CIS-Daten gefunden"
+    },
+    "loading": {
+      "description": "Der lokale Datenordner wird auf unterstützte CIS-Baseline-Dateien überprüft.",
+      "title": "CIS-Katalog wird überprüft"
+    },
+    "partial": {
+      "description": "Einige CIS-Kataloge sind bereit, während andere erkannte Dateien weiterhin eine OVAL-Begleitdatei oder verwendbare Regeln benötigen.",
+      "legacyMappingsDescription": "Einige CIS-Kataloge sind bereit; für die erkannten Legacy-Regelkataloge ist weiterhin eine gültige Datei namens cis-mappings.json erforderlich.",
+      "title": "CIS-Daten teilweise bereit"
+    },
+    "schemaDetails": "Schemadetails:",
+    "unavailable": {
+      "description": "Fügen Sie eine JSON-Datei für eine CIS-Baseline aus Azure Policy oder CIS XCCDF + OVAL XML-Dateien hinzu, und wählen Sie anschließend Katalog erneut überprüfen aus.",
+      "optional": "CIS-Daten sind optional; alle anderen ConfigForge-Funktionen bleiben verfügbar.",
+      "title": "Keine CIS-Daten gefunden"
+    }
+  },
+  "steps": {
+    "download": {
+      "alternate": "Alternative",
+      "azure": {
+        "description": "Navigieren Sie in Azure Policy zu Machine Configuration > CIS, und laden Sie die JSON-Datei der Baseline für jedes Zielbetriebssystem herunter.",
+        "link": "Azure Portal öffnen",
+        "title": "Azure Policy CIS-Baseline-JSON"
+      },
+      "description": "Wählen Sie die unterstützte Quelle aus, die zu Ihrer Umgebung passt. Es ist nur eine Quelle erforderlich.",
+      "license": {
+        "ariaLabel": "CIS-Lizenzhinweis",
+        "description": "Der Inhalt von CIS Benchmark ist geistiges Eigentum des Center for Internet Security und wird separat lizenziert. ConfigForge enthält die Zuordnungslogik, jedoch keine von CIS lizenzierten Daten.",
+        "title": "Lizenzhinweis:"
+      },
+      "recommended": "Empfohlen",
+      "title": "CIS-Baselines herunterladen",
+      "xccdf": {
+        "description": "Laden Sie die XCCDF-XML-Datei des Benchmarks und die zugehörige OVAL-XML-Datei herunter, um Regeln und Registrierungseinträge genauer abzugleichen.",
+        "link": "CIS Workbench öffnen",
+        "title": "CIS XCCDF + OVAL XML"
+      }
+    },
+    "import": {
+      "description": "Öffnen Sie den Datenordner oder legen Sie unterstützte Dateien im unten angezeigten vollständigen Pfad ab.",
+      "guidance": {
+        "ariaLabel": "Hinweise zum Importieren von CIS-Dateien",
+        "azureDescription": "Lassen Sie heruntergeladene JSON-Dateien unverändert. Sie können mehrere Dateien hinzufügen, eine pro Betriebssystem, und die Dateinamen müssen keinem bestimmten Muster entsprechen.",
+        "azureLabel": "Azure Policy JSON:",
+        "title": "Dateien vorbereiten",
+        "xccdfDescription": "Bewahren Sie jede Datei *-xccdf.xml neben der passenden OVAL-Begleitdatei *-oval.xml auf. Das gemeinsame Dateinamenpräfix ordnet sie einander zu, und OVAL ermöglicht den exakten Abgleich mit der Windows-Registrierung.",
+        "xccdfLabel": "XCCDF + OVAL:"
+      },
+      "pathAriaLabel": "Pfad zum CIS-Datenordner",
+      "pathLabel": "CIS-Datenordner",
+      "pathUnavailable": "Der Pfad zum Datenordner ist nicht verfügbar.",
+      "pathUnavailableHint": "Verwenden Sie Ordner öffnen oder Katalog erneut überprüfen, um es noch einmal zu versuchen.",
+      "title": "CIS-Baseline-Dateien importieren"
+    },
+    "recheck": {
+      "description": "Durchsuchen Sie den Datenordner erneut, nachdem Sie Dateien hinzugefügt, ersetzt oder umbenannt haben.",
+      "title": "Katalog erneut überprüfen"
+    }
+  },
+  "workflow": {
+    "ariaLabel": "Einrichtung des CIS-Katalogs",
+    "stepHeading": "Schritt {{number}}: {{title}}",
+    "stepLabel": "Schritt {{number}}:"
+  },
   "extracted": {
     "text1": "Benchmark-Zuordnung",
     "text2": "Vergleiche deine OSConfig-Einstellungen mit CIS Benchmark-Regeln. Fügen Sie Ihre CISDateien in den folgenden Ordner ein, und der Editor zeigt entsprechende Regeln an, während Sie sich durch die YAML bewegen.",

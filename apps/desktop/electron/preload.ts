@@ -34,6 +34,9 @@ import type {
   BaselineCsvResult,
   RegisterManifestRequest,
   RegisterManifestResult,
+  RestoreManifestRequest,
+  RestoreManifestResult,
+  DeleteManifestOptions,
   DeleteManifestResult,
   ImportRequest,
   ImportResult,
@@ -44,6 +47,7 @@ import type {
   DeployResponse,
   DeployProgressEvent,
   UserSettings,
+  ManifestListEntry,
 } from '@configforge/core/handlers';
 
 /**
@@ -208,10 +212,17 @@ const cfsApi = {
   },
 
   manifests: {
-    list: (opts?: { live?: boolean; includeResources?: boolean; lite?: boolean }) =>
-      call<{ data: unknown[] }>('cfs:manifests:list', opts ?? {}),
+    list: (opts?: {
+      live?: boolean;
+      includeResources?: boolean;
+      lite?: boolean;
+      force?: boolean;
+    }) =>
+      call<{ data: ManifestListEntry[] }>('cfs:manifests:list', opts ?? {}),
     register: (req: RegisterManifestRequest): Promise<RegisterManifestResult> =>
       call('cfs:manifests:register', req),
+    restore: (req: RestoreManifestRequest): Promise<RestoreManifestResult> =>
+      call('cfs:manifests:restore', req),
     /**
      * v0.2.15: fetch a remote manifest's source YAML *without*
      * registering it. The renderer uses this to load a URL into the
@@ -219,8 +230,8 @@ const cfsApi = {
      */
     fetchUri: (uri: string): Promise<{ content: string }> =>
       call('cfs:manifests:fetch-uri', { uri }),
-    delete: (name: string): Promise<DeleteManifestResult> =>
-      call('cfs:manifests:delete', { name }),
+    delete: (name: string, options: DeleteManifestOptions = {}): Promise<DeleteManifestResult> =>
+      call('cfs:manifests:delete', { name, ...options }),
     status: (name: string) => call<unknown>('cfs:manifests:status', { name }),
     /**
      * v0.2.16: registered manifest's source YAML (what the user wrote
@@ -245,12 +256,25 @@ const cfsApi = {
           Name: string;
           DisplayName: string;
           Source: 'library' | 'oscfg';
+          RegistrationSource: 'user' | 'library' | 'import' | null;
+          RegistrationSourceId: string | null;
           Deployed: boolean;
           LastAppliedAt: string | null;
           LastAuditedAt: string | null;
+          Revision: string | null;
           Platform: string | null;
           ResourceCount: number;
           Validation: unknown;
+          Compliance: {
+            auditedAt: string;
+            total: number;
+            compliant: number;
+            nonCompliant: number;
+            indeterminate: number;
+            errors: number;
+          } | null;
+          RegisteredAt: string | null;
+          LastModifiedAt: string | null;
           Resources?: { name: string; type: string }[];
         } | null;
         warning?: string;

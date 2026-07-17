@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Trans, useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
 import yaml from "js-yaml";
 import { ManifestEditor } from "../../components/manifest-editor";
 import { DiffViewer } from "../../components/diff-viewer";
@@ -29,12 +30,39 @@ import { withTimeout, TimeoutError } from "../../lib/with-timeout";
 import { useDiffMatrix, type MatrixApiResponse } from "./state/useDiffMatrix";
 import { useCisAvailable } from "../../components/use-cis-available";
 import { CisDiffTab } from "./components/CisDiffTab";
+import {
+  clearMatrixDiffLocationState,
+  readMatrixDiffLocationState,
+} from "./location-state";
 
 type InputMode = "paste" | "manifest"; // | "system" — commented out for V2
 type DiffTab = "pairwise" | "matrix" | "cis-diff";
 
 export function DiffPage() {
   const { t } = useTranslation(["diff", "common"]);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const [initialMatrixSelection] = useState(() =>
+    readMatrixDiffLocationState(location.state),
+  );
+  useEffect(() => {
+    const consumed = clearMatrixDiffLocationState(location.state);
+    if (!consumed.consumed) return;
+    navigate(
+      {
+        pathname: location.pathname,
+        search: location.search,
+        hash: location.hash,
+      },
+      { replace: true, state: consumed.state },
+    );
+  }, [
+    location.hash,
+    location.pathname,
+    location.search,
+    location.state,
+    navigate,
+  ]);
   const [leftText, setLeftText] = useState("");
   const [rightText, setRightText] = useState("");
   // Default to the manifest picker; we flip to 'paste' automatically if the
@@ -70,16 +98,19 @@ export function DiffPage() {
   // Owned by useDiffMatrix: selection, fetched data, loading/error,
   // race-guard token, toggle handler, runMatrixCompare, downloadMatrixXlsx,
   // and the 10-cap constant.
-  const [activeTab, setActiveTab] = useState<DiffTab>("pairwise");
+  const [activeTab, setActiveTab] = useState<DiffTab>(() =>
+    initialMatrixSelection.length > 0 ? "matrix" : "pairwise",
+  );
   const {
     matrixSelected,
     matrixData,
     matrixLoading,
     matrixError,
     toggleMatrixSelection,
+    reconcileMatrixSelection,
     runMatrixCompare: handleMatrixCompare,
     downloadMatrixXlsx,
-  } = useDiffMatrix();
+  } = useDiffMatrix({ initialSelected: initialMatrixSelection });
 
   // v0.1.13 fix — token refs so rapid switches between manifests for
   // the left/right side don't race. Previously a slow fetch for
@@ -183,6 +214,7 @@ export function DiffPage() {
             Resources: (m.Resources ?? m.resources ?? []) as OscManifest["Resources"],
           }))
           .filter((m) => m.Name);
+        reconcileMatrixSelection(normalized.map((manifest) => manifest.Name));
         setManifests(normalized);
         if (normalized.length === 0) {
           setLeftMode("paste");
@@ -205,7 +237,7 @@ export function DiffPage() {
     } finally {
       setLoadingManifests(false);
     }
-  }, []);
+  }, [reconcileMatrixSelection, t]);
 
   useEffect(() => {
     fetchManifests();
@@ -403,8 +435,15 @@ export function DiffPage() {
       )}
 
       {/* Tab nav */}
-      <div className="flex gap-1 border-b border-slate-200 dark:border-slate-800">
+      <div
+        role="tablist"
+        aria-label={t("page.title")}
+        className="flex gap-1 border-b border-slate-200 dark:border-slate-800"
+      >
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "pairwise"}
           onClick={() => setActiveTab("pairwise")}
           className={`inline-flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
             activeTab === "pairwise"
@@ -416,6 +455,9 @@ export function DiffPage() {
           {t('tabs.pairwise')}
         </button>
         <button
+          type="button"
+          role="tab"
+          aria-selected={activeTab === "matrix"}
           onClick={() => setActiveTab("matrix")}
           className={`inline-flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
             activeTab === "matrix"
@@ -428,6 +470,9 @@ export function DiffPage() {
         </button>
         {cisAvailable && (
           <button
+            type="button"
+            role="tab"
+            aria-selected={activeTab === "cis-diff"}
             onClick={() => setActiveTab("cis-diff")}
             className={`inline-flex items-center gap-2 border-b-2 px-4 py-2 text-sm font-medium transition-colors ${
               activeTab === "cis-diff"

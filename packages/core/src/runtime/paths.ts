@@ -42,7 +42,12 @@ const defaultStrategy: PathStrategy = {
   },
   resolvePublicAsset(relativePath) {
     const cleaned = relativePath.replace(/^\/+/, '');
-    return resolve(process.cwd(), 'public', cleaned);
+    const configuredRoot =
+      process.env.CONFIGFORGE_TEST_MODE === "1"
+        ? process.env.CONFIGFORGE_PUBLIC_ROOT?.trim()
+        : undefined;
+    const publicRoot = configuredRoot ? resolve(configuredRoot) : resolve(process.cwd(), 'public');
+    return resolve(publicRoot, cleaned);
   },
   resolveTempDir() {
     return os.tmpdir();

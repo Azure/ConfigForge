@@ -42,7 +42,7 @@ import { tryLoadRationale } from '../audit-pack/rationale-loader';
 import { buildAuditPackMarkdown } from '../audit-pack/markdown';
 import { resolvePublicAsset } from '../runtime/paths';
 import {
-  readAuditResult,
+  readAuditResultForRegistration,
   type PersistedAuditResult,
 } from '../manifest/audit-results-store';
 import { _getBaselineCatalog } from './library';
@@ -137,6 +137,7 @@ async function tryLoadProvenance(_namespace: string): Promise<ProvenanceBundle |
 
 async function tryLoadDeviceAudit(
   namespace: string,
+  registration: ManifestRegistration,
 ): Promise<PersistedAuditResult | undefined> {
   // v0.1.6: load the cached `~/.configforge/audit-results/<ns>.json`
   // written by deploy.ts after every audit / enforce run. This is the
@@ -145,7 +146,12 @@ async function tryLoadDeviceAudit(
   // Returns undefined when no audit has ever been run for this
   // namespace, so the new Device Audit section is omitted gracefully.
   try {
-    return (await readAuditResult(namespace)) ?? undefined;
+    return (
+      (await readAuditResultForRegistration(namespace, {
+        modifiedAt: registration.modifiedAt ?? registration.registeredAt,
+        revision: registration.revision,
+      })) ?? undefined
+    );
   } catch (err) {
     // eslint-disable-next-line no-console
     console.warn('[audit-pack] device audit load failed:', err);
@@ -167,7 +173,7 @@ async function loadAuditPackInput(
     tryLoadCompliance(namespace, against),
     tryLoadRationale(namespace),
     tryLoadProvenance(namespace),
-    tryLoadDeviceAudit(namespace),
+    tryLoadDeviceAudit(namespace, registration),
   ]);
   return {
     manifest: registration,

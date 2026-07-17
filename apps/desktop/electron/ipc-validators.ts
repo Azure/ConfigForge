@@ -141,10 +141,48 @@ export function validateRegisterManifestRequest(v: unknown): string | null {
   return null;
 }
 
+export function validateRestoreManifestRequest(v: unknown): string | null {
+  if (typeof v !== 'object' || v === null) return 'payload must be an object';
+  const o = v as Record<string, unknown>;
+  const namespaceError = validateNonEmptyString(
+    o.namespace,
+    'namespace',
+    MAX_MANIFEST_NAME_LEN,
+  );
+  if (namespaceError) return namespaceError;
+  const displayNameError = validateNonEmptyString(
+    o.displayName,
+    'displayName',
+    MAX_MANIFEST_NAME_LEN,
+  );
+  if (displayNameError) return displayNameError;
+  const contentError = validateNonEmptyString(
+    o.content,
+    'content',
+    MAX_MANIFEST_CONTENT_LEN,
+  );
+  if (contentError) return contentError;
+  if (o.source !== 'user' && o.source !== 'library' && o.source !== 'import') {
+    return 'source must be user, library, or import';
+  }
+  return validateOptionalString(o.sourceId, 'sourceId', MAX_FILENAME_LEN);
+}
+
+export function validateDeleteManifestRequest(v: unknown): string | null {
+  if (typeof v !== 'object' || v === null) return 'payload must be an object';
+  const o = v as Record<string, unknown>;
+  const nameError = validateNonEmptyString(o.name, 'name', MAX_MANIFEST_NAME_LEN);
+  if (nameError) return nameError;
+  if (o.requireRecovery !== undefined && typeof o.requireRecovery !== 'boolean') {
+    return 'requireRecovery must be a boolean when provided';
+  }
+  return null;
+}
+
 /**
  * v0.2.21 (CF-SEC-018): validator for `cfs:manifests:list` payload.
  *
- * The list handler accepts `{ live?, includeResources?, lite? }`.
+ * The list handler accepts `{ live?, includeResources?, lite?, force? }`.
  * Previously the IPC channel cast the renderer payload directly with
  * no shape check — inconsistent with every other mutating channel
  * and a maintenance hazard if `listManifests` ever grows a parameter
@@ -156,7 +194,7 @@ export function validateListManifestsRequest(v: unknown): string | null {
   if (v === undefined || v === null) return null;
   if (typeof v !== 'object') return 'payload must be an object or omitted';
   const o = v as Record<string, unknown>;
-  for (const k of ['live', 'includeResources', 'lite'] as const) {
+  for (const k of ['live', 'includeResources', 'lite', 'force'] as const) {
     if (o[k] !== undefined && typeof o[k] !== 'boolean') {
       return `${k} must be boolean when provided`;
     }

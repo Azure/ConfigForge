@@ -1,11 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import { getI18n } from '../locales';
+import { BASELINE_CATALOG } from '../data/baseline-catalog';
+import { BaselineWorkspaceProvider } from './BaselineWorkspace';
 import { Sidebar } from './Sidebar';
 
 /**
@@ -28,7 +30,9 @@ describe('Sidebar', () => {
     return render(
       <FluentProvider theme={webLightTheme}>
         <MemoryRouter initialEntries={[path]}>
-          <Sidebar />
+          <BaselineWorkspaceProvider>
+            <Sidebar />
+          </BaselineWorkspaceProvider>
         </MemoryRouter>
       </FluentProvider>,
     );
@@ -39,6 +43,13 @@ describe('Sidebar', () => {
     // viewport is 1024px (md breakpoint = 768) so the toggle is
     // rendered but hidden. The aside is always rendered.
     await getI18n().changeLanguage('en');
+    Object.assign(window.cfs!, {
+      manifests: {
+        list: vi.fn().mockResolvedValue({
+          data: [{ Name: 'one' }, { Name: 'two' }, { Name: 'three' }],
+        }),
+      },
+    });
   });
 
   afterEach(async () => {
@@ -48,12 +59,21 @@ describe('Sidebar', () => {
   it('renders all seven nav items', () => {
     renderAt('/');
     expect(screen.getByText('Dashboard')).toBeInTheDocument();
-    expect(screen.getByText('My Baselines')).toBeInTheDocument();
+    expect(screen.getByText(/My Baselines/)).toBeInTheDocument();
     expect(screen.getByText('Export Readiness')).toBeInTheDocument();
-    expect(screen.getByText('Microsoft Baselines')).toBeInTheDocument();
+    expect(screen.getByText(/Microsoft Baselines/)).toBeInTheDocument();
     expect(screen.getByText('Diff')).toBeInTheDocument();
     expect(screen.getByText('Benchmark Mapping')).toBeInTheDocument();
     expect(screen.getByText('Settings')).toBeInTheDocument();
+  });
+
+  it('shows live My Baselines and Microsoft catalog counts in parentheses', async () => {
+    renderAt('/');
+
+    expect(await screen.findByText('My Baselines (3)')).toBeInTheDocument();
+    expect(
+      screen.getByText(`Microsoft Baselines (${BASELINE_CATALOG.length})`),
+    ).toBeInTheDocument();
   });
 
   it('marks the Dashboard link active when at "/"', () => {
@@ -92,7 +112,9 @@ describe('Sidebar', () => {
     rerender(
       <FluentProvider theme={webLightTheme}>
         <MemoryRouter initialEntries={['/']}>
-          <Sidebar />
+          <BaselineWorkspaceProvider>
+            <Sidebar />
+          </BaselineWorkspaceProvider>
         </MemoryRouter>
       </FluentProvider>,
     );

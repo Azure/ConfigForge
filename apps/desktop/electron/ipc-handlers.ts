@@ -26,18 +26,20 @@ import os from 'node:os';
 // YAML directly from the oscfg registry (not via `manifests.status`,
 // which returns the CLI-reported live state and is empty for
 // registered-but-not-deployed manifests).
-import { getRegistrationSource, sanitizeNamespace } from '@configforge/core/oscfg';
+import { getRegistration, getRegistrationSource, sanitizeNamespace } from '@configforge/core/oscfg';
 import { isRemoteDesktopSession } from './platform-detection';
 import { isCurrentProcessElevated, relaunchElevated } from './elevate';
 import {
   MAX_JOB_ID_LEN,
   validateAppendRationaleRequest,
+  validateDeleteManifestRequest,
   validateDeleteSnapshotRequest,
   validateDeployRequest,
   validateDocsGenerateRequest,
   validateImportRequest,
   validateListManifestsRequest,
   validateRegisterManifestRequest,
+  validateRestoreManifestRequest,
   validateRevertRequest,
   validateSaveSnapshotRequest,
 } from './ipc-validators';
@@ -86,10 +88,12 @@ import {
   // Phase 4 pass B2 (manifests CRUD) — hot path
   listManifests,
   registerManifest,
+  restoreManifest,
   fetchManifestFromUri,
   deleteManifest,
   getManifest,
   type RegisterManifestRequest,
+  type RestoreManifestRequest,
   // Phase 4 pass E (deploy) — hot path
   runDeploy,
   type DeployRequest,
@@ -109,7 +113,7 @@ import {
 // build and threw "Cannot find package '@configforge/core'" on every
 // call from the audit-pack page, leaving the "What's included"
 // sidebar with no checkmark for the Compliance report row.
-import { readAuditResult } from '@configforge/core/manifest/audit-results-store.js';
+import { readAuditResultForRegistration } from '@configforge/core/manifest/audit-results-store.js';
 
 // perf W2 / H10: heavy / rarely-fired handlers stay TYPE-only at the
 // top of the module, with runtime imports deferred to inside each
@@ -485,7 +489,14 @@ export function registerCfsIpcHandlers(): void {
       // when the on-disk JSON existed and the PDF had the data.
       // No reason for the lazy load: this module is ~80 lines, no
       // heavy deps. Static import bundles cleanly.
-      const snapshot = await readAuditResult(req);
+      const namespace = sanitizeNamespace(req);
+      const registration = await getRegistration(namespace);
+      const snapshot = registration
+        ? await readAuditResultForRegistration(namespace, {
+            modifiedAt: registration.modifiedAt ?? registration.registeredAt,
+            revision: registration.revision,
+          })
+        : null;
       return { snapshot };
     } catch (err) {
       return envelope(err);
@@ -660,7 +671,13 @@ export function registerCfsIpcHandlers(): void {
     const verr = validateListManifestsRequest(req);
     if (verr) return envelope(new Error(verr));
     try {
-      const opts = (req as { live?: boolean; includeResources?: boolean; lite?: boolean }) ?? {};
+      const opts =
+        (req as {
+          live?: boolean;
+          includeResources?: boolean;
+          lite?: boolean;
+          force?: boolean;
+        }) ?? {};
       return await listManifests(opts);
     } catch (err) {
       return envelope(err);
@@ -700,6 +717,16 @@ export function registerCfsIpcHandlers(): void {
     }
   });
 
+  ipcMain.handle('cfs:manifests:restore', async (_evt, req: unknown) => {
+    const verr = validateRestoreManifestRequest(req);
+    if (verr) return envelope(new Error(verr));
+    try {
+      return await restoreManifest(req as RestoreManifestRequest);
+    } catch (err) {
+      return envelope(err);
+    }
+  });
+
   // v0.2.15: fetch-only URL preview. Lets the renderer import a
   // manifest from a URL, load it into the editor, allow the user to
   // edit it, and only commit via `register` when they're ready.
@@ -721,11 +748,18 @@ export function registerCfsIpcHandlers(): void {
   });
 
   ipcMain.handle('cfs:manifests:delete', async (_evt, req: unknown) => {
-    if (!isStringRequest(req)) {
-      return envelope(new Error('payload must be { name: string }'));
+    const validationError = validateDeleteManifestRequest(req);
+    if (validationError) {
+      return envelope(new Error(validationError));
     }
+    const deleteRequest = req as {
+      name: string;
+      requireRecovery?: boolean;
+    };
     try {
-      return await deleteManifest(req.name);
+      return await deleteManifest(deleteRequest.name, {
+        ...(deleteRequest.requireRecovery === true ? { requireRecovery: true } : {}),
+      });
     } catch (err) {
       return envelope(err);
     }
@@ -1260,4 +1294,3 @@ const importDialogOptions: Electron.OpenDialogOptions = {
     { name: 'All files', extensions: ['*'] },
   ],
 };
-

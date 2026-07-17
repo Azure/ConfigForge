@@ -9,6 +9,7 @@ import {
   WINDOWS_DEFAULT_YAML,
   LINUX_DEFAULT_YAML,
 } from "./useNewManifestForm";
+import { parseVisualManifest } from "../../ManifestEditor/visual-viewer";
 
 function makeImportClient(
   fromContent: ReturnType<typeof vi.fn> = vi.fn(),
@@ -29,7 +30,6 @@ describe("useNewManifestForm", () => {
     expect(result.current.yamlContent).toBe(WINDOWS_DEFAULT_YAML);
     expect(result.current.activeTab).toBe("yaml");
     expect(result.current.sourceType).toBe("content");
-    expect(result.current.visualResources).toEqual([]);
     expect(result.current.error).toBeNull();
   });
 
@@ -65,18 +65,17 @@ describe("useNewManifestForm", () => {
     expect(result.current.jsonContent).toBe(populated);
   });
 
-  it("syncResourcesToVisual parses valid YAML into a list of visual resources", () => {
+  it("switches to the visual tab without creating a second resource buffer", () => {
     const { result } = renderHook(() => useNewManifestForm({ importClient: makeImportClient() }));
+    const before = result.current.yamlContent;
 
     act(() => {
-      result.current.syncResourcesToVisual();
+      result.current.handleTabSwitch("visual");
     });
 
-    expect(result.current.visualResources.length).toBe(1);
-    expect(result.current.visualResources[0]).toMatchObject({
-      name: "ExampleSetting",
-      type: "Microsoft.Windows/Registry",
-    });
+    expect(result.current.activeTab).toBe("visual");
+    expect(result.current.yamlContent).toBe(before);
+    expect(result.current).not.toHaveProperty("visualResources");
   });
 
   it("handleJsonChange propagates valid JSON edits back to yamlContent", () => {
@@ -120,26 +119,40 @@ describe("useNewManifestForm", () => {
     expect(result.current.yamlContent).toBe(original);
   });
 
-  it("handleResourceAdd appends a new resource to existing YAML instead of overwriting", () => {
+  it("preserves unsafe QWord integers when editing an unrelated JSON field", () => {
     const { result } = renderHook(() => useNewManifestForm({ importClient: makeImportClient() }));
+    const qwordYaml = `resources:
+  - name: Original
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM:\\Software\\ConfigForge
+      valueName: Exact
+      valueType: QWord
+      value: 18446744073709551615
+`;
 
     act(() => {
-      result.current.handleResourceAdd({
-        name: "NewSetting",
-        type: "Microsoft.Windows/Registry",
-        properties: { keyPath: "HKLM:\\Bar" },
-      });
+      result.current.setYamlContent(qwordYaml);
+    });
+    act(() => {
+      result.current.handleTabSwitch("json");
+    });
+    expect(result.current.jsonContent).toContain('"value": 18446744073709551615');
+
+    act(() => {
+      result.current.handleJsonChange(
+        result.current.jsonContent.replace('"name": "Original"', '"name": "Renamed"'),
+      );
     });
 
-    const parsed = yaml.load(result.current.yamlContent) as { resources: unknown[] };
-    // Original "ExampleSetting" should still be there; new one appended
-    expect(parsed.resources.length).toBe(2);
-    expect((parsed.resources[0] as { name: string }).name).toBe("ExampleSetting");
-    expect((parsed.resources[1] as { name: string }).name).toBe("NewSetting");
-    expect(result.current.visualResources.length).toBe(1);
+    const document = parseVisualManifest(result.current.yamlContent) as {
+      resources: Array<{ name: string; properties: { value: bigint } }>;
+    };
+    expect(document.resources[0].name).toBe("Renamed");
+    expect(document.resources[0].properties.value).toBe(18446744073709551615n);
   });
 
-  it("handlePlatformSwitch on default Windows YAML swaps to Linux default and clears visual resources", () => {
+  it("handlePlatformSwitch on default Windows YAML swaps to the Linux default", () => {
     const { result } = renderHook(() => useNewManifestForm({ importClient: makeImportClient() }));
 
     act(() => {
@@ -148,7 +161,6 @@ describe("useNewManifestForm", () => {
 
     expect(result.current.platform).toBe("linux");
     expect(result.current.yamlContent).toBe(LINUX_DEFAULT_YAML);
-    expect(result.current.visualResources).toEqual([]);
     expect(result.current.platformWarning).toBeNull();
   });
 

@@ -1,12 +1,17 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { useState, useRef, useEffect, Suspense } from "react";
+import { useState, useRef, useEffect, useMemo, Suspense } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { ManifestEditor } from "../../components/manifest-editor";
-import { ResourcePicker } from "../../components/resource-picker";
 import { useCisAvailable } from "../../components/use-cis-available";
 import { useNavigationGuard } from "../../lib/use-navigation-guard";
+import { VisualManifestViewer } from "../ManifestEditor/components/VisualManifestViewer";
+import {
+  flattenVisualSettings,
+  parseVisualManifest,
+  validateVisualSettings,
+} from "../ManifestEditor/visual-viewer";
 import {
   ArrowLeftRegular,
   ArrowUploadRegular,
@@ -33,6 +38,7 @@ import { cfs } from "../../lib/cfs";
 import { useNewManifestForm } from "./state/useNewManifestForm";
 import { useTranslation } from "react-i18next";
 import { useNumberFormatter } from "../../lib/format";
+import { useBaselineWorkspace } from "../../components/BaselineWorkspace";
 
 export function ManifestNewPage() {
   const { t } = useTranslation("manifests");
@@ -53,6 +59,7 @@ function NewManifestPage() {
   const { t } = useTranslation("manifests");
   const fileSizeFormatter = useNumberFormatter({ minimumFractionDigits: 1, maximumFractionDigits: 1 });
   const navigate = useNavigate();
+  const { refresh: refreshWorkspace } = useBaselineWorkspace();
   const [searchParams] = useSearchParams();
   const cisAvailable = useCisAvailable();
 
@@ -77,7 +84,6 @@ function NewManifestPage() {
     sourceType,
     setSourceType,
     activeTab,
-    visualResources,
     platformWarning,
     fileInputRef,
     importing,
@@ -86,8 +92,6 @@ function NewManifestPage() {
     setError,
     handleTabSwitch,
     handleJsonChange,
-    handleResourceAdd,
-    handleResourceRemove,
     handlePlatformSwitch,
     handleImport,
     hydrateFromLibraryTemplate,
@@ -95,8 +99,20 @@ function NewManifestPage() {
   } = useNewManifestForm();
 
   const [submitting, setSubmitting] = useState(false);
+  const [visualDraftValid, setVisualDraftValid] = useState(true);
   const [postWarnings, setPostWarnings] = useState<string[]>([]);
   const [registeredName, setRegisteredName] = useState<string | null>(null);
+  const visualSourceValid = useMemo(() => {
+    try {
+      return (
+        validateVisualSettings(
+          flattenVisualSettings(parseVisualManifest(yamlContent)),
+        ).length === 0
+      );
+    } catch {
+      return false;
+    }
+  }, [yamlContent]);
 
   // v0.2.15: URL fetch-and-edit. The "From URL" mode used to defer all
   // network I/O to register-time, which forced users to register
@@ -189,6 +205,10 @@ function NewManifestPage() {
       setError("Baseline name is required.");
       return;
     }
+    if (sourceType === "content" && (!visualSourceValid || !visualDraftValid)) {
+      setError(t("new.visualValidationError"));
+      return;
+    }
 
     setSubmitting(true);
     setError(null);
@@ -208,6 +228,11 @@ function NewManifestPage() {
       }
 
       const json = await cfs.manifests.register(body);
+      void refreshWorkspace().catch(() => {
+        // Registration already succeeded. Never turn a transient shared-count
+        // refresh failure into a duplicate-registration retry; route entry
+        // performs the same refresh again.
+      });
 
       const warnings: string[] = Array.isArray((json as { warnings?: string[] }).warnings)
         ? (json as { warnings: string[] }).warnings
@@ -244,7 +269,7 @@ function NewManifestPage() {
   // v0.1.15: unsaved-changes guard. See use-navigation-guard.ts for why
   // useBlocker doesn't work with our legacy <HashRouter>. Triggers
   // if the user has typed a name, replaced the default YAML scaffold,
-  // added any resources via the visual builder, or typed a URI in
+  // changed any resources in the visual spreadsheet, or typed a URI in
   // URL-source mode, then tries to navigate away without registering.
   // `justRegistered` is the post-success bypass.
   const [justRegistered, setJustRegistered] = useState(false);
@@ -390,6 +415,11 @@ function NewManifestPage() {
                       }
                     }),
                   );
+
+                  void refreshWorkspace().catch(() => {
+                    // Registration results remain authoritative; route-entry
+                    // refresh retries a transient count/pruning failure.
+                  });
 
                   if (errors.length === 0) {
                     setTimeout(() => navigate("/manifests"), 1500);
@@ -799,58 +829,13 @@ function NewManifestPage() {
                 />
               </div>
             ) : (
-              <div className="grid gap-6 lg:grid-cols-2">
-                {/* Resource picker */}
-                <div>
-                  <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    {t("new.extracted.text63")}
-                  </h3>
-                  <ResourcePicker onSelect={handleResourceAdd} platform={platform} />
-                </div>
-
-                {/* Added resources preview */}
-                <div>
-                  <h3 className="mb-3 text-sm font-semibold text-slate-700 dark:text-slate-300">
-                    {t("new.extracted.text64")}
-                    {visualResources.length})
-                  </h3>
-                  {visualResources.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 py-12 text-sm text-slate-400 dark:border-slate-700 dark:text-slate-500">
-                      {t("new.extracted.text65")}
-
-                      <br />
-                      {t("new.extracted.text66")}
-                    </div>
-                  ) : (
-                    <div className="max-h-[400px] space-y-2 overflow-y-auto">
-                      {visualResources.map((r, i) => (
-                        <div
-                          key={i}
-                          className="flex items-center justify-between gap-3 rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 dark:border-slate-700 dark:bg-slate-800"
-                        >
-                          <div className="min-w-0 flex-1">
-                            <p
-                              className="truncate text-sm font-medium text-slate-900 dark:text-white"
-                              title={r.name}
-                            >
-                              {r.name}
-                            </p>
-                            <p className="break-all text-xs text-slate-500 dark:text-slate-400">
-                              {r.type}
-                            </p>
-                          </div>
-                          <button
-                            onClick={() => handleResourceRemove(i)}
-                            className="shrink-0 text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400"
-                          >
-                            {t("new.extracted.text67")}
-                          </button>
-                        </div>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
+              <VisualManifestViewer
+                source={yamlContent}
+                editable
+                platform={platform}
+                onSourceChange={setYamlContent}
+                onDraftValidityChange={setVisualDraftValid}
+              />
             )}
           </div>
         </div>
@@ -870,8 +855,17 @@ function NewManifestPage() {
         <Button
           appearance="primary"
           onClick={handleSubmit}
-          disabled={submitting || !name.trim()}
+          disabled={
+            submitting ||
+            !name.trim() ||
+            (sourceType === "content" && (!visualSourceValid || !visualDraftValid))
+          }
           icon={submitting ? <Spinner size="tiny" /> : undefined}
+          title={
+            sourceType === "content" && (!visualSourceValid || !visualDraftValid)
+              ? t("new.visualValidationError")
+              : undefined
+          }
         >
           {t("new.extracted.text72")}
         </Button>

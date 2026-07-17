@@ -56,6 +56,8 @@ export interface UseDeployFlowParams {
    * of mixed-platform manifests at the renderer (server still
    * re-validates against the host platform). */
   detectedPlatform: DetectedPlatform;
+  /** Registration revision that the resulting compliance cache belongs to. */
+  registrationRevision?: string | null;
   setStatus: (status: OscManifestStatus | null) => void;
   setError: (error: string | null) => void;
   fetchData: () => Promise<void>;
@@ -82,8 +84,15 @@ export interface DeployFlow {
 }
 
 export function useDeployFlow(params: UseDeployFlowParams): DeployFlow {
-  const { manifestName, presenceInstalled, detectedPlatform, setStatus, setError, fetchData } =
-    params;
+  const {
+    manifestName,
+    presenceInstalled,
+    detectedPlatform,
+    registrationRevision,
+    setStatus,
+    setError,
+    fetchData,
+  } = params;
   const { t } = useTranslation("manifest-editor");
 
   const [deploying, setDeploying] = useState(false);
@@ -212,7 +221,11 @@ export function useDeployFlow(params: UseDeployFlowParams): DeployFlow {
               },
             }),
           );
-          const statusData = { name: manifestName, resources: deployResources };
+          const statusData = {
+            name: manifestName,
+            revision: registrationRevision ?? null,
+            resources: deployResources,
+          };
           setStatus(statusData);
           // v0.1.14: sessionStorage quota guard. The compliance cache
           // can be ~80 KB per baseline (360-resource WS2025 manifest);

@@ -43,8 +43,8 @@ contributors get this docs site; agents get the single-file
   1.3.9-preview11`).
 - CIS data integration, CIS Diff behavior, renderer-safe matrix diff
   helpers, and the v0.3.46 fuzzy-matcher guardrails.
-- Visual Builder Edit behavior, including Test wrapper and Group
-  resource handling.
+- Spreadsheet visual editing, including lossless typed values and Test
+  wrapper / Group source-path handling.
 - Unsigned release builds — no code signing in CI (artifacts are unsigned by design).
 - Security-audit closure: CF-SEC-001 through CF-SEC-015 are all
   closed; don't regress any of them.

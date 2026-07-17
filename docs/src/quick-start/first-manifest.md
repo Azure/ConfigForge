@@ -47,7 +47,7 @@ In the UI:
 
 1. Open **Manifests** in the sidebar, then click **Register New**.
 2. Paste your YAML, upload a `.osc.yaml` / `.json` / `.csv` file, or
-   use the Visual Builder.
+   edit settings directly in the Visual spreadsheet.
 3. Pick the target platform (Windows or Linux). The editor's
    validation adjusts accordingly.
 4. Click **Register Manifest**.
@@ -58,7 +58,7 @@ get a soft `warnings[]` entry instead of a hard error - that's by
 design (see [Architecture → Registration semantics](../architecture/registration-semantics.md)).
 
 To open the editor afterwards: **Manifests → click the manifest row**.
-The detail/editor view loads with YAML / JSON / Visual Builder modes,
+The detail/editor view loads with Code / Visual modes,
 deploy/audit controls (gated on CLI presence), version history, and
 the **Audit Pack** button in the Full edition.
 

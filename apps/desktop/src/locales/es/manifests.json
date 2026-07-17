@@ -3,6 +3,102 @@
     "title": "Mis Baselines",
     "description": "Registrado OSConfig seguridad baselines"
   },
+  "administration": {
+    "actions": {
+      "create": "Crear una baseline",
+      "delete": "Eliminar",
+      "deleteAria": "Eliminar las baselines seleccionadas",
+      "diff": "Diff",
+      "diffAria": "Diff de las baselines seleccionadas",
+      "diffMaximum": "Matrix Diff admite un máximo de 10 baselines seleccionadas.",
+      "open": "Abrir",
+      "openAria": "Abrir las baselines seleccionadas",
+      "undo": "Deshacer",
+      "undoAria": "Deshacer la eliminación"
+    },
+    "filters": {
+      "compliance": {
+        "all": "Cumplimiento",
+        "label": "Cumplimiento",
+        "options": {
+          "all-compliant": "Todas conformes",
+          "not-audited": "Sin auditar",
+          "partially-compliant": "Parcialmente conformes"
+        }
+      },
+      "issues": {
+        "all": "Problemas",
+        "label": "Problemas",
+        "options": {
+          "has-issues": "Con problemas",
+          "no-issues": "Sin problemas"
+        }
+      },
+      "lastModified": {
+        "all": "Fecha de última modificación",
+        "label": "Fecha de última modificación",
+        "options": {
+          "older-than-30-days": "Hace más de 30 días",
+          "previous-30-days": "Últimos 30 días",
+          "previous-7-days": "Últimos 7 días",
+          "today": "Hoy",
+          "unknown": "Fecha no disponible"
+        }
+      },
+      "operatingSystem": {
+        "all": "Sistema operativo",
+        "label": "Sistema operativo",
+        "options": {
+          "cross-platform": "Multiplataforma",
+          "linux": "Linux",
+          "mixed": "Mixto",
+          "unknown": "Desconocido",
+          "windows": "Windows"
+        }
+      }
+    },
+    "loading": "Cargando baselines…",
+    "messages": {
+      "captureFailed": "No se eliminó ninguna baseline porque no se pudo capturar el contenido de recuperación. {{error}}",
+      "deletePartial": "Se eliminaron {{deleted}} baselines; {{failed}} no se pudieron eliminar.",
+      "deleteSuccess_one": "Se eliminó {{count}} baseline. La opción de deshacer está disponible durante esta sesión.",
+      "deleteSuccess_other": "Se eliminaron {{count}} baselines. La opción de deshacer está disponible durante esta sesión.",
+      "undoPartial": "Se restauraron {{restored}} registros de baseline; {{failed}} no se pudieron restaurar. {{error}}",
+      "undoSuccess_one": "Se restauró {{count}} registro de baseline a partir del contenido de origen YAML capturado. Los datos de implementación, historial, justificación y auditoría no se restauraron.",
+      "undoSuccess_other": "Se restauraron {{count}} registros de baseline a partir del contenido de origen YAML capturado. Los datos de implementación, historial, justificación y auditoría no se restauraron.",
+      "unknownError": "Error desconocido"
+    },
+    "search": {
+      "label": "Buscar baselines",
+      "placeholder": "Buscar baselines"
+    },
+    "showing": "Se muestran {{filtered}} de {{total}}",
+    "status": {
+      "allCompliant": "Todas conformes",
+      "complianceIncompleteTitle": "{{compliant}} de {{total}} configuraciones evaluadas cumplen los requisitos; {{unknown}} configuraciones no se pudieron evaluar",
+      "complianceTitle": "{{compliant}} de {{total}} configuraciones auditadas cumplen los requisitos",
+      "issueCount_one": "{{count}} problema",
+      "issueCount_other": "{{count}} problemas",
+      "noIssues": "Sin problemas",
+      "noValidationIssues": "Sin problemas de validación",
+      "notAudited": "Sin auditar",
+      "notAuditedTitle": "No hay datos de auditoría disponibles para esta baseline",
+      "percentCompliant": "{{percent}} de cumplimiento"
+    },
+    "table": {
+      "baseline": "Baseline",
+      "compliant": "Conforme",
+      "issues": "Problemas",
+      "lastModifiedTitle": "Última modificación el {{date}}",
+      "lastModifiedUnknown": "Fecha de última modificación no disponible",
+      "noMatches": "Ninguna baseline coincide con la búsqueda y los filtros actuales.",
+      "openBaseline": "Abrir la baseline {{name}}",
+      "operatingSystem": "Sistema operativo",
+      "selectAll": "Seleccionar todas las baselines filtradas",
+      "selectBaseline": "Seleccionar la baseline {{name}}",
+      "settings": "Configuraciones"
+    }
+  },
   "features": {
     "audit": "Auditar",
     "bulkDeploy": "Bulk implementar",
@@ -28,6 +124,8 @@
     "deploy": "Implementar \"{{name}}\" in {{mode}} mode?",
     "bulkDeploy_one": "¿Desplegar {{count}} baseline en este dispositivo?",
     "bulkDeploy_other": "¿Desplegar {{count}} baselines en este dispositivo?",
+    "bulkDeleteBaselineContentOnly_one": "¿Eliminar {{count}} baseline? Deshacer restaura únicamente el contenido de la baseline durante esta sesión. Los registros de implementación, historial, justificación y auditoría se eliminan y no se restauran.",
+    "bulkDeleteBaselineContentOnly_other": "¿Eliminar {{count}} baselines? Deshacer restaura únicamente el contenido de las baselines durante esta sesión. Los registros de implementación, historial, justificación y auditoría se eliminan y no se restauran.",
     "bulkDelete_one": "¿Borrar {{count}} baseline? Esta acción no puede deshacerse.",
     "bulkDelete_other": "¿Borrar {{count}} baselines? Esta acción no puede deshacerse.",
     "revert": "¿Revertir \"{{name}}\"?\n\nSi existe una instantánea previa al despliegue, tus ajustes previos se volverán a aplicar a este dispositivo. Si no existe una instantánea, OSConfig aplicación será eliminada y el baseline será desregistrado. En cualquier caso, esta baseline ya no se aplicará activamente."
@@ -58,6 +156,13 @@
     "selectAll": "Seleccionar todo",
     "deselectAll": "Anular selección",
     "selected": "{{count}} seleccionado"
+  },
+  "workspace": {
+    "allBaselines": "Todas las baselines",
+    "closeTab": "Cerrar {{name}}",
+    "moreTabs": "Más baselines abiertas",
+    "navigationLabel": "Área de trabajo de baselines",
+    "openTabsLabel": "Baselines abiertas"
   },
   "card": {
     "localSource": "Local",
@@ -149,7 +254,7 @@
       "text57": "Content",
       "text58": "YAML",
       "text59": "JSON",
-      "text60": "Constructor Visual",
+      "text60": "Visual",
       "text61": "Yaml",
       "text62": "Json",
       "text63": "Añadir Ambientación",
@@ -166,7 +271,8 @@
       "text74": "Copiado",
       "text75": "Copiar",
       "text76": "Descargar .md"
-    }
+    },
+    "visualValidationError": "Complete o corrija las celdas Visuales resaltadas antes de registrar la baseline."
   },
   "library": {
     "extracted": {

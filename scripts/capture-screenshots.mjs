@@ -115,20 +115,19 @@ try {
     settle: 2800,
   });
 
-  // 5) Visual Builder — enter Edit mode (the Visual Builder toggle is edit-only),
-  //    then switch to the Visual Builder view.
+  // 5) Visual spreadsheet — switch to Visual, then enter inline Edit mode.
   await shoot('visual-builder', '/manifests/Windows-Server-2025---Member-Server', {
     waitFor: 'main',
     beforeShoot: async (p) => {
       await p.waitForSelector('button:has-text("YAML")', { timeout: 9000 }).catch(() => {});
+      const visualBtn = await p.$('button:text-is("Visual")');
+      if (visualBtn) {
+        await visualBtn.click();
+        await p.waitForTimeout(1200);
+      }
       const editBtn = await p.$('button:text-is("Edit")');
       if (editBtn) {
         await editBtn.click();
-        await p.waitForTimeout(1200);
-      }
-      const vbBtn = await p.$('button:has-text("Visual Builder")');
-      if (vbBtn) {
-        await vbBtn.click();
         await p.waitForTimeout(1200);
       }
     },

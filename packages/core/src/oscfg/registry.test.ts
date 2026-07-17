@@ -18,15 +18,28 @@
  *      testable in a sandbox).
  */
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
-import { mkdtemp, readdir, readFile, rm, writeFile } from 'fs/promises';
+import {
+  mkdir,
+  mkdtemp,
+  open,
+  readdir,
+  readFile,
+  rm,
+  unlink,
+  utimes,
+  writeFile,
+} from 'fs/promises';
 import { tmpdir } from 'os';
 import path from 'path';
 import {
   deleteRegistration,
+  _removeAbandonedRegistrationLock,
   getRegistration,
+  getRegistrationSnapshot,
   getRegistrationSource,
   listRegistrations,
   saveRegistration,
+  saveRegistrationIfAbsent,
   updateRegistration,
   type ManifestRegistration,
 } from './registry';
@@ -45,6 +58,15 @@ function makeReg(
     source: 'user',
     ...overrides,
   };
+}
+
+function lockIdentityHash(identity: string): string {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < identity.length; index += 1) {
+    hash ^= identity.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16);
 }
 
 beforeEach(async () => {
@@ -91,6 +113,7 @@ describe('saveRegistration (PR18 atomic)', () => {
     await saveRegistration(makeReg('clean'), 'resources: []');
     const files = await readdir(path.join(SANDBOX, 'manifests'));
     expect(files.filter((f) => f.includes('.tmp'))).toEqual([]);
+    expect(files.filter((f) => f.endsWith('.lock'))).toEqual([]);
   });
 
   it('listRegistrations ignores .tmp leftovers from a prior crash', async () => {
@@ -111,6 +134,226 @@ describe('saveRegistration (PR18 atomic)', () => {
     await deleteRegistration('to-delete');
     expect(await getRegistration('to-delete')).toBeNull();
     expect(await getRegistrationSource('to-delete')).toBeNull();
+  });
+
+  it('updates metadata only when the expected registration revision is still current', async () => {
+    await saveRegistration(makeReg('revision-guard', { revision: 'revision-1' }), 'source 1');
+    await expect(
+      updateRegistration(
+        'revision-guard',
+        { lastAuditedAt: '2026-07-17T00:00:00.000Z' },
+        { expectedRevision: 'revision-1' },
+      ),
+    ).resolves.toMatchObject({
+      revision: 'revision-1',
+      lastAuditedAt: '2026-07-17T00:00:00.000Z',
+    });
+
+    await saveRegistration(makeReg('revision-guard', { revision: 'revision-2' }), 'source 2');
+    await expect(
+      updateRegistration(
+        'revision-guard',
+        { lastAuditedAt: '2026-07-18T00:00:00.000Z' },
+        { expectedRevision: 'revision-1' },
+      ),
+    ).resolves.toBeNull();
+    await expect(getRegistration('revision-guard')).resolves.toMatchObject({
+      revision: 'revision-2',
+    });
+    expect((await getRegistration('revision-guard'))?.lastAuditedAt).toBeUndefined();
+  });
+
+  it('reads registration metadata and source as one revision-locked snapshot', async () => {
+    await saveRegistration(
+      makeReg('snapshot-race', {
+        displayName: 'writer-seed',
+        revision: 'revision-seed',
+      }),
+      '# writer-seed',
+    );
+
+    const operations: Array<Promise<unknown>> = [];
+    for (let index = 0; index < 10; index += 1) {
+      operations.push(
+        saveRegistration(
+          makeReg('snapshot-race', {
+            displayName: `writer-${index}`,
+            revision: `revision-${index}`,
+          }),
+          `# writer-${index}`,
+        ),
+        getRegistrationSnapshot('snapshot-race'),
+      );
+    }
+
+    const snapshots = (await Promise.all(operations)).filter(
+      (value): value is NonNullable<Awaited<ReturnType<typeof getRegistrationSnapshot>>> =>
+        typeof value === 'object' && value !== null && 'registration' in value,
+    );
+
+    expect(snapshots).toHaveLength(10);
+    for (const snapshot of snapshots) {
+      const writer = snapshot.registration.displayName;
+      expect(snapshot.sourceYaml).toBe(`# ${writer}`);
+      expect(snapshot.registration.revision).toBe(writer.replace('writer-', 'revision-'));
+    }
+  });
+
+  it('guards legacy registrations by requiring the revision to remain absent', async () => {
+    await saveRegistration(makeReg('legacy-revision-guard'), 'legacy source');
+    await saveRegistration(
+      makeReg('legacy-revision-guard', { revision: 'first-revision' }),
+      'new source',
+    );
+
+    await expect(
+      updateRegistration(
+        'legacy-revision-guard',
+        { lastAuditedAt: '2026-07-18T00:00:00.000Z' },
+        { expectedRevision: null },
+      ),
+    ).resolves.toBeNull();
+    expect((await getRegistration('legacy-revision-guard'))?.lastAuditedAt).toBeUndefined();
+  });
+
+  it('captures exact recovery metadata and source while deleting under the namespace lock', async () => {
+    await saveRegistration(
+      makeReg('recoverable', {
+        displayName: 'Recoverable Baseline',
+        source: 'import',
+        sourceId: 'recoverable.yaml',
+      }),
+      'resources:\n  - name: original\n    type: Example/Type\n',
+    );
+
+    const result = await deleteRegistration('recoverable', {
+      requireRecovery: true,
+    });
+
+    expect(result).toEqual({
+      removed: true,
+      recovery: {
+        namespace: 'recoverable',
+        displayName: 'Recoverable Baseline',
+        sourceYaml: 'resources:\n  - name: original\n    type: Example/Type\n',
+        source: 'import',
+        sourceId: 'recoverable.yaml',
+      },
+    });
+    expect(await getRegistration('recoverable')).toBeNull();
+    expect(await getRegistrationSource('recoverable')).toBeNull();
+    expect(
+      (await readdir(path.join(SANDBOX, 'manifests'))).filter((name) => name.endsWith('.lock')),
+    ).toEqual([]);
+  });
+
+  it('deletes nothing when recovery is required but source YAML is unavailable', async () => {
+    await saveRegistration(makeReg('missing-source', { displayName: 'Keep Me' }), 'resources: []');
+    await unlink(path.join(SANDBOX, 'manifests', 'missing-source.source.yaml'));
+
+    await expect(deleteRegistration('missing-source', { requireRecovery: true })).resolves.toEqual({
+      removed: false,
+      recovery: null,
+    });
+    await expect(getRegistration('missing-source')).resolves.toMatchObject({
+      displayName: 'Keep Me',
+    });
+  });
+
+  it('holds the namespace lock through post-delete cleanup before allowing a replacement save', async () => {
+    await saveRegistration(
+      makeReg('cleanup-save-race', { displayName: 'Original Baseline' }),
+      'original source',
+    );
+
+    let signalCleanupStarted!: () => void;
+    const cleanupStarted = new Promise<void>((resolve) => {
+      signalCleanupStarted = resolve;
+    });
+    let releaseCleanup!: () => void;
+    const cleanupReleased = new Promise<void>((resolve) => {
+      releaseCleanup = resolve;
+    });
+
+    const deletion = deleteRegistration('cleanup-save-race', {
+      requireRecovery: true,
+      afterDeleteWhileLocked: async () => {
+        signalCleanupStarted();
+        await cleanupReleased;
+      },
+    });
+    await cleanupStarted;
+
+    let replacementFinished = false;
+    const replacement = saveRegistration(
+      makeReg('cleanup-save-race', { displayName: 'Replacement Baseline' }),
+      'replacement source',
+    ).then(() => {
+      replacementFinished = true;
+    });
+    await new Promise((resolve) => setTimeout(resolve, 25));
+    expect(replacementFinished).toBe(false);
+
+    releaseCleanup();
+    const deleted = await deletion;
+    await replacement;
+
+    expect(deleted.recovery).toMatchObject({
+      displayName: 'Original Baseline',
+      sourceYaml: 'original source',
+    });
+    await expect(getRegistration('cleanup-save-race')).resolves.toMatchObject({
+      displayName: 'Replacement Baseline',
+    });
+    await expect(getRegistrationSource('cleanup-save-race')).resolves.toBe('replacement source');
+  });
+
+  it('serializes recovery deletion with a concurrent save without mixing revisions', async () => {
+    await saveRegistration(
+      makeReg('delete-save-race', { displayName: 'Original Baseline' }),
+      'original source',
+    );
+
+    const deletion = deleteRegistration('delete-save-race', {
+      requireRecovery: true,
+    });
+    const recreation = saveRegistration(
+      makeReg('delete-save-race', { displayName: 'Replacement Baseline' }),
+      'replacement source',
+    );
+
+    const [deleted] = await Promise.all([deletion, recreation]);
+    expect(deleted.recovery).toMatchObject({
+      displayName: 'Original Baseline',
+      sourceYaml: 'original source',
+    });
+    await expect(getRegistration('delete-save-race')).resolves.toMatchObject({
+      displayName: 'Replacement Baseline',
+    });
+    await expect(getRegistrationSource('delete-save-race')).resolves.toBe('replacement source');
+  });
+
+  it('backs up the winning save when save and recovery delete collide in the opposite order', async () => {
+    await saveRegistration(
+      makeReg('save-delete-race', { displayName: 'Original Baseline' }),
+      'original source',
+    );
+
+    const replacement = saveRegistration(
+      makeReg('save-delete-race', { displayName: 'Replacement Baseline' }),
+      'replacement source',
+    );
+    const deletion = deleteRegistration('save-delete-race', {
+      requireRecovery: true,
+    });
+
+    const [, deleted] = await Promise.all([replacement, deletion]);
+    expect(deleted.recovery).toMatchObject({
+      displayName: 'Replacement Baseline',
+      sourceYaml: 'replacement source',
+    });
+    await expect(getRegistration('save-delete-race')).resolves.toBeNull();
+    await expect(getRegistrationSource('save-delete-race')).resolves.toBeNull();
   });
 });
 
@@ -144,10 +387,7 @@ describe('saveRegistration concurrency (PR18 mutex)', () => {
     // Different namespaces should not block each other. We can't easily
     // assert timing, but we can assert correctness under concurrency.
     const writes = Array.from({ length: 8 }, (_, i) =>
-      saveRegistration(
-        makeReg(`ns-${i}`, { displayName: `n${i}` }),
-        `value: ${i}`,
-      ),
+      saveRegistration(makeReg(`ns-${i}`, { displayName: `n${i}` }), `value: ${i}`),
     );
     await Promise.all(writes);
     const list = await listRegistrations();
@@ -157,6 +397,228 @@ describe('saveRegistration concurrency (PR18 mutex)', () => {
       expect(r?.displayName).toBe(`n${i}`);
       expect(await getRegistrationSource(`ns-${i}`)).toBe(`value: ${i}`);
     }
+  });
+});
+
+describe('saveRegistrationIfAbsent', () => {
+  it('creates a missing registration without changing its display name or source YAML', async () => {
+    const restored = makeReg('restore-me', { displayName: 'Original Display Name' });
+
+    await expect(saveRegistrationIfAbsent(restored, 'original source yaml')).resolves.toBe(true);
+    await expect(getRegistration('restore-me')).resolves.toMatchObject({
+      namespace: 'restore-me',
+      displayName: 'Original Display Name',
+    });
+    await expect(getRegistrationSource('restore-me')).resolves.toBe('original source yaml');
+  });
+
+  it('atomically refuses to overwrite a registration recreated during undo', async () => {
+    const recreated = makeReg('collision', { displayName: 'Recreated Baseline' });
+    const undoBackup = makeReg('collision', { displayName: 'Deleted Baseline' });
+
+    const [createResult, restoreResult] = await Promise.all([
+      saveRegistrationIfAbsent(recreated, 'recreated source'),
+      saveRegistrationIfAbsent(undoBackup, 'deleted source'),
+    ]);
+
+    expect([createResult, restoreResult].filter(Boolean)).toHaveLength(1);
+    const winner = await getRegistration('collision');
+    const source = await getRegistrationSource('collision');
+    expect(
+      (winner?.displayName === 'Recreated Baseline' && source === 'recreated source') ||
+        (winner?.displayName === 'Deleted Baseline' && source === 'deleted source'),
+    ).toBe(true);
+  });
+
+  it('returns false and preserves an existing registration exactly', async () => {
+    await saveRegistration(
+      makeReg('collision', { displayName: 'Recreated Baseline' }),
+      'recreated source',
+    );
+
+    await expect(
+      saveRegistrationIfAbsent(
+        makeReg('collision', { displayName: 'Deleted Baseline' }),
+        'deleted source',
+      ),
+    ).resolves.toBe(false);
+    await expect(getRegistration('collision')).resolves.toMatchObject({
+      displayName: 'Recreated Baseline',
+    });
+    await expect(getRegistrationSource('collision')).resolves.toBe('recreated source');
+  });
+
+  it('serializes the absence check against a concurrent normal registration', async () => {
+    const registration = saveRegistration(
+      makeReg('register-race', { displayName: 'Recreated Baseline' }),
+      'recreated source',
+    );
+    const undo = saveRegistrationIfAbsent(
+      makeReg('register-race', { displayName: 'Deleted Baseline' }),
+      'deleted source',
+    );
+
+    await registration;
+    await expect(undo).resolves.toBe(false);
+    await expect(getRegistration('register-race')).resolves.toMatchObject({
+      displayName: 'Recreated Baseline',
+    });
+    await expect(getRegistrationSource('register-race')).resolves.toBe('recreated source');
+  });
+
+  it('waits for another process lock before deciding whether restore is absent', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'external-race.lock');
+    await writeFile(
+      lockPath,
+      JSON.stringify({ pid: process.pid, createdAt: new Date().toISOString() }),
+      'utf-8',
+    );
+
+    const undo = saveRegistrationIfAbsent(
+      makeReg('external-race', { displayName: 'Deleted Baseline' }),
+      'deleted source',
+    );
+    await new Promise((resolve) => setTimeout(resolve, 75));
+    await expect(getRegistration('external-race')).resolves.toBeNull();
+
+    const recreated = makeReg('external-race', {
+      displayName: 'Recreated Baseline',
+    });
+    await writeFile(path.join(root, 'external-race.source.yaml'), 'recreated source', 'utf-8');
+    await writeFile(
+      path.join(root, 'external-race.json'),
+      JSON.stringify(recreated, null, 2),
+      'utf-8',
+    );
+    await unlink(lockPath);
+
+    await expect(undo).resolves.toBe(false);
+    await expect(getRegistration('external-race')).resolves.toMatchObject({
+      displayName: 'Recreated Baseline',
+    });
+    await expect(getRegistrationSource('external-race')).resolves.toBe('recreated source');
+  });
+
+  it('elects only one reaper for concurrent stale-lock cleanup', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'stale.lock');
+    await writeFile(lockPath, '', 'utf-8');
+    const old = new Date(Date.now() - 10 * 60_000);
+    await utimes(lockPath, old, old);
+
+    const results = await Promise.all([
+      _removeAbandonedRegistrationLock(lockPath),
+      _removeAbandonedRegistrationLock(lockPath),
+    ]);
+
+    expect(results).toContain(true);
+    await expect(readFile(lockPath, 'utf-8')).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
+    expect((await readdir(root)).filter((name) => name.includes('.reaper-'))).toEqual([]);
+  });
+
+  it('advances the election generation when a previous reaper crashed', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'reaper-crash.lock');
+    const identity = 'crashed-lock-owner';
+    await writeFile(
+      lockPath,
+      JSON.stringify({ owner: identity, createdAt: new Date().toISOString() }),
+      'utf-8',
+    );
+    const electionPath = `${lockPath}.reaper-${lockIdentityHash(identity)}-0`;
+    await writeFile(electionPath, '', 'utf-8');
+    const old = new Date(Date.now() - 10 * 60_000);
+    await utimes(lockPath, old, old);
+    await utimes(electionPath, old, old);
+
+    await expect(_removeAbandonedRegistrationLock(lockPath)).resolves.toBe(true);
+    await expect(readFile(lockPath, 'utf-8')).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
+    expect((await readdir(root)).filter((name) => name.includes('.reaper-'))).toEqual([]);
+  });
+
+  it('treats a fresh incomplete election record as active', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'incomplete-election.lock');
+    const identity = 'incomplete-election-owner';
+    await writeFile(
+      lockPath,
+      JSON.stringify({ owner: identity, createdAt: new Date().toISOString() }),
+      'utf-8',
+    );
+    const old = new Date(Date.now() - 10 * 60_000);
+    await utimes(lockPath, old, old);
+    const electionPath = `${lockPath}.reaper-${lockIdentityHash(identity)}-0`;
+    await writeFile(electionPath, '', 'utf-8');
+
+    await expect(_removeAbandonedRegistrationLock(lockPath)).resolves.toBe(false);
+    await expect(readFile(lockPath, 'utf-8')).resolves.toContain(identity);
+
+    await utimes(electionPath, old, old);
+    await expect(_removeAbandonedRegistrationLock(lockPath)).resolves.toBe(true);
+  });
+
+  it('honors a persisted abandonment marker even while its former owner PID is live', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'release-failure.lock');
+    const identity = 'failed-release-owner';
+    await writeFile(
+      lockPath,
+      JSON.stringify({
+        pid: process.pid,
+        owner: identity,
+        createdAt: new Date().toISOString(),
+      }),
+      'utf-8',
+    );
+    const lockHandle = await open(lockPath, 'r');
+    const lockInfo = await lockHandle.stat();
+    await lockHandle.close();
+    await writeFile(
+      `${lockPath}.abandoned`,
+      JSON.stringify({
+        fileIdentity: `${lockInfo.dev}-${lockInfo.ino}-${Math.trunc(lockInfo.birthtimeMs)}`,
+        owner: identity,
+      }),
+      'utf-8',
+    );
+
+    await expect(_removeAbandonedRegistrationLock(lockPath)).resolves.toBe(true);
+    await expect(readFile(lockPath, 'utf-8')).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
+  });
+
+  it('uses the file identity marker to recover an unreadable owned lock', async () => {
+    const root = path.join(SANDBOX, 'manifests');
+    await mkdir(root, { recursive: true });
+    const lockPath = path.join(root, 'unreadable-release.lock');
+    await writeFile(lockPath, '{incomplete', 'utf-8');
+    const lockHandle = await open(lockPath, 'r');
+    const lockInfo = await lockHandle.stat();
+    await lockHandle.close();
+    await writeFile(
+      `${lockPath}.abandoned`,
+      JSON.stringify({
+        fileIdentity: `${lockInfo.dev}-${lockInfo.ino}-${Math.trunc(lockInfo.birthtimeMs)}`,
+        owner: 'expected-owner',
+      }),
+      'utf-8',
+    );
+
+    await expect(_removeAbandonedRegistrationLock(lockPath)).resolves.toBe(true);
+    await expect(readFile(lockPath, 'utf-8')).rejects.toMatchObject({
+      code: 'ENOENT',
+    });
   });
 });
 
@@ -185,7 +647,9 @@ describe('updateRegistration (PR18 atomic)', () => {
     await saveRegistration(makeReg('update-race'), 'yaml');
     // 20 concurrent updates each setting a distinct timestamp.
     const updates = Array.from({ length: 20 }, (_, i) =>
-      updateRegistration('update-race', { lastAuditedAt: `2026-04-${String(i + 1).padStart(2, '0')}T00:00:00Z` }),
+      updateRegistration('update-race', {
+        lastAuditedAt: `2026-04-${String(i + 1).padStart(2, '0')}T00:00:00Z`,
+      }),
     );
     await Promise.all(updates);
     // The final on-disk json must be parseable (no torn write) and must

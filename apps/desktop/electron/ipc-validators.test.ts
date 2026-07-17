@@ -20,14 +20,38 @@ import {
   MAX_MANIFEST_CONTENT_LEN,
   MAX_MANIFEST_NAME_LEN,
   validateAppendRationaleRequest,
+  validateDeleteManifestRequest,
   validateDeleteSnapshotRequest,
   validateDeployRequest,
   validateDocsGenerateRequest,
   validateImportRequest,
+  validateListManifestsRequest,
   validateRegisterManifestRequest,
+  validateRestoreManifestRequest,
   validateRevertRequest,
   validateSaveSnapshotRequest,
 } from './ipc-validators';
+
+describe('validateDeleteManifestRequest', () => {
+  it('accepts legacy delete and recovery-required delete payloads', () => {
+    expect(validateDeleteManifestRequest({ name: 'baseline' })).toBeNull();
+    expect(
+      validateDeleteManifestRequest({
+        name: 'baseline',
+        requireRecovery: true,
+      }),
+    ).toBeNull();
+  });
+
+  it('rejects malformed recovery flags', () => {
+    expect(
+      validateDeleteManifestRequest({
+        name: 'baseline',
+        requireRecovery: 'yes',
+      }),
+    ).toMatch(/requireRecovery/);
+  });
+});
 
 describe('validateRevertRequest', () => {
   it('accepts a valid request', () => {
@@ -170,6 +194,67 @@ describe('validateRegisterManifestRequest', () => {
     expect(
       validateRegisterManifestRequest({ name: 'x', content: 'r', source: 42 }),
     ).toMatch(/source/);
+  });
+});
+
+describe('validateRestoreManifestRequest', () => {
+  it('accepts a bounded restore payload', () => {
+    expect(
+      validateRestoreManifestRequest({
+        namespace: 'baseline-ns',
+        displayName: 'Baseline Display Name',
+        content: 'resources: []',
+        source: 'import',
+        sourceId: 'baseline.yaml',
+      }),
+    ).toBeNull();
+  });
+
+  it('rejects missing identity fields and oversized content', () => {
+    expect(
+      validateRestoreManifestRequest({
+        displayName: 'Baseline',
+        content: 'resources: []',
+        source: 'user',
+      }),
+    ).toMatch(/namespace/);
+    expect(
+      validateRestoreManifestRequest({
+        namespace: 'baseline',
+        displayName: '',
+        content: 'resources: []',
+        source: 'user',
+      }),
+    ).toMatch(/displayName/);
+    expect(
+      validateRestoreManifestRequest({
+        namespace: 'baseline',
+        displayName: 'Baseline',
+        content: 'a'.repeat(MAX_MANIFEST_CONTENT_LEN + 1),
+        source: 'user',
+      }),
+    ).toMatch(/maximum length/);
+  });
+
+  it('rejects an unsupported registration source', () => {
+    expect(
+      validateRestoreManifestRequest({
+        namespace: 'baseline',
+        displayName: 'Baseline',
+        content: 'resources: []',
+        source: 'external',
+      }),
+    ).toMatch(/source/);
+  });
+});
+
+describe('validateListManifestsRequest', () => {
+  it('accepts the supported force-refresh flag', () => {
+    expect(validateListManifestsRequest({ force: true, lite: true })).toBeNull();
+  });
+
+  it('rejects a non-boolean force-refresh flag', () => {
+    expect(validateListManifestsRequest({ force: 'yes' })).toMatch(/force/);
   });
 });
 

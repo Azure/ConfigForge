@@ -101,17 +101,25 @@ test('renderer mounts and the dashboard is visible', async () => {
 });
 
 test('sidebar shows all seven nav items with the renamed labels', async () => {
-  const labels = ['Dashboard', 'My Baselines', 'Microsoft Baselines', 'Export Readiness', 'Diff', 'Benchmark Mapping', 'Settings'];
+  const labels = ['Dashboard', 'Export Readiness', 'Diff', 'Benchmark Mapping', 'Settings'];
   for (const label of labels) {
     await expect(firstWindow.locator('aside').getByText(label, { exact: true })).toBeVisible();
   }
+  await expect(
+    firstWindow.locator('aside').getByRole('link', { name: /^My Baselines \(\d+\)$/ }),
+  ).toBeVisible();
+  await expect(
+    firstWindow.locator('aside').getByRole('link', { name: /^Microsoft Baselines \(\d+\)$/ }),
+  ).toBeVisible();
   // Legacy labels must be gone from the sidebar after the rename.
   for (const legacy of ['Manifests', 'Validation', 'Library']) {
     await expect(firstWindow.locator('aside').getByText(legacy, { exact: true })).toHaveCount(0);
   }
   // Nav order: "Microsoft Baselines" now sits directly under "My Baselines"
   // (moved above "Export Readiness").
-  const navOrder = (await firstWindow.locator('aside').getByRole('link').allInnerTexts()).map((s) => s.trim());
+  const navOrder = (await firstWindow.locator('aside').getByRole('link').allInnerTexts()).map((s) =>
+    s.trim(),
+  );
   const myIdx = navOrder.findIndex((s) => s.includes('My Baselines'));
   const msIdx = navOrder.findIndex((s) => s.includes('Microsoft Baselines'));
   expect(myIdx).toBeGreaterThanOrEqual(0);
@@ -151,7 +159,10 @@ test('Export Readiness: heading renamed (no "Validation &" prefix) + "Total Sett
 test('Diff: "Compare Baselines" heading', async () => {
   await firstWindow.locator('aside').getByRole('link', { name: 'Diff' }).click();
   await expect(
-    firstWindow.locator('h1, h2').filter({ hasText: /Compare Baselines/ }).first(),
+    firstWindow
+      .locator('h1, h2')
+      .filter({ hasText: /Compare Baselines/ })
+      .first(),
   ).toBeVisible();
 });
 
