@@ -1,10 +1,10 @@
-# ConfigForge Author — macOS preview
+# ConfigForge Author 0.3.74 — macOS
 
 This is the **macOS author-only build**. Manifest authoring,
-library, cross-baseline compliance comparison, audit-pack PDF,
-and manifest-vs-manifest diff — same as the Windows + Linux
-builds. **Deploy / audit / enforce on a device is not included**
-on this flavor (use the Windows or Linux installer for that).
+Microsoft Baselines, cross-baseline comparison, Benchmark Mapping,
+Audit Pack export, and pairwise/matrix diff are included.
+**Deploy, Audit, Revert, elevation, and CLI health checks are not
+included** in this flavor.
 
 ## ⚠️ First-launch install — required one-time fix
 
@@ -37,32 +37,33 @@ If `xattr` complains about permissions, prefix with `sudo`:
 sudo xattr -rd com.apple.quarantine "/Applications/ConfigForge Author.app"
 ```
 
-A future release will be signed + notarized via an Apple
-Developer cert and this step won't be needed.
+Release artifacts are unsigned by design.
 
 ## What's in this build
 
-- **Author** — full YAML editor (Monaco) + visual resource picker
-- **Library** — 17 bundled Microsoft baselines:
-  Windows Server 2016 / 2019 / 2022 / 2025 (member, DC, workgroup),
-  Microsoft Defender Antivirus, Windows LAPS, Windows Secured Core,
-  Windows OpenSSH, Azure Local SFF Linux Security Baseline
-- **Compliance** — diff your manifest against any bundled reference
-  baseline; matched / mismatched / missing rule counts + per-rule
-  detail panel
+- **My Baselines workspace** — open multiple baselines in persistent
+  tabs, filter the administration table, compare selections, and
+  restore deleted baseline content during the current session
+- **Author** — YAML / JSON editing plus spreadsheet-style Visual
+  editing with inline cells, setting creation, multi-row deletion,
+  Test-wrapper and Group support, typed values, and exact QWord
+  round-trips
+- **Microsoft Baselines** — bundled Windows Server, Defender, LAPS,
+  Secured Core, and Azure Local Linux authoring references
+- **Benchmark Mapping** — import user-supplied XCCDF, OVAL, OCIL,
+  CPE dictionary, and Azure Policy benchmark files
 - **Audit Pack** — generate a Markdown / PDF bundle with the
-  manifest header, version history, rationale log, and the
+  baseline header, version history, rationale log, and the
   reference-baseline comparison
-- **Diff** — manifest-vs-manifest pairwise + N-way matrix view
-- **History** — versioned snapshots of every manifest edit, with
-  revert
+- **Diff** — baseline-vs-baseline pairwise, CIS, and N-way matrix
+  views
+- **History** — versioned snapshots of every baseline edit
 - **Rationale log** — capture and search per-edit reasoning notes
 
 ## What's NOT in this build
 
-- No deploy / audit / enforce on a device (oscfg CLI is not
-  bundled — use the Windows or Linux installer to actually
-  apply settings to a target machine)
+- No `oscfg` CLI detection or device operations
+- No deploy / audit / enforce / revert on a device
 - No admin / root elevation surface
 - No "Recent Activity" deploy event feed
 
@@ -74,6 +75,6 @@ configuration required.
 
 ## Reporting issues
 
-This is a `dev` preview tag. If you hit something broken, file
-an issue at <https://github.com/ABMFST/ConfigForge/issues>
+If you hit something broken, file an issue at
+<https://github.com/Azure/ConfigForge/issues>
 with the `mac-author` label.
