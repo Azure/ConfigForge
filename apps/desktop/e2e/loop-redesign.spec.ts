@@ -15,7 +15,15 @@ const electronExecutablePath = requireFromApp("electron") as string;
 const BASELINE_A = "LoopWindowsA";
 const BASELINE_B = "LoopWindowsB";
 const BASELINE_LINUX = "LoopLinux";
-const ALL_NAMES = [BASELINE_A, BASELINE_B, BASELINE_LINUX];
+const BASELINE_BLANK = "Blankmanifest";
+const BASELINE_WINDOWS_COLLISION = "Windows-Server-Search-Collision";
+const ALL_NAMES = [
+  BASELINE_A,
+  BASELINE_B,
+  BASELINE_LINUX,
+  BASELINE_BLANK,
+  BASELINE_WINDOWS_COLLISION,
+];
 
 const WINDOWS_A_YAML = `resources:
   - name: AlphaSetting
@@ -50,6 +58,16 @@ const LINUX_YAML = `resources:
     properties:
       path: /etc/configforge-loop.conf
       mode: "0644"
+`;
+
+const SEARCH_COLLISION_YAML = `resources:
+  - name: AccountsLimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Lsa
+      valueName: LimitBlankPasswordUse
+      valueType: Dword
+      value: 1
 `;
 
 let app: ElectronApplication;
@@ -107,6 +125,8 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await registerBaseline(BASELINE_A, WINDOWS_A_YAML);
     await registerBaseline(BASELINE_B, WINDOWS_B_YAML);
     await registerBaseline(BASELINE_LINUX, LINUX_YAML);
+    await registerBaseline(BASELINE_BLANK, SEARCH_COLLISION_YAML);
+    await registerBaseline(BASELINE_WINDOWS_COLLISION, SEARCH_COLLISION_YAML);
     await page.reload();
     await page.waitForLoadState("domcontentloaded");
   });
@@ -176,6 +196,29 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     );
     await expect(page.getByRole("checkbox", { name: BASELINE_A })).toBeChecked();
     await expect(page.getByRole("checkbox", { name: BASELINE_B })).toBeChecked();
+  });
+
+  test("search filters baseline identity without hidden resource collisions", async () => {
+    await goToMyBaselines();
+    const search = page.getByRole("textbox", { name: "Search Baselines" });
+
+    await search.fill("Blank");
+    await expect(page.getByRole("button", { name: `Open baseline ${BASELINE_BLANK}` })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: `Open baseline ${BASELINE_WINDOWS_COLLISION}` }),
+    ).toHaveCount(0);
+    await expect(page.getByText("Showing 1 of 5")).toBeVisible();
+
+    await search.fill("windows");
+    await expect(
+      page.getByRole("button", { name: `Open baseline ${BASELINE_WINDOWS_COLLISION}` }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: `Open baseline ${BASELINE_BLANK}` }),
+    ).toHaveCount(0);
+
+    await search.fill("");
+    await expect(page.getByText("Showing 5 of 5")).toBeVisible();
   });
 
   test("Code and Visual viewers preserve read-only and edit flows", async () => {

@@ -394,19 +394,17 @@ export function useManifestList(): ManifestListState {
     }
   }, [complianceFilter, filterOptions, issuesFilter, lastModifiedFilter, operatingSystemFilter]);
 
-  // Search + administrative filters. All predicates operate on normalized
-  // current list data; no static/fake filter values are introduced.
+  // Search only fields represented as baseline identity in this table.
+  // Resource names and types are intentionally excluded: common settings
+  // such as "blank password" and Microsoft.Windows/* otherwise make a
+  // namespace search appear unresponsive until the query becomes specific.
   const filteredManifests = useMemo(() => {
     const q = debouncedSearch.trim().toLowerCase();
     return manifests.filter((manifest) => {
       if (
         q &&
         !manifest.Name.toLowerCase().includes(q) &&
-        !manifest.DisplayName?.toLowerCase().includes(q) &&
-        !manifest.Resources?.some(
-          (resource) =>
-            resource.type?.toLowerCase().includes(q) || resource.name?.toLowerCase().includes(q),
-        )
+        !manifest.DisplayName?.toLowerCase().includes(q)
       ) {
         return false;
       }
