@@ -169,6 +169,28 @@ describe('resolveOscfgBinary: well-known install path discovery', () => {
     expect(info.path).toBe(usrPath);
     expect(info.source).toBe('installed');
   });
+
+  it('does not spawn probes for missing non-alias Windows install paths', async () => {
+    setPlatform('win32');
+    process.env.LOCALAPPDATA = 'C:\\Users\\amir\\AppData\\Local';
+    process.env.ProgramFiles = 'C:\\Program Files';
+    const commands: string[] = [];
+    state.spawnImpl = (cmd) => {
+      commands.push(cmd);
+      return { status: 1, stdout: '', stderr: '' };
+    };
+
+    const mod = await loadModule();
+    expect(() => mod.resolveOscfgBinary()).toThrow(/OSConfig CLI not found/);
+
+    expect(commands).toContain(
+      'C:\\Users\\amir\\AppData\\Local\\Microsoft\\WindowsApps\\oscfg.exe',
+    );
+    expect(commands).not.toContain(
+      'C:\\Users\\amir\\AppData\\Local\\Microsoft\\WinGet\\Links\\oscfg.exe',
+    );
+    expect(commands).not.toContain('C:\\Program Files\\OSConfig\\oscfg.exe');
+  });
 });
 
 describe('resolveOscfgBinary: MSIX fallback (Windows only)', () => {
@@ -238,4 +260,3 @@ describe('resolveOscfgBinary: env override still wins', () => {
     expect(info.source).toBe('env');
   });
 });
-

@@ -5,6 +5,7 @@
     "back": "Zurück",
     "checkCompliance": "Konformität prüfen",
     "closeBaseline": "Baseline schließen",
+    "closeCompliance": "Konformität schließen",
     "deleteBaseline": "Baseline löschen",
     "docs": "Docs",
     "duplicate": "Duplikat",
@@ -216,7 +217,7 @@
     "addSetting": "Einstellung hinzufügen",
     "deleteSelected": "{{count}} ausgewählte löschen",
     "editCell": "{{field}} für {{name}} bearbeiten",
-    "editHint": "Klicken Sie zum Bearbeiten auf eine Zelle. Drücken Sie zum Anwenden die Eingabetaste oder zum Abbrechen Escape.",
+    "editHint": "Cliquez sur une cellule pour la modifier. Appuyez sur Entrée pour appliquer ; dans la dernière cellule Entrée ajoute une ligne. Appuyez sur Échap pour annuler.",
     "editToolbar": "Aktionen zur Tabellenbearbeitung",
     "errors": {
       "boolean": "Geben Sie true oder false ein.",

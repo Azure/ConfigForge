@@ -5,6 +5,7 @@
     "back": "Atrás",
     "checkCompliance": "Comprobar cumplimiento",
     "closeBaseline": "Cerrar la baseline",
+    "closeCompliance": "Cerrar cumplimiento",
     "deleteBaseline": "Eliminar la baseline",
     "docs": "Docs",
     "duplicate": "Duplicado",
@@ -216,7 +217,7 @@
     "addSetting": "Añadir configuración",
     "deleteSelected": "Eliminar {{count}} seleccionados",
     "editCell": "Editar {{field}} para {{name}}",
-    "editHint": "Haga clic en cualquier celda para editarla. Presione Entrar para aplicar o Escape para cancelar.",
+    "editHint": "Klicken Sie zum Bearbeiten auf eine Zelle. Drücken Sie zum Anwenden die Eingabetaste; in der letzten Zelle fügt die Eingabetaste eine weitere Zeile hinzu. Drücken Sie zum Abbrechen Escape.",
     "editToolbar": "Acciones de edición de hoja de cálculo",
     "errors": {
       "boolean": "Introduzca true o false.",

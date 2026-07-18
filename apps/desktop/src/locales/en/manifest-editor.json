@@ -5,6 +5,7 @@
     "back": "Back",
     "checkCompliance": "Check compliance",
     "closeBaseline": "Close baseline",
+    "closeCompliance": "Close compliance",
     "deleteBaseline": "Delete Baseline",
     "docs": "Docs",
     "duplicate": "Duplicate",
@@ -216,7 +217,7 @@
     "addSetting": "Add setting",
     "deleteSelected": "Delete {{count}} selected",
     "editCell": "Edit {{field}} for {{name}}",
-    "editHint": "Click any cell to edit it. Press Enter to apply or Escape to cancel.",
+    "editHint": "Click any cell to edit it. Press Enter to apply; in the final cell, Enter adds another row. Press Escape to cancel.",
     "editToolbar": "Spreadsheet editing actions",
     "errors": {
       "boolean": "Enter true or false.",

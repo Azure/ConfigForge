@@ -59,7 +59,7 @@ export interface ManifestDetailFooterProps {
 }
 
 const footerLinkClass =
-  "inline-flex h-8 shrink-0 items-center gap-2 rounded px-3 text-sm font-medium text-slate-700 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-slate-300 dark:hover:bg-slate-800";
+  "inline-flex h-8 shrink-0 items-center gap-2 rounded px-3 text-xs font-medium text-slate-700 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-slate-300 dark:hover:bg-slate-800";
 
 export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   manifestName,

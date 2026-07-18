@@ -5,7 +5,7 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 ## v0.3.76 — 2026-07-17
 
-- **Cognitive Walkthrough polish.** Two selected baselines open Pairwise Diff; Code and Visual share visible read-only guidance and Undo; compliance is reachable from the footer and My Baselines; platform/status presentation is corrected; stacked onboarding dialogs and redundant step prefixes are removed.
+- **Cognitive Walkthrough polish.** Two selected baselines open Pairwise Diff; Code and Visual share visible read-only guidance and Undo; compliance opens in a drawer while remaining in-page; final-cell Enter appends a spreadsheet row; platform/status presentation is corrected; OSConfig recheck skips missing-path probes; stacked onboarding dialogs and redundant step prefixes are removed.
 
 ## v0.3.75 — 2026-07-17
 

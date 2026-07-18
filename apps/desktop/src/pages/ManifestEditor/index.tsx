@@ -10,8 +10,16 @@ import { useRationalePrompt, RationalePromptModal } from "../../components/use-r
 import { useCisAvailable } from "../../components/use-cis-available";
 import { useBaselineWorkspace } from "../../components/BaselineWorkspace";
 import yaml from "js-yaml";
-import { ArrowLeftRegular, WarningRegular } from "@fluentui/react-icons";
-import { MessageBar, MessageBarBody } from "@fluentui/react-components";
+import { ArrowLeftRegular, DismissRegular, WarningRegular } from "@fluentui/react-icons";
+import {
+  Button,
+  Drawer,
+  DrawerBody,
+  DrawerHeader,
+  DrawerHeaderTitle,
+  MessageBar,
+  MessageBarBody,
+} from "@fluentui/react-components";
 import type { OscResource } from "@configforge/core/types";
 import type { DeployProgressEvent as _DeployProgressEvent } from "@configforge/core/handlers/deploy";
 import { detectManifestPlatform } from "@configforge/core/platform";
@@ -43,6 +51,7 @@ export function ManifestDetailPage() {
   const { closeBaseline, refresh: refreshWorkspace } = useBaselineWorkspace();
 
   const [deleting, setDeleting] = useState(false);
+  const [complianceDrawerOpen, setComplianceDrawerOpen] = useState(false);
   const [visualDraftValid, setVisualDraftValid] = useState(true);
   const visualDraftValidRef = useRef(true);
   const [viewerSelection, setViewerSelection] = useState<{
@@ -183,18 +192,13 @@ export function ManifestDetailPage() {
   };
 
   const handleCheckCompliance = useCallback(() => {
-    const section = document.getElementById("baseline-compliance");
-    if (typeof section?.scrollIntoView === "function") {
-      section.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-    section?.focus({ preventScroll: true });
+    setComplianceDrawerOpen(true);
   }, []);
 
   useEffect(() => {
     if (loading) return;
     if (new URLSearchParams(location.search).get("section") !== "compliance") return;
-    const frame = requestAnimationFrame(handleCheckCompliance);
-    return () => cancelAnimationFrame(frame);
+    handleCheckCompliance();
   }, [handleCheckCompliance, loading, location.search]);
 
   const handleSave = useCallback(
@@ -398,6 +402,38 @@ export function ManifestDetailPage() {
         onDismiss={() => setCliGateFeature(null)}
         presence={presence}
       />
+
+      <Drawer
+        type="overlay"
+        position="end"
+        size="medium"
+        open={complianceDrawerOpen}
+        onOpenChange={(_event, data) => setComplianceDrawerOpen(data.open)}
+      >
+        <DrawerHeader>
+          <DrawerHeaderTitle
+            action={
+              <Button
+                appearance="subtle"
+                icon={<DismissRegular />}
+                aria-label={t("actions.closeCompliance")}
+                onClick={() => setComplianceDrawerOpen(false)}
+              />
+            }
+          >
+            {t("compliance.sectionTitle")}
+          </DrawerHeaderTitle>
+        </DrawerHeader>
+        <DrawerBody data-testid="compliance-drawer">
+          <ComplianceTable
+            resources={complianceResources}
+            expandedResource={expandedResource}
+            setExpandedResource={setExpandedResource}
+            complianceShowAll={complianceShowAll}
+            setComplianceShowAll={setComplianceShowAll}
+          />
+        </DrawerBody>
+      </Drawer>
 
       <div
         data-testid="manifest-detail-scroll-region"

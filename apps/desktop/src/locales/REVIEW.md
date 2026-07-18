@@ -11,9 +11,9 @@
 
 | Locale | Translated | Fallback/TODO | Total | Coverage |
 |---|---:|---:|---:|---:|
-| fr | 939 | 64 | 1003 | 93.6% |
-| de | 937 | 66 | 1003 | 93.4% |
-| es | 943 | 60 | 1003 | 94.0% |
+| fr | 940 | 64 | 1004 | 93.6% |
+| de | 938 | 66 | 1004 | 93.4% |
+| es | 944 | 60 | 1004 | 94.0% |
 
 ## Placeholder integrity check
 
@@ -95,8 +95,8 @@ Layout warnings (>150% of English): **95**
 | manifest-editor | deployResult.couldNotReadTitle | 199 | 184 | 108% | Ajustes que la CLI no podía leer (proveedor no soportado, error de transporte o ruta no soportada). Estos NO se cuentan como no cumplientes. El dispositivo puede estar realmente en |
 | diff | info.oneManifest | 194 | 189 | 103% | Tienes 1 baseline registrado. Para comparar dos baselines registrados, primero regístra un segundo, o cambia a cada lado a modo <strong>Pegar / Subir</strong> abajo para pegar YAML |
 | history | restore.noCurrent | 188 | 140 | 134% | No se encontró ningún baseline registrado actualmente, por lo que no se creará una instantánea automática. La restauración registrará el contenido de la instantánea como un nuevo b |
+| manifest-editor | visual.editHint | 188 | 115 | 163% ⚠️ | Klicken Sie zum Bearbeiten auf eine Zelle. Drücken Sie zum Anwenden die Eingabetaste; in der letzten Zelle fügt die Eingabetaste eine weitere Zeile hinzu. Drücken Sie zum Abbrechen |
 | settings | systemHealth.install.description | 188 | 153 | 123% | El editor, la biblioteca y las características de diferencia/comparación de ConfigForge funcionan sin la CLI. Instala OSConfig para habilitar Desplegar, Auditar y Revertir en esta  |
-| diff | matrix.sectionDescription | 186 | 150 | 124% | Cada fila en la matriz resultante es un ajuste; Cada columna es una baseline. Las celdas están codificadas por colores verde (idéntica), roja (diferente) o amarilla (solo en la ent |
 
 ## Glossary violations
 

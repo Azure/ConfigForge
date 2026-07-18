@@ -243,8 +243,14 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(page.getByRole("heading", { name: "Compliance Status" })).toBeVisible();
     await expect(page.getByTestId("manifest-detail-footer")).toBeVisible();
     await page.getByRole("button", { name: "Check compliance" }).click();
-    await expect(page.getByRole("heading", { name: "Compliance Status" })).toBeInViewport();
-    await expect(page.locator("#baseline-compliance")).toBeFocused();
+    const complianceDrawer = page.getByTestId("compliance-drawer");
+    await expect(complianceDrawer).toBeVisible();
+    await expect(
+      complianceDrawer.getByRole("heading", { name: "Compliance Status" }),
+    ).toBeVisible();
+    await expect(page.locator("#baseline-compliance")).toBeAttached();
+    await page.getByRole("button", { name: "Close compliance" }).click();
+    await expect(complianceDrawer).toBeHidden();
 
     await page.getByRole("button", { name: "Visual" }).click();
     const visual = page.getByRole("region", { name: "Visual baseline settings" });

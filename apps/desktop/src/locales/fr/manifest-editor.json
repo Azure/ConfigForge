@@ -5,6 +5,7 @@
     "back": "Retour",
     "checkCompliance": "Vérifier la conformité",
     "closeBaseline": "Fermer la baseline",
+    "closeCompliance": "Fermer la conformité",
     "deleteBaseline": "Supprimer la baseline",
     "docs": "Docs",
     "duplicate": "Duplique",
@@ -216,7 +217,7 @@
     "addSetting": "Ajouter un paramètre",
     "deleteSelected": "Supprimer la sélection ({{count}})",
     "editCell": "Modifier {{field}} pour {{name}}",
-    "editHint": "Cliquez sur une cellule pour la modifier. Appuyez sur Entrée pour appliquer ou Échap pour annuler.",
+    "editHint": " Enter adds another row. Press Escape to cancel.",
     "editToolbar": "Actions d'édition de la feuille de calcul",
     "errors": {
       "boolean": "Saisissez true ou false.",

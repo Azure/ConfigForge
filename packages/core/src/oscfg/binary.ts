@@ -186,17 +186,30 @@ export function resolveOscfgBinary(): OscfgBinaryInfo {
   if (_cached) return _cached;
 
   const wellKnown = new Set(wellKnownInstallPaths());
+  const appExecutionAlias =
+    process.platform === 'win32' && process.env.LOCALAPPDATA
+      ? win32Path.join(
+          process.env.LOCALAPPDATA,
+          'Microsoft',
+          'WindowsApps',
+          binaryName(),
+        )
+      : null;
 
   for (const p of candidatePaths()) {
     // WindowsApps App Execution Alias stubs report exists=false from
     // fs.existsSync (they are 0-byte reparse points), but Node's
     // spawnSync CAN invoke them and the OS resolves the redirect to
     // the real MSIX install. So for paths in the well-known set, skip
-    // the existsSync gate and rely on the version probe instead;
+    // the existsSync gate for that alias only and rely on the version probe;
     // spawnSync returns ENOENT immediately when the file truly does
-    // not exist, so the cost is minimal.
+    // not exist. Other well-known locations are normal files and must exist
+    // before we spawn them; probing every missing path makes Re-check slow.
     const isWellKnown = wellKnown.has(p);
-    if (!isWellKnown && !existsSync(p)) continue;
+    const isAppExecutionAlias =
+      appExecutionAlias !== null &&
+      p.toLowerCase() === appExecutionAlias.toLowerCase();
+    if (!isAppExecutionAlias && !existsSync(p)) continue;
     const version = checkVersion(p);
     if (version === null) continue;
     let source: OscfgBinaryInfo['source'] = 'bundled';
