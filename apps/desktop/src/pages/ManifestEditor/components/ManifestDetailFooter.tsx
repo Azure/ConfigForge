@@ -54,6 +54,7 @@ export interface ManifestDetailFooterProps {
   onExport: (format: "yaml" | "json" | "mof" | "excel" | "azurepolicy") => void;
   onExportDocs: () => void;
   onDelete: () => void;
+  onCheckCompliance: () => void;
   onSaveClick: () => void;
 }
 
@@ -77,6 +78,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   onExport,
   onExportDocs,
   onDelete,
+  onCheckCompliance,
   onSaveClick,
 }: ManifestDetailFooterProps) {
   const { t } = useTranslation(["manifest-editor", "common", "manifests"]);
@@ -160,6 +162,17 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               <ClipboardCheckmarkRegular aria-hidden="true" />
               {t("actions.auditPack")}
             </Link>
+
+            <Button
+              appearance="subtle"
+              size="small"
+              icon={<ShieldCheckmarkRegular />}
+              onClick={onCheckCompliance}
+              disabled={busy}
+              className="shrink-0"
+            >
+              {t("actions.checkCompliance")}
+            </Button>
 
             <Button
               appearance="subtle"

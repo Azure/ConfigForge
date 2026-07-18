@@ -3,8 +3,8 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components";
-import { CodeRegular, TableRegular } from "@fluentui/react-icons";
+import { Button, MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components";
+import { ArrowUndoRegular, CodeRegular, TableRegular } from "@fluentui/react-icons";
 import { ManifestEditor } from "../../../components/manifest-editor";
 import { FORMAT_TABS, EDITOR_LANGUAGE } from "../helpers";
 import { dumpVisualManifest } from "../visual-viewer";
@@ -36,6 +36,7 @@ export const ManifestContent = React.memo(function ManifestContent({
     editing,
     editedContent,
     setEditedContent,
+    savedContent,
     editView,
     setEditView,
     activeFormat,
@@ -49,12 +50,60 @@ export const ManifestContent = React.memo(function ManifestContent({
     setError,
   } = editorState;
   const { t } = useTranslation("manifest-editor");
+  const contentRef = React.useRef(editedContent);
+  const lastCodeEditAtRef = React.useRef(0);
+  const previousEditingRef = React.useRef(editing);
+  const [undoStack, setUndoStack] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    contentRef.current = editedContent;
+  }, [editedContent]);
+
+  React.useEffect(() => {
+    if (editing !== previousEditingRef.current) {
+      setUndoStack([]);
+      lastCodeEditAtRef.current = 0;
+      contentRef.current = editedContent;
+      previousEditingRef.current = editing;
+    }
+  }, [editedContent, editing]);
+
+  const applyEditedContent = (next: string, checkpoint: boolean) => {
+    const current = contentRef.current;
+    if (next === current) return;
+    const now = Date.now();
+    setUndoStack((stack) => {
+      if (!checkpoint && stack.length > 0 && now - lastCodeEditAtRef.current < 750) {
+        return stack;
+      }
+      return [...stack, current].slice(-50);
+    });
+    lastCodeEditAtRef.current = checkpoint ? 0 : now;
+    contentRef.current = next;
+    setEditedContent(next);
+  };
+
+  const handleUndo = () => {
+    const previous = undoStack.at(-1);
+    if (previous === undefined) return;
+    setUndoStack((stack) => stack.slice(0, -1));
+    lastCodeEditAtRef.current = 0;
+    contentRef.current = previous;
+    formatCache.current[activeFormat] = previous;
+    setEditedContent(previous);
+  };
 
   const switchToVisualEdit = () => {
     if (activeFormat === "json") {
       try {
+        const previousYaml = formatCache.current.yaml ?? savedContent;
         const yamlSource = dumpVisualManifest(JSON.parse(editedContent));
         formatCache.current.yaml = yamlSource;
+        contentRef.current = yamlSource;
+        setUndoStack(
+          previousYaml && previousYaml !== yamlSource ? [previousYaml] : [],
+        );
+        lastCodeEditAtRef.current = 0;
         setEditedContent(yamlSource);
         setActiveFormat("yaml");
       } catch {
@@ -67,7 +116,7 @@ export const ManifestContent = React.memo(function ManifestContent({
 
   const handleVisualSourceChange = (source: string) => {
     formatCache.current.yaml = source;
-    setEditedContent(source);
+    applyEditedContent(source, true);
   };
 
   const visualActive = editing ? editView === "visual" : viewerMode === "visual";
@@ -97,43 +146,57 @@ export const ManifestContent = React.memo(function ManifestContent({
         )}
 
         <div className="mt-3 flex items-center justify-between gap-4">
-          <div
-            role="group"
-            aria-label={t(editing ? "viewer.editModeLabel" : "viewer.modeLabel")}
-            className="inline-flex rounded-md border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-950"
-          >
-            <button
-              type="button"
-              onClick={() => {
-                if (editing) setEditView("editor");
-                else onViewerModeChange("code");
-              }}
-              aria-pressed={codeActive}
-              className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
-                codeActive
-                  ? "bg-white text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"
-                  : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
-              }`}
+          <div className="flex items-center gap-2">
+            <div
+              role="group"
+              aria-label={t(editing ? "viewer.editModeLabel" : "viewer.modeLabel")}
+              className="inline-flex rounded-md border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-950"
             >
-              <CodeRegular className="h-4 w-4" aria-hidden="true" />
-              {t("viewer.code")}
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                if (editing) switchToVisualEdit();
-                else onViewerModeChange("visual");
-              }}
-              aria-pressed={visualActive}
-              className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
-                visualActive
-                  ? "bg-white text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"
-                  : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
-              }`}
-            >
-              <TableRegular className="h-4 w-4" aria-hidden="true" />
-              {t("viewer.visual")}
-            </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (editing) setEditView("editor");
+                  else onViewerModeChange("code");
+                }}
+                aria-pressed={codeActive}
+                className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
+                  codeActive
+                    ? "bg-white text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"
+                    : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
+                }`}
+              >
+                <CodeRegular className="h-4 w-4" aria-hidden="true" />
+                {t("viewer.code")}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  if (editing) switchToVisualEdit();
+                  else onViewerModeChange("visual");
+                }}
+                aria-pressed={visualActive}
+                className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
+                  visualActive
+                    ? "bg-white text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"
+                    : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
+                }`}
+              >
+                <TableRegular className="h-4 w-4" aria-hidden="true" />
+                {t("viewer.visual")}
+              </button>
+            </div>
+            {editing && (
+              <Button
+                appearance="subtle"
+                size="small"
+                icon={<ArrowUndoRegular />}
+                onClick={handleUndo}
+                disabled={undoStack.length === 0}
+                title={t("actions.undoEditTitle")}
+              >
+                {t("actions.undoEdit")}
+              </Button>
+            )}
           </div>
 
           {codeActive && (
@@ -171,6 +234,14 @@ export const ManifestContent = React.memo(function ManifestContent({
         </div>
       </div>
 
+      {!editing && (
+        <div className="border-b border-slate-200 px-6 py-2 dark:border-slate-800">
+          <MessageBar intent="info">
+            <MessageBarBody>{t("content.readOnlyHint")}</MessageBarBody>
+          </MessageBar>
+        </div>
+      )}
+
       {visualActive ? (
         <VisualManifestViewer
           source={visualSource}
@@ -190,8 +261,13 @@ export const ManifestContent = React.memo(function ManifestContent({
           )}
           <ManifestEditor
             value={editing ? editedContent : currentDisplayContent}
-            onChange={editing && isEditable ? setEditedContent : undefined}
+            onChange={
+              editing && isEditable
+                ? (next) => applyEditedContent(next, false)
+                : undefined
+            }
             readOnly={isReadOnly}
+            readOnlyMessage={t("content.readOnlyHint")}
             language={EDITOR_LANGUAGE[activeFormat]}
             height="100%"
             platform={editorPlatform}

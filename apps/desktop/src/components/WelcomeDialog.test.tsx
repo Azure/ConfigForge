@@ -114,6 +114,7 @@ describe('WelcomeDialog', () => {
     await userEvent.click(screen.getByText(/Author \+ deploy on this machine/i));
 
     await screen.findByText(/OSConfig CLI required/i);
+    expect(screen.queryByText(/Welcome to ConfigForge/i)).not.toBeInTheDocument();
   });
 
   it('"Skip" CTA dismisses + persists without navigating', async () => {

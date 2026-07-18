@@ -149,7 +149,7 @@ export function WelcomeDialog({ forceShow }: WelcomeDialogProps = {}) {
 
   return (
     <>
-      <Dialog open={open} modalType="alert">
+      <Dialog open={open && !cliModalOpen} modalType="alert">
         <DialogSurface style={{ maxWidth: '640px' }}>
           <DialogBody>
             <DialogTitle>{t('title')}</DialogTitle>

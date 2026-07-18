@@ -93,6 +93,7 @@
       "lastModifiedUnknown": "Datum der letzten Änderung nicht verfügbar",
       "noMatches": "Keine Baselines entsprechen der aktuellen Suche und den Filtern.",
       "openBaseline": "Baseline {{name}} öffnen",
+      "openCompliance": "Konformität für {{name}} öffnen",
       "operatingSystem": "Betriebssystem",
       "selectAll": "Alle gefilterten Baselines auswählen",
       "selectBaseline": "Baseline {{name}} auswählen",

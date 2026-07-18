@@ -3,6 +3,7 @@
     "auditPack": "Audit Pack",
     "auditPackTitle": "Erstelle prüferbereite PDF-/Markdown-Lieferergebnisse",
     "back": "Zurück",
+    "checkCompliance": "Konformität prüfen",
     "closeBaseline": "Baseline schließen",
     "deleteBaseline": "Baseline löschen",
     "docs": "Docs",
@@ -18,7 +19,9 @@
     "removeConfirm": "Entfernen baseline \"{{name}}\"? Diese Maßnahme kann nicht rückgängig gemacht werden.",
     "revert": "Rückgängig machen",
     "revertConfirm": "Zurücksetzen baseline \"{{name}}\"?\n\nWenn ein Pre-Deploy-Snapshot vorhanden ist, werden deine vorherigen Einstellungen auf dieses Gerät erneut angewendet. Wenn kein Snapshot vorhanden ist, wird OSConfig Durchsetzung dieses baseline entfernt und der baseline wird nicht registriert. So oder so wird dieser baseline auf diesem Gerät nicht mehr aktiv durchgesetzt.",
-    "revertTitle": "Die letzte Bereitstellung dieses baseline von diesem Gerät rückgängig machen. Wenn ein Pre-Deploy-Snapshot existiert, werden vorherige Einstellungen erneut angewendet; ansonsten wird OSConfig Durchsetzung aufgehoben."
+    "revertTitle": "Die letzte Bereitstellung dieses baseline von diesem Gerät rückgängig machen. Wenn ein Pre-Deploy-Snapshot existiert, werden vorherige Einstellungen erneut angewendet; ansonsten wird OSConfig Durchsetzung aufgehoben.",
+    "undoEdit": "Rückgängig",
+    "undoEditTitle": "Letzte Bearbeitung rückgängig machen"
   },
   "compliance": {
     "emptyDescription": "Führen Sie Audit oder Enforce aus, um diese Baseline mit dem Gerät abzugleichen.",
@@ -29,6 +32,7 @@
     "editorView": "Bearbeitenor",
     "mofEditUnsupported": "Das Bearbeiten wird im MOF Format nicht unterstützt.",
     "mofReadOnly": "MOF ist nur lesegeschützt",
+    "readOnlyHint": "Schreibgeschützte Ansicht. Wählen Sie im Fußbereich Bearbeiten aus um Änderungen vorzunehmen.",
     "sectionTitle": "Baseline Inhalt",
     "unsavedFormatChanges": "Du hast in {{format}} nicht gespeicherte Änderungen. Das Wechseln der Tabs bewahrt sie; Speichere, bevor du wegnavigierst.",
     "visualEditUnavailable": "Zum Bearbeiten ist kanonisches YAML erforderlich, das derzeit nicht verfügbar ist."

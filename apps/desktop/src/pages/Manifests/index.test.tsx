@@ -47,6 +47,7 @@ function DiffLocationProbe() {
   return (
     <>
       <output aria-label="diff-path">{location.pathname}</output>
+      <output aria-label="location-search">{location.search}</output>
       <output aria-label="diff-state">{JSON.stringify(location.state)}</output>
     </>
   );
@@ -70,7 +71,15 @@ function renderManifests() {
           <Routes>
             <Route path="/manifests" element={<ManifestsPage />} />
             <Route path="/manifests/new" element={<div>New baseline route</div>} />
-            <Route path="/manifests/:id" element={<div>Baseline detail route</div>} />
+            <Route
+              path="/manifests/:id"
+              element={
+                <>
+                  <div>Baseline detail route</div>
+                  <DiffLocationProbe />
+                </>
+              }
+            />
             <Route path="/diff" element={<DiffLocationProbe />} />
           </Routes>
         </BaselineWorkspaceProvider>
@@ -236,13 +245,45 @@ describe('ManifestsPage administrative table', () => {
     expect(alphaRow).toHaveTextContent('12');
     expect(alphaRow).toHaveTextContent('No issues');
     expect(alphaRow).toHaveTextContent('All compliant');
+    expect(within(alphaRow).getByText('No issues')).toHaveClass(
+      'bg-slate-100',
+      'text-slate-600',
+    );
 
     const linuxRow = screen.getByRole('row', { name: /linux-beta/ });
     expect(linuxRow).toHaveTextContent('Linux');
     expect(linuxRow).toHaveTextContent('2 issues');
     expect(linuxRow).toHaveTextContent('74% compliant');
+    expect(within(linuxRow).getAllByRole('img', { name: 'Linux' })).toHaveLength(2);
 
-    expect(screen.getByRole('row', { name: /unaudited/ })).toHaveTextContent('Not audited');
+    const unauditedRow = screen.getByRole('row', { name: /unaudited/ });
+    expect(unauditedRow).toHaveTextContent('Not audited');
+    expect(within(unauditedRow).getByText('Not audited')).toHaveClass(
+      'bg-amber-50',
+      'text-amber-800',
+    );
+
+    fireEvent.click(
+      within(unauditedRow).getByRole('button', {
+        name: 'Open compliance for unaudited',
+      }),
+    );
+    expect(screen.getByLabelText('diff-path')).toHaveTextContent('/manifests/unaudited');
+    expect(screen.getByLabelText('location-search')).toHaveTextContent(
+      '?section=compliance',
+    );
+  });
+
+  it('omits a secondary namespace line when it only repeats the display name', async () => {
+    installCfs([
+      makeManifest('Windows-Secure-Shell--SSH', {
+        DisplayName: 'Windows Secure Shell (SSH)',
+      }),
+    ]);
+    renderManifests();
+
+    expect(await screen.findByText('Windows Secure Shell (SSH)')).toBeInTheDocument();
+    expect(screen.queryByText('Windows-Secure-Shell--SSH')).not.toBeInTheDocument();
   });
 
   it('uses working filters and select-all only selects filtered rows', async () => {
@@ -392,7 +433,28 @@ describe('ManifestsPage administrative table', () => {
     expect(getSourceMock).not.toHaveBeenCalled();
   });
 
-  it('navigates Diff with Matrix preselection and disables Diff above ten selections', async () => {
+  it('opens pairwise Diff for two selections and Matrix for three to ten', async () => {
+    installCfs([
+      makeManifest('baseline-1'),
+      makeManifest('baseline-2'),
+      makeManifest('baseline-3'),
+    ]);
+    const first = renderManifests();
+    await screen.findByRole('button', { name: 'Open baseline baseline-1' });
+
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select baseline baseline-1' }));
+    expect(screen.getByRole('button', { name: 'Diff selected baselines' })).toBeDisabled();
+    fireEvent.click(screen.getByRole('checkbox', { name: 'Select baseline baseline-2' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Diff selected baselines' }));
+
+    let state = JSON.parse(screen.getByLabelText('diff-state').textContent ?? '{}');
+    expect(state.configForgeDiff).toEqual({
+      tab: 'pairwise',
+      version: 1,
+      baselineNames: ['baseline-1', 'baseline-2'],
+    });
+
+    first.unmount();
     installCfs(
       Array.from({ length: 11 }, (_, index) => makeManifest(`baseline-${index + 1}`)),
     );
@@ -410,7 +472,7 @@ describe('ManifestsPage administrative table', () => {
     fireEvent.click(diff);
 
     expect(screen.getByLabelText('diff-path')).toHaveTextContent('/diff');
-    const state = JSON.parse(screen.getByLabelText('diff-state').textContent ?? '{}');
+    state = JSON.parse(screen.getByLabelText('diff-state').textContent ?? '{}');
     expect(state.configForgeDiff).toMatchObject({
       tab: 'matrix',
       version: 1,

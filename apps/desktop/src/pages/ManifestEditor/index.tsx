@@ -3,7 +3,7 @@
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useNavigationGuard } from "../../lib/use-navigation-guard";
 import { Link } from "react-router-dom";
 import { useRationalePrompt, RationalePromptModal } from "../../components/use-rationale-prompt";
@@ -35,6 +35,7 @@ import {
 
 export function ManifestDetailPage() {
   const params = useParams<{ id: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const manifestName = decodeURIComponent(params.id ?? "");
   const cisAvailable = useCisAvailable();
@@ -180,6 +181,21 @@ export function ManifestDetailPage() {
     closeBaseline(manifestName);
     navigate("/manifests");
   };
+
+  const handleCheckCompliance = useCallback(() => {
+    const section = document.getElementById("baseline-compliance");
+    if (typeof section?.scrollIntoView === "function") {
+      section.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    section?.focus({ preventScroll: true });
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    if (new URLSearchParams(location.search).get("section") !== "compliance") return;
+    const frame = requestAnimationFrame(handleCheckCompliance);
+    return () => cancelAnimationFrame(frame);
+  }, [handleCheckCompliance, loading, location.search]);
 
   const handleSave = useCallback(
     async (extra?: { rationale?: string; skipped?: boolean; changeSummary?: string }) => {
@@ -457,13 +473,21 @@ export function ManifestDetailPage() {
           />
 
           {/* Compliance Status (Phase C.4 — see components/ComplianceTable.tsx) */}
-          <ComplianceTable
-            resources={complianceResources}
-            expandedResource={expandedResource}
-            setExpandedResource={setExpandedResource}
-            complianceShowAll={complianceShowAll}
-            setComplianceShowAll={setComplianceShowAll}
-          />
+          <div
+            id="baseline-compliance"
+            role="region"
+            aria-label={t("compliance.sectionTitle")}
+            tabIndex={-1}
+            className="scroll-mt-4 outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+          >
+            <ComplianceTable
+              resources={complianceResources}
+              expandedResource={expandedResource}
+              setExpandedResource={setExpandedResource}
+              complianceShowAll={complianceShowAll}
+              setComplianceShowAll={setComplianceShowAll}
+            />
+          </div>
         </div>
       </div>
 
@@ -484,6 +508,7 @@ export function ManifestDetailPage() {
         onExport={handleExport}
         onExportDocs={handleExportDocs}
         onDelete={handleDelete}
+        onCheckCompliance={handleCheckCompliance}
         onSaveClick={handleSaveClick}
       />
 

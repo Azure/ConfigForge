@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.76 — 2026-07-17
+
+- **Cognitive Walkthrough polish.** Two selected baselines open Pairwise Diff; Code and Visual share visible read-only guidance and Undo; compliance is reachable from the footer and My Baselines; platform/status presentation is corrected; stacked onboarding dialogs and redundant step prefixes are removed.
+
 ## v0.3.75 — 2026-07-17
 
 - **Fixed My Baselines search.** Search now matches baseline namespace and display name only, so shared hidden setting names and `Microsoft.Windows/*` resource types cannot make short prefixes appear unresponsive.

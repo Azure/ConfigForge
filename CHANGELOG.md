@@ -1,5 +1,20 @@
 # Changelog
 
+## [0.3.76] - 2026-07-17
+
+### Changed
+- **Applied the Cognitive Walkthrough feedback pass.** Exactly two selected baselines now open Pairwise Diff with both sides preloaded; three to ten still open Matrix Diff.
+- **Made editing state explicit.** Code and Visual viewing now share a persistent read-only message, Monaco reports the same guidance when typing is attempted, and edit mode provides a shared Undo action with coalesced Code edits and per-operation Visual checkpoints.
+- **Made device compliance easier to find.** The baseline footer includes Check compliance, and compliance statuses on My Baselines open the permanent device-audit section for that baseline.
+- **Polished My Baselines semantics.** Platform marks replace generic document icons, Linux uses the penguin consistently, semantically duplicate namespace subtitles are suppressed, No issues is neutral gray, and Not audited is amber.
+- **Simplified Benchmark Mapping headings.** Numbered badges remain, while redundant visible “Step 1/2/3” prefixes are removed.
+
+### Fixed
+- The OSConfig install dialog no longer renders on top of the first-run Welcome dialog.
+
+### Localization
+- Added French, German, and Spanish strings for read-only guidance, Undo, and compliance navigation.
+
 ## [0.3.75] - 2026-07-17
 
 ### Fixed

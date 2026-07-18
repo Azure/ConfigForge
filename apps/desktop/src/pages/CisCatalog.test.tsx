@@ -95,9 +95,9 @@ describe('CisCatalogPage', () => {
     const banner = screen.getByRole('status', { name: 'CIS catalog status' });
     expect(within(banner).getByText('Checking CIS catalog')).toBeInTheDocument();
     expect(stepHeadings()).toEqual([
-      'Step 1: Download CIS baselines',
-      'Step 2: Import the CIS baseline files',
-      'Step 3: Re-check catalog',
+      'Download CIS baselines',
+      'Import the CIS baseline files',
+      'Re-check catalog',
     ]);
   });
 
