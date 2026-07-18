@@ -316,7 +316,11 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     });
   };
 
-  const commitEdit = (setting: VisualSetting, column: string): string | null => {
+  const commitEdit = (
+    setting: VisualSetting,
+    column: string,
+    emitChange = true,
+  ): string | null => {
     if (cancelBlurRef.current) return null;
     const result = updateVisualCellSource(source, setting, column, draft);
     if (!result.ok) {
@@ -329,7 +333,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     setDraftError(null);
     setCellError(null);
     onDraftValidityChange?.(true);
-    onSourceChange?.(result.source);
+    if (emitChange) onSourceChange?.(result.source);
     return result.source;
   };
 
@@ -708,7 +712,11 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                             } else if (event.key === "Enter" && !event.shiftKey) {
                                               event.preventDefault();
                                               if (appendOnEnter) {
-                                                const committed = commitEdit(setting, column);
+                                                const committed = commitEdit(
+                                                  setting,
+                                                  column,
+                                                  false,
+                                                );
                                                 if (committed) {
                                                   cancelBlurRef.current = true;
                                                   event.currentTarget.blur();
@@ -751,7 +759,11 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                             } else if (event.key === "Enter") {
                                               event.preventDefault();
                                               if (appendOnEnter) {
-                                                const committed = commitEdit(setting, column);
+                                                const committed = commitEdit(
+                                                  setting,
+                                                  column,
+                                                  false,
+                                                );
                                                 if (committed) {
                                                   cancelBlurRef.current = true;
                                                   event.currentTarget.blur();

@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import type { ManifestEditorState } from "../state/useManifestEditorState";
@@ -133,7 +133,9 @@ describe("ManifestContent read-only Visual mode", () => {
 
     expect(undo).toBeEnabled();
     await user.click(undo);
-    expect(setEditedContent).toHaveBeenLastCalledWith(source);
+    await waitFor(() =>
+      expect(setEditedContent).toHaveBeenLastCalledWith(source),
+    );
   });
 
   it("undoes a coalesced Code editor change", async () => {

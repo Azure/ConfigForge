@@ -368,6 +368,7 @@ describe("VisualManifestViewer", () => {
         name: "Edit Setting Name for Unnamed setting",
       }),
     ).toBeInTheDocument();
+    expect(onChange).toHaveBeenCalledTimes(1);
     const document = parseVisualManifest(onChange.mock.calls.at(-1)?.[0]) as {
       resources: Array<{
         name: string;
