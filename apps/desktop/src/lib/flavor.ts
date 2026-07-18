@@ -9,7 +9,7 @@
  *
  *   - `'full'`     (default) — Windows + Linux behavior: includes
  *                   deploy, audit-results-from-device, system
- *                   elevation, "recent activity" feed, and the
+ *                   elevation, author + device activity, and the
  *                   footer health indicator.
  *   - `'author'`   — macOS author-only build: strips deploy /
  *                   audit-results / elevation surfaces. Manifest
@@ -53,8 +53,8 @@ export const HAS_DEVICE_AUDIT = FLAVOR === 'full';
 export const HAS_HEALTH = FLAVOR === 'full';
 
 /**
- * True when the dashboard's "Recent activity" tile (deploy event
- * feed) should render. This is a separate flag from HAS_DEPLOY
- * only because future flavors might want activity but no deploy.
+ * True when the dashboard's "Recent activity" tile should render.
+ * Both flavors retain authoring history; the main process filters
+ * device deploy/audit/revert records out of the author flavor.
  */
-export const HAS_ACTIVITY_FEED = FLAVOR === 'full';
+export const HAS_ACTIVITY_FEED = true;

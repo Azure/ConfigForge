@@ -10,7 +10,8 @@ import { cfs, hasCfsNamespace, isElectron, safeCfs } from './cfs';
  *
  * The test suite simulates three preload states:
  *   - "full electron"  : every namespace present (main runtime)
- *   - "partial mac"    : deploy/elevation/health/auditResults missing
+ *   - "partial mac"    : authoring/activity namespaces present;
+ *                       device-operation namespaces missing
  *                       (mac-author-build runtime)
  *   - "no preload"     : window.cfs undefined (test default, or a renderer
  *                       boot race before the bridge is ready)
@@ -66,12 +67,17 @@ describe('cfs capability helpers (CF-SEC-015)', () => {
       diff: {},
       docs: {},
       importChannel: {},
-      // Intentionally OMITTED: deploy, elevation, health, auditResults.
+      activity: {},
+      // Intentionally OMITTED: deploy, deployRecovery, revert, system,
+      // health, auditResults.
     });
     expect(hasCfsNamespace('manifests' as never)).toBe(true);
     expect(hasCfsNamespace('library' as never)).toBe(true);
+    expect(hasCfsNamespace('activity' as never)).toBe(true);
     expect(hasCfsNamespace('deploy' as never)).toBe(false);
-    expect(hasCfsNamespace('elevation' as never)).toBe(false);
+    expect(hasCfsNamespace('deployRecovery' as never)).toBe(false);
+    expect(hasCfsNamespace('revert' as never)).toBe(false);
+    expect(hasCfsNamespace('system' as never)).toBe(false);
     expect(hasCfsNamespace('health' as never)).toBe(false);
     expect(hasCfsNamespace('auditResults' as never)).toBe(false);
   });

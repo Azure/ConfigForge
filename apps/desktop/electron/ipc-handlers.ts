@@ -29,6 +29,7 @@ import os from 'node:os';
 import { getRegistration, getRegistrationSource, sanitizeNamespace } from '@configforge/core/oscfg';
 import { isRemoteDesktopSession } from './platform-detection';
 import { isCurrentProcessElevated, relaunchElevated } from './elevate';
+import { HAS_ACTIVITY_FEED, HAS_DEPLOY } from './flavor';
 import {
   MAX_JOB_ID_LEN,
   validateAppendRationaleRequest,
@@ -433,14 +434,16 @@ export function registerCfsIpcHandlers(): void {
   ipcMain.handle('cfs:drift:list', () => getDriftUnavailable());
 
   // --- activity -----------------------------------------------------
-  ipcMain.handle('cfs:activity:recent', async () => {
-    try {
-      const data = await getRecentActivity();
-      return { data };
-    } catch (err) {
-      return envelope(err);
-    }
-  });
+  if (HAS_ACTIVITY_FEED) {
+    ipcMain.handle('cfs:activity:recent', async () => {
+      try {
+        const data = await getRecentActivity(10, HAS_DEPLOY);
+        return { data };
+      } catch (err) {
+        return envelope(err);
+      }
+    });
+  }
 
   // --- rationale (read) ---------------------------------------------
   ipcMain.handle('cfs:rationale:list', async (_evt, req: unknown) => {

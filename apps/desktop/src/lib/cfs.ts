@@ -14,11 +14,12 @@
  * runtime. Tests mock it in `apps/desktop/vitest.setup.ts`.
  *
  * CF-SEC-015 — per-flavor capability gating. The macOS author build
- * intentionally omits the deploy/elevation/health/auditResults
- * namespaces from preload. Renderer code that calls into one of those
- * namespaces without checking presence will crash with a cryptic
- * "Cannot read property X of undefined". Use `hasCfsNamespace` /
- * `safeCfs` from this module to make the flavor branch explicit.
+ * intentionally omits the deploy/revert/deployRecovery/system/health/
+ * auditResults namespaces from preload. Renderer code that calls into
+ * one of those namespaces without checking presence will crash with a
+ * cryptic "Cannot read property X of undefined". Use
+ * `hasCfsNamespace` / `safeCfs` from this module to make the flavor
+ * branch explicit.
  *
  * Pattern:
  *
@@ -105,4 +106,3 @@ export function safeCfs<K extends keyof CfsApi>(key: K): CfsApi[K] | undefined {
   }
   return (window.cfs as unknown as Record<string, CfsApi[K] | undefined>)[key as string];
 }
-

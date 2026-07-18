@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.76-author.1] - 2026-07-18
+
+### Added
+- **Recent Activity is now available in the macOS author build.** It shows local baseline registration and edit-history summaries while filtering deploy, audit, enforce, and revert device events.
+
 ## [0.3.75-author.1] - 2026-07-17
 
 ### Fixed
