@@ -3,7 +3,9 @@
     "auditPack": "Audit Pack",
     "auditPackTitle": "Generar entregables PDF / Markdown listos para auditores",
     "back": "Atrás",
+    "checkCompliance": "Comprobar cumplimiento",
     "closeBaseline": "Cerrar la baseline",
+    "closeCompliance": "Cerrar cumplimiento",
     "deleteBaseline": "Eliminar la baseline",
     "docs": "Docs",
     "duplicate": "Duplicado",
@@ -18,7 +20,9 @@
     "removeConfirm": "¿Quitar baseline \"{{name}}\"? Esta acción no puede deshacerse.",
     "revert": "Revert",
     "revertConfirm": "¿Revertir baseline \"{{name}}\"?\n\nSi existe una instantánea previa al despliegue, tus ajustes previos se volverán a aplicar a este dispositivo. Si no existe una instantánea, OSConfig aplicación de esta baseline se eliminará y la baseline se dará de registrar. En cualquier caso, esta baseline ya no se aplicará activamente en este dispositivo.",
-    "revertTitle": "Deshacer el último despliegue de este baseline desde este dispositivo. Si existe una instantánea previa al despliegue, se vuelven a aplicar configuraciones previas; de lo contrario, OSConfig aplicación se elimina."
+    "revertTitle": "Deshacer el último despliegue de este baseline desde este dispositivo. Si existe una instantánea previa al despliegue, se vuelven a aplicar configuraciones previas; de lo contrario, OSConfig aplicación se elimina.",
+    "undoEdit": "Deshacer",
+    "undoEditTitle": "Deshacer la edición más reciente"
   },
   "compliance": {
     "emptyDescription": "Ejecuta Audit o Enforce para comparar esta baseline con el dispositivo.",
@@ -29,6 +33,7 @@
     "editorView": "Editaror",
     "mofEditUnsupported": "No se soporta edición en MOF formato",
     "mofReadOnly": "MOF es de solo lectura",
+    "readOnlyHint": "Vista de solo lectura. Seleccione Editar en el pie para realizar cambios.",
     "sectionTitle": "Baseline Contenido",
     "unsavedFormatChanges": "Tienes cambios no guardados en {{format}}. Cambiar de pestaña los preserva; Guarda antes de navegar y alejarte.",
     "visualEditUnavailable": "La edición requiere YAML canónico, que no está disponible actualmente."
@@ -212,7 +217,7 @@
     "addSetting": "Añadir configuración",
     "deleteSelected": "Eliminar {{count}} seleccionados",
     "editCell": "Editar {{field}} para {{name}}",
-    "editHint": "Haga clic en cualquier celda para editarla. Presione Entrar para aplicar o Escape para cancelar.",
+    "editHint": "Klicken Sie zum Bearbeiten auf eine Zelle. Drücken Sie zum Anwenden die Eingabetaste; in der letzten Zelle fügt die Eingabetaste eine weitere Zeile hinzu. Drücken Sie zum Abbrechen Escape.",
     "editToolbar": "Acciones de edición de hoja de cálculo",
     "errors": {
       "boolean": "Introduzca true o false.",

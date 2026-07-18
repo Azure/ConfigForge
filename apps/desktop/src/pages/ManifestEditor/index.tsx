@@ -3,15 +3,23 @@
 
 import React, { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import { Trans, useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useNavigationGuard } from "../../lib/use-navigation-guard";
 import { Link } from "react-router-dom";
 import { useRationalePrompt, RationalePromptModal } from "../../components/use-rationale-prompt";
 import { useCisAvailable } from "../../components/use-cis-available";
 import { useBaselineWorkspace } from "../../components/BaselineWorkspace";
 import yaml from "js-yaml";
-import { ArrowLeftRegular, WarningRegular } from "@fluentui/react-icons";
-import { MessageBar, MessageBarBody } from "@fluentui/react-components";
+import { ArrowLeftRegular, DismissRegular, WarningRegular } from "@fluentui/react-icons";
+import {
+  Button,
+  Drawer,
+  DrawerBody,
+  DrawerHeader,
+  DrawerHeaderTitle,
+  MessageBar,
+  MessageBarBody,
+} from "@fluentui/react-components";
 import type { OscResource } from "@configforge/core/types";
 import type { DeployProgressEvent as _DeployProgressEvent } from "@configforge/core/handlers/deploy";
 import { detectManifestPlatform } from "@configforge/core/platform";
@@ -35,6 +43,7 @@ import {
 
 export function ManifestDetailPage() {
   const params = useParams<{ id: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const manifestName = decodeURIComponent(params.id ?? "");
   const cisAvailable = useCisAvailable();
@@ -42,6 +51,7 @@ export function ManifestDetailPage() {
   const { closeBaseline, refresh: refreshWorkspace } = useBaselineWorkspace();
 
   const [deleting, setDeleting] = useState(false);
+  const [complianceDrawerOpen, setComplianceDrawerOpen] = useState(false);
   const [visualDraftValid, setVisualDraftValid] = useState(true);
   const visualDraftValidRef = useRef(true);
   const [viewerSelection, setViewerSelection] = useState<{
@@ -180,6 +190,16 @@ export function ManifestDetailPage() {
     closeBaseline(manifestName);
     navigate("/manifests");
   };
+
+  const handleCheckCompliance = useCallback(() => {
+    setComplianceDrawerOpen(true);
+  }, []);
+
+  useEffect(() => {
+    if (loading) return;
+    if (new URLSearchParams(location.search).get("section") !== "compliance") return;
+    handleCheckCompliance();
+  }, [handleCheckCompliance, loading, location.search]);
 
   const handleSave = useCallback(
     async (extra?: { rationale?: string; skipped?: boolean; changeSummary?: string }) => {
@@ -383,6 +403,38 @@ export function ManifestDetailPage() {
         presence={presence}
       />
 
+      <Drawer
+        type="overlay"
+        position="end"
+        size="medium"
+        open={complianceDrawerOpen}
+        onOpenChange={(_event, data) => setComplianceDrawerOpen(data.open)}
+      >
+        <DrawerHeader>
+          <DrawerHeaderTitle
+            action={
+              <Button
+                appearance="subtle"
+                icon={<DismissRegular />}
+                aria-label={t("actions.closeCompliance")}
+                onClick={() => setComplianceDrawerOpen(false)}
+              />
+            }
+          >
+            {t("compliance.sectionTitle")}
+          </DrawerHeaderTitle>
+        </DrawerHeader>
+        <DrawerBody data-testid="compliance-drawer">
+          <ComplianceTable
+            resources={complianceResources}
+            expandedResource={expandedResource}
+            setExpandedResource={setExpandedResource}
+            complianceShowAll={complianceShowAll}
+            setComplianceShowAll={setComplianceShowAll}
+          />
+        </DrawerBody>
+      </Drawer>
+
       <div
         data-testid="manifest-detail-scroll-region"
         className="min-h-0 flex-1 overflow-y-auto px-6 py-6 [scrollbar-gutter:stable] lg:px-8 lg:py-7"
@@ -457,13 +509,21 @@ export function ManifestDetailPage() {
           />
 
           {/* Compliance Status (Phase C.4 — see components/ComplianceTable.tsx) */}
-          <ComplianceTable
-            resources={complianceResources}
-            expandedResource={expandedResource}
-            setExpandedResource={setExpandedResource}
-            complianceShowAll={complianceShowAll}
-            setComplianceShowAll={setComplianceShowAll}
-          />
+          <div
+            id="baseline-compliance"
+            role="region"
+            aria-label={t("compliance.sectionTitle")}
+            tabIndex={-1}
+            className="scroll-mt-4 outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
+          >
+            <ComplianceTable
+              resources={complianceResources}
+              expandedResource={expandedResource}
+              setExpandedResource={setExpandedResource}
+              complianceShowAll={complianceShowAll}
+              setComplianceShowAll={setComplianceShowAll}
+            />
+          </div>
         </div>
       </div>
 
@@ -484,6 +544,7 @@ export function ManifestDetailPage() {
         onExport={handleExport}
         onExportDocs={handleExportDocs}
         onDelete={handleDelete}
+        onCheckCompliance={handleCheckCompliance}
         onSaveClick={handleSaveClick}
       />
 

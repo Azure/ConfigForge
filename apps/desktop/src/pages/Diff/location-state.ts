@@ -11,6 +11,14 @@ export interface MatrixDiffLocationState {
   };
 }
 
+export interface PairwiseDiffLocationState {
+  configForgeDiff: {
+    version: 1;
+    tab: "pairwise";
+    baselineNames: [string, string];
+  };
+}
+
 function normalizeBaselineNames(value: unknown): string[] {
   if (!Array.isArray(value)) return [];
   const names: string[] = [];
@@ -38,6 +46,20 @@ export function createMatrixDiffLocationState(
   };
 }
 
+export function createPairwiseDiffLocationState(
+  baselineNames: Iterable<string>,
+): PairwiseDiffLocationState | null {
+  const names = normalizeBaselineNames(Array.from(baselineNames));
+  if (names.length !== 2) return null;
+  return {
+    configForgeDiff: {
+      version: 1,
+      tab: "pairwise",
+      baselineNames: [names[0], names[1]],
+    },
+  };
+}
+
 export function readMatrixDiffLocationState(state: unknown): string[] {
   if (!state || typeof state !== "object") return [];
   const envelope = (state as Record<string, unknown>).configForgeDiff;
@@ -45,6 +67,18 @@ export function readMatrixDiffLocationState(state: unknown): string[] {
   const value = envelope as Record<string, unknown>;
   if (value.version !== 1 || value.tab !== "matrix") return [];
   return normalizeBaselineNames(value.baselineNames);
+}
+
+export function readPairwiseDiffLocationState(
+  state: unknown,
+): [string, string] | [] {
+  if (!state || typeof state !== "object") return [];
+  const envelope = (state as Record<string, unknown>).configForgeDiff;
+  if (!envelope || typeof envelope !== "object") return [];
+  const value = envelope as Record<string, unknown>;
+  if (value.version !== 1 || value.tab !== "pairwise") return [];
+  const names = normalizeBaselineNames(value.baselineNames);
+  return names.length === 2 ? [names[0], names[1]] : [];
 }
 
 export function clearMatrixDiffLocationState(state: unknown): {

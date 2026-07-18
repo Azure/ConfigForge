@@ -12,11 +12,9 @@ import {
   BranchCompareRegular,
   DeleteRegular,
   DesktopRegular,
-  DocumentRegular,
   FolderOpenRegular,
   OpenRegular,
   SearchRegular,
-  WindowConsoleRegular,
 } from "@fluentui/react-icons";
 import type { OscManifest } from "@configforge/core/types";
 import { WindowsLogo } from "../../components/WindowsLogo";
@@ -26,7 +24,10 @@ import {
 } from "../../components/BaselineWorkspace";
 import { cfs } from "../../lib/cfs";
 import { useDateFormatter, useNumberFormatter } from "../../lib/format";
-import { createMatrixDiffLocationState } from "../Diff/location-state";
+import {
+  createMatrixDiffLocationState,
+  createPairwiseDiffLocationState,
+} from "../Diff/location-state";
 import {
   getManifestCompliance,
   getManifestIssueCount,
@@ -47,6 +48,39 @@ const PERCENT_FORMAT: Intl.NumberFormatOptions = {
   style: "percent",
   maximumFractionDigits: 0,
 };
+
+function normalizeBaselineIdentity(value: string): string {
+  return value.toLowerCase().replace(/[^a-z0-9]/g, "");
+}
+
+function shouldShowNamespace(displayName: string, namespace: string): boolean {
+  return (
+    displayName !== namespace &&
+    normalizeBaselineIdentity(displayName) !== normalizeBaselineIdentity(namespace)
+  );
+}
+
+function BaselinePlatformMark({ platform }: { platform: string }) {
+  if (platform === "windows") {
+    return (
+      <span aria-hidden="true" className="inline-flex">
+        <WindowsLogo className="h-4 w-4 shrink-0" />
+      </span>
+    );
+  }
+  if (platform === "linux") {
+    return (
+      <span
+        role="img"
+        aria-label="Linux"
+        className="inline-flex h-4 w-4 shrink-0 items-center justify-center text-sm leading-none"
+      >
+        🐧
+      </span>
+    );
+  }
+  return <DesktopRegular className="h-4 w-4 shrink-0 text-slate-500" aria-hidden="true" />;
+}
 
 type Feedback = {
   intent: "success" | "error" | "info";
@@ -158,6 +192,11 @@ export function ManifestsPage() {
     }
   };
 
+  const handleOpenCompliance = (name: string) => {
+    openBaseline(name);
+    navigate(`/manifests/${encodeURIComponent(name)}?section=compliance`);
+  };
+
   const handleOpenSelected = () => {
     if (selectedNames.length === 0) return;
     const token = beginOperation("open");
@@ -170,12 +209,16 @@ export function ManifestsPage() {
   };
 
   const handleDiffSelected = () => {
-    if (selectedNames.length === 0 || selectedNames.length > 10) return;
+    if (selectedNames.length < 2 || selectedNames.length > 10) return;
     const token = beginOperation("diff");
     if (!token) return;
     try {
+      const state =
+        selectedNames.length === 2
+          ? createPairwiseDiffLocationState(selectedNames)
+          : createMatrixDiffLocationState(selectedNames);
       navigate("/diff", {
-        state: createMatrixDiffLocationState(selectedNames),
+        state,
       });
     } finally {
       finishOperation(token);
@@ -338,7 +381,7 @@ export function ManifestsPage() {
     }
   };
 
-  const diffDisabled = selectedNames.length === 0 || selectedNames.length > 10;
+  const diffDisabled = selectedNames.length < 2 || selectedNames.length > 10;
   const actionsBusy = busyAction !== null;
 
   return (
@@ -549,13 +592,13 @@ export function ManifestsPage() {
                             title={`${displayName} — ${manifest.Name}. ${modifiedTitle}`}
                           >
                             <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                              <DocumentRegular aria-hidden="true" />
+                              <BaselinePlatformMark platform={platform} />
                             </span>
                             <span className="min-w-0">
                               <span className="block max-w-[34rem] truncate font-medium text-blue-700 group-hover:underline dark:text-blue-300">
                                 {displayName}
                               </span>
-                              {displayName !== manifest.Name && (
+                              {shouldShowNamespace(displayName, manifest.Name) && (
                                 <span
                                   className="block max-w-[34rem] truncate text-xs text-slate-500 dark:text-slate-400"
                                   title={manifest.Name}
@@ -568,19 +611,7 @@ export function ManifestsPage() {
                         </td>
                         <td className="px-3 py-2" title={platformLabel}>
                           <span className="inline-flex items-center gap-2">
-                            {platform === "windows" ? (
-                              <WindowsLogo className="h-4 w-4 shrink-0" />
-                            ) : platform === "linux" ? (
-                              <WindowConsoleRegular
-                                className="h-4 w-4 shrink-0 text-orange-600 dark:text-orange-400"
-                                aria-hidden="true"
-                              />
-                            ) : (
-                              <DesktopRegular
-                                className="h-4 w-4 shrink-0 text-slate-500"
-                                aria-hidden="true"
-                              />
-                            )}
+                            <BaselinePlatformMark platform={platform} />
                             <span className="truncate">{platformLabel}</span>
                           </span>
                         </td>
@@ -591,7 +622,7 @@ export function ManifestsPage() {
                           <span
                             className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                               issues === 0
-                                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
+                                ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                                 : "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                             }`}
                             title={
@@ -606,13 +637,18 @@ export function ManifestsPage() {
                           </span>
                         </td>
                         <td className="px-3 py-2">
-                          <span
-                            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                          <button
+                            type="button"
+                            onClick={() => handleOpenCompliance(manifest.Name)}
+                            aria-label={t("administration.table.openCompliance", {
+                              name: manifest.Name,
+                            })}
+                            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium outline-none hover:ring-2 hover:ring-blue-300 focus-visible:ring-2 focus-visible:ring-blue-600 ${
                               compliance.category === "all-compliant"
                                 ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
                                 : compliance.category === "partially-compliant"
                                   ? "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300"
-                                  : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                                  : "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                             }`}
                             title={
                               compliance.audited
@@ -636,7 +672,7 @@ export function ManifestsPage() {
                                     percent: percentFormatter.format(compliance.ratio ?? 0),
                                   })
                                 : t("administration.status.notAudited")}
-                          </span>
+                          </button>
                         </td>
                       </tr>
                     );

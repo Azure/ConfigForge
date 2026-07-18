@@ -176,7 +176,7 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await page.getByRole("combobox", { name: "Operating System" }).selectOption("all");
   });
 
-  test("selection actions open workspace tabs and preselect Matrix Diff", async () => {
+  test("selection actions open workspace tabs and preselect Pairwise Diff for two", async () => {
     await page.getByRole("checkbox", { name: `Select baseline ${BASELINE_A}` }).check();
     await page.getByRole("checkbox", { name: `Select baseline ${BASELINE_B}` }).check();
     await expect(page.getByRole("button", { name: "Open selected baselines" })).toBeEnabled();
@@ -190,12 +190,16 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(tablist.getByRole("tab", { name: BASELINE_B })).toBeVisible();
 
     await page.getByRole("button", { name: "Diff selected baselines" }).click();
-    await expect(page.getByRole("tab", { name: "Matrix (N-way)" })).toHaveAttribute(
+    await expect(page.getByRole("tab", { name: "Pairwise" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
-    await expect(page.getByRole("checkbox", { name: BASELINE_A })).toBeChecked();
-    await expect(page.getByRole("checkbox", { name: BASELINE_B })).toBeChecked();
+    const pairwiseSelects = page
+      .locator("select")
+      .filter({ has: page.locator(`option[value="${BASELINE_A}"]`) });
+    await expect(pairwiseSelects).toHaveCount(2);
+    await expect(pairwiseSelects.nth(0)).toHaveValue(BASELINE_A);
+    await expect(pairwiseSelects.nth(1)).toHaveValue(BASELINE_B);
   });
 
   test("search filters baseline identity without hidden resource collisions", async () => {
@@ -226,6 +230,9 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await page.getByRole("button", { name: `Open baseline ${BASELINE_A}` }).click();
 
     await expect(page.getByText("Viewing", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("Read-only view. Select Edit in the footer to make changes."),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "Code" })).toHaveAttribute(
       "aria-pressed",
       "true",
@@ -235,6 +242,15 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     }
     await expect(page.getByRole("heading", { name: "Compliance Status" })).toBeVisible();
     await expect(page.getByTestId("manifest-detail-footer")).toBeVisible();
+    await page.getByRole("button", { name: "Check compliance" }).click();
+    const complianceDrawer = page.getByTestId("compliance-drawer");
+    await expect(complianceDrawer).toBeVisible();
+    await expect(
+      complianceDrawer.getByRole("heading", { name: "Compliance Status" }),
+    ).toBeVisible();
+    await expect(page.locator("#baseline-compliance")).toBeAttached();
+    await page.getByRole("button", { name: "Close compliance" }).click();
+    await expect(complianceDrawer).toBeHidden();
 
     await page.getByRole("button", { name: "Visual" }).click();
     const visual = page.getByRole("region", { name: "Visual baseline settings" });
@@ -300,6 +316,17 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       name: "Edit Applied value for AlphaSetting",
     });
     await valueEditor.fill("5");
+    await valueEditor.press("Enter");
+    await page.getByRole("button", { name: "Undo" }).click();
+    await expect(
+      visual.getByRole("button", { name: "Edit Applied value for AlphaSetting" }),
+    ).toHaveText("1");
+    await visual
+      .getByRole("button", { name: "Edit Applied value for AlphaSetting" })
+      .click();
+    await visual
+      .getByRole("textbox", { name: "Edit Applied value for AlphaSetting" })
+      .fill("5");
     // Save directly while the cell still has focus. Blur must commit the
     // valid draft before the footer's Save handler reads editedContent.
     await footer.getByRole("button", { name: "Save" }).click();
@@ -345,9 +372,9 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       .getByRole("list", { name: "CIS catalog setup" })
       .getByRole("heading", { level: 2 });
     await expect(steps).toHaveText([
-      /Step 1: Download CIS baselines/,
-      /Step 2: Import the CIS baseline files/,
-      /Step 3: Re-check catalog/,
+      /Download CIS baselines/,
+      /Import the CIS baseline files/,
+      /Re-check catalog/,
     ]);
     await expect(page.getByText("No CIS data found")).toBeVisible();
 
@@ -411,9 +438,9 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(page.getByText("Unrecognized files")).toHaveCount(0);
     await expect(page.getByText(`${xccdfPrefix}-cpe-oval.xml`)).toHaveCount(0);
     await expect(steps).toHaveText([
-      /Step 1: Download CIS baselines/,
-      /Step 2: Import the CIS baseline files/,
-      /Step 3: Re-check catalog/,
+      /Download CIS baselines/,
+      /Import the CIS baseline files/,
+      /Re-check catalog/,
     ]);
   });
 

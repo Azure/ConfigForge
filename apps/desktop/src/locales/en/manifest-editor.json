@@ -3,7 +3,9 @@
     "auditPack": "Audit Pack",
     "auditPackTitle": "Generate auditor-ready PDF / Markdown deliverable",
     "back": "Back",
+    "checkCompliance": "Check compliance",
     "closeBaseline": "Close baseline",
+    "closeCompliance": "Close compliance",
     "deleteBaseline": "Delete Baseline",
     "docs": "Docs",
     "duplicate": "Duplicate",
@@ -18,7 +20,9 @@
     "removeConfirm": "Remove baseline \"{{name}}\"? This action cannot be undone.",
     "revert": "Revert",
     "revertConfirm": "Revert baseline \"{{name}}\"?\n\nIf a pre-deploy snapshot exists, your prior settings will be re-applied to this device. If no snapshot exists, OSConfig enforcement of this baseline will be removed and the baseline will be unregistered. Either way, this baseline will no longer be actively enforced on this device.",
-    "revertTitle": "Undo the last deployment of this baseline from this device. If a pre-deploy snapshot exists, prior settings are re-applied; otherwise OSConfig enforcement is removed."
+    "revertTitle": "Undo the last deployment of this baseline from this device. If a pre-deploy snapshot exists, prior settings are re-applied; otherwise OSConfig enforcement is removed.",
+    "undoEdit": "Undo",
+    "undoEditTitle": "Undo the most recent edit"
   },
   "compliance": {
     "emptyDescription": "Run Audit or Enforce to check this baseline against the device.",
@@ -29,6 +33,7 @@
     "editorView": "Editor",
     "mofEditUnsupported": "Editing is not supported in MOF format",
     "mofReadOnly": "MOF is read-only",
+    "readOnlyHint": "Read-only view. Select Edit in the footer to make changes.",
     "sectionTitle": "Baseline Content",
     "unsavedFormatChanges": "You have unsaved changes in {{format}}. Switching tabs preserves them; save before navigating away.",
     "visualEditUnavailable": "Editing requires canonical YAML, which is currently unavailable."
@@ -212,7 +217,7 @@
     "addSetting": "Add setting",
     "deleteSelected": "Delete {{count}} selected",
     "editCell": "Edit {{field}} for {{name}}",
-    "editHint": "Click any cell to edit it. Press Enter to apply or Escape to cancel.",
+    "editHint": "Click any cell to edit it. Press Enter to apply; in the final cell, Enter adds another row. Press Escape to cancel.",
     "editToolbar": "Spreadsheet editing actions",
     "errors": {
       "boolean": "Enter true or false.",

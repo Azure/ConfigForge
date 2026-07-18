@@ -93,6 +93,7 @@
       "lastModifiedUnknown": "Last modified date unavailable",
       "noMatches": "No baselines match the current search and filters.",
       "openBaseline": "Open baseline {{name}}",
+      "openCompliance": "Open compliance for {{name}}",
       "operatingSystem": "Operating System",
       "selectAll": "Select all filtered baselines",
       "selectBaseline": "Select baseline {{name}}",

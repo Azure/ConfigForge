@@ -3,7 +3,9 @@
     "auditPack": "Audit Pack",
     "auditPackTitle": "Générez un PDF / livrable Markdown prêt pour l’auditeur",
     "back": "Retour",
+    "checkCompliance": "Vérifier la conformité",
     "closeBaseline": "Fermer la baseline",
+    "closeCompliance": "Fermer la conformité",
     "deleteBaseline": "Supprimer la baseline",
     "docs": "Docs",
     "duplicate": "Duplique",
@@ -18,7 +20,9 @@
     "removeConfirm": "Supprimer baseline « {{name}} » ? Cette action ne peut être annulée.",
     "revert": "Retour",
     "revertConfirm": "Reviens baseline « {{name}} » ?\n\nSi un instantané pré-déploiement existe, vos paramètres précédents seront réappliqués sur cet appareil. Si aucun snapshot n’existe, OSConfig application de ce baseline sera supprimée et le baseline sera désenregistré. Dans tous les cas, cette baseline ne sera plus activement appliquée sur cet appareil.",
-    "revertTitle": "Annulez le dernier déploiement de ce baseline depuis cet appareil. Si un instantané pré-déploiement existe, les réglages précédents sont réappliqués ; sinon, OSConfig application est supprimée."
+    "revertTitle": "Annulez le dernier déploiement de ce baseline depuis cet appareil. Si un instantané pré-déploiement existe, les réglages précédents sont réappliqués ; sinon, OSConfig application est supprimée.",
+    "undoEdit": "Annuler",
+    "undoEditTitle": "Annuler la modification la plus récente"
   },
   "compliance": {
     "emptyDescription": "Lancez Audit ou Enforce pour vérifier cette baseline par rapport à l'appareil.",
@@ -29,6 +33,7 @@
     "editorView": "Modifieror",
     "mofEditUnsupported": "L’édition n’est pas prise en charge dans MOF format",
     "mofReadOnly": "MOF est en lecture seule",
+    "readOnlyHint": "Vue en lecture seule. Sélectionnez Modifier dans le pied de page pour apporter des modifications.",
     "sectionTitle": "Baseline Contenu",
     "unsavedFormatChanges": "Vous avez des modifications non enregistrées dans {{format}}. Changer d’onglet les préserve ; Sauvegarder avant de s’éloigner.",
     "visualEditUnavailable": "La modification nécessite un YAML canonique, actuellement indisponible."
@@ -212,7 +217,7 @@
     "addSetting": "Ajouter un paramètre",
     "deleteSelected": "Supprimer la sélection ({{count}})",
     "editCell": "Modifier {{field}} pour {{name}}",
-    "editHint": "Cliquez sur une cellule pour la modifier. Appuyez sur Entrée pour appliquer ou Échap pour annuler.",
+    "editHint": " Enter adds another row. Press Escape to cancel.",
     "editToolbar": "Actions d'édition de la feuille de calcul",
     "errors": {
       "boolean": "Saisissez true ou false.",

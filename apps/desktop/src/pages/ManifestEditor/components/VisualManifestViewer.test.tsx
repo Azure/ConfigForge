@@ -350,6 +350,39 @@ describe("VisualManifestViewer", () => {
     });
   });
 
+  it("commits the final cell with Enter and appends another row", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(source, onChange);
+
+    await user.click(
+      screen.getByRole("button", { name: "Edit Details for Second equal" }),
+    );
+    const input = screen.getByRole("textbox", {
+      name: "Edit Details for Second equal",
+    });
+    await user.type(input, "updated{Enter}");
+
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Setting Name for Unnamed setting",
+      }),
+    ).toBeInTheDocument();
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const document = parseVisualManifest(onChange.mock.calls.at(-1)?.[0]) as {
+      resources: Array<{
+        name: string;
+        properties: Record<string, unknown>;
+      }>;
+    };
+    expect(document.resources).toHaveLength(5);
+    expect(document.resources[2].properties.details).toBe("updated");
+    expect(document.resources.at(-1)).toMatchObject({
+      name: "",
+      properties: { priority: "", details: "" },
+    });
+  });
+
   it("adds a known resource type without opening the retired form picker", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();

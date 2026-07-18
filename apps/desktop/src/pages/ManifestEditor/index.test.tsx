@@ -291,11 +291,15 @@ describe("ManifestDetailPage Loop viewer", () => {
 
     const footer = screen.getByTestId("manifest-detail-footer");
     expect(footer).toHaveClass("shrink-0");
+    expect(within(footer).getByRole("link", { name: "Audit Pack" })).toHaveClass(
+      "text-xs",
+    );
     for (const action of [
       "Close baseline",
       "Delete Baseline",
       "Duplicate",
       "Audit Pack",
+      "Check compliance",
       "Docs",
       "History",
       "Export",
@@ -318,6 +322,7 @@ describe("ManifestDetailPage Loop viewer", () => {
       "Delete Baseline",
       "Duplicate",
       "Audit Pack",
+      "Check compliance",
       "Docs",
       "History",
       "Export",
@@ -327,6 +332,21 @@ describe("ManifestDetailPage Loop viewer", () => {
         footerText.indexOf(orderedActions[index - 1]),
       );
     }
+  });
+
+  it("opens device compliance in a drawer while retaining the permanent section", async () => {
+    const user = userEvent.setup();
+    renderEditor();
+
+    expect(screen.getByRole("region", { name: "Compliance Status" })).toBeInTheDocument();
+    await user.click(screen.getByRole("button", { name: "Check compliance" }));
+    expect(await screen.findByTestId("compliance-drawer")).toBeInTheDocument();
+    expect(screen.getByRole("region", { name: "Compliance Status" })).toBeInTheDocument();
+
+    await user.click(screen.getByRole("button", { name: "Close compliance" }));
+    await waitFor(() =>
+      expect(screen.queryByTestId("compliance-drawer")).not.toBeInTheDocument(),
+    );
   });
 
   it("switches between the read-only Code and Visual viewers without selection controls", async () => {

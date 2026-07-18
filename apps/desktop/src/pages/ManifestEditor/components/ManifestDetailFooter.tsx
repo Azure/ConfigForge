@@ -54,11 +54,12 @@ export interface ManifestDetailFooterProps {
   onExport: (format: "yaml" | "json" | "mof" | "excel" | "azurepolicy") => void;
   onExportDocs: () => void;
   onDelete: () => void;
+  onCheckCompliance: () => void;
   onSaveClick: () => void;
 }
 
 const footerLinkClass =
-  "inline-flex h-8 shrink-0 items-center gap-2 rounded px-3 text-sm font-medium text-slate-700 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-slate-300 dark:hover:bg-slate-800";
+  "inline-flex h-8 shrink-0 items-center gap-2 rounded px-3 text-xs font-medium text-slate-700 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-slate-300 dark:hover:bg-slate-800";
 
 export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   manifestName,
@@ -77,6 +78,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   onExport,
   onExportDocs,
   onDelete,
+  onCheckCompliance,
   onSaveClick,
 }: ManifestDetailFooterProps) {
   const { t } = useTranslation(["manifest-editor", "common", "manifests"]);
@@ -160,6 +162,17 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               <ClipboardCheckmarkRegular aria-hidden="true" />
               {t("actions.auditPack")}
             </Link>
+
+            <Button
+              appearance="subtle"
+              size="small"
+              icon={<ShieldCheckmarkRegular />}
+              onClick={onCheckCompliance}
+              disabled={busy}
+              className="shrink-0"
+            >
+              {t("actions.checkCompliance")}
+            </Button>
 
             <Button
               appearance="subtle"

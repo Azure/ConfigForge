@@ -191,10 +191,7 @@ function StepHeading({ description, id, number, title }: StepHeadingProps) {
           aria-label={t('workflow.stepHeading', { number, title })}
           className="text-lg font-semibold text-slate-950 dark:text-white"
         >
-          <span className="mr-2 text-xs font-semibold uppercase tracking-wide text-blue-700 dark:text-blue-300">
-            {t('workflow.stepLabel', { number })}
-          </span>{' '}
-          <span>{title}</span>
+          {title}
         </h2>
         <p className="mt-1 max-w-3xl text-sm text-slate-600 dark:text-slate-300">{description}</p>
       </div>

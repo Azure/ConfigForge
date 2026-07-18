@@ -316,20 +316,25 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     });
   };
 
-  const commitEdit = (setting: VisualSetting, column: string) => {
-    if (cancelBlurRef.current) return;
+  const commitEdit = (
+    setting: VisualSetting,
+    column: string,
+    emitChange = true,
+  ): string | null => {
+    if (cancelBlurRef.current) return null;
     const result = updateVisualCellSource(source, setting, column, draft);
     if (!result.ok) {
       setDraftError(result.error);
       setCellError(result.error);
       onDraftValidityChange?.(false);
-      return;
+      return null;
     }
     setActiveCell(null);
     setDraftError(null);
     setCellError(null);
     onDraftValidityChange?.(true);
-    onSourceChange?.(result.source);
+    if (emitChange) onSourceChange?.(result.source);
+    return result.source;
   };
 
   const updateDraft = (setting: VisualSetting, column: string, value: string) => {
@@ -345,8 +350,12 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     onDraftValidityChange?.(result.ok);
   };
 
-  const handleAdd = (type: string, columns: readonly string[] = []) => {
-    const result = addVisualSettingSource(source, type, columns);
+  const handleAdd = (
+    type: string,
+    columns: readonly string[] = [],
+    baseSource = source,
+  ) => {
+    const result = addVisualSettingSource(baseSource, type, columns);
     if (!result.ok) {
       setPageError(result.error);
       return;
@@ -664,6 +673,9 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                               const requiredMissing = validationIssueKeys.has(
                                 `${setting.id}:${column}`,
                               );
+                              const appendOnEnter =
+                                setting.id === rows.at(-1)?.id &&
+                                column === group.columns.at(-1);
 
                               return (
                                 <td
@@ -699,7 +711,27 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                               cancelEdit();
                                             } else if (event.key === "Enter" && !event.shiftKey) {
                                               event.preventDefault();
-                                              event.currentTarget.blur();
+                                              if (appendOnEnter) {
+                                                const committed = commitEdit(
+                                                  setting,
+                                                  column,
+                                                  false,
+                                                );
+                                                if (committed) {
+                                                  cancelBlurRef.current = true;
+                                                  event.currentTarget.blur();
+                                                  handleAdd(
+                                                    group.resourceType,
+                                                    group.columns,
+                                                    committed,
+                                                  );
+                                                  queueMicrotask(() => {
+                                                    cancelBlurRef.current = false;
+                                                  });
+                                                }
+                                              } else {
+                                                event.currentTarget.blur();
+                                              }
                                             }
                                           }}
                                           className={`${editorClass} resize-y font-mono text-xs`}
@@ -726,7 +758,27 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                               cancelEdit();
                                             } else if (event.key === "Enter") {
                                               event.preventDefault();
-                                              event.currentTarget.blur();
+                                              if (appendOnEnter) {
+                                                const committed = commitEdit(
+                                                  setting,
+                                                  column,
+                                                  false,
+                                                );
+                                                if (committed) {
+                                                  cancelBlurRef.current = true;
+                                                  event.currentTarget.blur();
+                                                  handleAdd(
+                                                    group.resourceType,
+                                                    group.columns,
+                                                    committed,
+                                                  );
+                                                  queueMicrotask(() => {
+                                                    cancelBlurRef.current = false;
+                                                  });
+                                                }
+                                              } else {
+                                                event.currentTarget.blur();
+                                              }
                                             }
                                           }}
                                           className={editorClass}

@@ -33,6 +33,7 @@ import { CisDiffTab } from "./components/CisDiffTab";
 import {
   clearMatrixDiffLocationState,
   readMatrixDiffLocationState,
+  readPairwiseDiffLocationState,
 } from "./location-state";
 
 type InputMode = "paste" | "manifest"; // | "system" — commented out for V2
@@ -44,6 +45,9 @@ export function DiffPage() {
   const navigate = useNavigate();
   const [initialMatrixSelection] = useState(() =>
     readMatrixDiffLocationState(location.state),
+  );
+  const [initialPairwiseSelection] = useState(() =>
+    readPairwiseDiffLocationState(location.state),
   );
   useEffect(() => {
     const consumed = clearMatrixDiffLocationState(location.state);
@@ -75,8 +79,8 @@ export function DiffPage() {
   const [manifests, setManifests] = useState<OscManifest[]>([]);
   const cisAvailable = useCisAvailable();
   const [loadingManifests, setLoadingManifests] = useState(false);
-  const [leftManifest, setLeftManifest] = useState("");
-  const [rightManifest, setRightManifest] = useState("");
+  const [leftManifest, setLeftManifest] = useState(initialPairwiseSelection[0] ?? "");
+  const [rightManifest, setRightManifest] = useState(initialPairwiseSelection[1] ?? "");
 
   // AI analysis state
   const [analysis, setAnalysis] = useState<DiffAnalysis | null>(null);
@@ -119,6 +123,22 @@ export function DiffPage() {
   // race-guard now lives inside useDiffMatrix.
   const leftLoadTokenRef = useRef(0);
   const rightLoadTokenRef = useRef(0);
+  const pairwisePreselectionCancelledRef = useRef(false);
+  const invalidateSideLoad = useCallback((side: "left" | "right") => {
+    const tokenRef = side === "left" ? leftLoadTokenRef : rightLoadTokenRef;
+    tokenRef.current += 1;
+    if (side === "left") setLoadingLeft(false);
+    else setLoadingRight(false);
+    pairwisePreselectionCancelledRef.current = true;
+  }, []);
+  const handleManualTextChange = useCallback(
+    (value: string, side: "left" | "right") => {
+      invalidateSideLoad(side);
+      if (side === "left") setLeftText(value);
+      else setRightText(value);
+    },
+    [invalidateSideLoad],
+  );
   // v0.3.47: Compare button sits in the middle of the form; on smaller
   // windows the diff output renders below the fold and users assume
   // nothing happened. Auto-scroll into view once results are visible.
@@ -243,9 +263,9 @@ export function DiffPage() {
     fetchManifests();
   }, [fetchManifests]);
 
-  const loadManifestContent = async (
+  const loadManifestContent = useCallback(async (
     name: string,
-    side: "left" | "right"
+    side: "left" | "right",
   ) => {
     const setText = side === "left" ? setLeftText : setRightText;
     const cached = contentCache.get(name);
@@ -275,7 +295,28 @@ export function DiffPage() {
     } finally {
       if (token === tokenRef.current) setLoading(false);
     }
-  };
+  }, [contentCache, t]);
+
+  const pairwisePreselectionAppliedRef = useRef(false);
+  useEffect(() => {
+    if (
+      pairwisePreselectionAppliedRef.current ||
+      pairwisePreselectionCancelledRef.current ||
+      initialPairwiseSelection.length !== 2 ||
+      manifests.length === 0
+    ) {
+      return;
+    }
+    const available = new Set(manifests.map((manifest) => manifest.Name));
+    const [left, right] = initialPairwiseSelection;
+    if (!available.has(left) || !available.has(right)) return;
+
+    pairwisePreselectionAppliedRef.current = true;
+    void Promise.all([
+      loadManifestContent(left, "left"),
+      loadManifestContent(right, "right"),
+    ]);
+  }, [initialPairwiseSelection, loadManifestContent, manifests]);
 
   const handleFileUpload = (
     e: React.ChangeEvent<HTMLInputElement>,
@@ -283,8 +324,12 @@ export function DiffPage() {
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    invalidateSideLoad(side);
+    const tokenRef = side === "left" ? leftLoadTokenRef : rightLoadTokenRef;
+    const token = tokenRef.current;
     const reader = new FileReader();
     reader.onload = () => {
+      if (token !== tokenRef.current) return;
       const text = reader.result as string;
       if (side === "left") setLeftText(text);
       else setRightText(text);
@@ -515,6 +560,7 @@ export function DiffPage() {
               <select
                 value={leftMode}
                 onChange={(e) => {
+                  invalidateSideLoad("left");
                   setLeftMode(e.target.value as InputMode);
                   setLeftText("");
                   setLeftManifest("");
@@ -533,6 +579,7 @@ export function DiffPage() {
                 <select
                   value={leftManifest}
                   onChange={(e) => {
+                    invalidateSideLoad("left");
                     setLeftManifest(e.target.value);
                     if (e.target.value) {
                       loadManifestContent(e.target.value, "left");
@@ -569,7 +616,11 @@ export function DiffPage() {
                     when value === '' so the empty state is clearly
                     "waiting for input" rather than "broken". */}
                 <div className="relative h-[350px]">
-                  <ManifestEditor height="100%" value={leftText} onChange={setLeftText} />
+                  <ManifestEditor
+                    height="100%"
+                    value={leftText}
+                    onChange={(value) => handleManualTextChange(value, "left")}
+                  />
                   {leftText === "" && !loadingLeft && (
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                       <div className="rounded-lg border border-dashed border-slate-600 bg-slate-900/60 px-6 py-4 text-center text-sm text-slate-400 dark:bg-slate-900/60">
@@ -593,7 +644,11 @@ export function DiffPage() {
                   />
                 </label>
                 <div className="relative h-[350px]">
-                  <ManifestEditor height="100%" value={leftText} onChange={setLeftText} />
+                  <ManifestEditor
+                    height="100%"
+                    value={leftText}
+                    onChange={(value) => handleManualTextChange(value, "left")}
+                  />
                   {leftText === "" && (
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                       <div className="rounded-lg border border-dashed border-slate-600 bg-slate-900/60 px-6 py-4 text-center text-sm text-slate-400">
@@ -616,6 +671,7 @@ export function DiffPage() {
               <select
                 value={rightMode}
                 onChange={(e) => {
+                  invalidateSideLoad("right");
                   setRightMode(e.target.value as InputMode);
                   setRightText("");
                   setRightManifest("");
@@ -634,6 +690,7 @@ export function DiffPage() {
                 <select
                   value={rightManifest}
                   onChange={(e) => {
+                    invalidateSideLoad("right");
                     setRightManifest(e.target.value);
                     if (e.target.value) {
                       loadManifestContent(e.target.value, "right");
@@ -660,7 +717,11 @@ export function DiffPage() {
                   </div>
                 )}
                 <div className="relative h-[350px]">
-                  <ManifestEditor height="100%" value={rightText} onChange={setRightText} />
+                  <ManifestEditor
+                    height="100%"
+                    value={rightText}
+                    onChange={(value) => handleManualTextChange(value, "right")}
+                  />
                   {rightText === "" && !loadingRight && (
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                       <div className="rounded-lg border border-dashed border-slate-600 bg-slate-900/60 px-6 py-4 text-center text-sm text-slate-400">
@@ -684,7 +745,11 @@ export function DiffPage() {
                   />
                 </label>
                 <div className="relative h-[350px]">
-                  <ManifestEditor height="100%" value={rightText} onChange={setRightText} />
+                  <ManifestEditor
+                    height="100%"
+                    value={rightText}
+                    onChange={(value) => handleManualTextChange(value, "right")}
+                  />
                   {rightText === "" && (
                     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
                       <div className="rounded-lg border border-dashed border-slate-600 bg-slate-900/60 px-6 py-4 text-center text-sm text-slate-400">

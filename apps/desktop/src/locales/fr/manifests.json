@@ -93,6 +93,7 @@
       "lastModifiedUnknown": "Date de dernière modification indisponible",
       "noMatches": "Aucune baseline ne correspond à la recherche et aux filtres actuels.",
       "openBaseline": "Ouvrir la baseline {{name}}",
+      "openCompliance": "Ouvrir la conformité pour {{name}}",
       "operatingSystem": "Système d’exploitation",
       "selectAll": "Sélectionner toutes les baselines filtrées",
       "selectBaseline": "Sélectionner la baseline {{name}}",
