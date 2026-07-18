@@ -16,6 +16,7 @@
  */
 import { contextBridge, ipcRenderer } from 'electron';
 import type { UpdateStatus } from './auto-updater';
+import { HAS_DEPLOY, HAS_DEVICE_AUDIT, HAS_ELEVATION } from './flavor';
 import type {
   HealthStatus,
   CisStatus,
@@ -513,7 +514,17 @@ const cfsApi = {
   },
 } as const;
 
-contextBridge.exposeInMainWorld('cfs', cfsApi);
+const exposedCfsApi = { ...cfsApi } as Record<string, unknown>;
+if (!HAS_DEPLOY) {
+  delete exposedCfsApi.health;
+  delete exposedCfsApi.deploy;
+  delete exposedCfsApi.deployRecovery;
+  delete exposedCfsApi.revert;
+}
+if (!HAS_DEVICE_AUDIT) delete exposedCfsApi.auditResults;
+if (!HAS_ELEVATION) delete exposedCfsApi.system;
+
+contextBridge.exposeInMainWorld('cfs', exposedCfsApi);
 
 export type CfsApi = typeof cfsApi;
 

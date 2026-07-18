@@ -1,4 +1,4 @@
-# ConfigForge Author 0.3.75 — macOS
+# ConfigForge Author 0.3.76 — macOS
 
 This is the **macOS author-only build**. Manifest authoring,
 Microsoft Baselines, cross-baseline comparison, Benchmark Mapping,
@@ -66,7 +66,7 @@ Release artifacts are unsigned by design.
 - No `oscfg` CLI detection or device operations
 - No deploy / audit / enforce / revert on a device
 - No admin / root elevation surface
-- No "Recent Activity" deploy event feed
+- Recent Activity contains authoring history only, never device events
 
 ## Architecture: arm64 only
 

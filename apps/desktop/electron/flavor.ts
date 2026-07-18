@@ -23,8 +23,9 @@
  *                            `cfs:system:elevate` handlers.
  *   - `HAS_DEVICE_AUDIT`  — register `cfs:audit-results:get`
  *                            handler (reads device-audit cache).
- *   - `HAS_ACTIVITY_FEED` — register `cfs:activity:recent` handler
- *                            (deploy event feed).
+ *   - `HAS_ACTIVITY_FEED` — register `cfs:activity:recent` handler.
+ *                            Both flavors expose authoring history;
+ *                            only full builds include device events.
  */
 
 declare const __CFS_FLAVOR__: 'full' | 'author';
@@ -36,4 +37,4 @@ export const FLAVOR: CfsFlavor = __CFS_FLAVOR__;
 export const HAS_DEPLOY = __CFS_FLAVOR__ === 'full';
 export const HAS_ELEVATION = __CFS_FLAVOR__ === 'full';
 export const HAS_DEVICE_AUDIT = __CFS_FLAVOR__ === 'full';
-export const HAS_ACTIVITY_FEED = __CFS_FLAVOR__ === 'full';
+export const HAS_ACTIVITY_FEED = true;

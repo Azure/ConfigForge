@@ -19,12 +19,12 @@ import {
 } from "@fluentui/react-icons";
 import { Button } from '@fluentui/react-components';
 import { useTranslation } from 'react-i18next';
-import { cfs } from '../lib/cfs';
+import { cfs, safeCfs } from '../lib/cfs';
 import { useCliPresence } from '../hooks/useCliPresence';
 import { ExternalLink } from '../components/ExternalLink';
 import { OSCONFIG_INSTALL_URL } from '../components/CliRequiredModal';
 import { useDateFormatter, useRelativeTimeFormatter } from '../lib/format';
-import { HAS_ACTIVITY_FEED, HAS_HEALTH } from '../lib/flavor';
+import { HAS_ACTIVITY_FEED, HAS_DEPLOY, HAS_HEALTH } from '../lib/flavor';
 
 interface ActivityItem {
   type: 'registered' | 'deployed' | 'deployed-audit' | 'deployed-enforce' | 'reverted';
@@ -88,17 +88,19 @@ export function HomePage() {
     let cancelled = false;
 
     async function fetchAll() {
+      const healthApi = HAS_HEALTH ? safeCfs('health') : undefined;
+      const activityApi = HAS_ACTIVITY_FEED ? safeCfs('activity') : undefined;
       const [healthRes, manifestRes, activityRes] = await Promise.allSettled([
-        HAS_HEALTH
-          ? cfs.health.check()
+        healthApi
+          ? healthApi.check()
           : Promise.resolve(null as unknown as Awaited<ReturnType<typeof cfs.health.check>>),
         // perf W2 / H6: dashboard tile only consumes `arr.length`, so
         // explicitly opt into the lite (Resources-stripped) payload.
         // Saves ~5-10 MB of serialized Resources[] for a 50-manifest
         // tenant on every Home mount.
         cfs.manifests.list({ lite: true }),
-        HAS_ACTIVITY_FEED
-          ? cfs.activity.recent()
+        activityApi
+          ? activityApi.recent()
           : Promise.resolve({ data: [] as ActivityItem[] }),
       ]);
 
@@ -148,6 +150,8 @@ export function HomePage() {
 
   const [interrupted, setInterrupted] = useState<{ namespace: string; displayName: string; startedAt: string }[]>([]);
   useEffect(() => {
+    if (!HAS_DEPLOY) return;
+
     // v0.3.1 (#4): on Dashboard mount, check for orphaned deploy-in-
     // progress sentinels. If any exist, the app died mid-enforce and
     // the user's device may be partially-applied. Surface a banner
@@ -155,9 +159,7 @@ export function HomePage() {
     let cancelled = false;
     (async () => {
       try {
-        const api = (window as unknown as {
-          cfs?: { deployRecovery?: { listInterrupted: () => Promise<{ data: { namespace: string; displayName: string; startedAt: string }[] }> } };
-        }).cfs?.deployRecovery;
+        const api = safeCfs('deployRecovery');
         if (!api) return;
         const res = await api.listInterrupted();
         if (cancelled) return;
@@ -170,10 +172,10 @@ export function HomePage() {
   }, []);
 
   const dismissInterrupted = useCallback(async (namespace: string) => {
+    if (!HAS_DEPLOY) return;
+
     try {
-      const api = (window as unknown as {
-        cfs?: { deployRecovery?: { dismiss: (n: string) => Promise<{ ok: true }> } };
-      }).cfs?.deployRecovery;
+      const api = safeCfs('deployRecovery');
       await api?.dismiss(namespace);
     } catch {
       /* best-effort */
@@ -196,7 +198,7 @@ export function HomePage() {
           on Dashboard when a `.deploy-in-progress` sentinel was left
           behind by a process killed mid-enforce. The customer is
           prompted to audit or revert the affected manifest. */}
-      {interrupted.length > 0 && (
+      {HAS_DEPLOY && interrupted.length > 0 && (
         <div className="space-y-3">
           {interrupted.map((e) => (
             <div

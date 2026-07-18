@@ -14,6 +14,7 @@ describe("renderer flavor flags", () => {
     const flavor = await import("./flavor");
     expect(flavor.FLAVOR).toBe("full");
     expect(flavor.HAS_DEPLOY).toBe(true);
+    expect(flavor.HAS_ACTIVITY_FEED).toBe(true);
   });
 
   it("disables device capabilities for the author flavor", async () => {
@@ -24,5 +25,6 @@ describe("renderer flavor flags", () => {
     expect(flavor.HAS_ELEVATION).toBe(false);
     expect(flavor.HAS_DEVICE_AUDIT).toBe(false);
     expect(flavor.HAS_HEALTH).toBe(false);
+    expect(flavor.HAS_ACTIVITY_FEED).toBe(true);
   });
 });

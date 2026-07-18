@@ -4,9 +4,10 @@
 /**
  * Pure handler for `cfs:activity:recent` and `GET /api/activity`.
  *
- * Scans `~/.configforge/history/` and `~/.configforge/snapshots/` for
- * registration / deploy / revert events, returns the 10 most recent
- * sorted descending by timestamp.
+ * Scans `~/.configforge/history/` for authoring events and, when
+ * requested, `~/.configforge/snapshots/` for deploy / audit / revert
+ * events. Returns the most recent records sorted descending by
+ * timestamp.
  *
  * Tolerant of missing directories: returns an empty array if the
  * user has never registered or deployed anything.
@@ -138,14 +139,17 @@ async function getSnapshotActivities(snapshotDir: string): Promise<ActivityItem[
   return activities;
 }
 
-export async function getRecentActivity(limit = 10): Promise<ActivityItem[]> {
+export async function getRecentActivity(
+  limit = 10,
+  includeDeviceActivity = true,
+): Promise<ActivityItem[]> {
   const userDataDir = resolveUserDataDir();
   const historyDir = join(userDataDir, 'history');
   const snapshotDir = join(userDataDir, 'snapshots');
 
   const [historyActivities, snapshotActivities] = await Promise.all([
     getHistoryActivities(historyDir),
-    getSnapshotActivities(snapshotDir),
+    includeDeviceActivity ? getSnapshotActivities(snapshotDir) : Promise.resolve([]),
   ]);
 
   return [...historyActivities, ...snapshotActivities]
