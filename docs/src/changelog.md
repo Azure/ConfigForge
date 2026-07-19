@@ -5,7 +5,7 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 ## v0.3.78 — 2026-07-19
 
-- **Corrected platform icons in Create New Baseline.** The custom baseline selector now uses ConfigForge's four-color Windows SVG and renders a single Linux penguin.
+- **Corrected Create New Baseline, read-only editor, and compliance visuals.** The custom baseline selector now uses ConfigForge's four-color Windows SVG and renders a single Linux penguin. The inline Monaco read-only warning again receives its explicit detached-host colors and opaque background. Baseline Detail now restores the last persisted audit across navigation/restarts and presents it in one large centered dialog instead of a bottom section plus side drawer.
 
 ## v0.3.77 — 2026-07-17
 

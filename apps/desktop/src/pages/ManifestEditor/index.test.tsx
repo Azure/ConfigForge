@@ -362,21 +362,30 @@ describe("ManifestDetailPage Loop viewer", () => {
     }
   });
 
-  it("opens device compliance in a drawer while retaining the permanent section", async () => {
+  it("opens device compliance in a large dialog without a permanent bottom section", async () => {
     const user = userEvent.setup();
     renderEditor();
 
-    expect(screen.getByRole("region", { name: "Compliance Status" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Compliance Status" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Check compliance" }));
-    const closeCompliance = await screen.findByRole("button", { name: "Close compliance" });
-    expect(screen.getByTestId("compliance-drawer")).toBeInTheDocument();
-    expect(screen.getByRole("region", { name: "Compliance Status" })).toBeInTheDocument();
-
-    await user.click(closeCompliance);
-    await waitFor(() =>
-      expect(screen.queryByTestId("compliance-drawer")).not.toBeInTheDocument(),
+    const dialogContent = await screen.findByTestId(
+      "compliance-dialog",
+      {},
+      { timeout: 10_000 },
     );
-  });
+    const dialog = dialogContent.closest('[role="dialog"]');
+    if (!(dialog instanceof HTMLElement)) throw new Error("Compliance dialog surface not found");
+    expect(dialog).toHaveStyle({
+      maxWidth: "1200px",
+      maxHeight: "820px",
+    });
+    expect(within(dialogContent).getAllByText("Matches desired value")).toHaveLength(2);
+
+    await user.keyboard("{Escape}");
+    await waitFor(() =>
+      expect(screen.queryByTestId("compliance-dialog")).not.toBeInTheDocument(),
+    );
+  }, 15_000);
 
   it("switches between the read-only Code and Visual viewers without selection controls", async () => {
     const user = userEvent.setup();
@@ -649,16 +658,21 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(screen.queryByText("All baselines route")).not.toBeInTheDocument();
   });
 
-  it("uses the existing editor entry point and keeps compliance rendered", async () => {
+  it("keeps the compliance report available while editing", async () => {
     const user = userEvent.setup();
     renderEditor();
 
     await user.click(screen.getByRole("button", { name: "Edit" }));
 
     expect(mocks.beginEditing).toHaveBeenCalledTimes(1);
-    expect(screen.getByRole("heading", { name: "Compliance Status" })).toBeInTheDocument();
-    expect(screen.getAllByText("Matches desired value").length).toBeGreaterThan(0);
-  });
+    await user.click(screen.getByRole("button", { name: "Check compliance" }));
+    const dialogContent = await screen.findByTestId(
+      "compliance-dialog",
+      {},
+      { timeout: 10_000 },
+    );
+    expect(within(dialogContent).getAllByText("Matches desired value")).toHaveLength(2);
+  }, 15_000);
 
   it("keeps export, audit, revert, history, and audit-pack footer actions wired", async () => {
     const user = userEvent.setup();
@@ -723,7 +737,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(within(footer).getByRole("button", { name: "Save" })).toBeInTheDocument();
     expect(within(footer).queryByRole("button", { name: "Edit" })).not.toBeInTheDocument();
     expect(screen.getByText("Editing")).toBeInTheDocument();
-    expect(screen.getByRole("heading", { name: "Compliance Status" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Compliance Status" })).not.toBeInTheDocument();
 
     await user.click(within(footer).getByRole("button", { name: "Save" }));
     expect(mocks.requestSave).toHaveBeenCalledWith(sampleYaml, sampleYaml);

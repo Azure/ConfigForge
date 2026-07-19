@@ -19,10 +19,6 @@ import {
   DialogContent,
   DialogSurface,
   DialogTitle,
-  Drawer,
-  DrawerBody,
-  DrawerHeader,
-  DrawerHeaderTitle,
   MessageBar,
   MessageBarBody,
 } from "@fluentui/react-components";
@@ -68,7 +64,7 @@ export function ManifestDetailPage() {
   const { closeBaseline, refresh: refreshWorkspace } = useBaselineWorkspace();
 
   const [deleting, setDeleting] = useState(false);
-  const [complianceDrawerOpen, setComplianceDrawerOpen] = useState(false);
+  const [complianceDialogOpen, setComplianceDialogOpen] = useState(false);
   const [pendingNavigation, setPendingNavigation] =
     useState<PendingWorkspaceNavigation | null>(null);
   const [navigationAfterSave, setNavigationAfterSave] =
@@ -280,7 +276,7 @@ export function ManifestDetailPage() {
   }, [hasUnsavedChanges, manifestName]);
 
   const handleCheckCompliance = useCallback(() => {
-    setComplianceDrawerOpen(true);
+    setComplianceDialogOpen(true);
   }, []);
 
   useEffect(() => {
@@ -474,7 +470,7 @@ export function ManifestDetailPage() {
     }
   };
 
-  const complianceResources: OscResource[] = status?.resources ?? manifest?.Resources ?? [];
+  const complianceResources: OscResource[] = status?.resources ?? [];
 
   const platformBadge =
     detectedPlatform === "windows"
@@ -532,37 +528,48 @@ export function ManifestDetailPage() {
         presence={presence}
       />
 
-      <Drawer
-        type="overlay"
-        position="end"
-        size="medium"
-        open={complianceDrawerOpen}
-        onOpenChange={(_event, data) => setComplianceDrawerOpen(data.open)}
+      <Dialog
+        open={complianceDialogOpen}
+        onOpenChange={(_event, data) => setComplianceDialogOpen(data.open)}
       >
-        <DrawerHeader>
-          <DrawerHeaderTitle
+        <DialogSurface
+          className="border border-slate-200 dark:border-slate-700"
+          style={{
+            width: "calc(100vw - 64px)",
+            maxWidth: "1200px",
+            height: "calc(100vh - 80px)",
+            maxHeight: "820px",
+          }}
+        >
+          <DialogBody className="h-full min-h-0">
+          <DialogTitle
             action={
               <Button
                 appearance="subtle"
                 icon={<DismissRegular />}
                 aria-label={t("actions.closeCompliance")}
-                onClick={() => setComplianceDrawerOpen(false)}
+                onClick={() => setComplianceDialogOpen(false)}
               />
             }
           >
             {t("compliance.sectionTitle")}
-          </DrawerHeaderTitle>
-        </DrawerHeader>
-        <DrawerBody data-testid="compliance-drawer">
-          <ComplianceTable
-            resources={complianceResources}
-            expandedResource={expandedResource}
-            setExpandedResource={setExpandedResource}
-            complianceShowAll={complianceShowAll}
-            setComplianceShowAll={setComplianceShowAll}
-          />
-        </DrawerBody>
-      </Drawer>
+          </DialogTitle>
+            <DialogContent
+              data-testid="compliance-dialog"
+              className="min-h-0 overflow-y-auto px-0 pb-0"
+            >
+              <ComplianceTable
+                resources={complianceResources}
+                expandedResource={expandedResource}
+                setExpandedResource={setExpandedResource}
+                complianceShowAll={complianceShowAll}
+                setComplianceShowAll={setComplianceShowAll}
+                showHeader={false}
+              />
+            </DialogContent>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
 
       <div
         data-testid="manifest-detail-scroll-region"
@@ -637,22 +644,6 @@ export function ManifestDetailPage() {
             onVisualDraftValidityChange={handleVisualDraftValidityChange}
           />
 
-          {/* Compliance Status (Phase C.4 — see components/ComplianceTable.tsx) */}
-          <div
-            id="baseline-compliance"
-            role="region"
-            aria-label={t("compliance.sectionTitle")}
-            tabIndex={-1}
-            className="scroll-mt-4 outline-none focus-visible:ring-2 focus-visible:ring-blue-600"
-          >
-            <ComplianceTable
-              resources={complianceResources}
-              expandedResource={expandedResource}
-              setExpandedResource={setExpandedResource}
-              complianceShowAll={complianceShowAll}
-              setComplianceShowAll={setComplianceShowAll}
-            />
-          </div>
         </div>
       </div>
 

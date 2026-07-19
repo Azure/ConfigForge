@@ -168,7 +168,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               size="small"
               icon={<ShieldCheckmarkRegular />}
               onClick={onCheckCompliance}
-              disabled={busy}
+              disabled={deleting || deploying || reverting || saving}
               className="shrink-0"
             >
               {t("actions.checkCompliance")}
