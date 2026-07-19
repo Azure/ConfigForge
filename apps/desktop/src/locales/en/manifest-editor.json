@@ -25,9 +25,16 @@
     "undoEditTitle": "Undo the most recent edit"
   },
   "compliance": {
+    "allStatuses": "All statuses",
     "emptyDescription": "Run Audit or Enforce to check this baseline against the device.",
     "emptyTitle": "No compliance data yet.",
-    "sectionTitle": "Compliance Status"
+    "filterStatus": "Filter compliance status",
+    "noMatches": "No compliance settings match the current search and status filter.",
+    "searchLabel": "Search compliance report",
+    "searchPlaceholder": "Search settings, types, or reasons",
+    "sectionTitle": "Compliance Status",
+    "showing": "Showing {{filtered}} of {{total}} settings",
+    "sortStatus": "Sort by compliance status"
   },
   "closeUnsaved": {
     "cancel": "Cancel",

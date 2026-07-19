@@ -540,23 +540,57 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
               status: "NonCompliant",
               reason: "Persisted audit from disk",
             },
+            {
+              name: "BetaSetting",
+              type: "Microsoft.Windows/Registry",
+              status: "Compliant",
+              reason: "Matches desired value",
+            },
+            {
+              name: "UnreadSetting",
+              type: "Microsoft.Windows/CSP",
+              status: "Indeterminate",
+              reason: "Provider unavailable",
+            },
           ],
         },
       }),
       "utf8",
     );
 
-    const assertPersistedReport = async () => {
+    const assertPersistedReport = async (exerciseControls = false) => {
       await page.getByRole("button", { name: `Open baseline ${BASELINE_A}` }).click();
       await page.getByRole("button", { name: "Check compliance" }).click();
       const dialog = page.getByRole("dialog", { name: "Compliance Status" });
       await expect(dialog.getByTitle("Persisted audit from disk")).toBeVisible();
+      if (exerciseControls) {
+        const search = dialog.getByRole("searchbox", { name: "Search compliance report" });
+        await search.fill("BetaSetting");
+        await expect(dialog.getByText("BetaSetting", { exact: true })).toBeVisible();
+        await expect(dialog.getByText("AlphaSetting", { exact: true })).toHaveCount(0);
+        await search.fill("");
+
+        const filter = dialog.getByRole("combobox", { name: "Filter compliance status" });
+        await filter.selectOption("unread");
+        await expect(dialog.getByText("UnreadSetting", { exact: true })).toBeVisible();
+        await expect(dialog.getByText("BetaSetting", { exact: true })).toHaveCount(0);
+        await filter.selectOption("all");
+
+        const sort = dialog.getByRole("button", { name: "Sort by compliance status" });
+        const statusHeader = dialog.getByRole("columnheader", { name: /status/i });
+        await sort.click();
+        await expect(statusHeader).toHaveAttribute("aria-sort", "ascending");
+        await expect(dialog.locator("tbody tr").first()).toContainText("BetaSetting");
+        await sort.click();
+        await expect(statusHeader).toHaveAttribute("aria-sort", "descending");
+        await expect(dialog.locator("tbody tr").first()).toContainText("AlphaSetting");
+      }
       await dialog.getByRole("button", { name: "Close compliance" }).click();
       await page.getByRole("button", { name: "Close baseline" }).click();
       await expect(page.getByRole("heading", { name: "My Baselines" })).toBeVisible();
     };
 
-    await assertPersistedReport();
+    await assertPersistedReport(true);
     await assertPersistedReport();
 
     await app.close();

@@ -25,9 +25,16 @@
     "undoEditTitle": "Annuler la modification la plus récente"
   },
   "compliance": {
+    "allStatuses": "Tous les états",
     "emptyDescription": "Lancez Audit ou Enforce pour vérifier cette baseline par rapport à l'appareil.",
     "emptyTitle": "Non compliance data yet.",
-    "sectionTitle": "Conformité État"
+    "filterStatus": "Filtrer l’état de conformité",
+    "noMatches": "Aucun paramètre de conformité ne correspond à la recherche et au filtre d’état actuels.",
+    "searchLabel": "Rechercher dans le rapport de conformité",
+    "searchPlaceholder": "Rechercher des paramètres, des types ou des raisons",
+    "sectionTitle": "Conformité État",
+    "showing": "Affichage de {{filtered}} paramètres sur {{total}}",
+    "sortStatus": "Trier par état de conformité"
   },
   "closeUnsaved": {
     "cancel": "Annuler",

@@ -25,9 +25,16 @@
     "undoEditTitle": "Deshacer la edición más reciente"
   },
   "compliance": {
+    "allStatuses": "Todos los estados",
     "emptyDescription": "Ejecuta Audit o Enforce para comparar esta baseline con el dispositivo.",
     "emptyTitle": "Aún no hay datos de cumplimiento.",
-    "sectionTitle": "Cumplimiento Estado"
+    "filterStatus": "Filtrar estado de cumplimiento",
+    "noMatches": "Ninguna configuración de cumplimiento coincide con la búsqueda y el filtro de estado actuales.",
+    "searchLabel": "Buscar en el informe de cumplimiento",
+    "searchPlaceholder": "Buscar configuraciones, tipos o motivos",
+    "sectionTitle": "Cumplimiento Estado",
+    "showing": "Mostrando {{filtered}} de {{total}} configuraciones",
+    "sortStatus": "Ordenar por estado de cumplimiento"
   },
   "closeUnsaved": {
     "cancel": "Cancelar",
