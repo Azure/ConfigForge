@@ -162,6 +162,7 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       "Settings",
       "Issues",
       "Compliant",
+      "Date Modified",
     ]) {
       await expect(
         table.getByRole("columnheader", { name: heading, exact: true }),
@@ -169,6 +170,9 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     }
     await expect(page.getByRole("textbox", { name: "Search Baselines" })).toBeVisible();
     await expect(page.getByRole("combobox", { name: "Operating System" })).toBeVisible();
+    await expect(page.getByRole("row", { name: new RegExp(BASELINE_A) })).toContainText(
+      /\d{4}-\d{2}-\d{2}/,
+    );
 
     await page.getByRole("combobox", { name: "Operating System" }).selectOption("linux");
     await expect(page.getByRole("button", { name: `Open baseline ${BASELINE_LINUX}` })).toBeVisible();
@@ -327,6 +331,13 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await visual
       .getByRole("textbox", { name: "Edit Applied value for AlphaSetting" })
       .fill("5");
+    await page.getByRole("button", { name: "Close baseline" }).click();
+    const closeDialog = page.getByRole("dialog", {
+      name: "Close without saving?",
+    });
+    await expect(closeDialog).toBeVisible();
+    await closeDialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(page.getByText("Editing", { exact: true })).toBeVisible();
     // Save directly while the cell still has focus. Blur must commit the
     // valid draft before the footer's Save handler reads editedContent.
     await footer.getByRole("button", { name: "Save" }).click();
@@ -348,6 +359,14 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
         name: BASELINE_A,
       }),
     ).toHaveCount(0);
+
+    await page.getByRole("button", { name: `Open baseline ${BASELINE_A}` }).click();
+    await expect(page.getByRole("button", { name: "Visual" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
+    await page.getByRole("button", { name: "Close baseline" }).click();
+    await expect(page.getByRole("heading", { name: "My Baselines" })).toBeVisible();
   });
 
   test("Delete and session Undo restore captured baseline content", async () => {
@@ -442,6 +461,32 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       /Import the CIS baseline files/,
       /Re-check catalog/,
     ]);
+  });
+
+  test("Create Baseline offers all five Loop methods before opening the editor", async () => {
+    await goToMyBaselines();
+    await page.getByRole("button", { name: "Create new baseline" }).click();
+    await expect(page.getByRole("heading", { name: "Create new baseline" })).toBeVisible();
+
+    for (const method of [
+      "Import existing baseline file",
+      "Import existing baseline from URL",
+      "Import baseline from Excel",
+      "Choose a template from the baseline library",
+      "Create my own baseline",
+    ]) {
+      await expect(page.getByRole("radio", { name: new RegExp(method, "i") })).toBeVisible();
+    }
+
+    await page.getByRole("radio", { name: /Create my own baseline/i }).check();
+    await page.getByLabel("Baseline Name").fill("LoopWizardCreated");
+    await page.getByRole("button", { name: "Create baseline" }).click();
+    await expect(page.getByRole("region", { name: "Visual baseline settings" })).toBeVisible();
+    await page.getByRole("button", { name: "Register Baseline" }).click();
+    await expect(page.getByRole("heading", { name: "My Baselines" })).toBeVisible();
+    await expect(
+      page.getByRole("button", { name: "Open baseline LoopWizardCreated" }),
+    ).toBeVisible();
   });
 
   test("open baseline tabs survive an application restart", async () => {

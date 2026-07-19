@@ -14,9 +14,6 @@ import {
 } from "../ManifestEditor/visual-viewer";
 import {
   ArrowLeftRegular,
-  ArrowUploadRegular,
-  LinkRegular as LinkIcon,
-  DocumentArrowUpRegular,
   WarningRegular,
   DesktopRegular,
   WindowConsoleRegular,
@@ -30,15 +27,68 @@ import {
   Button,
   MessageBar,
   MessageBarBody,
-  MessageBarTitle,
   Spinner,
 } from "@fluentui/react-components";
 import { Link } from "react-router-dom";
 import { cfs } from "../../lib/cfs";
-import { useNewManifestForm } from "./state/useNewManifestForm";
+import {
+  LINUX_DEFAULT_YAML,
+  WINDOWS_DEFAULT_YAML,
+  type ImportResult,
+  useNewManifestForm,
+} from "./state/useNewManifestForm";
 import { useTranslation } from "react-i18next";
 import { useNumberFormatter } from "../../lib/format";
 import { useBaselineWorkspace } from "../../components/BaselineWorkspace";
+import type { BaselineEntry } from "../../data/baseline-catalog";
+import {
+  BaselineCreationSetup,
+  type BaselineCreationMethod,
+} from "./components/BaselineCreationSetup";
+import { BaselineTemplatePickerDialog } from "./components/BaselineTemplatePickerDialog";
+
+const MAX_WIZARD_IMPORT_BYTES = 10 * 1024 * 1024; // Matches core MAX_IMPORT_BYTES.
+const MAX_BATCH_FILE_COUNT = 20;
+const MAX_BATCH_IMPORT_BYTES = 50 * 1024 * 1024;
+const MAX_BATCH_IMPORT_CONCURRENCY = 4;
+
+type ImportRequest = Parameters<typeof cfs.importChannel.fromContent>[0];
+
+async function createImportRequest(
+  file: File,
+  tooLargeMessage: string,
+): Promise<ImportRequest> {
+  if (file.size > MAX_WIZARD_IMPORT_BYTES) {
+    throw new Error(tooLargeMessage);
+  }
+  return file.name.toLowerCase().endsWith(".xlsx")
+    ? {
+        filename: file.name,
+        bytes: new Uint8Array(await file.arrayBuffer()),
+      }
+    : {
+        filename: file.name,
+        content: await file.text(),
+      };
+}
+
+async function runWithBoundedConcurrency<T>(
+  items: readonly T[],
+  concurrency: number,
+  operation: (item: T, index: number) => Promise<void>,
+): Promise<void> {
+  let nextIndex = 0;
+  const workerCount = Math.min(concurrency, items.length);
+  await Promise.all(
+    Array.from({ length: workerCount }, async () => {
+      while (nextIndex < items.length) {
+        const index = nextIndex;
+        nextIndex += 1;
+        await operation(items[index], index);
+      }
+    }),
+  );
+}
 
 export function ManifestNewPage() {
   const { t } = useTranslation("manifests");
@@ -85,19 +135,23 @@ function NewManifestPage() {
     setSourceType,
     activeTab,
     platformWarning,
-    fileInputRef,
-    importing,
-    importResult,
+    setPlatformWarning,
     error,
     setError,
     handleTabSwitch,
     handleJsonChange,
     handlePlatformSwitch,
-    handleImport,
+    applyTemplate,
     hydrateFromLibraryTemplate,
     hasUserContent,
   } = useNewManifestForm();
 
+  const [creationMethod, setCreationMethod] = useState<BaselineCreationMethod | null>(null);
+  const [editorStarted, setEditorStarted] = useState(false);
+  const [preparingEditor, setPreparingEditor] = useState(false);
+  const [templatePickerOpen, setTemplatePickerOpen] = useState(false);
+  const [templateLoadingId, setTemplateLoadingId] = useState<string | null>(null);
+  const [selectedTemplate, setSelectedTemplate] = useState<BaselineEntry | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [visualDraftValid, setVisualDraftValid] = useState(true);
   const [postWarnings, setPostWarnings] = useState<string[]>([]);
@@ -122,14 +176,34 @@ function NewManifestPage() {
   // editor can render.
   const [urlFetching, setUrlFetching] = useState(false);
   const [urlFetchError, setUrlFetchError] = useState<string | null>(null);
+  const setupOperationGenerationRef = useRef(0);
+  const batchNavigationTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Batch import state.
+  const [setupImporting, setSetupImporting] = useState(false);
+  const [setupImportResult, setSetupImportResult] = useState<ImportResult | null>(null);
   const [batchFiles, setBatchFiles] = useState<File[]>([]);
   const [batchProgress, setBatchProgress] = useState<{
     done: number;
     total: number;
     errors: string[];
   } | null>(null);
+
+  const beginSetupOperation = () => {
+    const generation = ++setupOperationGenerationRef.current;
+    if (batchNavigationTimerRef.current !== null) {
+      clearTimeout(batchNavigationTimerRef.current);
+      batchNavigationTimerRef.current = null;
+    }
+    setPreparingEditor(false);
+    setUrlFetching(false);
+    setSetupImporting(false);
+    setTemplateLoadingId(null);
+    return generation;
+  };
+
+  const isCurrentSetupOperation = (generation: number) =>
+    generation === setupOperationGenerationRef.current;
 
   // Docs modal state — kept at page level for now; consolidating with
   // ManifestEditor's identical useDocsModal hook is a queued follow-up.
@@ -146,6 +220,11 @@ function NewManifestPage() {
   const docsCopiedTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   useEffect(() => {
     return () => {
+      setupOperationGenerationRef.current += 1;
+      if (batchNavigationTimerRef.current !== null) {
+        clearTimeout(batchNavigationTimerRef.current);
+        batchNavigationTimerRef.current = null;
+      }
       if (docsCopiedTimerRef.current !== null) {
         clearTimeout(docsCopiedTimerRef.current);
         docsCopiedTimerRef.current = null;
@@ -156,7 +235,10 @@ function NewManifestPage() {
   // Hydrate from library template (sessionStorage) when navigated from Baseline Library
   useEffect(() => {
     if (searchParams.get("fromLibrary") !== "true") return;
-    hydrateFromLibraryTemplate();
+    if (hydrateFromLibraryTemplate()) {
+      setCreationMethod("template");
+      setEditorStarted(true);
+    }
   }, [searchParams, hydrateFromLibraryTemplate]);
 
   const handleGenerateDocs = async () => {
@@ -198,6 +280,199 @@ function NewManifestPage() {
       setDocsCopied(false);
       docsCopiedTimerRef.current = null;
     }, 2000);
+  };
+
+  const fetchUrlIntoEditor = async (
+    generation: number,
+    requestedUri: string,
+  ): Promise<boolean> => {
+    if (!requestedUri) {
+      setError(t("new.setup.urlRequired"));
+      return false;
+    }
+    setUrlFetchError(null);
+    setUrlFetching(true);
+    try {
+      const response = (await cfs.manifests.fetchUri(requestedUri)) as
+        | { content: string }
+        | { ok?: false; error?: string };
+      if (!isCurrentSetupOperation(generation)) return false;
+      const errorResponse = response as { ok?: boolean; error?: string };
+      if (errorResponse.ok === false) {
+        throw new Error(errorResponse.error ?? "Fetch failed");
+      }
+      setYamlContent((response as { content: string }).content);
+      setSourceType("content");
+      handleTabSwitch("yaml");
+      return true;
+    } catch (err) {
+      if (!isCurrentSetupOperation(generation)) return false;
+      const raw = err instanceof Error ? err.message : String(err);
+      let friendly: string;
+      if (/HTTP 404/i.test(raw) || /not found/i.test(raw)) {
+        friendly = t("new.setup.urlErrors.notFound");
+      } else if (/HTTP 40[13]/i.test(raw) || /forbidden|unauthor/i.test(raw)) {
+        friendly = t("new.setup.urlErrors.authentication");
+      } else if (/HTTP 5\d\d/i.test(raw) || /server error/i.test(raw)) {
+        friendly = t("new.setup.urlErrors.server");
+      } else if (/abort|timeout/i.test(raw) || /signal/i.test(raw)) {
+        friendly = t("new.setup.urlErrors.timeout");
+      } else if (/fetch failed|enotfound|getaddrinfo|network/i.test(raw)) {
+        friendly = t("new.setup.urlErrors.network");
+      } else if (/private\/loopback|private\/?internal/i.test(raw)) {
+        friendly = t("new.setup.urlErrors.privateAddress");
+      } else if (/scheme|unsupported uri|invalid uri/i.test(raw)) {
+        friendly = t("new.setup.urlErrors.invalid");
+      } else if (/too large/i.test(raw)) {
+        friendly = t("new.setup.urlErrors.tooLarge");
+      } else {
+        friendly = t("new.setup.urlErrors.generic", { error: raw });
+      }
+      setUrlFetchError(friendly);
+      setError(friendly);
+      return false;
+    } finally {
+      if (isCurrentSetupOperation(generation)) {
+        setUrlFetching(false);
+      }
+    }
+  };
+
+  const handleSetupFiles = async (files: File[]) => {
+    const generation = beginSetupOperation();
+    setError(null);
+    setUrlFetchError(null);
+    setSetupImportResult(null);
+    setSelectedTemplate(null);
+    setBatchFiles([]);
+    setBatchProgress(null);
+    if (files.length === 0) return;
+
+    const tooLargeMessage = t("new.setup.urlErrors.tooLarge");
+    const oversizedFile = files.find((file) => file.size > MAX_WIZARD_IMPORT_BYTES);
+    if (oversizedFile) {
+      setError(`${oversizedFile.name}: ${tooLargeMessage}`);
+      return;
+    }
+    if (files.length > MAX_BATCH_FILE_COUNT) {
+      setError(
+        `${t("new.extracted.text14")} ${files.length} ${t("new.extracted.text15")} (> ${MAX_BATCH_FILE_COUNT}).`,
+      );
+      return;
+    }
+    const aggregateBytes = files.reduce((total, file) => total + file.size, 0);
+    if (aggregateBytes > MAX_BATCH_IMPORT_BYTES) {
+      setError(
+        `${t("new.extracted.text14")} ${fileSizeFormatter.format(
+          aggregateBytes / (1024 * 1024),
+        )} MB > ${MAX_BATCH_IMPORT_BYTES / (1024 * 1024)} MB.`,
+      );
+      return;
+    }
+
+    if (files.length > 1) {
+      setBatchFiles(files);
+      return;
+    }
+    const file = files[0];
+    setSetupImporting(true);
+    try {
+      const request = await createImportRequest(file, tooLargeMessage);
+      if (!isCurrentSetupOperation(generation)) return;
+
+      const result = await cfs.importChannel.fromContent(request);
+      if (!isCurrentSetupOperation(generation)) return;
+
+      if (result.yaml) {
+        setYamlContent(result.yaml);
+        setSourceType("content");
+        handleTabSwitch("yaml");
+      }
+      setSetupImportResult({
+        type: result.type,
+        filename: result.filename,
+        data: (result as { data?: unknown }).data as Record<string, unknown>,
+      });
+      if (!name.trim()) {
+        setName(
+          file.name
+            .replace(/\.(osc\.ya?ml|ya?ml|json|csv|tsv|xlsx)$/i, "")
+            .replace(/[^a-zA-Z0-9_-]/g, "-")
+            .slice(0, 64),
+        );
+      }
+    } catch (err) {
+      if (!isCurrentSetupOperation(generation)) return;
+      setError(err instanceof Error ? err.message : "Import failed");
+    } finally {
+      if (isCurrentSetupOperation(generation)) {
+        setSetupImporting(false);
+      }
+    }
+  };
+
+  const handleTemplateSelect = async (entry: BaselineEntry) => {
+    const generation = beginSetupOperation();
+    if (!entry.manifestUrl) return;
+    setTemplateLoadingId(entry.id);
+    setError(null);
+    setSelectedTemplate(null);
+    setSetupImportResult(null);
+    try {
+      const result = await cfs.library.get({ id: entry.id, content: true });
+      if (!isCurrentSetupOperation(generation)) return;
+      if (!result.content) {
+        throw new Error(result.note ?? t("new.setup.templatePicker.loadFailed"));
+      }
+      applyTemplate(result.content, entry.name, entry.platform);
+      setSelectedTemplate(entry);
+      setTemplatePickerOpen(false);
+    } catch (err) {
+      if (!isCurrentSetupOperation(generation)) return;
+      setError(err instanceof Error ? err.message : t("new.setup.templatePicker.loadFailed"));
+    } finally {
+      if (isCurrentSetupOperation(generation)) {
+        setTemplateLoadingId(null);
+      }
+    }
+  };
+
+  const canPrepareEditor =
+    name.trim().length > 0 &&
+    creationMethod !== null &&
+    (creationMethod === "custom" ||
+      (creationMethod === "url" && uri.trim().length > 0) ||
+      (creationMethod === "template" && selectedTemplate !== null) ||
+      ((creationMethod === "file" || creationMethod === "excel") &&
+        setupImportResult !== null &&
+        batchFiles.length === 0));
+
+  const handlePrepareEditor = async () => {
+    if (!canPrepareEditor || !creationMethod) return;
+    const generation = beginSetupOperation();
+    setPreparingEditor(true);
+    setError(null);
+    try {
+      if (
+        creationMethod === "url" &&
+        !(await fetchUrlIntoEditor(generation, uri.trim()))
+      ) {
+        return;
+      }
+      if (!isCurrentSetupOperation(generation)) return;
+      if (creationMethod === "custom") {
+        setYamlContent(platform === "linux" ? LINUX_DEFAULT_YAML : WINDOWS_DEFAULT_YAML);
+        setPlatformWarning(null);
+        handleTabSwitch("visual");
+      }
+      setSourceType("content");
+      setEditorStarted(true);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    } finally {
+      if (isCurrentSetupOperation(generation)) {
+        setPreparingEditor(false);
+      }
+    }
   };
 
   const handleSubmit = async () => {
@@ -279,6 +554,192 @@ function NewManifestPage() {
     `You haven't registered this baseline yet. Leave anyway and discard your work?`,
   );
 
+  const importSummary = setupImportResult
+    ? {
+        filename: setupImportResult.filename,
+        detail: t("new.setup.importReady"),
+      }
+    : null;
+
+  const batchContent =
+    batchFiles.length > 0 ? (
+      <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/30">
+        <div className="mb-3 flex items-center justify-between gap-3">
+          <h3 className="text-sm font-semibold text-blue-950 dark:text-blue-100">
+            {t("new.extracted.text14")} {batchFiles.length} {t("new.extracted.text15")}
+          </h3>
+          <div className="flex gap-2">
+            <Button
+              appearance="primary"
+              size="small"
+              disabled={!!batchProgress && batchProgress.done < batchProgress.total}
+              onClick={async () => {
+                const generation = beginSetupOperation();
+                const filesToImport = batchFiles;
+                const total = filesToImport.length;
+                const errors: string[] = [];
+                setBatchProgress({ done: 0, total, errors });
+                let doneCount = 0;
+                const tooLargeMessage = t("new.setup.urlErrors.tooLarge");
+                await runWithBoundedConcurrency(
+                  filesToImport,
+                  MAX_BATCH_IMPORT_CONCURRENCY,
+                  async (file) => {
+                    if (!isCurrentSetupOperation(generation)) return;
+                    try {
+                      const request = await createImportRequest(file, tooLargeMessage);
+                      if (!isCurrentSetupOperation(generation)) return;
+                      const result = await cfs.importChannel.fromContent(request);
+                      if (!isCurrentSetupOperation(generation)) return;
+                      if (result.yaml) {
+                        const derivedName = file.name
+                          .replace(/\.(osc\.yaml|yaml|yml|json|csv|tsv|xlsx)$/i, "")
+                          .replace(/[^a-zA-Z0-9_-]/g, "-");
+                        await cfs.manifests.register({
+                          name: derivedName,
+                          content: result.yaml,
+                          source: "import",
+                        });
+                        if (!isCurrentSetupOperation(generation)) return;
+                      }
+                    } catch (err) {
+                      if (isCurrentSetupOperation(generation)) {
+                        errors.push(
+                          `${file.name}: ${
+                            err instanceof Error
+                              ? err.message
+                              : t("administration.messages.unknownError")
+                          }`,
+                        );
+                      }
+                    } finally {
+                      if (isCurrentSetupOperation(generation)) {
+                        doneCount += 1;
+                        setBatchProgress({
+                          done: doneCount,
+                          total,
+                          errors: [...errors],
+                        });
+                      }
+                    }
+                  },
+                );
+
+                if (!isCurrentSetupOperation(generation)) return;
+                void refreshWorkspace().catch(() => {
+                  // Route entry retries a transient workspace refresh.
+                });
+                if (errors.length === 0) {
+                  batchNavigationTimerRef.current = setTimeout(() => {
+                    batchNavigationTimerRef.current = null;
+                    if (isCurrentSetupOperation(generation)) {
+                      navigate("/manifests");
+                    }
+                  }, 1500);
+                }
+              }}
+            >
+              {batchProgress && batchProgress.done < batchProgress.total
+                ? `Importing ${batchProgress.done + 1}/${batchProgress.total}…`
+                : t("new.extracted.text16")}
+            </Button>
+            <Button
+              appearance="secondary"
+              size="small"
+              onClick={() => {
+                beginSetupOperation();
+                setBatchFiles([]);
+                setBatchProgress(null);
+              }}
+            >
+              {t("new.extracted.text17")}
+            </Button>
+          </div>
+        </div>
+
+        <div className="space-y-1">
+          {batchFiles.map((file, index) => {
+            const completed = batchProgress ? index < batchProgress.done : false;
+            const errorMessage = batchProgress?.errors.find((entry) =>
+              entry.startsWith(`${file.name}:`),
+            );
+            return (
+              <div
+                key={`${file.name}-${index}`}
+                className={`flex items-center gap-2 rounded px-3 py-1.5 text-sm ${
+                  errorMessage
+                    ? "bg-red-100 text-red-800 dark:bg-red-950/40 dark:text-red-300"
+                    : completed
+                      ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-300"
+                      : "bg-white text-slate-700 dark:bg-slate-900 dark:text-slate-300"
+                }`}
+              >
+                {errorMessage ? (
+                  <DismissRegular className="h-4 w-4 shrink-0" />
+                ) : completed ? (
+                  <CheckmarkRegular className="h-4 w-4 shrink-0" />
+                ) : (
+                  <DocumentRegular className="h-4 w-4 shrink-0 text-slate-400" />
+                )}
+                <span className="truncate">{file.name}</span>
+                <span className="ml-auto shrink-0 text-xs opacity-70">
+                  {fileSizeFormatter.format(file.size / 1024)} {t("new.extracted.text18")}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    ) : null;
+
+  if (!editorStarted) {
+    return (
+      <>
+        <BaselineCreationSetup
+          method={creationMethod}
+          onMethodChange={(nextMethod) => {
+            beginSetupOperation();
+            setCreationMethod(nextMethod);
+            setError(null);
+            setUrlFetchError(null);
+            setSetupImportResult(null);
+            setSelectedTemplate(null);
+            setBatchFiles([]);
+            setBatchProgress(null);
+          }}
+          name={name}
+          onNameChange={setName}
+          platform={platform}
+          onPlatformChange={handlePlatformSwitch}
+          uri={uri}
+          onUriChange={(nextUri) => {
+            beginSetupOperation();
+            setUri(nextUri);
+            setError(null);
+            setUrlFetchError(null);
+          }}
+          importSummary={importSummary}
+          importing={setupImporting}
+          error={error ?? urlFetchError}
+          selectedTemplateName={selectedTemplate?.name ?? null}
+          onBrowseTemplates={() => setTemplatePickerOpen(true)}
+          onFilesSelected={(files) => void handleSetupFiles(files)}
+          canContinue={canPrepareEditor}
+          continuing={preparingEditor || urlFetching}
+          onContinue={() => void handlePrepareEditor()}
+          onCancel={() => navigate("/manifests")}
+          batchContent={batchContent}
+        />
+        <BaselineTemplatePickerDialog
+          open={templatePickerOpen}
+          loadingId={templateLoadingId}
+          onOpenChange={setTemplatePickerOpen}
+          onSelect={(entry) => void handleTemplateSelect(entry)}
+        />
+      </>
+    );
+  }
+
   return (
     <div className="mx-auto max-w-7xl space-y-6">
       {/* Header */}
@@ -299,208 +760,6 @@ function NewManifestPage() {
           </p>
         </div>
       </div>
-
-      {/* Import File */}
-      <div className="rounded-lg border-2 border-dashed border-slate-300 bg-white p-6 transition-colors hover:border-blue-400 dark:border-slate-700 dark:bg-slate-900 dark:hover:border-blue-500">
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept=".osc.yaml,.yaml,.yml,.json,.csv,.tsv"
-          multiple
-          className="hidden"
-          onChange={(e) => {
-            const files = e.target.files;
-            if (!files || files.length === 0) return;
-            if (files.length === 1) {
-              handleImport(files[0]);
-            } else {
-              setBatchFiles(Array.from(files));
-              setBatchProgress(null);
-            }
-          }}
-        />
-
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="rounded-lg bg-blue-50 p-2 dark:bg-blue-900/20">
-              <DocumentArrowUpRegular className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-            </div>
-            <div>
-              <p className="text-sm font-medium text-slate-900 dark:text-white">
-                {t("new.extracted.text5")}
-              </p>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
-                {t("new.extracted.text6")}
-              </p>
-            </div>
-          </div>
-          <Button
-            appearance="secondary"
-            onClick={() => fileInputRef.current?.click()}
-            disabled={importing}
-            icon={importing ? <Spinner size="tiny" /> : <ArrowUploadRegular />}
-          >
-            {importing ? t("new.extracted.text7") : t("new.extracted.text8")}
-          </Button>
-        </div>
-        {importResult && (
-          <MessageBar intent="success" style={{ marginTop: 16 }}>
-            <MessageBarBody>
-              <MessageBarTitle>
-                {t("new.extracted.text9")}
-                {importResult.filename} ({importResult.type})
-              </MessageBarTitle>
-              {importResult.type === "manifest" &&
-                `${(importResult.data as { resourceCount?: number }).resourceCount ?? 0} settings loaded`}
-              {importResult.type === "security-definition" &&
-                `${(importResult.data as { settingCount?: number }).settingCount ?? 0} settings converted to baseline`}
-              {importResult.type === "baseline-spreadsheet" &&
-                `${(importResult.data as { settingCount?: number }).settingCount ?? 0} baseline settings converted`}{" "}
-              {t("new.extracted.text13")}
-            </MessageBarBody>
-          </MessageBar>
-        )}
-      </div>
-
-      {/* Batch Import Panel */}
-      {batchFiles.length > 0 && (
-        <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-900/20">
-          <div className="mb-3 flex items-center justify-between">
-            <h3 className="text-sm font-semibold text-blue-900 dark:text-blue-200">
-              {t("new.extracted.text14")}
-              {batchFiles.length}
-              {t("new.extracted.text15")}
-            </h3>
-            <div className="flex gap-2">
-              <Button
-                appearance="primary"
-                size="small"
-                disabled={!!batchProgress && batchProgress.done < batchProgress.total}
-                onClick={async () => {
-                  const total = batchFiles.length;
-                  const errors: string[] = [];
-                  setBatchProgress({ done: 0, total, errors });
-
-                  // Parallel import. Each file does file.text() + 2 IPCs.
-                  // Sequential was ~150ms per file (10 files = 1.5s).
-                  // Parallel collapses that to roughly the slowest file's
-                  // time. We update progress as each settles, not by
-                  // input order, so the counter reflects actual completions.
-                  let doneCount = 0;
-                  await Promise.allSettled(
-                    batchFiles.map(async (file) => {
-                      try {
-                        const text = await file.text();
-                        const result = await cfs.importChannel.fromContent({
-                          filename: file.name,
-                          content: text,
-                        });
-                        if (result.yaml) {
-                          const derivedName = file.name
-                            .replace(/\.(osc\.yaml|yaml|yml|json|csv|tsv)$/i, "")
-                            .replace(/[^a-zA-Z0-9_-]/g, "-");
-                          await cfs.manifests.register({
-                            name: derivedName,
-                            content: result.yaml,
-                            source: "import",
-                          });
-                        }
-                      } catch (err) {
-                        errors.push(
-                          `${file.name}: ${err instanceof Error ? err.message : "failed"}`,
-                        );
-                      } finally {
-                        doneCount += 1;
-                        setBatchProgress({ done: doneCount, total, errors: [...errors] });
-                      }
-                    }),
-                  );
-
-                  void refreshWorkspace().catch(() => {
-                    // Registration results remain authoritative; route-entry
-                    // refresh retries a transient count/pruning failure.
-                  });
-
-                  if (errors.length === 0) {
-                    setTimeout(() => navigate("/manifests"), 1500);
-                  }
-                }}
-              >
-                {batchProgress && batchProgress.done < batchProgress.total
-                  ? `Importing ${batchProgress.done + 1}/${batchProgress.total}…`
-                  : t("new.extracted.text16")}
-              </Button>
-              <Button
-                appearance="secondary"
-                size="small"
-                onClick={() => {
-                  setBatchFiles([]);
-                  setBatchProgress(null);
-                  if (fileInputRef.current) fileInputRef.current.value = "";
-                }}
-              >
-                {t("new.extracted.text17")}
-              </Button>
-            </div>
-          </div>
-
-          <div className="space-y-1">
-            {batchFiles.map((file, idx) => {
-              const done = batchProgress ? idx < batchProgress.done : false;
-              const errMsg = batchProgress?.errors.find((e) => e.startsWith(file.name + ":"));
-              return (
-                <div
-                  key={file.name + idx}
-                  className={`flex items-center gap-2 rounded px-3 py-1.5 text-sm ${
-                    errMsg
-                      ? "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-300"
-                      : done
-                        ? "bg-emerald-100 text-emerald-800 dark:bg-emerald-900/30 dark:text-emerald-300"
-                        : "bg-white text-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                  }`}
-                >
-                  {errMsg ? (
-                    <DismissRegular className="h-4 w-4 shrink-0 text-red-500" />
-                  ) : done ? (
-                    <CheckmarkRegular className="h-4 w-4 shrink-0 text-emerald-500" />
-                  ) : (
-                    <DocumentRegular className="h-4 w-4 shrink-0 text-slate-400" />
-                  )}
-                  <span className="truncate">{file.name}</span>
-                  <span className="ml-auto shrink-0 text-xs text-slate-400">
-                    {fileSizeFormatter.format(file.size / 1024)}
-                    {t("new.extracted.text18")}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-
-          {batchProgress && batchProgress.done === batchProgress.total && (
-            <div className="mt-3">
-              {batchProgress.errors.length === 0 ? (
-                <MessageBar intent="success">
-                  <MessageBarBody>
-                    {t("new.extracted.text19")}
-                    {batchProgress.total}
-                    {t("new.extracted.text20")}
-                  </MessageBarBody>
-                </MessageBar>
-              ) : (
-                <MessageBar intent="warning">
-                  <MessageBarBody>
-                    {batchProgress.total - batchProgress.errors.length}
-                    {t("new.extracted.text21")}
-                    {batchProgress.total}
-                    {t("new.extracted.text22")} {batchProgress.errors.length}
-                    {t("new.extracted.text23")}
-                  </MessageBarBody>
-                </MessageBar>
-              )}
-            </div>
-          )}
-        </div>
-      )}
 
       {/* Error */}
       {error && (
@@ -631,7 +890,7 @@ function NewManifestPage() {
           </div>
         )}
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="max-w-xl">
           <label className="block">
             <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
               {t("new.extracted.text41")}
@@ -644,128 +903,7 @@ function NewManifestPage() {
               className="w-full rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
             />
           </label>
-
-          <label className="block">
-            <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-              {t("new.extracted.text43")}
-            </span>
-            <div className="flex rounded-lg border border-slate-200 dark:border-slate-700">
-              <button
-                onClick={() => setSourceType("content")}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-l-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  sourceType === "content"
-                    ? "bg-blue-600 text-white"
-                    : "bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
-                }`}
-              >
-                <ArrowUploadRegular className="h-4 w-4" />
-                {t("new.extracted.text44")}
-              </button>
-              <button
-                onClick={() => setSourceType("uri")}
-                className={`flex flex-1 items-center justify-center gap-2 rounded-r-lg px-4 py-2 text-sm font-medium transition-colors ${
-                  sourceType === "uri"
-                    ? "bg-blue-600 text-white"
-                    : "bg-white text-slate-600 hover:bg-slate-50 dark:bg-slate-800 dark:text-slate-400 dark:hover:bg-slate-700"
-                }`}
-              >
-                <LinkIcon className="h-4 w-4" />
-                {t("new.extracted.text45")}
-              </button>
-            </div>
-          </label>
         </div>
-
-        {sourceType === "uri" && (
-          <div className="mt-4 space-y-2">
-            <label className="block">
-              <span className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
-                {t("new.extracted.text47")}
-              </span>
-              <div className="flex gap-2">
-                <input
-                  type="url"
-                  value={uri}
-                  onChange={(e) => setUri(e.target.value)}
-                  placeholder={t("new.extracted.text48")}
-                  className="flex-1 rounded-lg border border-slate-200 bg-white px-4 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-white dark:placeholder:text-slate-500"
-                />
-
-                <Button
-                  type="button"
-                  appearance="secondary"
-                  disabled={!uri.trim() || urlFetching}
-                  onClick={async () => {
-                    setUrlFetchError(null);
-                    setUrlFetching(true);
-                    try {
-                      const res = (await cfs.manifests.fetchUri(uri.trim())) as
-                        | { content: string }
-                        | { ok?: false; error?: string };
-                      const errObj = res as { ok?: boolean; error?: string };
-                      if (errObj && errObj.ok === false) {
-                        throw new Error(errObj.error ?? "Fetch failed");
-                      }
-                      const content = (res as { content: string }).content;
-                      setYamlContent(content);
-                      setSourceType("content");
-                      // Default to the YAML tab — fetched content is typically YAML.
-                      handleTabSwitch("yaml");
-                    } catch (err) {
-                      // v0.3.0 (#16): classify the raw error into a
-                      // friendly message. The backend `fetchManifestFromUri`
-                      // throws `Failed to fetch manifest from URI: HTTP 404`
-                      // or `…: fetch failed`; we surface those as
-                      // actionable copy instead of raw HTTP status lines.
-                      const raw = err instanceof Error ? err.message : String(err);
-                      let friendly: string;
-                      if (/HTTP 404/i.test(raw) || /not found/i.test(raw)) {
-                        friendly = `The URL returned 404. The file may have been moved or deleted. Verify the link and try again.`;
-                      } else if (/HTTP 40[13]/i.test(raw) || /forbidden|unauthor/i.test(raw)) {
-                        friendly = `The URL requires authentication or is forbidden. ConfigForge fetches anonymously; use a public link or download + upload.`;
-                      } else if (/HTTP 5\d\d/i.test(raw) || /server error/i.test(raw)) {
-                        friendly = `Remote server returned an error. The host may be temporarily unavailable.`;
-                      } else if (/abort|timeout/i.test(raw) || /signal/i.test(raw)) {
-                        friendly = `The fetch timed out (limit 30s). Check your network connection or try a smaller baseline.`;
-                      } else if (/fetch failed|enotfound|getaddrinfo|network/i.test(raw)) {
-                        friendly = `Could not reach the host. Check your internet connection and that the URL is reachable.`;
-                      } else if (/private\/loopback|private\/?internal/i.test(raw)) {
-                        friendly = `URLs pointing to private or loopback addresses are not allowed. Use a public baseline URL.`;
-                      } else if (/scheme|unsupported uri|invalid uri/i.test(raw)) {
-                        friendly = `The URL is invalid. Make sure it starts with http:// or https:// and points to a YAML or JSON baseline.`;
-                      } else if (/too large/i.test(raw)) {
-                        friendly = `The baseline is too large (>10 MB). Trim it before importing.`;
-                      } else {
-                        friendly = `Fetch failed: ${raw}`;
-                      }
-                      setUrlFetchError(friendly);
-                    } finally {
-                      setUrlFetching(false);
-                    }
-                  }}
-                  icon={urlFetching ? <Spinner size="tiny" /> : <ArrowDownloadRegular />}
-                >
-                  {urlFetching ? t("new.extracted.text49") : t("new.extracted.text50")}
-                </Button>
-              </div>
-            </label>
-            <p className="text-xs text-slate-500 dark:text-slate-400">
-              {t("new.extracted.text51")}
-              <span className="font-medium">{t("new.extracted.text52")}</span>
-              {t("new.extracted.text53")}{" "}
-              <span className="font-medium">{t("new.extracted.text54")}</span>
-              {t("new.extracted.text55")}
-            </p>
-            {urlFetchError && (
-              <MessageBar intent="error">
-                <MessageBarBody>
-                  <MessageBarTitle>{t("new.extracted.text56")}</MessageBarTitle>
-                  {urlFetchError}
-                </MessageBarBody>
-              </MessageBar>
-            )}
-          </div>
-        )}
       </div>
 
       {/* Editor / Builder Tabs (only for content source) */}

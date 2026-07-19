@@ -29,6 +29,13 @@
     "emptyTitle": "Aún no hay datos de cumplimiento.",
     "sectionTitle": "Cumplimiento Estado"
   },
+  "closeUnsaved": {
+    "cancel": "Cancelar",
+    "description": "\"{{name}}\" tiene cambios que no se han guardado.",
+    "discard": "Descartar cambios",
+    "save": "Guardar baseline",
+    "title": "¿Cerrar sin guardar?"
+  },
   "content": {
     "editorView": "Editaror",
     "mofEditUnsupported": "No se soporta edición en MOF formato",

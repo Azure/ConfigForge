@@ -1,5 +1,23 @@
 # Changelog
 
+## [0.3.77] - 2026-07-17
+
+### Changed
+
+- **Completed the Loop baseline-creation workflow.** The new-baseline page now presents five deliberate starting methods: OSConfig file, public URL, Excel spreadsheet, Microsoft baseline template, or a clean custom Windows/Linux baseline. Each method prepares the shared Code/Visual editor before registration.
+- **Kept template selection in context.** A searchable, filterable Microsoft baseline picker opens inside the creation workflow and loads the chosen template directly into the editor.
+- **Added a visible Date Modified column** to My Baselines using the requested `YYYY-MM-DD` format.
+- **Remembered Code/Visual viewer preference per baseline** across tab closures and app restarts.
+- **Replaced the two-choice close prompt** with Save baseline, Discard changes, and Cancel actions; closing the active workspace tab uses the same protection.
+
+### Fixed
+
+- **Real `.xlsx` imports now work.** The renderer and Electron IPC preserve workbook bytes instead of decoding ZIP content as UTF-8, and the core importer reads the first worksheet without adding a runtime dependency.
+
+### Localization
+
+- Added French, German, and Spanish strings for the baseline-creation wizard and unsaved-close dialog.
+
 ## [0.3.76] - 2026-07-17
 
 ### Changed

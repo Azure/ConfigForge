@@ -11,9 +11,9 @@
 
 | Locale | Translated | Fallback/TODO | Total | Coverage |
 |---|---:|---:|---:|---:|
-| fr | 940 | 64 | 1004 | 93.6% |
-| de | 938 | 66 | 1004 | 93.4% |
-| es | 944 | 60 | 1004 | 94.0% |
+| fr | 995 | 66 | 1061 | 93.8% |
+| de | 993 | 68 | 1061 | 93.6% |
+| es | 999 | 62 | 1061 | 94.2% |
 
 ## Placeholder integrity check
 
@@ -21,7 +21,7 @@
 
 ## Length analysis
 
-Layout warnings (>150% of English): **95**
+Layout warnings (>150% of English): **99**
 
 ### fr: 20 longest values
 

@@ -29,6 +29,13 @@
     "emptyTitle": "Non compliance data yet.",
     "sectionTitle": "Conformité État"
   },
+  "closeUnsaved": {
+    "cancel": "Annuler",
+    "description": "\"{{name}}\" contient des modifications qui n'ont pas été enregistrées.",
+    "discard": "Ignorer les modifications",
+    "save": "Enregistrer la baseline",
+    "title": "Fermer sans enregistrer ?"
+  },
   "content": {
     "editorView": "Modifieror",
     "mofEditUnsupported": "L’édition n’est pas prise en charge dans MOF format",

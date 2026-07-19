@@ -88,6 +88,7 @@
     "table": {
       "baseline": "Baseline",
       "compliant": "Conforme",
+      "dateModified": "Date de modification",
       "issues": "Problèmes",
       "lastModifiedTitle": "Dernière modification le {{date}}",
       "lastModifiedUnknown": "Date de dernière modification indisponible",
@@ -195,6 +196,77 @@
     "deleteCount": "Supprimer {{count}}"
   },
   "new": {
+    "setup": {
+      "browseFiles": "Parcourir les fichiers",
+      "browseTemplates": "Parcourir les modèles de baseline",
+      "cancel": "Annuler",
+      "changeTemplate": "Modifier",
+      "create": "Créer la baseline",
+      "creating": "Préparation de la baseline…",
+      "description": "Choisissez un point de départ. ConfigForge ouvrira l'éditeur de baseline avant tout enregistrement.",
+      "emptyDescription": "Les champs nécessaires à cette méthode s'afficheront ici.",
+      "emptyTitle": "Choisissez comment commencer",
+      "excelDropTitle": "Déposez une baseline Excel ici",
+      "excelFormats": "CSV, TSV ou XLSX jusqu'à 10 Mo",
+      "fileDropTitle": "Déposez un fichier de baseline ici",
+      "fileFormats": "Fichier YAML ou JSON OSConfig jusqu'à 10 Mo",
+      "importing": "Importation de la baseline…",
+      "importReady": "Prêt à être vérifié dans l'éditeur de baseline.",
+      "methodLabel": "Choisissez une source pour votre baseline",
+      "methods": {
+        "custom": {
+          "description": "Commencez avec une baseline Windows ou Linux vierge.",
+          "title": "Créer ma propre baseline"
+        },
+        "excel": {
+          "description": "Convertissez une feuille de calcul de paramètres en baseline modifiable.",
+          "title": "Importer une baseline depuis Excel"
+        },
+        "file": {
+          "description": "Utilisez un fichier YAML ou JSON OSConfig existant.",
+          "title": "Importer un fichier de baseline existant"
+        },
+        "template": {
+          "description": "Commencez à partir d'une baseline Microsoft organisée.",
+          "title": "Choisir un modèle dans la bibliothèque de baselines"
+        },
+        "url": {
+          "description": "Récupérez une baseline OSConfig publique et vérifiez-la avant de l'enregistrer.",
+          "title": "Importer une baseline existante depuis une URL"
+        }
+      },
+      "platformLabel": "Système d'exploitation",
+      "selectedTemplate": "Modèle sélectionné",
+      "templateDescription": "Recherchez dans la bibliothèque de baselines Microsoft, puis adaptez la baseline sélectionnée dans l'éditeur.",
+      "templatePicker": {
+        "loadFailed": "Le modèle sélectionné n'a pas pu être chargé.",
+        "noMatches": "Aucun modèle de baseline ne correspond à ces filtres.",
+        "platforms": {
+          "all": "Toutes les plateformes",
+          "linux": "Linux",
+          "windows": "Windows"
+        },
+        "search": "Rechercher des modèles de baseline",
+        "title": "Modèles de baseline Microsoft",
+        "useTemplate": "Utiliser comme modèle"
+      },
+      "templateTitle": "Modèle de baseline",
+      "title": "Créer une baseline",
+      "urlHelp": "Seuls les liens HTTP ou HTTPS publics peuvent être récupérés.",
+      "urlLabel": "URL de la baseline",
+      "urlRequired": "Saisissez une URL de baseline avant de continuer.",
+      "urlErrors": {
+        "authentication": "L'URL nécessite une authentification ou est interdite. Utilisez un lien public ou téléchargez le fichier et importez-le.",
+        "generic": "Échec de la récupération : {{error}}",
+        "invalid": "Saisissez une URL HTTP ou HTTPS valide pointant vers une baseline YAML ou JSON.",
+        "network": "ConfigForge n'a pas pu joindre l'hôte. Vérifiez l'URL et votre connexion réseau.",
+        "notFound": "L'URL a renvoyé 404. Vérifiez que la baseline existe toujours à cette adresse.",
+        "privateAddress": "Les adresses privées et de bouclage ne sont pas autorisées. Utilisez une URL de baseline publique.",
+        "server": "Le serveur distant a renvoyé une erreur. Réessayez plus tard.",
+        "timeout": "La récupération a expiré après 30 secondes. Vérifiez la connexion ou utilisez une baseline plus petite.",
+        "tooLarge": "La baseline dépasse la limite d'importation de 10 Mo."
+      }
+    },
     "extracted": {
       "text1": "Chargement…",
       "text2": "Retour",

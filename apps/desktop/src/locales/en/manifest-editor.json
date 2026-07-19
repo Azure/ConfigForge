@@ -29,6 +29,13 @@
     "emptyTitle": "No compliance data yet.",
     "sectionTitle": "Compliance Status"
   },
+  "closeUnsaved": {
+    "cancel": "Cancel",
+    "description": "\"{{name}}\" has changes that have not been saved.",
+    "discard": "Discard changes",
+    "save": "Save baseline",
+    "title": "Close without saving?"
+  },
   "content": {
     "editorView": "Editor",
     "mofEditUnsupported": "Editing is not supported in MOF format",
