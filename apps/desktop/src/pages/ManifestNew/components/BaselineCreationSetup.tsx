@@ -5,7 +5,6 @@ import { useRef, type ChangeEvent, type DragEvent, type ReactNode } from "react"
 import type { Platform } from "@configforge/core/platform";
 import {
   ArrowUploadRegular,
-  DesktopRegular,
   DocumentArrowUpRegular,
   EditRegular,
   LibraryRegular,
@@ -14,6 +13,7 @@ import {
 } from "@fluentui/react-icons";
 import { Button, MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components";
 import { useTranslation } from "react-i18next";
+import { WindowsLogo } from "../../../components/WindowsLogo";
 
 export type BaselineCreationMethod = "file" | "url" | "excel" | "template" | "custom";
 
@@ -315,19 +315,23 @@ export function BaselineCreationSetup({
                         type="button"
                         onClick={() => onPlatformChange("windows")}
                         aria-pressed={platform === "windows"}
+                        aria-label={t("administration.filters.operatingSystem.options.windows")}
                         className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium ${
                           platform === "windows"
                             ? "bg-blue-600 text-white"
                             : "text-slate-600 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-800"
                         }`}
                       >
-                        <DesktopRegular className="h-4 w-4" aria-hidden="true" />
-                        {t("new.extracted.text39")}
+                        <span aria-hidden="true">
+                          <WindowsLogo className="h-4 w-4" />
+                        </span>
+                        {t("administration.filters.operatingSystem.options.windows")}
                       </button>
                       <button
                         type="button"
                         onClick={() => onPlatformChange("linux")}
                         aria-pressed={platform === "linux"}
+                        aria-label={t("administration.filters.operatingSystem.options.linux")}
                         className={`inline-flex items-center gap-2 rounded-md px-4 py-2 text-sm font-medium ${
                           platform === "linux"
                             ? "bg-blue-600 text-white"
@@ -335,7 +339,7 @@ export function BaselineCreationSetup({
                         }`}
                       >
                         <span aria-hidden="true">🐧</span>
-                        {t("new.extracted.text40")}
+                        {t("administration.filters.operatingSystem.options.linux")}
                       </button>
                     </div>
                   </div>

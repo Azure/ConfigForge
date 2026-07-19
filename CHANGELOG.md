@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.78] - 2026-07-19
+
+### Fixed
+
+- **Corrected the custom-baseline operating-system selector.** Windows now uses the shared four-color Windows SVG used elsewhere in ConfigForge, and Linux renders exactly one penguin icon instead of duplicating the emoji from the localized label.
+
 ## [0.3.77] - 2026-07-17
 
 ### Changed

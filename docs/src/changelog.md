@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.78 — 2026-07-19
+
+- **Corrected platform icons in Create New Baseline.** The custom baseline selector now uses ConfigForge's four-color Windows SVG and renders a single Linux penguin.
+
 ## v0.3.77 — 2026-07-17
 
 - **Completed the Loop design pass.** Register New Baseline now offers file, URL, Excel, Microsoft template, and custom-authoring methods before opening the shared editor; My Baselines shows Date Modified; each baseline remembers Code/Visual mode; edited baselines use Save/Discard/Cancel close protection; and real `.xlsx` workbooks import without a new runtime dependency.

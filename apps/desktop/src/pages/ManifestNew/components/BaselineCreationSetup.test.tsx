@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { beforeEach, describe, expect, it, vi } from "vitest";
-import { fireEvent, render } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import { getI18n } from "../../../locales";
 import { BaselineCreationSetup, type BaselineCreationMethod } from "./BaselineCreationSetup";
@@ -83,4 +83,41 @@ describe("BaselineCreationSetup file inputs", () => {
       expect(input).toHaveValue("");
     },
   );
+
+  it("uses the Windows logo and renders exactly one Linux penguin", () => {
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <BaselineCreationSetup
+          method="custom"
+          onMethodChange={vi.fn()}
+          name=""
+          onNameChange={vi.fn()}
+          platform="windows"
+          onPlatformChange={vi.fn()}
+          uri=""
+          onUriChange={vi.fn()}
+          importSummary={null}
+          importing={false}
+          error={null}
+          selectedTemplateName={null}
+          onBrowseTemplates={vi.fn()}
+          onFilesSelected={vi.fn()}
+          canContinue={false}
+          continuing={false}
+          onContinue={vi.fn()}
+          onCancel={vi.fn()}
+        />
+      </FluentProvider>,
+    );
+
+    const windows = screen.getByRole("button", { name: "Windows" });
+    expect(within(windows).getByRole("img", { hidden: true })).toHaveAttribute(
+      "viewBox",
+      "0 0 23 23",
+    );
+
+    const linux = screen.getByRole("button", { name: "Linux" });
+    expect(linux).toHaveTextContent("🐧Linux");
+    expect(linux.textContent?.match(/🐧/gu)).toHaveLength(1);
+  });
 });
