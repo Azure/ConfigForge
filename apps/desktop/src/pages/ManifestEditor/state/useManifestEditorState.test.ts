@@ -53,10 +53,12 @@ function installCfsMocks(overrides?: Partial<{
   get: ReturnType<typeof vi.fn>;
   exportGet: ReturnType<typeof vi.fn>;
   status: ReturnType<typeof vi.fn>;
+  auditGet: ReturnType<typeof vi.fn>;
 }>) {
   const get = overrides?.get ?? vi.fn();
   const exportGet = overrides?.exportGet ?? vi.fn();
   const status = overrides?.status ?? vi.fn();
+  const auditGet = overrides?.auditGet ?? vi.fn();
 
   // Default happy path — concrete manifests / yaml / status responses.
   if (!overrides?.get) {
@@ -79,8 +81,12 @@ function installCfsMocks(overrides?: Partial<{
   }
   if (!overrides?.status) {
     status.mockResolvedValue({
-      data: { name: 'sample', resources: [] },
+      name: 'sample',
+      resources: [],
     });
+  }
+  if (!overrides?.auditGet) {
+    auditGet.mockResolvedValue({ snapshot: null });
   }
 
   Object.assign(window.cfs as Record<string, unknown>, {
@@ -89,15 +95,17 @@ function installCfsMocks(overrides?: Partial<{
       status,
     },
     exportChannel: { get: exportGet },
+    auditResults: { get: auditGet },
   });
 
-  return { get, exportGet, status };
+  return { get, exportGet, status, auditGet };
 }
 
 beforeEach(() => {
   // Clear any prior namespace pollution between tests.
   delete (window.cfs as Record<string, unknown>).manifests;
   delete (window.cfs as Record<string, unknown>).exportChannel;
+  delete (window.cfs as Record<string, unknown>).auditResults;
   // Also clear the sessionStorage cache the hook touches.
   sessionStorage.clear();
   vi.restoreAllMocks();
@@ -106,6 +114,7 @@ beforeEach(() => {
 afterEach(() => {
   delete (window.cfs as Record<string, unknown>).manifests;
   delete (window.cfs as Record<string, unknown>).exportChannel;
+  delete (window.cfs as Record<string, unknown>).auditResults;
 });
 
 // ── Happy-path load ─────────────────────────────────────────────────
@@ -145,6 +154,47 @@ describe('useManifestEditorState — happy-path load', () => {
     expect(result.current.isEditable).toBe(true); // yaml is editable
     expect(result.current.isReadOnly).toBe(true); // but editing is false
     expect(result.current.hasUnsavedChanges).toBe(false);
+  });
+
+  it('loads the persisted audit report when live status has no compliance data', async () => {
+    const auditGet = vi.fn().mockResolvedValue({
+      snapshot: {
+        version: 1,
+        recordedAt: '2026-07-18T20:00:00.000Z',
+        mode: 'audit',
+        result: {
+          Resources: [
+            {
+              name: 'PasswordPolicy',
+              type: 'Microsoft.Windows/Registry',
+              status: 'NonCompliant',
+              reason: 'Expected 1, found 0',
+            },
+          ],
+        },
+      },
+    });
+    installCfsMocks({ auditGet });
+
+    const { result } = renderHook(() => useManifestEditorState('sample'));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    expect(auditGet).toHaveBeenCalledWith('sample');
+    expect(result.current.status).toMatchObject({
+      name: 'sample',
+      recordedAt: '2026-07-18T20:00:00.000Z',
+      mode: 'audit',
+      resources: [
+        {
+          name: 'PasswordPolicy',
+          type: 'Microsoft.Windows/Registry',
+          compliance: {
+            status: 'NonCompliant',
+            reason: 'Expected 1, found 0',
+          },
+        },
+      ],
+    });
   });
 });
 

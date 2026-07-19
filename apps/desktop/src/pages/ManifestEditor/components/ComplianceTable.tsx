@@ -22,6 +22,7 @@ export interface ComplianceTableProps {
   setExpandedResource: (idx: number | null) => void;
   complianceShowAll: boolean;
   setComplianceShowAll: (show: boolean) => void;
+  showHeader?: boolean;
 }
 
 export const ComplianceTable = React.memo(function ComplianceTable({
@@ -30,14 +31,19 @@ export const ComplianceTable = React.memo(function ComplianceTable({
   setExpandedResource,
   complianceShowAll,
   setComplianceShowAll,
+  showHeader = true,
 }: ComplianceTableProps) {
   const { t } = useTranslation("manifest-editor");
 
   return (
     <div className="rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
-      <div className="border-b border-slate-200 px-6 py-4 dark:border-slate-800">
-        <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t("compliance.sectionTitle")}</h2>
-      </div>
+      {showHeader && (
+        <div className="border-b border-slate-200 px-6 py-4 dark:border-slate-800">
+          <h2 className="text-lg font-semibold text-slate-900 dark:text-white">
+            {t("compliance.sectionTitle")}
+          </h2>
+        </div>
+      )}
 
       {resources.length === 0 ? (
         <div className="flex flex-col items-center justify-center py-12 text-sm text-slate-400 dark:text-slate-500">

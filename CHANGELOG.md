@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.78] - 2026-07-19
+
+### Fixed
+
+- **Corrected the custom-baseline operating-system selector.** Windows now uses the shared four-color Windows SVG used elsewhere in ConfigForge, and Linux renders exactly one penguin icon instead of duplicating the emoji from the localized label.
+- **Restored the inline Monaco read-only message styling.** The detached overflow host now receives the explicit dark background, foreground, border, and opacity that previously kept the warning legible instead of drawing directly over source lines.
+- **Made compliance reports persistent and easier to read.** Baseline Detail now loads the last revision-matched audit from the existing on-disk audit-results store across navigation and app restarts. The duplicate bottom-page report and narrow side drawer are replaced by one large centered compliance dialog.
+
 ## [0.3.77] - 2026-07-17
 
 ### Changed

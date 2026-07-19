@@ -66,6 +66,10 @@ export interface OscResource {
 export interface OscManifestStatus {
   name: string;
   resources: OscResource[];
+  /** Timestamp of the persisted audit that produced these resources. */
+  recordedAt?: string;
+  /** Whether the persisted report came from an audit or enforce run. */
+  mode?: 'audit' | 'enforce';
 }
 
 export interface SettingConfiguration {

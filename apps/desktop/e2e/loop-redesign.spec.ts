@@ -241,20 +241,72 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       "aria-pressed",
       "true",
     );
+    const codeEditor = page.locator(".monaco-editor").first();
+    await codeEditor.click();
+    await page.keyboard.type("x");
+    const readOnlyMessage = page.locator(
+      ".monaco-overflow-host .monaco-editor-overlaymessage .message",
+    );
+    await expect(readOnlyMessage).toBeVisible();
+    expect(
+      await readOnlyMessage.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          backgroundColor: style.backgroundColor,
+          borderColor: style.borderColor,
+          color: style.color,
+          opacity: style.opacity,
+        };
+      }),
+    ).toEqual({
+      backgroundColor: "rgb(37, 37, 38)",
+      borderColor: "rgb(0, 122, 204)",
+      color: "rgb(204, 204, 204)",
+      opacity: "1",
+    });
     for (const format of ["YAML", "JSON", "MOF"]) {
       await expect(page.getByRole("tab", { name: format })).toBeVisible();
     }
-    await expect(page.getByRole("heading", { name: "Compliance Status" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Compliance Status" })).toHaveCount(0);
     await expect(page.getByTestId("manifest-detail-footer")).toBeVisible();
     await page.getByRole("button", { name: "Check compliance" }).click();
-    const complianceDrawer = page.getByTestId("compliance-drawer");
-    await expect(complianceDrawer).toBeVisible();
-    await expect(
-      complianceDrawer.getByRole("heading", { name: "Compliance Status" }),
-    ).toBeVisible();
-    await expect(page.locator("#baseline-compliance")).toBeAttached();
+    const complianceDialog = page.getByTestId("compliance-dialog");
+    await expect(complianceDialog).toBeVisible();
+    const complianceSurface = page.getByRole("dialog", { name: "Compliance Status" });
+    await expect(complianceSurface).toBeVisible();
+    const assertDialogFitsViewport = async () => {
+      const geometry = await complianceSurface.evaluate((element) => {
+        const rect = element.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return {
+          bottom: rect.bottom,
+          borderBottom: Number.parseFloat(style.borderBottomWidth),
+          borderLeft: Number.parseFloat(style.borderLeftWidth),
+          borderRight: Number.parseFloat(style.borderRightWidth),
+          borderTop: Number.parseFloat(style.borderTopWidth),
+          left: rect.left,
+          right: rect.right,
+          top: rect.top,
+          viewportHeight: window.innerHeight,
+          viewportWidth: window.innerWidth,
+        };
+      });
+      expect(geometry.left).toBeGreaterThanOrEqual(24);
+      expect(geometry.top).toBeGreaterThanOrEqual(24);
+      expect(geometry.right).toBeLessThanOrEqual(geometry.viewportWidth - 24);
+      expect(geometry.bottom).toBeLessThanOrEqual(geometry.viewportHeight - 24);
+      expect(geometry.borderTop).toBeGreaterThan(0);
+      expect(geometry.borderRight).toBeGreaterThan(0);
+      expect(geometry.borderBottom).toBeGreaterThan(0);
+      expect(geometry.borderLeft).toBeGreaterThan(0);
+    };
+    await assertDialogFitsViewport();
+    await page.setViewportSize({ width: 900, height: 700 });
+    await assertDialogFitsViewport();
+    await page.setViewportSize({ width: 1440, height: 1000 });
+    await expect(page.locator("#baseline-compliance")).toHaveCount(0);
     await page.getByRole("button", { name: "Close compliance" }).click();
-    await expect(complianceDrawer).toBeHidden();
+    await expect(complianceDialog).toBeHidden();
 
     await page.getByRole("button", { name: "Visual" }).click();
     const visual = page.getByRole("region", { name: "Visual baseline settings" });
@@ -461,6 +513,56 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       /Import the CIS baseline files/,
       /Re-check catalog/,
     ]);
+  });
+
+  test("persisted compliance survives page navigation and application restart", async () => {
+    await goToMyBaselines();
+    const revision = await page.evaluate(async (name) => {
+      const response = await window.cfs!.manifests.get(name);
+      return (response.data as { Revision?: string }).Revision;
+    }, BASELINE_A);
+    expect(revision).toBeTruthy();
+
+    const auditDir = path.join(configHome, "audit-results");
+    await mkdir(auditDir, { recursive: true });
+    await writeFile(
+      path.join(auditDir, `${BASELINE_A}.json`),
+      JSON.stringify({
+        version: 1,
+        recordedAt: "2026-07-19T07:00:00.000Z",
+        mode: "audit",
+        registrationRevision: revision,
+        result: {
+          Resources: [
+            {
+              name: "AlphaSetting",
+              type: "Microsoft.Windows/Registry",
+              status: "NonCompliant",
+              reason: "Persisted audit from disk",
+            },
+          ],
+        },
+      }),
+      "utf8",
+    );
+
+    const assertPersistedReport = async () => {
+      await page.getByRole("button", { name: `Open baseline ${BASELINE_A}` }).click();
+      await page.getByRole("button", { name: "Check compliance" }).click();
+      const dialog = page.getByRole("dialog", { name: "Compliance Status" });
+      await expect(dialog.getByTitle("Persisted audit from disk")).toBeVisible();
+      await dialog.getByRole("button", { name: "Close compliance" }).click();
+      await page.getByRole("button", { name: "Close baseline" }).click();
+      await expect(page.getByRole("heading", { name: "My Baselines" })).toBeVisible();
+    };
+
+    await assertPersistedReport();
+    await assertPersistedReport();
+
+    await app.close();
+    await launchApp();
+    await goToMyBaselines();
+    await assertPersistedReport();
   });
 
   test("Create Baseline offers all five Loop methods before opening the editor", async () => {

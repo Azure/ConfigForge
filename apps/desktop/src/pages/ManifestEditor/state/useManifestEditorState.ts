@@ -19,8 +19,83 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { OscManifest, OscManifestStatus } from "@configforge/core/types";
-import { cfs } from "../../../lib/cfs";
+import { cfs, safeCfs } from "../../../lib/cfs";
 import type { FormatTab } from "../helpers";
+
+interface PersistedAuditSnapshot {
+  recordedAt: string;
+  mode: "audit" | "enforce";
+  result: unknown;
+}
+
+function normalizeManifestStatus(value: unknown): OscManifestStatus | null {
+  if (!value || typeof value !== "object") return null;
+  const record = value as Record<string, unknown>;
+  const nested = record.data;
+  const candidate =
+    nested && typeof nested === "object" && !Array.isArray(nested)
+      ? (nested as Record<string, unknown>)
+      : record;
+  if (!Array.isArray(candidate.resources)) return null;
+  return {
+    name: typeof candidate.name === "string" ? candidate.name : "",
+    resources: candidate.resources as OscManifestStatus["resources"],
+  };
+}
+
+function normalizePersistedAudit(
+  manifestName: string,
+  snapshot: PersistedAuditSnapshot | null,
+  manifest: OscManifest | null,
+): OscManifestStatus | null {
+  if (!snapshot?.result || typeof snapshot.result !== "object") return null;
+  const result = snapshot.result as Record<string, unknown>;
+  if (!Array.isArray(result.Resources)) return null;
+
+  const currentResources = manifest?.Resources ?? [];
+  const resources = result.Resources.flatMap((entry) => {
+    if (!entry || typeof entry !== "object") return [];
+    const record = entry as Record<string, unknown>;
+    if (
+      typeof record.name !== "string" ||
+      typeof record.type !== "string" ||
+      typeof record.status !== "string"
+    ) {
+      return [];
+    }
+    const current = currentResources.find(
+      (resource) => resource.name === record.name && resource.type === record.type,
+    );
+    return [
+      {
+        name: record.name,
+        type: record.type,
+        properties: current?.properties ?? {},
+        compliance: {
+          status: record.status,
+          reason: typeof record.reason === "string" ? record.reason : "",
+        },
+      },
+    ];
+  });
+
+  return {
+    name: manifestName,
+    resources,
+    recordedAt: snapshot.recordedAt,
+    mode: snapshot.mode,
+  };
+}
+
+function readSessionStatus(manifestName: string): OscManifestStatus | null {
+  try {
+    return normalizeManifestStatus(
+      JSON.parse(sessionStorage.getItem(`configforge-compliance-${manifestName}`) ?? "null"),
+    );
+  } catch {
+    return null;
+  }
+}
 
 export interface ManifestEditorState {
   // ── Load lifecycle ─────────────────────────────────────────────
@@ -179,12 +254,16 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
       // tenant that's ~5-10 MB serialized for one display. The new
       // `cfs.manifests.get(name)` channel returns just this manifest
       // with its Resources, no list traversal needed.
-      const [getRes, yamlRes, statusRes] = await Promise.allSettled([
+      const auditResultsApi = safeCfs("auditResults");
+      const [getRes, yamlRes, statusRes, auditRes] = await Promise.allSettled([
         cfs.manifests.get(manifestName),
         cfs.exportChannel.get({ name: manifestName, format: "yaml" }).then((a) =>
           typeof a.body === "string" ? a.body : new TextDecoder().decode(a.body),
         ),
         cfs.manifests.status(manifestName),
+        auditResultsApi
+          ? auditResultsApi.get(manifestName)
+          : Promise.resolve({ snapshot: null }),
       ]);
 
       // After awaiting: if the URL has navigated to a different
@@ -214,7 +293,12 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
         // eslint-disable-next-line no-console
         console.error("[ManifestEditor] cfs.manifests.status failed:", statusRes.reason);
       }
+      if (auditRes.status === "rejected") {
+        // eslint-disable-next-line no-console
+        console.error("[ManifestEditor] cfs.auditResults.get failed:", auditRes.reason);
+      }
 
+      let loadedManifest: OscManifest | null = null;
       if (getRes.status === "fulfilled") {
         const entry = (getRes.value as { data?: unknown }).data;
         if (entry && typeof entry === "object") {
@@ -222,7 +306,8 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
           // contract one-for-one (Name, DisplayName, Source, Resources,
           // Platform, …) so we can plug it straight into the existing
           // setManifest() consumer without reshaping.
-          setManifest(entry as OscManifest);
+          loadedManifest = entry as OscManifest;
+          setManifest(loadedManifest);
         }
       }
 
@@ -235,25 +320,17 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
         setEditBaselineContent(yamlRes.value);
       }
 
-      if (statusRes.status === "fulfilled") {
-        const data = (statusRes.value as { data?: unknown }).data;
-        if (data) setStatus(data as OscManifestStatus);
-        else {
-          try {
-            const cached = sessionStorage.getItem(`configforge-compliance-${manifestName}`);
-            if (cached) setStatus(JSON.parse(cached));
-          } catch {
-            /* ignore */
-          }
-        }
-      } else {
-        try {
-          const cached = sessionStorage.getItem(`configforge-compliance-${manifestName}`);
-          if (cached) setStatus(JSON.parse(cached));
-        } catch {
-          /* ignore */
-        }
-      }
+      const persistedStatus =
+        auditRes.status === "fulfilled"
+          ? normalizePersistedAudit(
+              manifestName,
+              (auditRes.value as { snapshot?: PersistedAuditSnapshot | null }).snapshot ?? null,
+              loadedManifest,
+            )
+          : null;
+      const liveStatus =
+        statusRes.status === "fulfilled" ? normalizeManifestStatus(statusRes.value) : null;
+      setStatus(persistedStatus ?? liveStatus ?? readSessionStatus(manifestName));
 
       setActiveFormat("yaml");
     } catch (err) {
