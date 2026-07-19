@@ -25,9 +25,16 @@
     "undoEditTitle": "Letzte Bearbeitung rückgängig machen"
   },
   "compliance": {
+    "allStatuses": "Alle Status",
     "emptyDescription": "Führen Sie Audit oder Enforce aus, um diese Baseline mit dem Gerät abzugleichen.",
     "emptyTitle": "Nein compliance data yet.",
-    "sectionTitle": "Konformität Status"
+    "filterStatus": "Konformitätsstatus filtern",
+    "noMatches": "Keine Konformitätseinstellungen entsprechen der aktuellen Suche und dem Statusfilter.",
+    "searchLabel": "Konformitätsbericht durchsuchen",
+    "searchPlaceholder": "Einstellungen, Typen oder Gründe durchsuchen",
+    "sectionTitle": "Konformität Status",
+    "showing": "{{filtered}} von {{total}} Einstellungen werden angezeigt",
+    "sortStatus": "Nach Konformitätsstatus sortieren"
   },
   "closeUnsaved": {
     "cancel": "Abbrechen",

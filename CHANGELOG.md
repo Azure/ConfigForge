@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.79] - 2026-07-19
+
+### Changed
+
+- **Added compliance report search and status controls.** Search matches setting names, resource types, and audit reasons. The report can be filtered to Compliant, Non-compliant, or Could not read settings, and the Status column now supports ascending, descending, and original-order sorting.
+
 ## [0.3.78] - 2026-07-19
 
 ### Fixed
