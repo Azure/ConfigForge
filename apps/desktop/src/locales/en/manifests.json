@@ -88,6 +88,7 @@
     "table": {
       "baseline": "Baseline",
       "compliant": "Compliant",
+      "dateModified": "Date Modified",
       "issues": "Issues",
       "lastModifiedTitle": "Last modified {{date}}",
       "lastModifiedUnknown": "Last modified date unavailable",
@@ -195,6 +196,77 @@
     "deleteCount": "Delete {{count}}"
   },
   "new": {
+    "setup": {
+      "browseFiles": "Browse files",
+      "browseTemplates": "Browse baseline templates",
+      "cancel": "Cancel",
+      "changeTemplate": "Change",
+      "create": "Create baseline",
+      "creating": "Preparing baseline…",
+      "description": "Choose a starting point. ConfigForge will open the baseline editor before anything is registered.",
+      "emptyDescription": "The fields needed for that method will appear here.",
+      "emptyTitle": "Choose how you want to start",
+      "excelDropTitle": "Drop an Excel baseline here",
+      "excelFormats": "CSV, TSV, or XLSX up to 10 MB",
+      "fileDropTitle": "Drop a baseline file here",
+      "fileFormats": "OSConfig YAML or JSON up to 10 MB",
+      "importing": "Importing baseline…",
+      "importReady": "Ready to review in the baseline editor.",
+      "methodLabel": "Choose a source for your baseline",
+      "methods": {
+        "custom": {
+          "description": "Start with a clean Windows or Linux baseline.",
+          "title": "Create my own baseline"
+        },
+        "excel": {
+          "description": "Convert a settings spreadsheet into an editable baseline.",
+          "title": "Import baseline from Excel"
+        },
+        "file": {
+          "description": "Use an existing OSConfig YAML or JSON file.",
+          "title": "Import existing baseline file"
+        },
+        "template": {
+          "description": "Start from a curated Microsoft baseline.",
+          "title": "Choose a template from the baseline library"
+        },
+        "url": {
+          "description": "Fetch a public OSConfig baseline and review it before registering.",
+          "title": "Import existing baseline from URL"
+        }
+      },
+      "platformLabel": "Operating system",
+      "selectedTemplate": "Selected template",
+      "templateDescription": "Search the Microsoft baseline library, then tailor the selected baseline in the editor.",
+      "templatePicker": {
+        "loadFailed": "The selected template could not be loaded.",
+        "noMatches": "No baseline templates match these filters.",
+        "platforms": {
+          "all": "All platforms",
+          "linux": "Linux",
+          "windows": "Windows"
+        },
+        "search": "Search baseline templates",
+        "title": "Microsoft baseline templates",
+        "useTemplate": "Use as template"
+      },
+      "templateTitle": "Baseline template",
+      "title": "Create new baseline",
+      "urlHelp": "Only public HTTP or HTTPS links can be fetched.",
+      "urlLabel": "Baseline URL",
+      "urlRequired": "Enter a baseline URL before continuing.",
+      "urlErrors": {
+        "authentication": "The URL requires authentication or is forbidden. Use a public link or download the file and import it.",
+        "generic": "Fetch failed: {{error}}",
+        "invalid": "Enter a valid HTTP or HTTPS URL that points to a YAML or JSON baseline.",
+        "network": "ConfigForge could not reach the host. Check the URL and your network connection.",
+        "notFound": "The URL returned 404. Verify that the baseline still exists at this address.",
+        "privateAddress": "Private and loopback addresses are not allowed. Use a public baseline URL.",
+        "server": "The remote server returned an error. Try again later.",
+        "timeout": "The fetch timed out after 30 seconds. Check the connection or use a smaller baseline.",
+        "tooLarge": "The baseline is larger than the 10 MB import limit."
+      }
+    },
     "extracted": {
       "text1": "Loading…",
       "text2": "Back",

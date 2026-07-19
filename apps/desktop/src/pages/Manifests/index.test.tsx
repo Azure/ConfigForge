@@ -236,6 +236,7 @@ describe('ManifestsPage administrative table', () => {
       'Settings',
       'Issues',
       'Compliant',
+      'Date Modified',
     ]) {
       expect(within(table).getByRole('columnheader', { name: column })).toBeInTheDocument();
     }
@@ -245,6 +246,7 @@ describe('ManifestsPage administrative table', () => {
     expect(alphaRow).toHaveTextContent('12');
     expect(alphaRow).toHaveTextContent('No issues');
     expect(alphaRow).toHaveTextContent('All compliant');
+    expect(alphaRow).toHaveTextContent(/\d{4}-\d{2}-\d{2}/);
     expect(within(alphaRow).getByText('No issues')).toHaveClass(
       'bg-slate-100',
       'text-slate-600',
@@ -507,6 +509,31 @@ describe('ManifestsPage administrative table', () => {
       'title',
       expect.stringContaining('Last modified date unavailable'),
     );
+    expect(screen.getByRole('row', { name: /Legacy Baseline/ })).toHaveTextContent('—');
+  });
+
+  it('renders Date Modified from the local calendar date instead of the UTC date', async () => {
+    const previousTimeZone = process.env.TZ;
+    process.env.TZ = 'America/Los_Angeles';
+    try {
+      installCfs([
+        makeManifest('local-date', {
+          DisplayName: 'Local Date Baseline',
+          LastModifiedAt: '2026-07-18T00:30:00.000Z',
+        }),
+      ]);
+
+      renderManifests();
+
+      const row = await screen.findByRole('row', { name: /Local Date Baseline/ });
+      expect(within(row).getByText('2026-07-17')).toBeInTheDocument();
+    } finally {
+      if (previousTimeZone === undefined) {
+        delete process.env.TZ;
+      } else {
+        process.env.TZ = previousTimeZone;
+      }
+    }
   });
 
   it('blocks Delete, Open, and Diff while Refresh owns the operation gate', async () => {

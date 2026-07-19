@@ -29,6 +29,13 @@
     "emptyTitle": "Nein compliance data yet.",
     "sectionTitle": "Konformität Status"
   },
+  "closeUnsaved": {
+    "cancel": "Abbrechen",
+    "description": "\"{{name}}\" enthält nicht gespeicherte Änderungen.",
+    "discard": "Änderungen verwerfen",
+    "save": "Baseline speichern",
+    "title": "Ohne Speichern schließen?"
+  },
   "content": {
     "editorView": "Bearbeitenor",
     "mofEditUnsupported": "Das Bearbeiten wird im MOF Format nicht unterstützt.",

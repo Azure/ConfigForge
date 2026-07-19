@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.77 — 2026-07-17
+
+- **Completed the Loop design pass.** Register New Baseline now offers file, URL, Excel, Microsoft template, and custom-authoring methods before opening the shared editor; My Baselines shows Date Modified; each baseline remembers Code/Visual mode; edited baselines use Save/Discard/Cancel close protection; and real `.xlsx` workbooks import without a new runtime dependency.
+
 ## v0.3.76 — 2026-07-17
 
 - **Cognitive Walkthrough polish.** Two selected baselines open Pairwise Diff; Code and Visual share visible read-only guidance and Undo; compliance opens in a drawer while remaining in-page; final-cell Enter appends a spreadsheet row; platform/status presentation is corrected; OSConfig recheck skips missing-path probes; stacked onboarding dialogs and redundant step prefixes are removed.

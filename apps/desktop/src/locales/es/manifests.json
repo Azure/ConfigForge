@@ -88,6 +88,7 @@
     "table": {
       "baseline": "Baseline",
       "compliant": "Conforme",
+      "dateModified": "Fecha de modificación",
       "issues": "Problemas",
       "lastModifiedTitle": "Última modificación el {{date}}",
       "lastModifiedUnknown": "Fecha de última modificación no disponible",
@@ -195,6 +196,77 @@
     "deleteCount": "Eliminar {{count}}"
   },
   "new": {
+    "setup": {
+      "browseFiles": "Examinar archivos",
+      "browseTemplates": "Examinar plantillas de baseline",
+      "cancel": "Cancelar",
+      "changeTemplate": "Cambiar",
+      "create": "Crear baseline",
+      "creating": "Preparando baseline…",
+      "description": "Elige un punto de partida. ConfigForge abrirá el editor de baseline antes de registrar nada.",
+      "emptyDescription": "Los campos necesarios para ese método aparecerán aquí.",
+      "emptyTitle": "Elige cómo quieres empezar",
+      "excelDropTitle": "Suelta aquí una baseline de Excel",
+      "excelFormats": "CSV, TSV o XLSX de hasta 10 MB",
+      "fileDropTitle": "Suelta aquí un archivo de baseline",
+      "fileFormats": "YAML o JSON de OSConfig de hasta 10 MB",
+      "importing": "Importando baseline…",
+      "importReady": "Lista para revisar en el editor de baseline.",
+      "methodLabel": "Elige un origen para tu baseline",
+      "methods": {
+        "custom": {
+          "description": "Empieza con una baseline limpia de Windows o Linux.",
+          "title": "Crear mi propia baseline"
+        },
+        "excel": {
+          "description": "Convierte una hoja de cálculo de configuración en una baseline editable.",
+          "title": "Importar baseline desde Excel"
+        },
+        "file": {
+          "description": "Usa un archivo YAML o JSON de OSConfig existente.",
+          "title": "Importar un archivo de baseline existente"
+        },
+        "template": {
+          "description": "Empieza con una baseline de Microsoft seleccionada.",
+          "title": "Elegir una plantilla de la biblioteca de baselines"
+        },
+        "url": {
+          "description": "Obtén una baseline pública de OSConfig y revísala antes de registrarla.",
+          "title": "Importar una baseline existente desde una URL"
+        }
+      },
+      "platformLabel": "Sistema operativo",
+      "selectedTemplate": "Plantilla seleccionada",
+      "templateDescription": "Busca en la biblioteca de baselines de Microsoft y personaliza la baseline seleccionada en el editor.",
+      "templatePicker": {
+        "loadFailed": "No se pudo cargar la plantilla seleccionada.",
+        "noMatches": "Ninguna plantilla de baseline coincide con estos filtros.",
+        "platforms": {
+          "all": "Todas las plataformas",
+          "linux": "Linux",
+          "windows": "Windows"
+        },
+        "search": "Buscar plantillas de baseline",
+        "title": "Plantillas de baseline de Microsoft",
+        "useTemplate": "Usar como plantilla"
+      },
+      "templateTitle": "Plantilla de baseline",
+      "title": "Crear nueva baseline",
+      "urlHelp": "Solo se pueden obtener vínculos HTTP o HTTPS públicos.",
+      "urlLabel": "URL de la baseline",
+      "urlRequired": "Escribe una URL de baseline antes de continuar.",
+      "urlErrors": {
+        "authentication": "La URL requiere autenticación o está prohibida. Usa un vínculo público o descarga el archivo e impórtalo.",
+        "generic": "Error al obtener: {{error}}",
+        "invalid": "Escribe una URL HTTP o HTTPS válida que apunte a una baseline YAML o JSON.",
+        "network": "ConfigForge no pudo acceder al host. Comprueba la URL y la conexión de red.",
+        "notFound": "La URL devolvió 404. Comprueba que la baseline siga existiendo en esta dirección.",
+        "privateAddress": "No se permiten direcciones privadas ni de bucle invertido. Usa una URL pública de baseline.",
+        "server": "El servidor remoto devolvió un error. Inténtalo más tarde.",
+        "timeout": "La solicitud agotó el tiempo de espera después de 30 segundos. Comprueba la conexión o usa una baseline más pequeña.",
+        "tooLarge": "La baseline supera el límite de importación de 10 MB."
+      }
+    },
     "extracted": {
       "text1": "Cargando…",
       "text2": "Atrás",

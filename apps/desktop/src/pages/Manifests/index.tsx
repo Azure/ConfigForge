@@ -44,10 +44,22 @@ const LAST_MODIFIED_FORMAT: Intl.DateTimeFormatOptions = {
   dateStyle: "medium",
   timeStyle: "short",
 };
+const LOCAL_CALENDAR_DATE_FORMAT: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+};
 const PERCENT_FORMAT: Intl.NumberFormatOptions = {
   style: "percent",
   maximumFractionDigits: 0,
 };
+
+function formatLocalCalendarDate(date: Date, formatter: Intl.DateTimeFormat): string {
+  const parts = new Map(
+    formatter.formatToParts(date).map(({ type, value }) => [type, value]),
+  );
+  return `${parts.get("year")}-${parts.get("month")}-${parts.get("day")}`;
+}
 
 function normalizeBaselineIdentity(value: string): string {
   return value.toLowerCase().replace(/[^a-z0-9]/g, "");
@@ -108,6 +120,7 @@ export function ManifestsPage() {
     setLastDeletedBatch,
   } = useBaselineWorkspace();
   const dateFormatter = useDateFormatter(LAST_MODIFIED_FORMAT);
+  const localCalendarDateFormatter = useDateFormatter(LOCAL_CALENDAR_DATE_FORMAT);
   const percentFormatter = useNumberFormatter(PERCENT_FORMAT);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [busyAction, setBusyAction] = useState<OperationKind | null>(null);
@@ -530,13 +543,16 @@ export function ManifestsPage() {
                   <th className="w-40 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
                     {t("administration.table.compliant")}
                   </th>
+                  <th className="w-32 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
+                    {t("administration.table.dateModified")}
+                  </th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                 {filteredManifests.length === 0 ? (
                   <tr>
                     <td
-                      colSpan={6}
+                      colSpan={7}
                       className="px-4 py-12 text-center text-sm text-slate-500 dark:text-slate-400"
                     >
                       {t("administration.table.noMatches")}
@@ -549,6 +565,9 @@ export function ManifestsPage() {
                     const compliance = getManifestCompliance(manifest);
                     const displayName = manifest.DisplayName || manifest.Name;
                     const lastModifiedDate = getManifestLastModifiedDate(manifest);
+                    const modifiedDateLabel = lastModifiedDate
+                      ? formatLocalCalendarDate(lastModifiedDate, localCalendarDateFormatter)
+                      : "—";
                     const modifiedTitle = lastModifiedDate
                       ? t("administration.table.lastModifiedTitle", {
                           date: dateFormatter.format(lastModifiedDate),
@@ -673,6 +692,12 @@ export function ManifestsPage() {
                                   })
                                 : t("administration.status.notAudited")}
                           </button>
+                        </td>
+                        <td
+                          className="whitespace-nowrap px-3 py-2 tabular-nums text-slate-600 dark:text-slate-300"
+                          title={modifiedTitle}
+                        >
+                          {modifiedDateLabel}
                         </td>
                       </tr>
                     );

@@ -8,7 +8,12 @@ import {
   BASELINE_WORKSPACE_STORAGE_KEY,
   BaselineWorkspaceProvider,
 } from './BaselineWorkspace';
-import { BaselineWorkspaceTabs } from './BaselineWorkspaceTabs';
+import {
+  BASELINE_CLOSE_REQUEST_EVENT,
+  BASELINE_NAVIGATION_REQUEST_EVENT,
+  BaselineWorkspaceTabs,
+  type BaselineNavigationRequestDetail,
+} from './BaselineWorkspaceTabs';
 
 function CurrentPath() {
   return <output aria-label="current-path">{useLocation().pathname}</output>;
@@ -60,6 +65,9 @@ describe('BaselineWorkspaceTabs', () => {
         'alpha',
       ]),
     );
+
+    fireEvent.click(screen.getByRole('tab', { name: 'All Baselines' }));
+    expect(screen.getByLabelText('current-path')).toHaveTextContent('/manifests');
   });
 
   it('routes an open tab to its latest detail state and closes the active tab to the list', async () => {
@@ -92,6 +100,71 @@ describe('BaselineWorkspaceTabs', () => {
     fireEvent.click(screen.getByRole('button', { name: 'More open baselines' }));
 
     expect(await screen.findByRole('menuitem', { name: 'alpha' })).toBeInTheDocument();
-    expect(screen.getByRole('menuitem', { name: 'beta' })).toBeInTheDocument();
+    fireEvent.click(screen.getByRole('menuitem', { name: 'beta' }));
+    expect(screen.getByLabelText('current-path')).toHaveTextContent('/manifests/beta');
+  });
+
+  it.each([
+    {
+      surface: 'All Baselines',
+      destination: '/manifests',
+      click: async () => {
+        fireEvent.click(screen.getByRole('tab', { name: 'All Baselines' }));
+      },
+    },
+    {
+      surface: 'another open baseline tab',
+      destination: '/manifests/beta',
+      click: async () => {
+        fireEvent.click(screen.getByRole('tab', { name: 'beta' }));
+      },
+    },
+    {
+      surface: 'a More-menu baseline',
+      destination: '/manifests/beta',
+      click: async () => {
+        fireEvent.click(screen.getByRole('button', { name: 'More open baselines' }));
+        fireEvent.click(await screen.findByRole('menuitem', { name: 'beta' }));
+      },
+    },
+  ])(
+    'lets the active editor intercept navigation from $surface with its destination',
+    async ({ destination, click }) => {
+      localStorage.setItem(
+        BASELINE_WORKSPACE_STORAGE_KEY,
+        JSON.stringify(['alpha', 'beta']),
+      );
+      const listener = vi.fn((event: Event) => event.preventDefault());
+      window.addEventListener(BASELINE_NAVIGATION_REQUEST_EVENT, listener);
+      renderAt('/manifests/alpha');
+      await screen.findByRole('tab', { name: 'beta' });
+
+      await click();
+
+      expect(listener).toHaveBeenCalledTimes(1);
+      expect(
+        (listener.mock.calls[0][0] as CustomEvent<BaselineNavigationRequestDetail>).detail,
+      ).toEqual({
+        name: 'alpha',
+        destination,
+      });
+      expect(screen.getByLabelText('current-path')).toHaveTextContent('/manifests/alpha');
+      window.removeEventListener(BASELINE_NAVIGATION_REQUEST_EVENT, listener);
+    },
+  );
+
+  it('lets the active editor intercept a tab close for unsaved changes', async () => {
+    localStorage.setItem(BASELINE_WORKSPACE_STORAGE_KEY, JSON.stringify(['alpha']));
+    const listener = vi.fn((event: Event) => event.preventDefault());
+    window.addEventListener(BASELINE_CLOSE_REQUEST_EVENT, listener);
+    renderAt('/manifests/alpha');
+    await screen.findByRole('tab', { name: 'alpha' });
+
+    fireEvent.click(screen.getByRole('button', { name: 'Close alpha' }));
+
+    expect(listener).toHaveBeenCalledTimes(1);
+    expect(screen.getByLabelText('current-path')).toHaveTextContent('/manifests/alpha');
+    expect(screen.getByRole('tab', { name: 'alpha' })).toBeInTheDocument();
+    window.removeEventListener(BASELINE_CLOSE_REQUEST_EVENT, listener);
   });
 });
