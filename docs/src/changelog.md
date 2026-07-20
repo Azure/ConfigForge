@@ -3,6 +3,11 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.81-author.1 — 2026-07-19
+
+- **Ported first-class OSConfig CSV imports** for typed Registry/CSP resources, profile values, and Test compliance criteria.
+- **Corrected responsive Baseline Detail actions.** Every available mac-author footer action retains its icon and label, using one row on wide layouts and balanced compact rows when space tightens.
+
 ## v0.3.76-author.1 — 2026-07-18
 
 - **Added author-only Recent Activity.** The macOS dashboard now shows baseline registration and edit-history summaries while excluding device deploy, audit, enforce, and revert events.
