@@ -281,9 +281,25 @@ export function ManifestDetailPage() {
 
   useEffect(() => {
     if (loading) return;
-    if (new URLSearchParams(location.search).get("section") !== "compliance") return;
+    const searchParams = new URLSearchParams(location.search);
+    if (searchParams.get("section") !== "compliance") return;
     handleCheckCompliance();
-  }, [handleCheckCompliance, loading, location.search]);
+    searchParams.delete("section");
+    navigate(
+      {
+        pathname: location.pathname,
+        search: searchParams.size > 0 ? `?${searchParams.toString()}` : "",
+      },
+      { replace: true, state: location.state },
+    );
+  }, [
+    handleCheckCompliance,
+    loading,
+    location.pathname,
+    location.search,
+    location.state,
+    navigate,
+  ]);
 
   const handleSave = useCallback(
     async (extra?: { rationale?: string; skipped?: boolean; changeSummary?: string }) => {

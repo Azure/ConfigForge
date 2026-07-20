@@ -6,6 +6,7 @@ import { createRequire } from "node:module";
 import { mkdtemp, mkdir, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
+import yaml from "js-yaml";
 
 const APP_ROOT = path.resolve(__dirname, "..");
 const MAIN_ENTRY = path.join(APP_ROOT, "dist", "electron", "main.js");
@@ -229,6 +230,64 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(page.getByText("Showing 5 of 5")).toBeVisible();
   });
 
+  test("OSConfig CSV import preserves typed Registry and CSP resources", async () => {
+    const csv = [
+      "Name,Registry Key,Registry Value,Registry Value Type,CSP Name,CSP Path,CSP Value Type,Default Value: Domain Controller,Default Value: Member Server,Expected Value: Domain Controller,Expected Value: Member Server",
+      "RegistrySetting,HKLM:\\SOFTWARE\\ConfigForge\\Loop,Enabled,REG_DWORD,,,,0,1,Equals(0),Equals(1)",
+      'CspSetting,HKLM:\\SOFTWARE\\ConfigForge\\Loop,Mode,REG_DWORD,./Vendor/MSFT/Policy,Config/ConfigForge/Mode,Integer,0,2,Equals(0),"Range(1, 3)"',
+    ].join("\n");
+    const result = await page.evaluate(async (content) => {
+      return window.cfs!.importChannel.fromContent({
+        filename: "server-baseline.csv",
+        content,
+      });
+    }, csv);
+    const document = yaml.load(result.yaml) as {
+      resources: Array<Record<string, unknown>>;
+    };
+
+    expect(result.data).toEqual(
+      expect.objectContaining({
+        profile: "Member Server",
+        settingCount: 2,
+        skippedSettingCount: 0,
+      }),
+    );
+    expect(document.resources).toEqual([
+      {
+        name: "RegistrySetting",
+        type: "Microsoft.OSConfig/Test",
+        properties: {
+          resource: {
+            type: "Microsoft.Windows/Registry",
+            properties: {
+              keyPath: "HKEY_LOCAL_MACHINE\\SOFTWARE\\ConfigForge\\Loop",
+              valueName: "Enabled",
+              valueType: "REG_DWORD",
+              value: 1,
+            },
+          },
+          schema: { const: 1 },
+        },
+      },
+      {
+        name: "CspSetting",
+        type: "Microsoft.OSConfig/Test",
+        properties: {
+          resource: {
+            type: "Microsoft.Windows/CSP",
+            properties: {
+              path: "./Vendor/MSFT/Policy/Config/ConfigForge/Mode",
+              type: "integer",
+              value: 2,
+            },
+          },
+          schema: { minimum: 1, maximum: 3 },
+        },
+      },
+    ]);
+  });
+
   test("Code and Visual viewers preserve read-only and edit flows", async () => {
     await goToMyBaselines();
     await page.getByRole("button", { name: `Open baseline ${BASELINE_A}` }).click();
@@ -268,7 +327,63 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       await expect(page.getByRole("tab", { name: format })).toBeVisible();
     }
     await expect(page.getByRole("heading", { name: "Compliance Status" })).toHaveCount(0);
-    await expect(page.getByTestId("manifest-detail-footer")).toBeVisible();
+    const footer = page.getByTestId("manifest-detail-footer");
+    await expect(footer).toBeVisible();
+    for (const width of [2000, 1440, 900]) {
+      await page.setViewportSize({ width, height: 900 });
+      const geometry = await footer.evaluate((element) => {
+        const footerRect = element.getBoundingClientRect();
+        const controls = Array.from(element.querySelectorAll<HTMLElement>("button, a"))
+          .filter((control) => {
+            const style = getComputedStyle(control);
+            return style.display !== "none" && style.visibility !== "hidden";
+          })
+          .map((control) => {
+            const rect = control.getBoundingClientRect();
+            return {
+              label: control.getAttribute("aria-label") ?? control.textContent?.trim() ?? "",
+              left: rect.left,
+              right: rect.right,
+            };
+          });
+        return {
+          clientWidth: element.clientWidth,
+          controls,
+          left: footerRect.left,
+          right: footerRect.right,
+          scrollWidth: element.scrollWidth,
+        };
+      });
+      expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+      for (const control of geometry.controls) {
+        expect(control.left, `${control.label} left edge at ${width}px`).toBeGreaterThanOrEqual(
+          geometry.left,
+        );
+        expect(control.right, `${control.label} right edge at ${width}px`).toBeLessThanOrEqual(
+          geometry.right,
+        );
+      }
+      for (const action of [
+        "Close baseline",
+        "Delete Baseline",
+        "Duplicate",
+        "Audit Pack",
+        "Check compliance",
+        "Docs",
+        "History",
+        "Export",
+        "Deploy",
+        "Revert",
+        "Edit",
+      ]) {
+        await expect(
+          footer.getByRole(action === "Audit Pack" || action === "History" ? "link" : "button", {
+            name: action,
+          }),
+        ).toBeVisible();
+      }
+    }
+    await page.setViewportSize({ width: 1440, height: 1000 });
     await page.getByRole("button", { name: "Check compliance" }).click();
     const complianceDialog = page.getByTestId("compliance-dialog");
     await expect(complianceDialog).toBeVisible();
@@ -357,7 +472,6 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await page.setViewportSize({ width: 1440, height: 1000 });
 
     await page.getByRole("button", { name: "Edit" }).click();
-    const footer = page.getByTestId("manifest-detail-footer");
     await expect(footer.getByRole("button", { name: "Save" })).toBeVisible();
     await expect(footer.getByRole("button", { name: "Edit" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
@@ -597,6 +711,35 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await launchApp();
     await goToMyBaselines();
     await assertPersistedReport();
+
+    await page
+      .getByRole("button", { name: `Open compliance for ${BASELINE_A}` })
+      .click();
+    const deepLinkedDialog = page.getByRole("dialog", { name: "Compliance Status" });
+    await expect(deepLinkedDialog).toBeVisible();
+    await deepLinkedDialog.getByRole("button", { name: "Close compliance" }).click();
+
+    await page.getByRole("button", { name: "Visual" }).click();
+    await page.getByRole("button", { name: "Edit" }).click();
+    const visual = page.getByRole("region", { name: "Visual baseline settings" });
+    await visual
+      .getByRole("button", { name: "Edit Applied value for AlphaSetting" })
+      .click();
+    const valueEditor = visual.getByRole("textbox", {
+      name: "Edit Applied value for AlphaSetting",
+    });
+    await valueEditor.fill("6");
+    await page
+      .getByTestId("manifest-detail-footer")
+      .getByRole("button", { name: "Save" })
+      .click();
+    await page
+      .getByRole("dialog", { name: "Why this change?" })
+      .getByRole("button", { name: "Skip" })
+      .click();
+    await expect(page.getByText("Viewing", { exact: true })).toBeVisible();
+    await expect(page.getByTestId("compliance-dialog")).toHaveCount(0);
+    await page.getByRole("button", { name: "Close baseline" }).click();
   });
 
   test("Create Baseline offers all five Loop methods before opening the editor", async () => {

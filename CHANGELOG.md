@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.3.80] - 2026-07-19
+
+### Fixed
+
+- **Made OSConfig CSV import first-class.** Official LAPS, Defender Antivirus, and Windows Server security-baseline CSVs now preserve Registry/CSP definitions, typed desired values, Member Server profiles, and `Microsoft.OSConfig/Test` compliance expressions. Quoted multiline records and comma, tab, semicolon, or pipe delimiters are supported, while flattened report CSVs now explain why they cannot reconstruct a manifest.
+- **Kept every Baseline Detail footer action visible.** The footer adapts labels and control widths to the available Electron window size without horizontal scrolling or clipped actions.
+- **Stopped Save → Skip from reopening Compliance Status.** Compliance deep links are consumed after their first use, so saving an edited baseline returns to the normal read-only page.
+
 ## [0.3.79] - 2026-07-19
 
 ### Changed
