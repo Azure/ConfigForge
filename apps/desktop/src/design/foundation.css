@@ -173,50 +173,111 @@
   .cfs-no-drag { -webkit-app-region: no-drag; }
 
   /* Baseline detail footer ──────────────────────────────────────────
-     Never horizontally scroll or hide actions. Wide layouts show full
-     labels; compact layouts preserve every action as a 32px icon button.
-     The app's minimum window width is 880px, where all icons still fit. */
+     Preserve every labeled action. The toolbar stays on one row while
+     space allows, then moves the secondary actions to a compact second
+     row instead of hiding labels or creating a horizontal scroller. */
   .cfs-manifest-footer {
     container-name: manifest-footer;
     container-type: inline-size;
   }
 
   .cfs-footer-bar {
+    display: grid;
+    grid-template-areas: 'close leading-divider actions trailing-divider primary';
+    grid-template-columns: max-content max-content minmax(0, 1fr) max-content max-content;
+    align-items: center;
+    column-gap: clamp(4px, 0.55cqi, 12px);
+  }
+
+  .cfs-footer-close-action {
+    grid-area: close;
+  }
+
+  .cfs-footer-divider-leading {
+    grid-area: leading-divider;
+  }
+
+  .cfs-footer-actions {
+    grid-area: actions;
+    min-width: 0;
+  }
+
+  .cfs-footer-action-group {
+    display: flex;
     flex-wrap: nowrap;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(2px, 0.35cqi, 8px);
+  }
+
+  .cfs-footer-divider-trailing {
+    grid-area: trailing-divider;
+  }
+
+  .cfs-footer-primary-action {
+    grid-area: primary;
+  }
+
+  .cfs-footer-action {
+    min-width: 0 !important;
+    padding-inline: clamp(6px, 0.65cqi, 12px) !important;
+    font-size: clamp(11px, 0.72cqi, 13px) !important;
+  }
+
+  .cfs-footer-action svg {
+    width: clamp(16px, 1.05cqi, 20px);
+    height: clamp(16px, 1.05cqi, 20px);
   }
 }
 
-@container manifest-footer (max-width: 1700px) {
-  .cfs-footer-secondary-label,
-  .cfs-footer-chevron {
-    display: none;
+@container manifest-footer (max-width: 1220px) {
+  .cfs-footer-bar {
+    grid-template-areas:
+      'close primary'
+      'actions actions';
+    grid-template-columns: minmax(0, 1fr) max-content;
+    row-gap: 6px;
+    padding: 6px 12px !important;
   }
 
-  .cfs-footer-action:not(.cfs-footer-close-action):not(.cfs-footer-primary-action) {
-    width: 32px !important;
-    min-width: 32px !important;
-    padding-inline: 6px !important;
-    gap: 0 !important;
+  .cfs-footer-close-action {
+    justify-self: start;
   }
-}
 
-@container manifest-footer (max-width: 1050px) {
-  .cfs-footer-close-label,
-  .cfs-footer-primary-label,
+  .cfs-footer-actions {
+    width: 100%;
+  }
+
+  .cfs-footer-action-group {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .cfs-footer-primary-action {
+    justify-self: end;
+  }
+
   .cfs-footer-divider {
     display: none;
   }
+}
 
+@container manifest-footer (max-width: 940px) {
   .cfs-footer-bar {
-    gap: 4px;
+    row-gap: 4px;
     padding-inline: 8px !important;
   }
 
-  .cfs-footer-close-action,
-  .cfs-footer-primary-action {
-    width: 36px !important;
-    min-width: 36px !important;
-    padding-inline: 8px !important;
+  .cfs-footer-action-group {
+    display: grid;
+    grid-template-columns: repeat(5, max-content);
+    justify-content: center;
+    gap: 2px 4px;
+  }
+
+  .cfs-footer-action {
+    padding-inline: 4px !important;
+    font-size: 11px !important;
   }
 }
 

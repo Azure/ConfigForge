@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.81] - 2026-07-19
+
+### Fixed
+
+- **Corrected the Baseline Detail footer adaptation.** Responsive layouts no longer remove action labels or leave isolated icons across large empty regions. Wide windows keep one complete labeled toolbar; scaled and narrow Electron windows move the secondary actions into balanced compact rows while preserving every label, icon, and action without clipping or horizontal scrolling.
+
 ## [0.3.80] - 2026-07-19
 
 ### Fixed
