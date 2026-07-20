@@ -329,7 +329,7 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(page.getByRole("heading", { name: "Compliance Status" })).toHaveCount(0);
     const footer = page.getByTestId("manifest-detail-footer");
     await expect(footer).toBeVisible();
-    for (const width of [2000, 1440, 900]) {
+    for (const width of [2000, 1440, 1100, 1000, 900, 880]) {
       await page.setViewportSize({ width, height: 900 });
       const geometry = await footer.evaluate((element) => {
         const footerRect = element.getBoundingClientRect();
@@ -342,19 +342,36 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
             const rect = control.getBoundingClientRect();
             return {
               label: control.getAttribute("aria-label") ?? control.textContent?.trim() ?? "",
+              centerY: (rect.top + rect.bottom) / 2,
               left: rect.left,
               right: rect.right,
             };
           });
+        const labels = Array.from(
+          element.querySelectorAll<HTMLElement>(
+            ".cfs-footer-close-label, .cfs-footer-secondary-label, .cfs-footer-primary-label",
+          ),
+        ).map((label) => ({
+          display: getComputedStyle(label).display,
+          text: label.textContent?.trim() ?? "",
+        }));
         return {
           clientWidth: element.clientWidth,
           controls,
+          height: footerRect.height,
+          labels,
           left: footerRect.left,
           right: footerRect.right,
           scrollWidth: element.scrollWidth,
         };
       });
       expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+      expect(geometry.height).toBeLessThanOrEqual(128);
+      expect(geometry.labels.length).toBeGreaterThanOrEqual(11);
+      for (const label of geometry.labels) {
+        expect(label.display, `${label.text} label display at ${width}px`).not.toBe("none");
+        expect(label.text, `label text at ${width}px`).not.toBe("");
+      }
       for (const control of geometry.controls) {
         expect(control.left, `${control.label} left edge at ${width}px`).toBeGreaterThanOrEqual(
           geometry.left,
@@ -362,6 +379,24 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
         expect(control.right, `${control.label} right edge at ${width}px`).toBeLessThanOrEqual(
           geometry.right,
         );
+      }
+      const rows = new Set(geometry.controls.map((control) => Math.round(control.centerY)));
+      if (geometry.clientWidth <= 1220) {
+        expect(rows.size, `responsive rows at ${width}px`).toBeGreaterThan(1);
+      } else {
+        expect(rows.size, `single footer row at ${width}px`).toBe(1);
+      }
+      if (geometry.clientWidth <= 940) {
+        const secondaryRows = new Map<number, number>();
+        for (const control of geometry.controls.filter(
+          (control) => control.label !== "Close baseline" && control.label !== "Edit",
+        )) {
+          const row = Math.round(control.centerY);
+          secondaryRows.set(row, (secondaryRows.get(row) ?? 0) + 1);
+        }
+        const counts = [...secondaryRows.values()];
+        expect(counts).toHaveLength(2);
+        expect(Math.max(...counts) - Math.min(...counts)).toBeLessThanOrEqual(1);
       }
       for (const action of [
         "Close baseline",
