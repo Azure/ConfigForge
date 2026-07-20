@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.81-author.1] - 2026-07-19
+
+### Fixed
+- **Official OSConfig CSVs now import as first-class baselines.** LAPS, Defender Antivirus, and Windows Server CSVs preserve typed Registry/CSP resources, role-specific values, and Test compliance criteria.
+- **Baseline Detail footer actions remain labeled at every supported width.** Wide windows use one complete row; scaled and narrow layouts reflow actions into balanced compact rows without clipping, horizontal scrolling, or isolated icon-only controls.
+
 ## [0.3.76-author.1] - 2026-07-18
 
 ### Added
