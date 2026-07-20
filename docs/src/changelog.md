@@ -3,6 +3,13 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.82-author.1 — 2026-07-20
+
+- **Refined Baseline Detail document identity and view-only feedback.** The title uses a document icon, and Visual table clicks clearly explain that editing requires Edit mode.
+- **Improved Visual authoring reach.** Add setting actions now appear above and below every table.
+- **Added Matrix baseline search** so large registered-baseline lists can be filtered before selection.
+- **Patched `js-yaml` to 4.3.0** across direct and transitive dependencies to resolve a high-severity CPU-consumption advisory.
+
 ## v0.3.81-author.1 — 2026-07-19
 
 - **Ported first-class OSConfig CSV imports** for typed Registry/CSP resources, profile values, and Test compliance criteria.
