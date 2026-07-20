@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.82-author.1] - 2026-07-20
+
+### Added
+- **Baseline Detail now uses a clear document identity and point-anchored view-only feedback.** Clicking a non-interactive Visual table cell explains that editing requires Edit mode, and moving the pointer dismisses the message.
+- **Visual authoring exposes Add setting above and below every table.** Long baselines no longer require scrolling back to the top to add another setting.
+- **Matrix Diff can search registered baselines before selection.** Multi-word searches match baseline names and sources while preserving already-selected baselines.
+
+### Security
+- **Patched `js-yaml` to 4.3.0.** All direct and transitive copies are overridden to resolve the high-severity merge-key chain CPU-consumption advisory.
+
 ## [0.3.81-author.1] - 2026-07-19
 
 ### Fixed
