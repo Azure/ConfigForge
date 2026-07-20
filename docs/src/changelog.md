@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.81 — 2026-07-19
+
+- **Corrected responsive Baseline Detail actions.** Every footer action keeps its icon and label. Wide windows use one row; scaled and narrow Electron windows use balanced compact rows instead of icon-only controls, clipping, or horizontal scrolling.
+
 ## v0.3.80 — 2026-07-19
 
 - **Fixed official OSConfig CSV imports.** LAPS, Defender Antivirus, and Windows Server baseline files now retain typed Registry/CSP resources, role-specific values, and Test compliance criteria; report-only CSVs receive a clear reconstruction error.
