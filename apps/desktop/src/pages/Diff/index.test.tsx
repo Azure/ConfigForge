@@ -155,6 +155,34 @@ describe('DiffPage — dropdown stability (v0.3.53)', () => {
     );
   });
 
+  it('filters Matrix baseline choices with the Search baselines input', async () => {
+    (window as unknown as { cfs: Record<string, unknown> }).cfs.manifests = {
+      list: vi.fn().mockResolvedValue({
+        data: [
+          { Name: 'Alpha Baseline', Source: 'user', Resources: [] },
+          { Name: 'Windows Production', Source: 'user', Resources: [] },
+          { Name: 'Linux Test', Source: 'user', Resources: [] },
+        ],
+      }),
+    };
+    renderDiff();
+    fireEvent.click(screen.getByRole('tab', { name: 'Matrix (N-way)' }));
+
+    const search = await screen.findByRole('searchbox', { name: /Search Baselines/i });
+    expect(screen.getByText('Alpha Baseline')).toBeInTheDocument();
+    expect(screen.getByText('Windows Production')).toBeInTheDocument();
+    expect(screen.getByText('Linux Test')).toBeInTheDocument();
+
+    fireEvent.change(search, { target: { value: 'windows prod' } });
+    expect(screen.getByText('Windows Production')).toBeInTheDocument();
+    expect(screen.queryByText('Alpha Baseline')).not.toBeInTheDocument();
+    expect(screen.queryByText('Linux Test')).not.toBeInTheDocument();
+
+    fireEvent.change(search, { target: { value: 'missing' } });
+    expect(
+      screen.getByText('No baselines match the current search and filters.'),
+    ).toBeInTheDocument();
+  });
   it('Pairwise "Before" select stays interactive while manifest list IPC is pending', () => {
     renderDiff();
     // Two manifest pickers render on the Pairwise tab (Before + After).

@@ -210,6 +210,7 @@
   "visual": {
     "addRow": "Añadir fila",
     "addSetting": "Añadir configuración",
+    "cannotEditViewOnly": "No se puede editar en modo de solo lectura",
     "deleteSelected": "Eliminar {{count}} seleccionados",
     "editCell": "Editar {{field}} para {{name}}",
     "editHint": "Haga clic en cualquier celda para editarla. Presione Entrar para aplicar o Escape para cancelar.",

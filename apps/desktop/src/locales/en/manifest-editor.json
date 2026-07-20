@@ -210,6 +210,7 @@
   "visual": {
     "addRow": "Add row",
     "addSetting": "Add setting",
+    "cannotEditViewOnly": "Cannot edit in view-only mode",
     "deleteSelected": "Delete {{count}} selected",
     "editCell": "Edit {{field}} for {{name}}",
     "editHint": "Click any cell to edit it. Press Enter to apply or Escape to cancel.",

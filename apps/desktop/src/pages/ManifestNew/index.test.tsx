@@ -71,7 +71,7 @@ describe('ManifestNewPage post-registration refresh', () => {
     expect(
       await screen.findByRole('region', { name: 'Visual baseline settings' }),
     ).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Add setting' })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Add setting' }).length).toBeGreaterThanOrEqual(3);
     expect(screen.getByRole('button', { name: /Edit Setting Name/ })).toBeInTheDocument();
     expect(screen.queryByTestId('resource-picker')).not.toBeInTheDocument();
   });
@@ -87,7 +87,9 @@ describe('ManifestNewPage post-registration refresh', () => {
     );
     expect(registrySection).not.toBeNull();
 
-    fireEvent.click(within(registrySection!).getByRole('button', { name: 'Add row' }));
+    fireEvent.click(
+      within(registrySection!).getAllByRole('button', { name: 'Add setting' }).at(-1)!,
+    );
 
     expect(screen.getByRole('alert')).toHaveTextContent(
       'Complete 3 required cells before saving.',
