@@ -104,7 +104,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
       data-testid="manifest-detail-footer"
       className="cfs-manifest-footer z-20 shrink-0 border-t border-slate-200 bg-white/98 shadow-[0_-8px_24px_-24px_rgba(15,23,42,0.65)] dark:border-slate-800 dark:bg-slate-950/98"
     >
-      <div className="cfs-footer-bar mx-auto flex min-h-14 w-full items-center gap-2 px-4 py-2 lg:px-8">
+      <div className="cfs-footer-bar mx-auto min-h-14 w-full px-4 py-2 lg:px-8">
         <Button
           appearance="subtle"
           size="small"
@@ -118,12 +118,12 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
         </Button>
 
         <div
-          className="cfs-footer-divider h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
+          className="cfs-footer-divider cfs-footer-divider-leading h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
           aria-hidden="true"
         />
 
-        <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 items-center justify-center gap-1">
+        <div className="cfs-footer-actions min-w-0">
+          <div className="cfs-footer-action-group">
             <Button
               appearance="subtle"
               size="small"
@@ -322,7 +322,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
         </div>
 
         <div
-          className="cfs-footer-divider h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
+          className="cfs-footer-divider cfs-footer-divider-trailing h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
           aria-hidden="true"
         />
 
