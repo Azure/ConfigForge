@@ -20,13 +20,45 @@ vi.mock('../import-export', () => ({
     name: 'win10-baseline',
     version: '1.0',
     description: 'test',
-    settings: [
-      { name: 's1', keyPath: 'HKLM\\Soft', expectedValue: 1 },
-    ],
+    settings: [{ name: 's1', keyPath: 'HKLM\\Soft', expectedValue: 1 }],
   })),
   parseExcelBaseline: vi.fn(() => [
-    { settingName: 'PasswordHistory', registryPath: 'HKLM\\Soft', expectedValue: 24 },
+    {
+      settingName: 'PasswordHistory',
+      registryPath: 'HKLM\\Soft',
+      expectedValue: '24',
+      format: 'generic',
+      rowNumber: 2,
+      columns: {},
+    },
   ]),
+  inferRegistryValueType: vi.fn((expectedValue: unknown) => {
+    if (
+      (typeof expectedValue === 'number' && Number.isInteger(expectedValue)) ||
+      (typeof expectedValue === 'string' && /^-?\d+$/.test(expectedValue.trim()))
+    ) {
+      return 'Dword';
+    }
+    return 'String';
+  }),
+  buildBaselineManifest: vi.fn((settings: Array<Record<string, unknown>>) => ({
+    manifest: {
+      $schema: 'https://aka.ms/osc/schemas/prerelease/document.json',
+      resources: settings.map((setting) => ({
+        name: String(setting.settingName),
+        type: 'Microsoft.Windows/Registry',
+        properties: {
+          keyPath: setting.registryPath,
+          valueName: setting.settingName,
+          valueType: 'Dword',
+          value: 24,
+        },
+        compliance: { equals: 24 },
+      })),
+    },
+    includedSettings: settings,
+    skippedSettings: [],
+  })),
   exportToYaml: vi.fn(() => 'resources:\n  - name: out\n'),
 }));
 

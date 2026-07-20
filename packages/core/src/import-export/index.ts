@@ -4,6 +4,16 @@
 import yaml from 'js-yaml';
 import type { SettingConfiguration } from '../types';
 
+export {
+  buildBaselineManifest,
+  inferRegistryValueType,
+  parseComplianceExpression,
+  parseExcelBaseline,
+  type BaselineManifestBuildResult,
+  type BaselineSpreadsheetFormat,
+  type ParsedBaselineSetting,
+} from './baseline';
+
 // ── Parsed types ────────────────────────────────────────────────────────────
 
 export interface ParsedManifest {
@@ -64,14 +74,6 @@ export interface ParsedSDSetting {
   originalSettingName?: string;
 }
 
-export interface ParsedBaselineSetting {
-  settingName: string;
-  registryPath?: string;
-  expectedValue?: string;
-  currentValue?: string;
-  [key: string]: string | undefined;
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 //  Import functions
 // ═══════════════════════════════════════════════════════════════════════════
@@ -91,22 +93,20 @@ export function parseOscYaml(content: string): ParsedManifest {
     throw new Error('Invalid manifest: "resources" array is required');
   }
 
-  const resources: ParsedResource[] = (obj.resources as Record<string, unknown>[]).map(
-    (r, idx) => {
-      if (!r.name || typeof r.name !== 'string') {
-        throw new Error(`Resource at index ${idx} is missing a "name" field`);
-      }
-      if (!r.type || typeof r.type !== 'string') {
-        throw new Error(`Resource "${r.name}" is missing a "type" field`);
-      }
-      return {
-        name: r.name as string,
-        type: r.type as string,
-        properties: (r.properties as Record<string, unknown>) ?? {},
-        compliance: r.compliance as Record<string, unknown> | undefined,
-      };
+  const resources: ParsedResource[] = (obj.resources as Record<string, unknown>[]).map((r, idx) => {
+    if (!r.name || typeof r.name !== 'string') {
+      throw new Error(`Resource at index ${idx} is missing a "name" field`);
     }
-  );
+    if (!r.type || typeof r.type !== 'string') {
+      throw new Error(`Resource "${r.name}" is missing a "type" field`);
+    }
+    return {
+      name: r.name as string,
+      type: r.type as string,
+      properties: (r.properties as Record<string, unknown>) ?? {},
+      compliance: r.compliance as Record<string, unknown> | undefined,
+    };
+  });
 
   return {
     $schema: obj.$schema as string | undefined,
@@ -242,84 +242,6 @@ export function parseSecurityDefinition(jsonStr: string): ParsedSecurityDefiniti
   };
 }
 
-/**
- * Parse a CSV/TSV spreadsheet with baseline settings.
- * Expects a header row with columns like: Setting Name, Registry Path, Expected Value, Current Value.
- */
-export function parseExcelBaseline(text: string): ParsedBaselineSetting[] {
-  const lines = text.split(/\r?\n/).filter((l) => l.trim().length > 0);
-  if (lines.length < 2) {
-    throw new Error('Spreadsheet must have at least a header row and one data row');
-  }
-
-  // Detect delimiter (tab vs comma)
-  const delimiter = lines[0].includes('\t') ? '\t' : ',';
-
-  const parseRow = (line: string): string[] => {
-    const result: string[] = [];
-    let current = '';
-    let inQuotes = false;
-
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') {
-        if (inQuotes && line[i + 1] === '"') {
-          current += '"';
-          i++;
-        } else {
-          inQuotes = !inQuotes;
-        }
-      } else if (ch === delimiter && !inQuotes) {
-        result.push(current.trim());
-        current = '';
-      } else {
-        current += ch;
-      }
-    }
-    result.push(current.trim());
-    return result;
-  };
-
-  const headers = parseRow(lines[0]).map((h) => h.toLowerCase().replace(/[^a-z0-9]/g, ''));
-  const results: ParsedBaselineSetting[] = [];
-
-  // Map common header names to our fields
-  const nameIdx = headers.findIndex((h) =>
-    ['settingname', 'name', 'setting', 'policyname'].includes(h)
-  );
-  const pathIdx = headers.findIndex((h) =>
-    ['registrypath', 'path', 'regpath', 'key', 'registrykey'].includes(h)
-  );
-  const expectedIdx = headers.findIndex((h) =>
-    ['expectedvalue', 'expected', 'desiredvalue', 'desired', 'baseline'].includes(h)
-  );
-  const currentIdx = headers.findIndex((h) =>
-    ['currentvalue', 'current', 'actualvalue', 'actual'].includes(h)
-  );
-
-  for (let i = 1; i < lines.length; i++) {
-    const cols = parseRow(lines[i]);
-    const settingName = nameIdx >= 0 ? cols[nameIdx] ?? '' : cols[0] ?? '';
-    if (!settingName) continue;
-
-    const entry: ParsedBaselineSetting = { settingName };
-    if (pathIdx >= 0) entry.registryPath = cols[pathIdx];
-    if (expectedIdx >= 0) entry.expectedValue = cols[expectedIdx];
-    if (currentIdx >= 0) entry.currentValue = cols[currentIdx];
-
-    // Store all columns by header name for extensibility
-    headers.forEach((h, idx) => {
-      if (idx !== nameIdx && idx !== pathIdx && idx !== expectedIdx && idx !== currentIdx) {
-        if (cols[idx]) entry[h] = cols[idx];
-      }
-    });
-
-    results.push(entry);
-  }
-
-  return results;
-}
-
 // ═══════════════════════════════════════════════════════════════════════════
 //  Export functions
 // ═══════════════════════════════════════════════════════════════════════════
@@ -366,7 +288,9 @@ function mofEscape(s: string): string {
  */
 export function exportToMof(
   manifestName: string,
-  resources: Array<{ name?: string; type?: string; properties?: Record<string, unknown> } | unknown>,
+  resources: Array<
+    { name?: string; type?: string; properties?: Record<string, unknown> } | unknown
+  >,
 ): string {
   const instances: string[] = [];
   const configurationName = crypto?.randomUUID?.() ?? manifestName.replace(/[^a-zA-Z0-9_.-]/g, '_');
@@ -384,7 +308,11 @@ export function exportToMof(
 
     // Test-wrapped resources: unwrap to the inner resource (mirrors PS module
     // ConvertTo-Mof lines 1979-1992).
-    if (type === 'Microsoft.OSConfig/Test' && props.resource && typeof props.resource === 'object') {
+    if (
+      type === 'Microsoft.OSConfig/Test' &&
+      props.resource &&
+      typeof props.resource === 'object'
+    ) {
       const inner = props.resource as Record<string, unknown>;
       if (!name && typeof inner.name === 'string') name = inner.name;
       type = typeof inner.type === 'string' ? inner.type : type;
@@ -470,7 +398,7 @@ export function exportToExcel(settings: SettingConfiguration[]): string {
       escapeCSV(s.Default),
       escapeCSV(s.Value),
       escapeCSV(s.Compliance),
-    ].join(',')
+    ].join(','),
   );
 
   return [headers.join(','), ...rows].join('\n');
@@ -662,9 +590,7 @@ function extractPolicySettingParams(resources: unknown): PolicySettingParam[] {
  * object — maps each ARM parameter name to the MOF parameter name
  * the agent looks for inside the MOF.
  */
-function buildConfigurationParameterMap(
-  params: PolicySettingParam[],
-): Record<string, string> {
+function buildConfigurationParameterMap(params: PolicySettingParam[]): Record<string, string> {
   const out: Record<string, string> = {};
   for (const p of params) out[p.armName] = p.mofParamName;
   return out;
@@ -733,7 +659,9 @@ function buildDeploymentResource(
       ? 'Microsoft.Compute/virtualMachines/providers/guestConfigurationAssignments'
       : 'Microsoft.HybridCompute/machines/providers/guestConfigurationAssignments';
   const conditionTarget =
-    platform === 'compute' ? 'Microsoft.Compute/virtualMachines' : 'Microsoft.HybridCompute/machines';
+    platform === 'compute'
+      ? 'Microsoft.Compute/virtualMachines'
+      : 'Microsoft.HybridCompute/machines';
   return {
     condition: `[equals(toLower(parameters('type')), toLower('${conditionTarget}'))]`,
     apiVersion: '2024-04-05',
@@ -901,8 +829,7 @@ export function exportToAzurePolicy(
                   equals: 'Compliant',
                 },
                 {
-                  field:
-                    'Microsoft.GuestConfiguration/guestConfigurationAssignments/parameterHash',
+                  field: 'Microsoft.GuestConfiguration/guestConfigurationAssignments/parameterHash',
                   equals: buildParameterHashExpression(params),
                 },
               ],
@@ -925,9 +852,7 @@ export function exportToAzurePolicy(
                           location: { type: 'string' },
                           type: { type: 'string' },
                           assignmentName: { type: 'string' },
-                          ...Object.fromEntries(
-                            params.map((p) => [p.armName, { type: 'string' }]),
-                          ),
+                          ...Object.fromEntries(params.map((p) => [p.armName, { type: 'string' }])),
                         },
                         resources: [
                           buildDeploymentResource(

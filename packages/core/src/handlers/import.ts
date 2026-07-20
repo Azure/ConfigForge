@@ -25,7 +25,9 @@ import {
   parseOscYaml,
   parseSecurityDefinition,
   parseExcelBaseline,
+  buildBaselineManifest,
   exportToYaml,
+  inferRegistryValueType,
   type ParsedSDSetting,
   type ParsedSecurityDefinition,
 } from '../import-export';
@@ -35,37 +37,7 @@ export const MAX_IMPORT_BYTES = 10 * 1024 * 1024; // 10 MB
 
 export type DetectedType = 'osc-yaml' | 'yaml' | 'json' | 'csv';
 
-/**
- * Pick a valid Registry `valueType` for the schema's oneOf constraint.
- *
- * The OSC document schema (osc-manifest-schema.json) requires Registry
- * resources to declare a `valueType` and ties the allowed `value` shape
- * to it (string for `String`/`ExpandString`/`Binary`/`REG_SZ` family;
- * integer for `Dword`/`QWord`/`REG_DWORD` family; string[] for
- * `MultiString`/`REG_MULTI_SZ`). The inline validator in
- * `apps/desktop/src/components/manifest-editor.tsx` enforces presence.
- *
- * CSV / security-definition imports historically omitted `valueType`,
- * which made imported manifests fail validation immediately in the
- * editor. We now infer a reasonable default from the expected value:
- *   - integer-shaped strings (e.g. "0", "1", "-3") and JS numbers → Dword
- *   - everything else (and undefined) → String
- *
- * This is intentionally a heuristic. Users can override `valueType`
- * after import without re-running through the importer.
- */
-export function inferRegistryValueType(expectedValue: unknown): string {
-  if (typeof expectedValue === 'number' && Number.isInteger(expectedValue)) {
-    return 'Dword';
-  }
-  if (typeof expectedValue === 'string') {
-    const trimmed = expectedValue.trim();
-    if (trimmed !== '' && /^-?\d+$/.test(trimmed)) {
-      return 'Dword';
-    }
-  }
-  return 'String';
-}
+export { inferRegistryValueType };
 
 export interface ImportRequest {
   filename: string;
@@ -351,7 +323,7 @@ function policyDefinitionRejection(doc: Record<string, unknown>): HandlerError {
     );
   } else {
     parts.push(
-      "Import the underlying Guest Configuration baseline JSON (the file with a settingsReference[] array) instead.",
+      'Import the underlying Guest Configuration baseline JSON (the file with a settingsReference[] array) instead.',
     );
   }
   return new HandlerError(400, parts.join(' '));
@@ -508,40 +480,29 @@ export function importFile(req: ImportRequest): ImportResult {
     }
 
     case 'csv': {
-      const settings = parseExcelBaseline(req.content);
-      const manifest = {
-        $schema: 'https://aka.ms/osc/schemas/prerelease/document.json',
-        resources: settings.map((s) => ({
-          name: s.settingName.replace(/[^a-zA-Z0-9_-]/g, '_'),
-          type: 'Microsoft.Windows/Registry',
-          properties: {
-            ...(s.registryPath ? { keyPath: s.registryPath } : {}),
-            ...(s.settingName ? { valueName: s.settingName } : {}),
-            // Schema requires valueType for Registry resources. The
-            // CSV/TSV/XLSX rowset doesn't carry an explicit type, so
-            // we infer Dword for integer-shaped expectedValues and
-            // String otherwise. Without this, imported manifests
-            // fail editor validation immediately.
-            valueType: inferRegistryValueType(s.expectedValue),
-          },
-          ...(s.expectedValue !== undefined
-            ? { compliance: { equals: s.expectedValue } }
-            : {}),
-        })),
-      };
-      const yamlStr = exportToYaml(manifest);
-      return {
-        type: 'baseline-spreadsheet',
-        filename: req.filename,
-        data: {
-          settingCount: settings.length,
-          settings,
-        },
-        yaml: yamlStr,
-      };
+      return spreadsheetImportResult(req.filename, parseExcelBaseline(req.content));
     }
 
     default:
       throw new HandlerError(400, `Unsupported file type: ${req.filename}`);
   }
+}
+
+function spreadsheetImportResult(
+  filename: string,
+  settings: ReturnType<typeof parseExcelBaseline>,
+): ImportResult {
+  const built = buildBaselineManifest(settings);
+  return {
+    type: 'baseline-spreadsheet',
+    filename,
+    data: {
+      settingCount: built.manifest.resources.length,
+      sourceSettingCount: settings.length,
+      skippedSettingCount: built.skippedSettings.length,
+      profile: built.profile,
+      settings: built.includedSettings,
+    },
+    yaml: exportToYaml(built.manifest),
+  };
 }
