@@ -20,7 +20,7 @@
  * and asserting the selects do NOT carry the `disabled` attribute.
  */
 import { afterEach, describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { FluentProvider, webLightTheme } from '@fluentui/react-components';
 import { MemoryRouter, useLocation } from 'react-router-dom';
 import { getI18n } from '../../locales';
