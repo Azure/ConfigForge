@@ -290,7 +290,13 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(screen.getByTestId("mock-monaco-model")).toHaveAttribute("data-read-only", "true");
 
     const footer = screen.getByTestId("manifest-detail-footer");
-    expect(footer).toHaveClass("shrink-0");
+    expect(footer).toHaveClass("cfs-manifest-footer", "shrink-0");
+    expect(footer.querySelector(".overflow-x-auto")).toBeNull();
+    expect(footer.querySelector(".w-max")).toBeNull();
+    expect(footer.querySelectorAll(".cfs-footer-secondary-label").length).toBeGreaterThan(0);
+    expect(within(footer).getByRole("link", { name: "Audit Pack" })).toHaveClass(
+      "text-xs",
+    );
     for (const action of [
       "Close baseline",
       "Delete Baseline",

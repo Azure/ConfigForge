@@ -58,7 +58,7 @@ export interface ManifestDetailFooterProps {
 }
 
 const footerLinkClass =
-  "inline-flex h-8 shrink-0 items-center gap-2 rounded px-3 text-sm font-medium text-slate-700 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-slate-300 dark:hover:bg-slate-800";
+  "cfs-footer-action cfs-footer-link inline-flex h-8 shrink-0 items-center justify-center gap-2 rounded px-3 text-xs font-medium text-slate-700 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-slate-300 dark:hover:bg-slate-800";
 
 export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   manifestName,
@@ -102,36 +102,45 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   return (
     <footer
       data-testid="manifest-detail-footer"
-      className="z-20 shrink-0 border-t border-slate-200 bg-white/98 shadow-[0_-8px_24px_-24px_rgba(15,23,42,0.65)] dark:border-slate-800 dark:bg-slate-950/98"
+      className="cfs-manifest-footer z-20 shrink-0 border-t border-slate-200 bg-white/98 shadow-[0_-8px_24px_-24px_rgba(15,23,42,0.65)] dark:border-slate-800 dark:bg-slate-950/98"
     >
-      <div className="mx-auto flex min-h-14 max-w-[96rem] items-center gap-2 px-4 py-2 lg:px-8">
+      <div className="cfs-footer-bar mx-auto flex min-h-14 w-full items-center gap-2 px-4 py-2 lg:px-8">
         <Button
           appearance="subtle"
           size="small"
           icon={<DismissRegular />}
           onClick={onClose}
-          className="shrink-0"
+          aria-label={t("actions.closeBaseline")}
+          title={t("actions.closeBaseline")}
+          className="cfs-footer-action cfs-footer-close-action shrink-0"
         >
-          {t("actions.closeBaseline")}
+          <span className="cfs-footer-close-label">{t("actions.closeBaseline")}</span>
         </Button>
 
-        <div className="h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
+        <div
+          className="cfs-footer-divider h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
+          aria-hidden="true"
+        />
 
-        <div className="min-w-0 flex-1 overflow-x-auto [scrollbar-width:thin]">
-          <div className="flex w-max items-center gap-1 pr-2">
+        <div className="min-w-0 flex-1">
+          <div className="flex min-w-0 items-center justify-center gap-1">
             <Button
               appearance="subtle"
               size="small"
               icon={deleting ? <Spinner size="tiny" /> : <DeleteRegular />}
               onClick={onDelete}
               disabled={busy}
-              className="shrink-0 text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+              aria-label={t("actions.deleteBaseline")}
+              title={t("actions.deleteBaseline")}
+              className="cfs-footer-action shrink-0 text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
             >
-              {t("actions.deleteBaseline")}
+              <span className="cfs-footer-secondary-label">
+                {t("actions.deleteBaseline")}
+              </span>
             </Button>
 
             <div
-              className="mx-1 h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
+              className="cfs-footer-divider mx-1 h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
               aria-hidden="true"
             />
 
@@ -142,15 +151,17 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               onClick={onDuplicate}
               disabled={duplicating || busy}
               title={t("actions.duplicateTitle")}
-              className="shrink-0"
+              aria-label={t("actions.duplicate")}
+              className="cfs-footer-action shrink-0"
             >
-              {t("actions.duplicate")}
+              <span className="cfs-footer-secondary-label">{t("actions.duplicate")}</span>
             </Button>
 
             <Link
               to={`/manifests/${encodeURIComponent(manifestName)}/audit-pack`}
               className={`${footerLinkClass} ${disabledLinkClass}`}
               title={t("actions.auditPackTitle")}
+              aria-label={t("actions.auditPack")}
               aria-disabled={editing}
               tabIndex={editing ? -1 : undefined}
               onClick={(event) => {
@@ -158,7 +169,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               }}
             >
               <ClipboardCheckmarkRegular aria-hidden="true" />
-              {t("actions.auditPack")}
+              <span className="cfs-footer-secondary-label">{t("actions.auditPack")}</span>
             </Link>
 
             <Button
@@ -167,15 +178,18 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               icon={<DocumentRegular />}
               onClick={onExportDocs}
               disabled={busy}
-              className="shrink-0"
+              aria-label={t("actions.docs")}
+              className="cfs-footer-action shrink-0"
               title={t("actions.generateDocsTitle")}
             >
-              {t("actions.docs")}
+              <span className="cfs-footer-secondary-label">{t("actions.docs")}</span>
             </Button>
 
             <Link
               to={`/manifests/${encodeURIComponent(manifestName)}/history`}
               className={`${footerLinkClass} ${disabledLinkClass}`}
+              title={t("actions.history")}
+              aria-label={t("actions.history")}
               aria-disabled={editing}
               tabIndex={editing ? -1 : undefined}
               onClick={(event) => {
@@ -183,7 +197,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               }}
             >
               <HistoryRegular aria-hidden="true" />
-              {t("actions.history")}
+              <span className="cfs-footer-secondary-label">{t("actions.history")}</span>
             </Link>
 
             <Menu
@@ -198,10 +212,15 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
                   size="small"
                   icon={<ArrowDownloadRegular />}
                   disabled={busy}
-                  className="shrink-0"
+                  aria-label={t("actions.export")}
+                  title={t("actions.export")}
+                  className="cfs-footer-action shrink-0"
                 >
-                  {t("actions.export")}
-                  <ChevronDownRegular className="ml-1" aria-hidden="true" />
+                  <span className="cfs-footer-secondary-label">{t("actions.export")}</span>
+                  <ChevronDownRegular
+                    className="cfs-footer-chevron ml-1"
+                    aria-hidden="true"
+                  />
                 </Button>
               </MenuTrigger>
               <MenuPopover>
@@ -220,7 +239,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
 
             {(canDeploy || canRevert) && (
               <div
-                className="mx-1 h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
+                className="cfs-footer-divider mx-1 h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
                 aria-hidden="true"
               />
             )}
@@ -238,17 +257,24 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
                     size="small"
                     icon={deploying ? <Spinner size="tiny" /> : <PlayRegular />}
                     disabled={busy}
-                    className="shrink-0 bg-emerald-700 hover:bg-emerald-800"
+                    aria-label={t("common:features.deploy")}
+                    title={t("common:features.deploy")}
+                    className="cfs-footer-action shrink-0 bg-emerald-700 hover:bg-emerald-800"
                   >
-                    {deploying && deployProgress?.resourcesTotal ? (
-                      <AuditProgressCounter
-                        completed={deployProgress.resourcesCompleted ?? 0}
-                        total={deployProgress.resourcesTotal}
-                      />
-                    ) : (
-                      t("common:features.deploy")
-                    )}
-                    <ChevronDownRegular className="ml-1" aria-hidden="true" />
+                    <span className="cfs-footer-secondary-label">
+                      {deploying && deployProgress?.resourcesTotal ? (
+                        <AuditProgressCounter
+                          completed={deployProgress.resourcesCompleted ?? 0}
+                          total={deployProgress.resourcesTotal}
+                        />
+                      ) : (
+                        t("common:features.deploy")
+                      )}
+                    </span>
+                    <ChevronDownRegular
+                      className="cfs-footer-chevron ml-1"
+                      aria-hidden="true"
+                    />
                   </Button>
                 </MenuTrigger>
                 <MenuPopover>
@@ -286,15 +312,19 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
                 onClick={() => void handleRevert()}
                 disabled={busy || !manifest?.Deployed}
                 title={manifest?.Deployed ? t("actions.revertTitle") : t("actions.noRevertTitle")}
-                className="shrink-0 text-amber-700 dark:text-amber-400"
+                aria-label={t("actions.revert")}
+                className="cfs-footer-action shrink-0 text-amber-700 dark:text-amber-400"
               >
-                {t("actions.revert")}
+                <span className="cfs-footer-secondary-label">{t("actions.revert")}</span>
               </Button>
             )}
           </div>
         </div>
 
-        <div className="h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700" aria-hidden="true" />
+        <div
+          className="cfs-footer-divider h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
+          aria-hidden="true"
+        />
 
         {editing ? (
           <Button
@@ -304,9 +334,10 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
             onClick={onSaveClick}
             disabled={saving || rationaleBusy || saveBlocked}
             title={saveBlocked ? t("visual.fixValidationBeforeSave") : undefined}
-            className="shrink-0"
+            aria-label={t("common:buttons.save")}
+            className="cfs-footer-action cfs-footer-primary-action shrink-0"
           >
-            {t("common:buttons.save")}
+            <span className="cfs-footer-primary-label">{t("common:buttons.save")}</span>
           </Button>
         ) : (
           <Button
@@ -327,9 +358,10 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
                   )
                 : undefined
             }
-            className="shrink-0"
+            aria-label={t("actions.edit")}
+            className="cfs-footer-action cfs-footer-primary-action shrink-0"
           >
-            {t("actions.edit")}
+            <span className="cfs-footer-primary-label">{t("actions.edit")}</span>
           </Button>
         )}
       </div>
