@@ -294,6 +294,8 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(footer.querySelector(".overflow-x-auto")).toBeNull();
     expect(footer.querySelector(".w-max")).toBeNull();
     expect(footer.querySelectorAll(".cfs-footer-secondary-label").length).toBeGreaterThan(0);
+    expect(footer.querySelector(".cfs-footer-actions")).toBeInTheDocument();
+    expect(footer.querySelector(".cfs-footer-action-group")).toBeInTheDocument();
     expect(within(footer).getByRole("link", { name: "Audit Pack" })).toHaveClass(
       "text-xs",
     );
