@@ -19,6 +19,7 @@ const sampleYaml = `resources:
 `;
 
 const mocks = vi.hoisted(() => ({
+  loading: false,
   editing: false,
   editView: "editor" as "editor" | "visual",
   hasUnsavedChanges: false,
@@ -168,7 +169,7 @@ vi.mock("./state/useManifestEditorState", () => ({
       ],
     },
     setStatus: vi.fn(),
-    loading: false,
+    loading: mocks.loading,
     setLoading: vi.fn(),
     error: mocks.error,
     setError: (value: string | null | ((current: string | null) => string | null)) => {
@@ -239,7 +240,13 @@ import {
 } from "../../components/BaselineWorkspaceTabs";
 
 function CurrentPath() {
-  return <output aria-label="current-path">{useLocation().pathname}</output>;
+  const location = useLocation();
+  return (
+    <>
+      <output aria-label="current-path">{location.pathname}</output>
+      <output aria-label="current-search">{location.search}</output>
+    </>
+  );
 }
 
 function editorShell(initialEntry = "/manifests/sample") {
@@ -257,8 +264,8 @@ function editorShell(initialEntry = "/manifests/sample") {
   );
 }
 
-function renderEditor() {
-  return render(editorShell());
+function renderEditor(initialEntry = "/manifests/sample") {
+  return render(editorShell(initialEntry));
 }
 
 async function requestWorkspaceNavigation(destination = "/manifests/beta") {
@@ -276,6 +283,7 @@ describe("ManifestDetailPage Loop viewer", () => {
   beforeEach(async () => {
     await getI18n().changeLanguage("en");
     localStorage.clear();
+    mocks.loading = false;
     mocks.editing = false;
     mocks.editView = "editor";
     mocks.hasUnsavedChanges = false;
@@ -318,7 +326,10 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(screen.getByTestId("mock-monaco-model")).toHaveAttribute("data-read-only", "true");
 
     const footer = screen.getByTestId("manifest-detail-footer");
-    expect(footer).toHaveClass("shrink-0");
+    expect(footer).toHaveClass("cfs-manifest-footer", "shrink-0");
+    expect(footer.querySelector(".overflow-x-auto")).toBeNull();
+    expect(footer.querySelector(".w-max")).toBeNull();
+    expect(footer.querySelectorAll(".cfs-footer-secondary-label").length).toBeGreaterThan(0);
     expect(within(footer).getByRole("link", { name: "Audit Pack" })).toHaveClass(
       "text-xs",
     );
@@ -385,6 +396,31 @@ describe("ManifestDetailPage Loop viewer", () => {
     await waitFor(() =>
       expect(screen.queryByTestId("compliance-dialog")).not.toBeInTheDocument(),
     );
+  }, 15_000);
+
+  it("consumes the compliance deep link so save refreshes do not reopen the report", async () => {
+    const user = userEvent.setup();
+    const view = renderEditor("/manifests/sample?section=compliance");
+
+    await screen.findByTestId("compliance-dialog");
+    await waitFor(() => expect(screen.getByLabelText("current-search")).toHaveTextContent(""));
+    await user.keyboard("{Escape}");
+    await waitFor(() =>
+      expect(screen.queryByTestId("compliance-dialog")).not.toBeInTheDocument(),
+    );
+
+    mocks.editing = true;
+    mocks.rationaleOpen = true;
+    view.rerender(editorShell());
+    mocks.loading = true;
+    view.rerender(editorShell());
+    mocks.loading = false;
+    mocks.editing = false;
+    mocks.rationaleOpen = false;
+    view.rerender(editorShell());
+
+    expect(screen.queryByTestId("compliance-dialog")).not.toBeInTheDocument();
+    expect(screen.getByLabelText("current-search")).toHaveTextContent("");
   }, 15_000);
 
   it("switches between the read-only Code and Visual viewers without selection controls", async () => {
