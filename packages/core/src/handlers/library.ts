@@ -19,7 +19,7 @@
  */
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import yaml from 'js-yaml';
+import { buildBaselineManifest, exportToYaml, parseExcelBaseline } from '../import-export';
 import { resolvePublicAsset } from '../runtime/paths';
 import { HandlerError } from './errors';
 import type {
@@ -85,10 +85,7 @@ export async function getLibraryEntry(req: LibraryEntryRequest): Promise<Library
     const publicRoot = resolvePublicAsset('');
     const requested = resolvePublicAsset(url);
     if (requested !== publicRoot && !requested.startsWith(publicRoot + path.sep)) {
-      throw new HandlerError(
-        400,
-        `Catalog entry '${id}' resolves outside the public/ directory`,
-      );
+      throw new HandlerError(400, `Catalog entry '${id}' resolves outside the public/ directory`);
     }
     body = await readFile(requested, 'utf-8');
   } else {
@@ -132,115 +129,7 @@ export async function getLibraryEntry(req: LibraryEntryRequest): Promise<Library
  *   Name, Registry Key, [Registry Value], [Registry Value Type],
  *   [Expected Value]
  */
-function csvToManifest(csv: string): string {
-  const lines = csv.split(/\r?\n/).filter((l) => l.trim().length > 0);
-  if (lines.length < 2) {
-    throw new Error(
-      'CSV baseline has no data rows — expected at least a header row and one setting.',
-    );
-  }
-
-  const parseRow = (line: string): string[] => {
-    const result: string[] = [];
-    let cur = '';
-    let inQ = false;
-    for (let i = 0; i < line.length; i++) {
-      const ch = line[i];
-      if (ch === '"') {
-        if (inQ && line[i + 1] === '"') {
-          cur += '"';
-          i++;
-        } else {
-          inQ = !inQ;
-        }
-      } else if (ch === ',' && !inQ) {
-        result.push(cur.trim());
-        cur = '';
-      } else {
-        cur += ch;
-      }
-    }
-    result.push(cur.trim());
-    return result;
-  };
-
-  const headers = parseRow(lines[0]).map((h) => h.toLowerCase().replace(/"/g, ''));
-  const nameIdx = headers.indexOf('name');
-  const keyIdx = headers.findIndex((h) => h.includes('registry key'));
-  const valNameIdx = headers.findIndex((h) => h === 'registry value');
-  const valTypeIdx = headers.findIndex((h) => h.includes('registry value type'));
-  const expectedIdx = headers.findIndex((h) => h.includes('expected value'));
-
-  if (nameIdx < 0 || keyIdx < 0) {
-    throw new Error(
-      `CSV headers don't match the Defender baseline schema (need "Name" + "Registry Key" columns). Found: ${headers.slice(0, 6).join(', ')}…`,
-    );
-  }
-
-  const resources: Record<string, unknown>[] = [];
-  for (let i = 1; i < lines.length; i++) {
-    const cols = parseRow(lines[i]);
-    const name = cols[nameIdx]?.replace(/"/g, '');
-    const regKey = cols[keyIdx]?.replace(/"/g, '');
-    if (!name || !regKey) continue;
-
-    const valueName = valNameIdx >= 0 ? cols[valNameIdx]?.replace(/"/g, '') : name;
-    const valueType = valTypeIdx >= 0 ? cols[valTypeIdx]?.replace(/"/g, '') : 'Dword';
-    const expected = expectedIdx >= 0 ? cols[expectedIdx]?.replace(/"/g, '') : undefined;
-
-    let normalizedKey = regKey;
-    if (normalizedKey.startsWith('HKLM:\\')) {
-      normalizedKey = 'HKEY_LOCAL_MACHINE\\' + normalizedKey.substring(6);
-    } else if (normalizedKey.startsWith('HKLM:')) {
-      normalizedKey = 'HKEY_LOCAL_MACHINE\\' + normalizedKey.substring(5);
-    } else if (normalizedKey.startsWith('HKCU:\\')) {
-      normalizedKey = 'HKEY_CURRENT_USER\\' + normalizedKey.substring(6);
-    } else if (normalizedKey.startsWith('HKCU:')) {
-      normalizedKey = 'HKEY_CURRENT_USER\\' + normalizedKey.substring(5);
-    }
-
-    let value: string;
-    if (expected) {
-      const equalsMatch = expected.match(/Equals\((\d+)\)/i);
-      const rangeMatch = expected.match(/Range\((\d+),\s*(\d+)\)/i);
-      if (equalsMatch) {
-        value = equalsMatch[1];
-      } else if (rangeMatch) {
-        value = rangeMatch[1];
-      } else {
-        value = '0';
-      }
-    } else {
-      value = '0';
-    }
-
-    // Build a structured object and serialize via js-yaml. The previous
-    // implementation concatenated raw cell values into YAML strings, so a
-    // CSV cell containing `\n`, `:`, `#`, or quote characters could break
-    // the document layout or smuggle in extra resources (CSV → YAML
-    // injection). yaml.dump() correctly quotes/escapes any special chars.
-    // Mirrors the JSON-import path in handlers/manifests.ts:107-111.
-    resources.push({
-      name,
-      type: 'Microsoft.Windows/Registry',
-      properties: {
-        keyPath: normalizedKey,
-        valueName: valueName ?? name,
-        valueType,
-        value,
-      },
-    });
-  }
-
-  const document = {
-    $schema: 'https://aka.ms/osc/schemas/prerelease/document.json',
-    resources,
-  };
-  const dumped = yaml.dump(document, {
-    indent: 2,
-    lineWidth: 120,
-    noRefs: true,
-    sortKeys: false,
-  });
-  return `# Auto-generated from CSV baseline\n${dumped}`;
+export function csvToManifest(csv: string): string {
+  const built = buildBaselineManifest(parseExcelBaseline(csv));
+  return `# Auto-generated from CSV baseline\n${exportToYaml(built.manifest)}`;
 }
