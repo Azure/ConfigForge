@@ -229,6 +229,7 @@
   "visual": {
     "addRow": "Añadir fila",
     "addSetting": "Añadir configuración",
+    "cannotEditViewOnly": "No se puede editar en modo de solo lectura",
     "deleteSelected": "Eliminar {{count}} seleccionados",
     "editCell": "Editar {{field}} para {{name}}",
     "editHint": "Klicken Sie zum Bearbeiten auf eine Zelle. Drücken Sie zum Anwenden die Eingabetaste; in der letzten Zelle fügt die Eingabetaste eine weitere Zeile hinzu. Drücken Sie zum Abbrechen Escape.",

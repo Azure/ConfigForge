@@ -229,6 +229,7 @@
   "visual": {
     "addRow": "Zeile hinzufügen",
     "addSetting": "Einstellung hinzufügen",
+    "cannotEditViewOnly": "Im schreibgeschützten Modus kann nicht bearbeitet werden",
     "deleteSelected": "{{count}} ausgewählte löschen",
     "editCell": "{{field}} für {{name}} bearbeiten",
     "editHint": "Cliquez sur une cellule pour la modifier. Appuyez sur Entrée pour appliquer ; dans la dernière cellule Entrée ajoute une ligne. Appuyez sur Échap pour annuler.",

@@ -229,6 +229,7 @@
   "visual": {
     "addRow": "Ajouter une ligne",
     "addSetting": "Ajouter un paramètre",
+    "cannotEditViewOnly": "Impossible de modifier en mode lecture seule",
     "deleteSelected": "Supprimer la sélection ({{count}})",
     "editCell": "Modifier {{field}} pour {{name}}",
     "editHint": " Enter adds another row. Press Escape to cancel.",
