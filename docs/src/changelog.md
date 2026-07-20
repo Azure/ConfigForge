@@ -3,6 +3,12 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.82 — 2026-07-20
+
+- **Refined Baseline Detail document identity and view-only feedback.** The title uses a document icon, and clicking a Visual table cell while viewing explains that editing requires Edit mode.
+- **Improved Visual authoring reach.** Add setting actions now appear above and below each table.
+- **Added Matrix baseline search** so large baseline lists can be filtered before selection.
+
 ## v0.3.81 — 2026-07-19
 
 - **Corrected responsive Baseline Detail actions.** Every footer action keeps its icon and label. Wide windows use one row; scaled and narrow Electron windows use balanced compact rows instead of icon-only controls, clipping, or horizontal scrolling.
