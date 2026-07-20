@@ -210,6 +210,7 @@
   "visual": {
     "addRow": "Zeile hinzufügen",
     "addSetting": "Einstellung hinzufügen",
+    "cannotEditViewOnly": "Im schreibgeschützten Modus kann nicht bearbeitet werden",
     "deleteSelected": "{{count}} ausgewählte löschen",
     "editCell": "{{field}} für {{name}} bearbeiten",
     "editHint": "Klicken Sie zum Bearbeiten auf eine Zelle. Drücken Sie zum Anwenden die Eingabetaste oder zum Abbrechen Escape.",

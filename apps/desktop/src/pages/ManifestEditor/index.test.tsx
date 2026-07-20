@@ -279,7 +279,8 @@ describe("ManifestDetailPage Loop viewer", () => {
     renderEditor();
 
     expect(screen.getByRole("heading", { name: "Sample Baseline" })).toBeInTheDocument();
-    expect(screen.getByRole("img", { name: "Windows" })).toBeInTheDocument();
+    expect(screen.getByTestId("baseline-document-icon")).toHaveClass("bg-white");
+    expect(screen.queryByRole("img", { name: "Windows" })).not.toBeInTheDocument();
     expect(screen.getByText("Viewing")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Code" })).toHaveAttribute("aria-pressed", "true");
     expect(screen.getByRole("button", { name: "Visual" })).toHaveAttribute("aria-pressed", "false");
@@ -384,7 +385,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     rerender(editorShell());
     expect(screen.getByRole("region", { name: "Visual baseline settings" })).toBeInTheDocument();
     expect(screen.getByRole("toolbar", { name: "Spreadsheet editing actions" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Add setting" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Add setting" }).length).toBeGreaterThanOrEqual(3);
     expect(screen.getByRole("button", { name: /Edit Setting Name/ })).toBeInTheDocument();
     expect(mocks.activeFormat).toBe("yaml");
     expect(mocks.formatCache.current).toEqual({
@@ -589,7 +590,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     renderEditor();
 
     expect(screen.getByRole("region", { name: "Visual baseline settings" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "Add setting" })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Add setting" }).length).toBeGreaterThanOrEqual(3);
     expect(screen.getByRole("button", { name: /Edit Setting Name/ })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "Code" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByRole("button", { name: "Visual" })).toHaveAttribute("aria-pressed", "true");

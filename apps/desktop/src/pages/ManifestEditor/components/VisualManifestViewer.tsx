@@ -47,6 +47,11 @@ interface ActiveCell {
   column: string;
 }
 
+interface ReadOnlyNotice {
+  left: number;
+  top: number;
+}
+
 function categoryName(resourceType: string): string {
   const slash = resourceType.lastIndexOf("/");
   return slash >= 0 && slash < resourceType.length - 1
@@ -222,6 +227,24 @@ function AddSettingMenu({ platform, onAdd }: AddSettingMenuProps) {
   );
 }
 
+function CategoryAddSettingButton({
+  onClick,
+}: {
+  onClick: () => void;
+}) {
+  const { t } = useTranslation("manifest-editor");
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-semibold text-blue-700 outline-none hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-blue-300 dark:hover:bg-blue-950/30"
+    >
+      <AddRegular className="h-3.5 w-3.5" aria-hidden="true" />
+      {t("visual.addSetting")}
+    </button>
+  );
+}
+
 export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   source,
   editable = false,
@@ -241,6 +264,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   const [cellError, setCellError] = useState<VisualEditError | null>(null);
   const [pageError, setPageError] = useState<VisualEditError | null>(null);
   const [pendingEditId, setPendingEditId] = useState<string | null>(null);
+  const [readOnlyNotice, setReadOnlyNotice] = useState<ReadOnlyNotice | null>(null);
 
   const parsed = useMemo<ParsedGroups>(() => {
     try {
@@ -274,6 +298,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     setPageError(null);
     setDraftError(null);
     setCellError(null);
+    setReadOnlyNotice(null);
   }, [source]);
 
   useEffect(() => {
@@ -281,6 +306,13 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     onDraftValidityChange?.(draftError === null && cellError === null);
     return () => onDraftValidityChange?.(true);
   }, [canEdit, cellError, draftError, onDraftValidityChange]);
+
+  useEffect(() => {
+    if (!readOnlyNotice) return;
+    const dismiss = () => setReadOnlyNotice(null);
+    window.addEventListener("pointermove", dismiss, { once: true });
+    return () => window.removeEventListener("pointermove", dismiss);
+  }, [readOnlyNotice]);
 
   useEffect(() => {
     if (!pendingEditId || parsed.kind !== "ready") return;
@@ -369,6 +401,22 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     onSourceChange?.(result.source);
   };
 
+  const handleReadOnlyClick = (event: React.MouseEvent<HTMLElement>) => {
+    if (canEdit) return;
+    const target = event.target as HTMLElement;
+    if (target.closest("button, input, a, select, textarea")) return;
+    const bounds = regionRef.current?.getBoundingClientRect();
+    if (!bounds) return;
+    const horizontalPadding = 112;
+    setReadOnlyNotice({
+      left: Math.min(
+        Math.max(event.clientX - bounds.left, horizontalPadding),
+        Math.max(horizontalPadding, bounds.width - horizontalPadding),
+      ),
+      top: Math.max(48, event.clientY - bounds.top),
+    });
+  };
+
   if (parsed.kind === "error") {
     return (
       <div className="flex min-h-80 items-center justify-center p-8">
@@ -387,8 +435,24 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
       ref={regionRef}
       role="region"
       aria-label={t("viewer.visualRegionLabel")}
-      className="max-h-[min(62vh,48rem)] min-h-[28rem] overflow-y-auto [scrollbar-gutter:stable]"
+      onScroll={() => setReadOnlyNotice(null)}
+      className="relative max-h-[min(62vh,48rem)] min-h-[28rem] overflow-y-auto [scrollbar-gutter:stable]"
     >
+      {readOnlyNotice && (
+        <div
+          role="status"
+          data-testid="visual-readonly-tooltip"
+          className="pointer-events-none absolute z-30 max-w-56 -translate-x-1/2 rounded-md bg-blue-700 px-3 py-2 text-xs font-semibold leading-4 text-white shadow-lg"
+          style={{
+            left: readOnlyNotice.left,
+            top: readOnlyNotice.top,
+            transform: "translate(-50%, calc(-100% - 10px))",
+          }}
+        >
+          {t("visual.cannotEditViewOnly")}
+        </div>
+      )}
+
       {canEdit && (
         <div
           role="toolbar"
@@ -480,14 +544,9 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                     {group.resourceType}
                   </code>
                   {canEdit && (
-                    <button
-                      type="button"
+                    <CategoryAddSettingButton
                       onClick={() => handleAdd(group.resourceType, group.columns)}
-                      className="inline-flex items-center gap-1 rounded px-2 py-1 text-xs font-semibold text-blue-700 outline-none hover:bg-blue-50 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-blue-300 dark:hover:bg-blue-950/30"
-                    >
-                      <AddRegular className="h-3.5 w-3.5" aria-hidden="true" />
-                      {t("visual.addRow")}
-                    </button>
+                    />
                   )}
                 </div>
 
@@ -496,6 +555,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                   role="region"
                   aria-label={t("viewer.horizontalScrollLabel", { category: shortName })}
                   tabIndex={0}
+                  onClickCapture={handleReadOnlyClick}
                   className="isolate overflow-x-auto overscroll-x-contain rounded-md border border-slate-200 [scrollbar-color:theme(colors.slate.400)_transparent] [scrollbar-width:thin] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600 dark:border-slate-700 dark:[scrollbar-color:theme(colors.slate.600)_transparent]"
                 >
                   <table
@@ -772,6 +832,13 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                     </tbody>
                   </table>
                 </div>
+                {canEdit && (
+                  <div className="mt-2 flex justify-end">
+                    <CategoryAddSettingButton
+                      onClick={() => handleAdd(group.resourceType, group.columns)}
+                    />
+                  </div>
+                )}
               </section>
             );
           })}

@@ -196,6 +196,13 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     );
     await expect(page.getByRole("checkbox", { name: BASELINE_A })).toBeChecked();
     await expect(page.getByRole("checkbox", { name: BASELINE_B })).toBeChecked();
+    const matrixPicker = page
+      .getByRole("heading", { name: "Pick 2–10 baselines to compare" })
+      .locator("..");
+    const baselineSearch = matrixPicker.getByRole("searchbox", { name: /Search Baselines/i });
+    await baselineSearch.fill(BASELINE_LINUX);
+    await expect(matrixPicker.getByText(BASELINE_LINUX, { exact: true })).toBeVisible();
+    await expect(matrixPicker.getByText(BASELINE_A, { exact: true })).toHaveCount(0);
   });
 
   test("search filters baseline identity without hidden resource collisions", async () => {
@@ -225,6 +232,7 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await goToMyBaselines();
     await page.getByRole("button", { name: `Open baseline ${BASELINE_A}` }).click();
 
+    await expect(page.getByTestId("baseline-document-icon")).toBeVisible();
     await expect(page.getByText("Viewing", { exact: true })).toBeVisible();
     await expect(page.getByRole("button", { name: "Code" })).toHaveAttribute(
       "aria-pressed",
@@ -241,6 +249,12 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(visual).toBeVisible();
     await expect(visual.getByRole("table", { name: /Registry settings/i })).toBeVisible();
     await expect(page.getByRole("checkbox")).toHaveCount(0);
+    await visual.getByRole("cell", { name: "AlphaSetting" }).click();
+    await expect(page.getByTestId("visual-readonly-tooltip")).toHaveText(
+      "Cannot edit in view-only mode",
+    );
+    await page.mouse.move(16, 16);
+    await expect(page.getByTestId("visual-readonly-tooltip")).toHaveCount(0);
 
     const settingName = visual.getByRole("button", { name: "Setting Name" }).first();
     await settingName.click();
@@ -291,7 +305,10 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
     await expect(page.getByText("Editing", { exact: true })).toBeVisible();
     await expect(visual.getByRole("checkbox")).toHaveCount(3);
-    await expect(visual.getByRole("button", { name: "Add setting" })).toBeVisible();
+    const registrySection = visual
+      .getByRole("heading", { name: "Registry" })
+      .locator("xpath=../..");
+    await expect(registrySection.getByRole("button", { name: "Add setting" })).toHaveCount(2);
 
     await visual
       .getByRole("button", { name: "Edit Applied value for AlphaSetting" })
