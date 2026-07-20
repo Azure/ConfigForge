@@ -12,6 +12,10 @@
 - **View-only Visual feedback.** Clicking a non-interactive table cell shows a prominent “Cannot edit in view-only mode” message above the click point; moving the pointer dismisses it.
 - **Matrix baseline search.** The Matrix selector can filter registered baseline choices before users select the 2–10 baselines to compare.
 
+### Security
+
+- **Patched `js-yaml` to 4.3.0.** The release now overrides all direct and transitive copies to resolve the high-severity merge-key chain CPU-consumption advisory.
+
 ## [0.3.81] - 2026-07-19
 
 ### Fixed

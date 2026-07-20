@@ -8,6 +8,7 @@ shipped semver tag; older entries summarize the foundational work by theme.
 - **Refined Baseline Detail document identity and view-only feedback.** The title uses a document icon, and clicking a Visual table cell while viewing explains that editing requires Edit mode.
 - **Improved Visual authoring reach.** Add setting actions now appear above and below each table.
 - **Added Matrix baseline search** so large baseline lists can be filtered before selection.
+- **Patched `js-yaml` to 4.3.0** across direct and transitive dependencies to resolve a high-severity CPU-consumption advisory.
 
 ## v0.3.81 — 2026-07-19
 
