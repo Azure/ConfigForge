@@ -3,6 +3,12 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.80 — 2026-07-19
+
+- **Fixed official OSConfig CSV imports.** LAPS, Defender Antivirus, and Windows Server baseline files now retain typed Registry/CSP resources, role-specific values, and Test compliance criteria; report-only CSVs receive a clear reconstruction error.
+- **Made the Baseline Detail footer responsive without hiding actions.** Controls compact to icons as space tightens instead of clipping or scrolling horizontally.
+- **Fixed Save → Skip navigation.** A consumed compliance deep link no longer reopens the report after saving an edited baseline.
+
 ## v0.3.79 — 2026-07-19
 
 - **Added compliance report search, filtering, and status sorting.** Search covers setting names, types, and reasons; status filters isolate Compliant, Non-compliant, or Could not read entries; and the Status header cycles ascending, descending, and original ordering.
