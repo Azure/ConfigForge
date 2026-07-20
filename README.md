@@ -144,7 +144,8 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.81** (current) | Footer actions retain labels and reflow into balanced compact rows across Electron resolutions |
+| **0.3.82** (current) | Baseline document identity, view-only Visual feedback, top/bottom Add setting actions, and Matrix baseline search |
+| **0.3.81** | Footer actions retain labels and reflow into balanced compact rows across Electron resolutions |
 | **0.3.80** | First-class OSConfig CSV imports, a responsive no-scroll Baseline Detail footer, and correct Save → Skip navigation after compliance deep links |
 | **0.3.79** | Search compliance reports, filter by Compliant / Non-compliant / Could not read, and sort by status |
 | **0.3.78** | Correct baseline platform icons and Monaco warning styling; persist compliance reports and move them into a large centered dialog |

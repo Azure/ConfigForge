@@ -3,7 +3,7 @@
 
 import React, { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import { getI18n } from "../../../locales";
@@ -136,6 +136,21 @@ describe("VisualManifestViewer", () => {
     expect(priorityHeader).not.toHaveAttribute("aria-sort");
     expect(settingNames(table)).toEqual(["Later", "First equal", "Second equal"]);
     expect(within(sortButton).queryByTestId("sort-direction-icon")).not.toBeInTheDocument();
+  });
+
+  it("shows view-only feedback above a clicked table cell until the pointer moves", () => {
+    renderViewer();
+    const region = screen.getByRole("region", { name: "Visual baseline settings" });
+    const cell = screen.getByText("Later");
+
+    fireEvent.click(cell, { clientX: 240, clientY: 180 });
+
+    expect(screen.getByTestId("visual-readonly-tooltip")).toHaveTextContent(
+      "Cannot edit in view-only mode",
+    );
+
+    fireEvent.pointerMove(region);
+    expect(screen.queryByTestId("visual-readonly-tooltip")).not.toBeInTheDocument();
   });
 
   it("renders an Expected value column only for categories that contain desired state", () => {
@@ -320,14 +335,16 @@ describe("VisualManifestViewer", () => {
     expect(document.resources[0].name).toBe("Renamed setting");
   });
 
-  it("adds blank rows directly in the table and opens the new name cell", async () => {
+  it("offers matching Add setting actions above and below each table", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     renderEditable(source, onChange);
     const category = screen.getByRole("heading", { name: "Category" }).closest("section");
     expect(category).not.toBeNull();
 
-    await user.click(within(category!).getByRole("button", { name: "Add row" }));
+    const addActions = within(category!).getAllByRole("button", { name: "Add setting" });
+    expect(addActions).toHaveLength(2);
+    await user.click(addActions.at(-1)!);
 
     expect(onChange).toHaveBeenCalledTimes(1);
     expect(

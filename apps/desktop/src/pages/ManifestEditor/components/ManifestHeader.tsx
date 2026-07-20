@@ -3,10 +3,14 @@
 
 import React from "react";
 import { Button } from "@fluentui/react-components";
-import { DesktopRegular, DismissRegular, EditRegular, EyeRegular } from "@fluentui/react-icons";
+import {
+  DismissRegular,
+  DocumentRegular,
+  EditRegular,
+  EyeRegular,
+} from "@fluentui/react-icons";
 import { useTranslation } from "react-i18next";
 import type { OscManifest } from "@configforge/core/types";
-import { WindowsLogo } from "../../../components/WindowsLogo";
 import type { ManifestEditorState } from "../state/useManifestEditorState";
 
 export interface ManifestHeaderProps {
@@ -19,30 +23,6 @@ export interface ManifestHeaderProps {
   };
   editorState: ManifestEditorState;
   onCancelEdit: () => void;
-}
-
-function PlatformMark({
-  platform,
-  label,
-}: {
-  platform: ManifestHeaderProps["platformBadge"]["platform"];
-  label: string;
-}) {
-  if (platform === "windows") {
-    return <WindowsLogo className="h-6 w-6 shrink-0" />;
-  }
-  if (platform === "linux") {
-    return (
-      <span role="img" aria-label={label} className="text-xl leading-none">
-        🐧
-      </span>
-    );
-  }
-  return (
-    <span role="img" aria-label={label} className="inline-flex text-slate-500 dark:text-slate-400">
-      <DesktopRegular className="h-6 w-6" aria-hidden="true" />
-    </span>
-  );
 }
 
 export const ManifestHeader = React.memo(function ManifestHeader({
@@ -60,7 +40,13 @@ export const ManifestHeader = React.memo(function ManifestHeader({
   return (
     <header className="flex flex-wrap items-start justify-between gap-4">
       <div className="flex min-w-0 items-center gap-3">
-        <PlatformMark platform={platformBadge.platform} label={platformLabel} />
+        <span
+          data-testid="baseline-document-icon"
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-slate-200 bg-white text-slate-600 shadow-sm dark:border-slate-600 dark:text-slate-700"
+          aria-hidden="true"
+        >
+          <DocumentRegular className="h-5 w-5" />
+        </span>
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2.5">
             <h1 className="truncate text-2xl font-semibold tracking-tight text-slate-950 dark:text-white">

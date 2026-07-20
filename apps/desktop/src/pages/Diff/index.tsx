@@ -1011,9 +1011,19 @@ function MatrixTab({
   data,
   error,
 }: MatrixTabProps) {
-  const { t } = useTranslation(["diff", "common"]);
+  const { t } = useTranslation(["diff", "common", "manifests"]);
+  const [baselineSearchQuery, setBaselineSearchQuery] = useState("");
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | "identical" | "differs" | "partial">("all");
+
+  const filteredManifests = useMemo(() => {
+    const tokens = baselineSearchQuery.trim().toLowerCase().split(/\s+/).filter(Boolean);
+    if (tokens.length === 0) return manifests;
+    return manifests.filter((manifest) => {
+      const searchable = `${manifest.Name} ${manifest.Source ?? ""}`.toLowerCase();
+      return tokens.every((token) => searchable.includes(token));
+    });
+  }, [baselineSearchQuery, manifests]);
 
   const filteredMatrix = useMemo(() => {
     if (!data) return [];
@@ -1057,31 +1067,56 @@ function MatrixTab({
         {manifests.length === 0 ? (
           <p className="text-sm text-slate-400">{t('matrix.noManifests')}</p>
         ) : (
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
-            {manifests.map((m) => {
-              const isSelected = selected.has(m.Name);
-              const disabled = !isSelected && selected.size >= 10;
-              return (
-                <label
-                  key={m.Name}
-                  className={`flex items-center gap-2 rounded border px-3 py-2 text-sm ${
-                    isSelected
-                      ? "border-blue-400 bg-blue-50 text-blue-900 dark:border-blue-600 dark:bg-blue-900/30 dark:text-blue-200"
-                      : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
-                  } ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-blue-300"}`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={isSelected}
-                    disabled={disabled}
-                    onChange={() => toggleSelection(m.Name)}
-                    className="h-4 w-4"
-                  />
-                  <span className="truncate">{m.Name}</span>
-                </label>
-              );
-            })}
-          </div>
+          <>
+            <div className="relative mb-3 max-w-sm">
+              <label htmlFor="matrix-baseline-search" className="sr-only">
+                {t('manifests:administration.search.label')}
+              </label>
+              <SearchRegular
+                className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400"
+                aria-hidden="true"
+              />
+              <input
+                id="matrix-baseline-search"
+                type="search"
+                value={baselineSearchQuery}
+                onChange={(event) => setBaselineSearchQuery(event.target.value)}
+                placeholder={t('manifests:administration.search.placeholder')}
+                className="w-full rounded border border-slate-200 bg-white py-1.5 pl-9 pr-3 text-sm text-slate-700 placeholder:text-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:placeholder:text-slate-500"
+              />
+            </div>
+            {filteredManifests.length === 0 ? (
+              <p className="rounded border border-dashed border-slate-200 px-3 py-4 text-sm text-slate-500 dark:border-slate-700 dark:text-slate-400">
+                {t('manifests:administration.table.noMatches')}
+              </p>
+            ) : (
+              <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-4">
+                {filteredManifests.map((m) => {
+                  const isSelected = selected.has(m.Name);
+                  const disabled = !isSelected && selected.size >= 10;
+                  return (
+                    <label
+                      key={m.Name}
+                      className={`flex items-center gap-2 rounded border px-3 py-2 text-sm ${
+                        isSelected
+                          ? "border-blue-400 bg-blue-50 text-blue-900 dark:border-blue-600 dark:bg-blue-900/30 dark:text-blue-200"
+                          : "border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                      } ${disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:border-blue-300"}`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={isSelected}
+                        disabled={disabled}
+                        onChange={() => toggleSelection(m.Name)}
+                        className="h-4 w-4"
+                      />
+                      <span className="truncate">{m.Name}</span>
+                    </label>
+                  );
+                })}
+              </div>
+            )}
+          </>
         )}
         <div className="mt-4 flex items-center gap-3">
           <Button
