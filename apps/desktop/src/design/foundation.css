@@ -171,6 +171,53 @@
   /* Drag region utilities for the Phase 6 custom titlebar. */
   .cfs-drag { -webkit-app-region: drag; }
   .cfs-no-drag { -webkit-app-region: no-drag; }
+
+  /* Baseline detail footer ──────────────────────────────────────────
+     Never horizontally scroll or hide actions. Wide layouts show full
+     labels; compact layouts preserve every action as a 32px icon button.
+     The app's minimum window width is 880px, where all icons still fit. */
+  .cfs-manifest-footer {
+    container-name: manifest-footer;
+    container-type: inline-size;
+  }
+
+  .cfs-footer-bar {
+    flex-wrap: nowrap;
+  }
+}
+
+@container manifest-footer (max-width: 1700px) {
+  .cfs-footer-secondary-label,
+  .cfs-footer-chevron {
+    display: none;
+  }
+
+  .cfs-footer-action:not(.cfs-footer-close-action):not(.cfs-footer-primary-action) {
+    width: 32px !important;
+    min-width: 32px !important;
+    padding-inline: 6px !important;
+    gap: 0 !important;
+  }
+}
+
+@container manifest-footer (max-width: 1050px) {
+  .cfs-footer-close-label,
+  .cfs-footer-primary-label,
+  .cfs-footer-divider {
+    display: none;
+  }
+
+  .cfs-footer-bar {
+    gap: 4px;
+    padding-inline: 8px !important;
+  }
+
+  .cfs-footer-close-action,
+  .cfs-footer-primary-action {
+    width: 36px !important;
+    min-width: 36px !important;
+    padding-inline: 8px !important;
+  }
 }
 
 @layer utilities {
