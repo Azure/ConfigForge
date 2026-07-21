@@ -147,7 +147,8 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.82-author.1** (current) | macOS author flavor with clearer Baseline Detail identity and view-only feedback, top/bottom Add setting actions, Matrix baseline search, and the `js-yaml` 4.3.0 security patch |
+| **0.3.84-author.1** (current) | macOS author flavor with exports limited to YAML, JSON, MOF, and CSV plus all high-severity development dependency advisories cleared |
+| **0.3.82-author.1** | macOS author flavor with clearer Baseline Detail identity and view-only feedback, top/bottom Add setting actions, Matrix baseline search, and the `js-yaml` 4.3.0 security patch |
 | **0.3.81-author.1** | macOS author flavor with first-class OSConfig CSV imports, fully labeled responsive Baseline Detail actions, author-only Recent Activity, spreadsheet editing, and full FR/DE/ES coverage |
 | **0.3.76-author.1** | macOS author flavor with author-only Recent Activity for registration/edit history, predictable namespace/display-name search in My Baselines, responsive Visual tables, spreadsheet editing shared by Baseline Detail and Register New Baseline, and full FR/DE/ES coverage |
 | **0.3.62 – 0.3.68** | Rebrand **ConfigForge Spark → ConfigForge**; vocabulary refresh (**Manifests → My Baselines**, **Library → Microsoft Baselines**, **Validation → Export Readiness**, **CIS Mapping → Benchmark Mapping**, *resource* → *setting*, **OSConfig vNext → Gen 2**); unsigned OSS release pipeline with `SHA256SUMS` + SBOM verification; MOF export targets the `Microsoft.OSConfig` module; Monaco overflow-widget dropdown root-cause fix; "Could not read" compliance bucket on baseline cards |

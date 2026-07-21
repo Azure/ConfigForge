@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.84-author.1] - 2026-07-20
+
+### Removed
+- **Removed Azure Policy definition JSON from customer-facing export menus.** Baseline Detail and Export Readiness now offer only YAML, JSON, MOF, and CSV.
+
+### Security
+- **Updated the dev-only `tar` dependency to 7.5.20 and `axios` to 1.18.1.** These updates resolve the critical archive decompression denial-of-service advisory and the inherited-proxy/request-construction advisories.
+- **Updated `concurrently` to 9.2.4 and `shell-quote` to 1.9.0.** This resolves the high-severity quadratic-complexity denial-of-service advisory in shell parsing.
+- **Patched every vulnerable `brace-expansion` major line.** npm overrides resolve 1.x to 1.1.16, 2.x to 2.1.2, and 5.x to 5.0.7 without coercing consumers across major versions.
+
 ## [0.3.82-author.1] - 2026-07-20
 
 ### Added
