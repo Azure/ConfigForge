@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.86-author.1] - 2026-07-21
+
+### Fixed
+- **Corrected the Server 2025 `ImpersonateClient` rule for current OSConfig CLIs.** All three Server 2025 variants now use the upstream string-backed UserRights CSP representation and explicit SID schema.
+- **Updated shared oscfg compatibility logic.** Version 1.3.9 is treated as the minimum, so newer CLI releases are accepted wherever the health contract is consumed.
+
 ## [0.3.85-author.1] - 2026-07-20
 
 ### Fixed
