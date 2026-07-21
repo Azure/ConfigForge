@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.83] - 2026-07-20
+
+### Security
+
+- **Updated the dev-only `tar` dependency to 7.5.20.** This resolves the critical decompression/parse denial-of-service advisory plus related archive parsing and infinite-loop issues reported by Dependabot.
+- **Updated the dev-only `axios` dependency to 1.18.1.** This resolves the inherited-proxy configuration advisory and the associated request-construction, upload-limit, and form-serialization advisories.
+
 ## [0.3.82] - 2026-07-20
 
 ### Changed

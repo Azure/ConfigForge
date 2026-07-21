@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.83 — 2026-07-20
+
+- **Patched development dependency advisories** by updating `tar` to 7.5.20 and `axios` to 1.18.1. This release contains no runtime feature changes.
+
 ## v0.3.82 — 2026-07-20
 
 - **Refined Baseline Detail document identity and view-only feedback.** The title uses a document icon, and clicking a Visual table cell while viewing explains that editing requires Edit mode.
