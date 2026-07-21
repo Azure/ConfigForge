@@ -42,6 +42,8 @@
     "cli-ready": "CLI de OSConfig lista",
     "editor-mode-cli-not-installed": "Modo editor, CLI no instalada",
     "install-hint": "Instale OSConfig para implementar y auditar en este equipo.",
+    "minimum-version-hint": "Instalado: {{version}}. Actualice a oscfg {{minimumVersion}} o posterior.",
+    "minimum-version-required": "Se requiere oscfg {{minimumVersion}} o posterior",
     "version-mismatch-detail": "{{version}}, esperado {{expectedVersion}}",
     "version-mismatch-hint": "ConfigForge se validó con {{expectedVersion}}. La CLI instalada puede producir errores inesperados durante la implementación o la auditoría. Actualice OSConfig si encuentra problemas."
   },

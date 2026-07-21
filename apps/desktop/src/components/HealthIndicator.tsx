@@ -10,7 +10,7 @@ import { useCliPresence } from '../hooks/useCliPresence';
  *
  * v0.2.0+ (bring-your-own-CLI): drives off `useCliPresence()`. Three
  * states:
- *   🟢 healthy:  OSConfig CLI v… (installed, no admin block)
+ *   🟢 healthy:  oscfg (installed, supported, no admin block)
  *   🟠 degraded: Editor mode, CLI not installed (or admin required)
  *   🔴 error:    Cannot reach IPC
  *   ⚪ loading:  Verifying…
@@ -57,17 +57,18 @@ export function HealthIndicator({ onInstallClick }: HealthIndicatorProps = {}) {
     detail = t('health.editor-mode-cli-not-installed');
     hint = t('health.install-hint');
     clickable = Boolean(onInstallClick);
-  } else if (adminBlocked) {
-    dotColor = 'bg-amber-500';
-    detail = t('health.admin-required', { version });
-    hint = adminMessage;
   } else if (versionMismatch) {
     dotColor = 'bg-amber-500';
-    detail = t('health.version-mismatch-detail', { version, expectedVersion });
-    hint = t('health.version-mismatch-hint', { expectedVersion });
+    detail = t('health.minimum-version-required', { minimumVersion: expectedVersion });
+    hint = t('health.minimum-version-hint', { version, minimumVersion: expectedVersion });
+  } else if (adminBlocked) {
+    dotColor = 'bg-amber-500';
+    detail = t('health.admin-required', { version: 'oscfg' });
+    hint = [version, adminMessage].filter(Boolean).join(' — ');
   } else {
     dotColor = 'bg-emerald-500';
-    detail = version || t('health.cli-ready');
+    detail = 'oscfg';
+    hint = version || t('health.cli-ready');
   }
 
   const handleClick = useCallback(() => {
