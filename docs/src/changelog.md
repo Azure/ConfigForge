@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.84-author.1 — 2026-07-20
+
+- **Cleared all high-severity development dependency advisories** by updating `tar`, `axios`, `concurrently`, and `shell-quote`, plus pinning each active `brace-expansion` major line to its patched release. The macOS author-only capability boundary is unchanged.
+
 ## v0.3.82-author.1 — 2026-07-20
 
 - **Refined Baseline Detail document identity and view-only feedback.** The title uses a document icon, and Visual table clicks clearly explain that editing requires Edit mode.
