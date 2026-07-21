@@ -3,6 +3,11 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.84 — 2026-07-20
+
+- **Simplified exports to YAML, JSON, MOF, and CSV.** Azure Policy definition JSON is no longer offered in Baseline Detail or Export Readiness.
+- **Cleared the remaining high-severity development dependency advisories** by updating `concurrently` to 9.2.4, `shell-quote` to 1.9.0, and each active `brace-expansion` major line to its patched release. This release contains no runtime feature changes.
+
 ## v0.3.83 — 2026-07-20
 
 - **Patched development dependency advisories** by updating `tar` to 7.5.20 and `axios` to 1.18.1. This release contains no runtime feature changes.

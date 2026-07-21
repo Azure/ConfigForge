@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.84] - 2026-07-20
+
+### Removed
+
+- **Removed Azure Policy definition JSON from customer-facing export menus.** Baseline Detail and Export Readiness now offer only YAML, JSON, MOF, and CSV.
+
+### Security
+
+- **Updated `concurrently` to 9.2.4 and `shell-quote` to 1.9.0.** This resolves the high-severity quadratic-complexity denial-of-service advisory in shell parsing.
+- **Patched every vulnerable `brace-expansion` major line.** npm overrides now resolve 1.x to 1.1.16, 2.x to 2.1.2, and 5.x to 5.0.7, clearing the remaining high-severity development dependency advisories without coercing consumers across major versions.
+
 ## [0.3.83] - 2026-07-20
 
 ### Security

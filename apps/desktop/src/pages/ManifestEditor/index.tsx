@@ -435,7 +435,7 @@ export function ManifestDetailPage() {
   // `useManifestEditorState` (Phase A.3) — destructured above.
   useNavigationGuard(hasUnsavedChanges, t("actions.leaveUnsavedConfirm", { name: manifestName }));
 
-  const handleExport = async (format: "yaml" | "json" | "mof" | "excel" | "azurepolicy") => {
+  const handleExport = async (format: "yaml" | "json" | "mof" | "excel") => {
     setExportOpen(false);
     try {
       await cfs.exportChannel.save({ name: manifestName, format });
