@@ -42,6 +42,8 @@
     "cli-ready": "OSConfig CLI ready",
     "editor-mode-cli-not-installed": "Editor mode, CLI not installed",
     "install-hint": "Install OSConfig to deploy and audit on this machine.",
+    "minimum-version-hint": "Installed: {{version}}. Upgrade to oscfg {{minimumVersion}} or newer.",
+    "minimum-version-required": "oscfg {{minimumVersion}} or newer required",
     "version-mismatch-detail": "{{version}}, expected {{expectedVersion}}",
     "version-mismatch-hint": "ConfigForge was validated against {{expectedVersion}}. The installed CLI may produce unexpected errors during deploy or audit. Upgrade OSConfig if you hit issues."
   },

@@ -102,4 +102,42 @@ describe('recheckHealth', () => {
     expect(cached.installed).toBe(true);
     expect(cached.version).toContain('1.3.9');
   });
+
+  it.each([
+    'oscfg 1.3.9-preview11',
+    'oscfg 1.3.10-preview13',
+    'oscfg 1.4.3',
+    'oscfg 2.0.0-preview1',
+  ])('accepts supported or newer CLI version %s', async (version) => {
+    mockedOscfg.resolveOscfgBinary.mockReturnValue({
+      path: '/usr/local/bin/oscfg',
+      version,
+      platform: 'linux',
+      source: 'path',
+    });
+
+    const status = await recheckHealth();
+
+    expect(status.versionMismatch).toBe(false);
+    expect(status.status).toBe('healthy');
+    expect(status.expectedVersion).toBe('1.3.9');
+  });
+
+  it.each(['oscfg 1.3.8-preview18', 'oscfg 1.2.99'])(
+    'flags CLI version %s below the minimum',
+    async (version) => {
+      mockedOscfg.resolveOscfgBinary.mockReturnValue({
+        path: '/usr/local/bin/oscfg',
+        version,
+        platform: 'linux',
+        source: 'path',
+      });
+
+      const status = await recheckHealth();
+
+      expect(status.versionMismatch).toBe(true);
+      expect(status.status).toBe('degraded');
+      expect(status.expectedVersion).toBe('1.3.9');
+    },
+  );
 });
