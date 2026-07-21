@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.87] - 2026-07-21
+
+### Changed
+
+- **Removed ConfigForge's local Server 2025 `ImpersonateClient` manifest override.** The Member Server, Domain Controller, and Workgroup Member baselines are restored exactly to their source representation because the reported issue belongs to the upstream manifest path. The separate oscfg 1.3.9-or-newer compatibility and footer-status fix remains.
+
 ## [0.3.86] - 2026-07-21
 
 ### Fixed

@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.87 — 2026-07-21
+
+- **Removed the local Server 2025 `ImpersonateClient` manifest override.** The three bundled baselines are restored to their source representation while the separate oscfg 1.3.9-or-newer status handling remains.
+
 ## v0.3.86 — 2026-07-21
 
 - **Fixed the Server 2025 `ImpersonateClient` CSP rule** to use the current upstream string-backed UserRights representation and explicit SID schema.

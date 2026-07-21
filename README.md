@@ -144,7 +144,8 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.86** (current) | Current OSConfig-compatible `ImpersonateClient` YAML and minimum-version handling for oscfg 1.3.9 or newer |
+| **0.3.87** (current) | Removes the local `ImpersonateClient` manifest override while retaining minimum-version handling for oscfg 1.3.9 or newer |
+| **0.3.86** | Current OSConfig-compatible `ImpersonateClient` YAML and minimum-version handling for oscfg 1.3.9 or newer |
 | **0.3.85** | My Baselines rows stay behind the opaque sticky column header while scrolling |
 | **0.3.84** | Export options are limited to YAML, JSON, MOF, and CSV; all remaining high-severity development dependency advisories are cleared |
 | **0.3.83** | Development dependency security refresh: `tar` 7.5.20 and `axios` 1.18.1; no runtime feature changes |
