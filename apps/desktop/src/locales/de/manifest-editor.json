@@ -83,7 +83,6 @@
   "export": {
     "documentation": "Dokumentation (.md)",
     "formats": {
-      "azurePolicy": "Azure Policy (.json)",
       "csv": "CSV (.csv)",
       "json": "JSON (.json)",
       "mof": "MOF (.mof)",
