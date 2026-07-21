@@ -21,6 +21,7 @@
  */
 
 export const OSCFG_CLI_VERSION = '1.3.9-preview11';
+export const OSCFG_MINIMUM_VERSION = '1.3.9';
 
 export const REGISTERED_WINDOWS_TYPES = [
   'Microsoft.Windows/CSP',

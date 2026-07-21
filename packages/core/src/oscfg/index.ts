@@ -42,6 +42,7 @@ export type {
 } from './registry';
 export {
   OSCFG_CLI_VERSION,
+  OSCFG_MINIMUM_VERSION,
   REGISTERED_WINDOWS_TYPES,
   REGISTERED_LINUX_TYPES,
   isRegisteredType,

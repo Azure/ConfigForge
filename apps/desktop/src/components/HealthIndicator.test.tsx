@@ -48,13 +48,17 @@ beforeEach(() => {
 });
 
 describe('HealthIndicator', () => {
-  it('renders the healthy state with version text when CLI is installed', async () => {
+  it('renders a concise healthy state and keeps the exact version in the tooltip', async () => {
     fakeHealth.check.mockResolvedValue(makeHealth(true));
     render(<HealthIndicator />);
 
     await waitFor(() => {
-      expect(screen.getByText(/oscfg 1.3.9-preview11/)).toBeInTheDocument();
+      expect(screen.getByText('oscfg')).toBeInTheDocument();
     });
+    expect(screen.getByText('oscfg').closest('div')).toHaveAttribute(
+      'title',
+      'oscfg 1.3.9-preview11',
+    );
   });
 
   it('renders "Editor mode, CLI not installed" when CLI is missing', async () => {
@@ -127,7 +131,25 @@ describe('HealthIndicator', () => {
     render(<HealthIndicator />);
 
     await waitFor(() => {
-      expect(screen.getByText(/admin required/i)).toBeInTheDocument();
+      expect(screen.getByText('oscfg, admin required')).toBeInTheDocument();
+    });
+    expect(screen.getByText('oscfg, admin required').closest('div')).toHaveAttribute(
+      'title',
+      expect.stringContaining('oscfg 1.3.9-preview11'),
+    );
+  });
+
+  it('shows the minimum version only when the installed CLI is too old', async () => {
+    fakeHealth.check.mockResolvedValue({
+      ...makeHealth(true, 'oscfg 1.3.8-preview18'),
+      status: 'degraded',
+      versionMismatch: true,
+      expectedVersion: '1.3.9',
+    });
+    render(<HealthIndicator />);
+
+    await waitFor(() => {
+      expect(screen.getByText('oscfg 1.3.9 or newer required')).toBeInTheDocument();
     });
   });
 });
