@@ -47,6 +47,8 @@ const PERCENT_FORMAT: Intl.NumberFormatOptions = {
   style: "percent",
   maximumFractionDigits: 0,
 };
+const STICKY_HEADER_CELL_CLASS =
+  "sticky top-0 z-20 border-b border-slate-200 bg-slate-100 px-3 py-2 dark:border-slate-700 dark:bg-slate-800";
 
 type Feedback = {
   intent: "success" | "error" | "info";
@@ -439,13 +441,13 @@ export function ManifestsPage() {
         </div>
       )}
 
-      <section className="min-h-0 flex-1 overflow-auto px-5 py-3">
+      <section className="min-h-0 flex-1 overflow-auto px-5 pb-3">
         {loading && manifests.length === 0 ? (
-          <div className="flex h-full items-center justify-center">
+          <div className="flex h-full items-center justify-center pt-3">
             <Spinner label={t("administration.loading")} />
           </div>
         ) : manifests.length === 0 ? (
-          <div className="flex h-full min-h-56 flex-col items-center justify-center border border-dashed border-slate-300 bg-white px-6 text-center dark:border-slate-700 dark:bg-slate-900">
+          <div className="mt-3 flex h-[calc(100%-0.75rem)] min-h-56 flex-col items-center justify-center border border-dashed border-slate-300 bg-white px-6 text-center dark:border-slate-700 dark:bg-slate-900">
             <FolderOpenRegular className="mb-3 h-9 w-9 text-slate-400" />
             <h2 className="text-base font-semibold text-slate-900 dark:text-white">
               {t("empty.sectionTitle")}
@@ -455,14 +457,14 @@ export function ManifestsPage() {
             </p>
           </div>
         ) : (
-          <div className="min-w-[760px] border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
+          <div className="isolate mt-3 min-w-[760px] border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
             <table
               aria-label={t("page.title")}
-              className="w-full border-collapse text-left text-sm"
+              className="w-full border-separate border-spacing-0 text-left text-sm"
             >
-              <thead className="sticky top-0 z-10 bg-slate-100 text-xs font-semibold text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              <thead className="text-xs font-semibold text-slate-600 dark:text-slate-300">
                 <tr>
-                  <th className="w-11 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
+                  <th className={`${STICKY_HEADER_CELL_CLASS} w-11`}>
                     <input
                       ref={selectAllRef}
                       type="checkbox"
@@ -472,19 +474,19 @@ export function ManifestsPage() {
                       className="h-4 w-4 rounded border-slate-300 accent-blue-600"
                     />
                   </th>
-                  <th className="border-b border-slate-200 px-3 py-2 dark:border-slate-700">
+                  <th className={STICKY_HEADER_CELL_CLASS}>
                     {t("administration.table.baseline")}
                   </th>
-                  <th className="w-44 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
+                  <th className={`${STICKY_HEADER_CELL_CLASS} w-44`}>
                     {t("administration.table.operatingSystem")}
                   </th>
-                  <th className="w-24 border-b border-slate-200 px-3 py-2 text-right dark:border-slate-700">
+                  <th className={`${STICKY_HEADER_CELL_CLASS} w-24 text-right`}>
                     {t("administration.table.settings")}
                   </th>
-                  <th className="w-36 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
+                  <th className={`${STICKY_HEADER_CELL_CLASS} w-36`}>
                     {t("administration.table.issues")}
                   </th>
-                  <th className="w-40 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
+                  <th className={`${STICKY_HEADER_CELL_CLASS} w-40`}>
                     {t("administration.table.compliant")}
                   </th>
                 </tr>
