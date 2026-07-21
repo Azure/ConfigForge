@@ -240,6 +240,17 @@ describe('ManifestsPage administrative table', () => {
     ]) {
       expect(within(table).getByRole('columnheader', { name: column })).toBeInTheDocument();
     }
+    expect(table).toHaveClass('border-separate', 'border-spacing-0');
+    expect(table.parentElement).toHaveClass('isolate', 'mt-3');
+    expect(table.closest('section')).toHaveClass('pb-3');
+    expect(table.closest('section')).not.toHaveClass('pt-3');
+    expect(within(table).getByRole('columnheader', { name: 'Baseline' })).toHaveClass(
+      'sticky',
+      'top-0',
+      'z-20',
+      'bg-slate-100',
+      'dark:bg-slate-800',
+    );
 
     const alphaRow = screen.getByRole('row', { name: /Alpha Security Baseline/ });
     expect(alphaRow).toHaveTextContent('Windows');
