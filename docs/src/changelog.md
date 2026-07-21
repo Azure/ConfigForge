@@ -5,6 +5,7 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 ## v0.3.84-author.1 — 2026-07-20
 
+- **Simplified exports to YAML, JSON, MOF, and CSV.** Azure Policy definition JSON is no longer offered in Baseline Detail or Export Readiness.
 - **Cleared all high-severity development dependency advisories** by updating `tar`, `axios`, `concurrently`, and `shell-quote`, plus pinning each active `brace-expansion` major line to its patched release. The macOS author-only capability boundary is unchanged.
 
 ## v0.3.82-author.1 — 2026-07-20
