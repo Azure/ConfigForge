@@ -2,6 +2,10 @@
 
 ## [0.3.84] - 2026-07-20
 
+### Removed
+
+- **Removed Azure Policy definition JSON from customer-facing export menus.** Baseline Detail and Export Readiness now offer only YAML, JSON, MOF, and CSV.
+
 ### Security
 
 - **Updated `concurrently` to 9.2.4 and `shell-quote` to 1.9.0.** This resolves the high-severity quadratic-complexity denial-of-service advisory in shell parsing.

@@ -6,7 +6,6 @@ import { Link } from "react-router-dom";
 import {
   Button,
   Menu,
-  MenuDivider,
   MenuItem,
   MenuList,
   MenuPopover,
@@ -51,7 +50,7 @@ export interface ManifestDetailFooterProps {
   saveBlocked: boolean;
   onClose: () => void;
   onDuplicate: () => void;
-  onExport: (format: "yaml" | "json" | "mof" | "excel" | "azurepolicy") => void;
+  onExport: (format: "yaml" | "json" | "mof" | "excel") => void;
   onExportDocs: () => void;
   onDelete: () => void;
   onCheckCompliance: () => void;
@@ -245,10 +244,6 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
                   <MenuItem onClick={() => onExport("yaml")}>{t("export.formats.yaml")}</MenuItem>
                   <MenuItem onClick={() => onExport("json")}>{t("export.formats.json")}</MenuItem>
                   <MenuItem onClick={() => onExport("mof")}>{t("export.formats.mof")}</MenuItem>
-                  <MenuDivider />
-                  <MenuItem onClick={() => onExport("azurepolicy")}>
-                    {t("export.formats.azurePolicy")}
-                  </MenuItem>
                   <MenuItem onClick={() => onExport("excel")}>{t("export.formats.csv")}</MenuItem>
                 </MenuList>
               </MenuPopover>

@@ -34,7 +34,7 @@ interface ManifestSummary {
   hasEnforcementValues: boolean;
   hasComplianceCriteria: boolean;
   hasSchema: boolean;
-  exportReady: { yaml: boolean; json: boolean; mof: boolean; azurepolicy: boolean };
+  exportReady: { yaml: boolean; json: boolean; mof: boolean };
   issues: string[];
 }
 
@@ -88,7 +88,6 @@ export function CompliancePage() {
               yaml: resources.length > 0,
               json: resources.length > 0,
               mof: resources.length > 0,
-              azurepolicy: resources.length > 0,
             },
             issues: validation?.issues ?? [],
           };
@@ -359,16 +358,10 @@ export function CompliancePage() {
                                 fmt="json"
                               />
                               <ExportRow
-                                format="MOF (Azure Policy)"
+                                format="MOF (.mof)"
                                 ready={m.exportReady.mof}
                                 name={m.name}
                                 fmt="mof"
-                              />
-                              <ExportRow
-                                format="Azure Policy Definition"
-                                ready={m.exportReady.azurepolicy}
-                                name={m.name}
-                                fmt="azurepolicy"
                               />
                               <ExportRow
                                 format="CSV (Spreadsheet)"
@@ -461,7 +454,7 @@ function ExportRow({
   format: string;
   ready: boolean;
   name: string;
-  fmt: "yaml" | "json" | "mof" | "azurepolicy" | "excel";
+  fmt: "yaml" | "json" | "mof" | "excel";
 }) {
   const { t } = useTranslation("compliance");
   const [errMsg, setErrMsg] = useState<string | null>(null);
