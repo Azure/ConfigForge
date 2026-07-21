@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.85-author.1 — 2026-07-20
+
+- **Fixed My Baselines sticky-header layering.** Scrolled baseline rows remain fully behind the opaque column header.
+
 ## v0.3.84-author.1 — 2026-07-20
 
 - **Simplified exports to YAML, JSON, MOF, and CSV.** Azure Policy definition JSON is no longer offered in Baseline Detail or Export Readiness.

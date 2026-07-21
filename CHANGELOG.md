@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.85-author.1] - 2026-07-20
+
+### Fixed
+- **My Baselines rows no longer cross above the sticky table header while scrolling.** Opaque per-cell sticky layers keep baseline content fully behind the header in the macOS author build.
+
 ## [0.3.84-author.1] - 2026-07-20
 
 ### Removed
