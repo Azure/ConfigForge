@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.86] - 2026-07-21
+
+### Fixed
+
+- **Corrected the Server 2025 `ImpersonateClient` rule for current OSConfig CLIs.** Member Server, Domain Controller, and Workgroup Member baselines now use the upstream `Policy/Config` CSP path, a string-backed comma-delimited SID value, and `schema.items.enum` instead of the obsolete Result/array/empty-schema representation that produced `0x8000000E`.
+- **Newer `oscfg` versions no longer show a false compatibility warning.** ConfigForge now treats 1.3.9 as the minimum supported version, accepts newer preview/patch/minor/major releases, and shows the exact installed version in the footer tooltip instead of the persistent status text.
+
 ## [0.3.85] - 2026-07-20
 
 ### Fixed

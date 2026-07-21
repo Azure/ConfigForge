@@ -3,6 +3,11 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.86 — 2026-07-21
+
+- **Fixed the Server 2025 `ImpersonateClient` CSP rule** to use the current upstream string-backed UserRights representation and explicit SID schema.
+- **Made oscfg 1.3.9 a minimum version.** Newer CLI releases are accepted; the footer shows concise installed/admin-required states and keeps the exact version in its tooltip.
+
 ## v0.3.85 — 2026-07-20
 
 - **Fixed My Baselines sticky-header layering.** Scrolled baseline rows no longer appear in the gap above the column header or paint through it.
