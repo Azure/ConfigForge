@@ -37,14 +37,11 @@ export interface HealthStatus {
   adminBlocked: boolean;
   adminMessage: string;
   /**
-   * v0.3.0 (#5): true when the resolved binary's version string does
-   * not include the version constant ConfigForge was validated
-   * against (`OSCFG_CLI_VERSION`). The CLI may still work for most
-   * flows but deploy/audit can produce unexpected structured errors.
-   * The renderer should surface an amber-state warning when set.
+   * True when the resolved numeric CLI version is lower than the
+   * minimum version required by ConfigForge. Newer versions are valid.
    */
   versionMismatch?: boolean;
-  /** Expected oscfg version string the app was validated against. */
+  /** Minimum supported oscfg version, without the `oscfg` prefix. */
   expectedVersion?: string;
   /** Present only when status === 'error' */
   error?: string;

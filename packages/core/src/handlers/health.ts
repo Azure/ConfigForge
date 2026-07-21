@@ -14,10 +14,27 @@
 import { getSystemInfo } from '../system';
 import { resolveOscfgBinary } from '../oscfg';
 import type { HealthStatus } from './contract';
-import { OSCFG_CLI_VERSION } from '../oscfg/registered-types';
+import { OSCFG_MINIMUM_VERSION } from '../oscfg/registered-types';
 
 let cache: { data: HealthStatus; fetchedAt: number } | null = null;
 const TTL = 60_000;
+
+function parseNumericVersion(value: string): [number, number, number] | null {
+  const match = value.match(/\b(\d+)\.(\d+)\.(\d+)\b/);
+  if (!match) return null;
+  return [Number(match[1]), Number(match[2]), Number(match[3])];
+}
+
+function isVersionAtLeast(value: string, minimum: string): boolean {
+  const current = parseNumericVersion(value);
+  const required = parseNumericVersion(minimum);
+  if (!current || !required) return true;
+  for (let index = 0; index < current.length; index += 1) {
+    if (current[index] > required[index]) return true;
+    if (current[index] < required[index]) return false;
+  }
+  return true;
+}
 
 /**
  * Force-clear the cache. Test affordance + lets the renderer trigger
@@ -68,18 +85,15 @@ export async function getHealthStatus(): Promise<HealthStatus> {
     const requiresAdminForAllOps = sys.platform === 'win32';
     const blocked = requiresAdminForAllOps && !sys.isAdmin;
 
-    // v0.3.0 (#5): mark a version mismatch so the renderer can amber-
-    // pill it. `info.version` is the raw `oscfg --version` line (e.g.
-    // `"oscfg 1.3.10-preview13"`); compare it as a substring against
-    // the constant we shipped against. A loose `.includes()` match is
-    // intentional — preview suffix changes (`-preview13` vs
-    // `-preview14`) on the same minor should NOT trip this; only
-    // major/minor drift does.
-    const expectedTrimmed = OSCFG_CLI_VERSION.replace(/-preview\d+$/, '');
-    const versionMismatch = installed && !version.includes(expectedTrimmed);
+    // ConfigForge requires the CLI features introduced in 1.3.9.
+    // Newer patch, minor, major, and preview builds remain supported.
+    // Unparseable vendor version text is treated as installed instead
+    // of falsely warning that a newer CLI is incompatible.
+    const versionMismatch =
+      installed && !isVersionAtLeast(version, OSCFG_MINIMUM_VERSION);
 
     const data: HealthStatus = {
-      status: installed && !blocked ? 'healthy' : 'degraded',
+      status: installed && !blocked && !versionMismatch ? 'healthy' : 'degraded',
       installed,
       version,
       binaryPath,
@@ -94,7 +108,7 @@ export async function getHealthStatus(): Promise<HealthStatus> {
         ? 'On Windows, the oscfg CLI currently requires Administrator privileges for every operation (including read-only audits). Restart ConfigForge from an elevated shell.'
         : '',
       versionMismatch,
-      expectedVersion: `oscfg ${OSCFG_CLI_VERSION}`,
+      expectedVersion: OSCFG_MINIMUM_VERSION,
     };
     cache = { data, fetchedAt: Date.now() };
     return data;

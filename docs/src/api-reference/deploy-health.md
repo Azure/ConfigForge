@@ -142,19 +142,19 @@ type HealthStatus = {
   adminBlocked: boolean;
   adminMessage: string;
   versionMismatch?: boolean;
-  expectedVersion?: string;        // e.g. "oscfg 1.3.9-preview11"
+  expectedVersion?: string;        // minimum supported version, e.g. "1.3.9"
   error?: string;                  // only when status === 'error'
 };
 ```
 
 | Field | Notes |
 | --- | --- |
-| `status` | `"healthy"` when binary resolves AND admin OK on Windows; `"degraded"` otherwise; `"error"` on probe failure. |
+| `status` | `"healthy"` when the binary resolves, meets the minimum version, and admin is available on Windows; `"degraded"` otherwise; `"error"` on probe failure. |
 | `binarySource` | `'env'` (`$OSCFG_BIN` override - **not** `OSCFG_BINARY`), `'bundled'` (`resources/oscfg/<plat>/` - dev only, never shipped), `'installed'` (well-known install path), `'msix'` (winget MSIX alias), `'path'` (`$PATH`). |
 | `requiresAdminForAllOps` | `true` on Windows - the preview CLI initializes a log file in a protected dir on every spawn. |
 | `adminBlocked` | `true` on Windows without admin. Drives `<HealthIndicator />` + `<CliRequiredModal />`. |
-| `versionMismatch` | `true` when the resolved binary version does not include the `OSCFG_CLI_VERSION` major/minor string validated by the app. |
-| `expectedVersion` | The app's validated target version string from `packages/core/src/oscfg/registered-types.ts`. |
+| `versionMismatch` | `true` only when the resolved numeric version is below the minimum supported version. Newer patch, minor, major, and preview builds are accepted. |
+| `expectedVersion` | The minimum supported version from `OSCFG_MINIMUM_VERSION` in `packages/core/src/oscfg/registered-types.ts`. |
 
 ## `cfs.health.recheck()` - channel `cfs:health:recheck`
 
