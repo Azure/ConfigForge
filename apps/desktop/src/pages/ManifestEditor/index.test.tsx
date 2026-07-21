@@ -478,6 +478,12 @@ describe("ManifestDetailPage Loop viewer", () => {
     );
 
     await user.click(screen.getByRole("button", { name: "Export" }));
+    for (const format of ["YAML (.osc.yaml)", "JSON (.json)", "MOF (.mof)", "CSV (.csv)"]) {
+      expect(screen.getByRole("menuitem", { name: format })).toBeVisible();
+    }
+    expect(
+      screen.queryByRole("menuitem", { name: "Azure Policy (.json)" }),
+    ).not.toBeInTheDocument();
     await user.click(screen.getByRole("menuitem", { name: "YAML (.osc.yaml)" }));
     expect(mocks.exportSave).toHaveBeenCalledWith({ name: "sample", format: "yaml" });
 

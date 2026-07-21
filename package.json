@@ -44,7 +44,10 @@
   "overrides": {
     "dompurify": "$dompurify",
     "tmp": "^0.2.7",
-    "shell-quote": "^1.8.4",
+    "shell-quote": "1.9.0",
+    "brace-expansion@1": "1.1.16",
+    "brace-expansion@2": "2.1.2",
+    "brace-expansion@5": "5.0.7",
     "esbuild": "^0.28.1",
     "js-yaml": "^4.3.0",
     "undici@7": "^7.28.0",
