@@ -1,5 +1,10 @@
 # Changelog
 
+## [0.3.87-author.1] - 2026-07-21
+
+### Changed
+- **Removed ConfigForge's local Server 2025 `ImpersonateClient` manifest override.** All three bundled baselines are restored exactly to their source representation while shared oscfg 1.3.9-or-newer compatibility handling remains.
+
 ## [0.3.86-author.1] - 2026-07-21
 
 ### Fixed

@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.87-author.1 — 2026-07-21
+
+- **Removed the local Server 2025 `ImpersonateClient` manifest override** while retaining shared minimum-version handling for oscfg 1.3.9 or newer.
+
 ## v0.3.86-author.1 — 2026-07-21
 
 - **Fixed the Server 2025 `ImpersonateClient` CSP rule** and synchronized shared minimum-version handling for oscfg 1.3.9 or newer.
