@@ -2271,16 +2271,14 @@ resources:
       resource:
         type: Microsoft.Windows/CSP
         properties:
-          path: ./Vendor/MSFT/Policy/Config/UserRights/ImpersonateClient
-          type: string
-          value: '*S-1-5-32-544,*S-1-5-6,*S-1-5-19,*S-1-5-20'
-      schema:
-        items:
-          enum:
+          path: ./Vendor/MSFT/Policy/Result/UserRights/ImpersonateClient
+          type: array
+          value:
             - '*S-1-5-32-544'
             - '*S-1-5-6'
             - '*S-1-5-19'
             - '*S-1-5-20'
+      schema: {}
   - name: IPSourceRoutingProtectionLevel
     type: Microsoft.OSConfig/Test
     properties:
