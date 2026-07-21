@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.85] - 2026-07-20
+
+### Fixed
+
+- **My Baselines rows no longer cross above the sticky table header while scrolling.** The table header now sits flush against the scroll viewport on opaque, isolated sticky cells, so baseline content remains fully obscured beneath it in light and dark themes.
+
 ## [0.3.84] - 2026-07-20
 
 ### Removed
