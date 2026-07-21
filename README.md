@@ -147,7 +147,8 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.85-author.1** (current) | macOS author flavor keeps My Baselines rows behind the opaque sticky column header while scrolling |
+| **0.3.86-author.1** (current) | macOS author flavor includes current OSConfig-compatible `ImpersonateClient` YAML and shared minimum-version handling |
+| **0.3.85-author.1** | macOS author flavor keeps My Baselines rows behind the opaque sticky column header while scrolling |
 | **0.3.84-author.1** | macOS author flavor with exports limited to YAML, JSON, MOF, and CSV plus all high-severity development dependency advisories cleared |
 | **0.3.82-author.1** | macOS author flavor with clearer Baseline Detail identity and view-only feedback, top/bottom Add setting actions, Matrix baseline search, and the `js-yaml` 4.3.0 security patch |
 | **0.3.81-author.1** | macOS author flavor with first-class OSConfig CSV imports, fully labeled responsive Baseline Detail actions, author-only Recent Activity, spreadsheet editing, and full FR/DE/ES coverage |
