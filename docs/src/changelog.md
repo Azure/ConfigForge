@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.88 — 2026-07-22
+
+- **Completed the July Loop revision batch.** Baseline tabs now use the specified pill states; My Baselines has reliable cell-wide status tooltips, fully left-aligned content, and three-state sorting; and Baseline Detail adds recovery-safe one-click Undo between Delete and Duplicate.
+
 ## v0.3.87 — 2026-07-21
 
 - **Removed the local Server 2025 `ImpersonateClient` manifest override.** The three bundled baselines are restored to their source representation while the separate oscfg 1.3.9-or-newer status handling remains.

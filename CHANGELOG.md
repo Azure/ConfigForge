@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.88] - 2026-07-22
+
+### Added
+
+- **Added safe one-click Undo to Baseline Detail.** Undo restores the newest saved version that differs from the current baseline, creates a recovery snapshot first, and requires a canonical YAML reload before the restored content can be edited.
+
+### Changed
+
+- **Redesigned baseline workspace tabs as prominent pills.** Selected, selected-hover, unselected, and unselected-hover states now match the July Loop mockups.
+- **Made every My Baselines data column sortable.** Repeated header clicks cycle ascending, descending, and original order, with directional arrows and the specified `#E4E9F0` hover background.
+
+### Fixed
+
+- **Made status help easier to discover.** Issue and compliance tooltips now activate across their full table cells instead of only the status pills.
+- **Left-aligned all My Baselines headers and values, including Settings.**
+
 ## [0.3.87] - 2026-07-21
 
 ### Changed
