@@ -81,7 +81,10 @@ describe("undoLatestManifestChange", () => {
         .fn()
         .mockResolvedValueOnce({ data: [{ id: "current" }] })
         .mockResolvedValueOnce({
-          data: [{ id: "current" }, { id: "previous" }],
+          data: [
+            { id: "current", timestamp: "2026-07-22T10:00:00.000Z" },
+            { id: "previous", timestamp: 12345 },
+          ],
         }),
     };
     const client = restoreClient();

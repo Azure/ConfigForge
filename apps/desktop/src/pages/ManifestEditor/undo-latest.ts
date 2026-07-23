@@ -22,12 +22,15 @@ export interface HistoryListApi {
 function normalizeEntries(response: { data?: unknown }): HistoryEntryMeta[] {
   if (!Array.isArray(response.data)) return [];
   return response.data
-    .filter(
-      (entry): entry is HistoryEntryMeta =>
-        entry !== null &&
-        typeof entry === "object" &&
-        typeof (entry as { id?: unknown }).id === "string",
-    )
+    .flatMap((entry): HistoryEntryMeta[] => {
+      if (entry === null || typeof entry !== "object") return [];
+      const record = entry as { id?: unknown; timestamp?: unknown };
+      if (typeof record.id !== "string") return [];
+      return [{
+        id: record.id,
+        timestamp: typeof record.timestamp === "string" ? record.timestamp : "",
+      }];
+    })
     .sort((left, right) =>
       (right.timestamp ?? "").localeCompare(left.timestamp ?? ""),
     );
