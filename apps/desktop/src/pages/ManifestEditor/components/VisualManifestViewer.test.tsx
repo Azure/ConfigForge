@@ -442,6 +442,55 @@ describe("VisualManifestViewer", () => {
     expect(screen.queryByRole("heading", { name: "Category" })).not.toBeInTheDocument();
   });
 
+  it("clears search before focusing a per-table added setting", async () => {
+    const user = userEvent.setup();
+    renderEditable();
+
+    const search = screen.getByRole("searchbox", { name: "Search baseline settings" });
+    await user.type(search, "Later");
+    const category = screen.getByRole("heading", { name: "Category" }).closest("section");
+    expect(category).not.toBeNull();
+    await user.click(within(category!).getAllByRole("button", { name: "Add setting" })[0]);
+
+    expect(search).toHaveValue("");
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Setting Name for Unnamed setting",
+      }),
+    ).toHaveFocus();
+    expect(screen.getByText("First equal")).toBeInTheDocument();
+  });
+
+  it("clears search before focusing a batch-added setting", async () => {
+    const user = userEvent.setup();
+    renderEditable();
+
+    const search = screen.getByRole("searchbox", { name: "Search baseline settings" });
+    await user.type(search, "completeValue");
+    await user.click(screen.getByRole("button", { name: "Add settings", exact: true }));
+    const pane = await screen.findByRole("dialog", { name: "Add settings" });
+    await user.click(
+      within(pane).getByRole("checkbox", {
+        name: "Select Microsoft.Windows/Registry",
+      }),
+    );
+    await within(pane).findByText("1 setting selected");
+    fireEvent.click(
+      within(pane).getByRole("button", {
+        name: "Add settings",
+        exact: true,
+      }),
+    );
+
+    expect(search).toHaveValue("");
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Setting Name for Unnamed setting",
+      }),
+    ).toHaveFocus();
+    expect(screen.getByRole("heading", { name: "Category" })).toBeInTheDocument();
+  });
+
   it("enables Unselect All only while rows are selected", async () => {
     const user = userEvent.setup();
     renderEditable();

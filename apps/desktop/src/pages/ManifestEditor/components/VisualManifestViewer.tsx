@@ -496,6 +496,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
       return;
     }
     setPageError(null);
+    setFilterQuery("");
     queueNavigationAfterSourceChange({
       settingId: result.settingId,
       column: focusColumn,
@@ -542,6 +543,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     }
     if (nextSource !== source) {
       setPageError(null);
+      setFilterQuery("");
       if (firstSettingId) {
         queueNavigationAfterSourceChange({
           settingId: firstSettingId,
