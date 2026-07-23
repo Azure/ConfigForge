@@ -37,6 +37,7 @@ export function electronRestoreClient(): RestoreClient {
       // not currently visible to oscfg and is unsafe as a recovery snapshot.
       const result = await cfs.manifests.getSource(name);
       const data = (result as { data?: unknown }).data;
+      if (data === null) return '';
       if (typeof data !== 'string') {
         throw new Error(`Canonical source YAML is unavailable for manifest '${name}'`);
       }

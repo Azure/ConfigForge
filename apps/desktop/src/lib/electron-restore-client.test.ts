@@ -48,9 +48,15 @@ describe('electronRestoreClient', () => {
     await expect(client.fetchCurrentYaml('m1')).rejects.toThrow('IPC disconnected');
   });
 
-  it('rejects when canonical source YAML is unavailable', async () => {
+  it('returns an empty source when the manifest is currently unregistered', async () => {
     const client = electronRestoreClient();
     cfsMock.manifests.getSource.mockResolvedValueOnce({ data: null });
+    await expect(client.fetchCurrentYaml('m1')).resolves.toBe('');
+  });
+
+  it('rejects when the canonical source response is malformed', async () => {
+    const client = electronRestoreClient();
+    cfsMock.manifests.getSource.mockResolvedValueOnce({});
     await expect(client.fetchCurrentYaml('m1')).rejects.toThrow(
       /Canonical source YAML is unavailable/,
     );

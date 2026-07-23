@@ -292,7 +292,7 @@ export function ManifestDetailPage() {
         electronRestoreClient(),
       );
       if (!result.ok) {
-        throw new Error(result.error ?? t("errors.undoFailed"));
+        throw new Error(result.error ?? t("actions.undoUnavailable"));
       }
       await fetchData();
       await reloadCanonicalSource();
