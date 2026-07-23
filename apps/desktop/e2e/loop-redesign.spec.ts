@@ -541,7 +541,10 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     });
     await valueEditor.fill("5");
     await valueEditor.press("Enter");
-    await page.getByRole("button", { name: "Undo" }).click();
+    await page
+      .getByTestId("manifest-detail-scroll-region")
+      .getByRole("button", { name: "Undo" })
+      .click();
     await expect(
       visual.getByRole("button", { name: "Edit Applied value for AlphaSetting" }),
     ).toHaveText("1");
