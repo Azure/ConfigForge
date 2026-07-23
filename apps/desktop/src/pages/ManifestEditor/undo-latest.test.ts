@@ -5,7 +5,6 @@ import { describe, expect, it, vi } from "vitest";
 import type { RestoreClient } from "@configforge/core/history/restore";
 import {
   hasUndoableHistory,
-  NO_PREVIOUS_VERSION_ERROR,
   undoLatestManifestChange,
 } from "./undo-latest";
 
@@ -72,7 +71,6 @@ describe("undoLatestManifestChange", () => {
     ).resolves.toEqual({
       ok: false,
       autoSnapshotted: false,
-      error: NO_PREVIOUS_VERSION_ERROR,
     });
     expect(client.registerManifest).not.toHaveBeenCalled();
   });

@@ -19,8 +19,6 @@ export interface HistoryListApi {
   }) => Promise<{ data?: unknown }>;
 }
 
-export const NO_PREVIOUS_VERSION_ERROR = "No previous saved version is available to undo.";
-
 function normalizeEntries(response: { data?: unknown }): HistoryEntryMeta[] {
   if (!Array.isArray(response.data)) return [];
   return response.data
@@ -81,7 +79,6 @@ export async function undoLatestManifestChange(
     return {
       ok: false,
       autoSnapshotted: false,
-      error: NO_PREVIOUS_VERSION_ERROR,
     };
   }
   return safeRestore(manifestName, snapshotId, restoreClient);

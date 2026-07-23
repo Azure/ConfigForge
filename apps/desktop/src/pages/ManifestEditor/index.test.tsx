@@ -794,6 +794,28 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(undo).toBeDisabled();
   });
 
+  it("uses the localized unavailable message when history changes during Undo", async () => {
+    const user = userEvent.setup();
+    mocks.hasUndoableHistory.mockResolvedValue(true);
+    mocks.undoLatestManifestChange.mockResolvedValueOnce({
+      ok: false,
+      autoSnapshotted: false,
+    });
+    renderEditor();
+
+    const undo = screen.getByRole("button", { name: "Undo" });
+    await waitFor(() => expect(undo).toBeEnabled());
+    await user.click(undo);
+
+    await waitFor(() =>
+      expect(mocks.setError).toHaveBeenCalledWith(
+        "No previous saved baseline version is available",
+      ),
+    );
+    expect(mocks.fetchData).not.toHaveBeenCalled();
+    expect(sessionStorage.getItem("configforge-flash")).toBeNull();
+  });
+
   it("omits Deploy and Revert when their preload namespaces are absent", () => {
     mocks.deployNamespace = false;
     mocks.revertNamespace = false;
