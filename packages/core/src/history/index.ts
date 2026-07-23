@@ -144,7 +144,7 @@ function snapshotIdForTimestamp(isoTs: string): string {
   // Sequence keeps same-millisecond saves ordered; entropy still protects
   // against collisions across process restarts.
   const sequence = sameTimestampSequence.toString(16).padStart(8, '0');
-  const entropy = randomBytes(2).toString('hex');
+  const entropy = randomBytes(4).toString('hex');
   return `${isoTs.replace(/:/g, '-')}.${sequence}${entropy}`;
 }
 

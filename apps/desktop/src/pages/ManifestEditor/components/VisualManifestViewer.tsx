@@ -199,6 +199,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   const navigationCellsRef = useRef<NavigationCell[]>([]);
   const allSettingsRef = useRef<VisualSetting[]>([]);
   const pendingNavigationRef = useRef<ActiveCell | null>(null);
+  const navigationRequestRef = useRef(0);
   const commitAndNavigateRef = useRef<
     | ((
         setting: VisualSetting,
@@ -339,6 +340,9 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   const errorText = (error: VisualEditError): string => t(`visual.errors.${error}`);
 
   const beginEdit = (setting: VisualSetting, column: string, arrayIndex?: number) => {
+    navigationRequestRef.current += 1;
+    pendingNavigationRef.current = null;
+    setPendingEditCell(null);
     const rawValue = valueForColumn(setting, column);
     const resolvedArrayIndex =
       arrayIndex ?? (Array.isArray(rawValue) && rawValue.length > 0 ? 0 : undefined);
@@ -361,6 +365,9 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
 
   const cancelEdit = (element?: HTMLElement) => {
     if (element) ignoredBlurTargetsRef.current.add(element);
+    navigationRequestRef.current += 1;
+    pendingNavigationRef.current = null;
+    setPendingEditCell(null);
     setActiveCell(null);
     setDraftError(null);
     setCellError(null);
@@ -434,10 +441,13 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   };
 
   const queueNavigationAfterSourceChange = (cell: ActiveCell | null) => {
+    const requestId = navigationRequestRef.current + 1;
+    navigationRequestRef.current = requestId;
     pendingNavigationRef.current = cell;
     if (!cell) return;
     let attempts = 0;
     const activate = () => {
+      if (navigationRequestRef.current !== requestId) return;
       if (
         activeCellRef.current?.settingId === cell.settingId &&
         activeCellRef.current.column === cell.column &&
@@ -523,7 +533,13 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     }
 
     setAddSettingsOpen(false);
-    setDuplicateTypes(duplicates);
+    if (duplicates.length > 0) {
+      // Mount the second modal after the Add click finishes so that event
+      // cannot be interpreted as an outside-click dismissal.
+      window.setTimeout(() => setDuplicateTypes(duplicates), 0);
+    } else {
+      setDuplicateTypes([]);
+    }
     if (nextSource !== source) {
       setPageError(null);
       if (firstSettingId) {

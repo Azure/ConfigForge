@@ -268,6 +268,9 @@ describe('getHistory sort order', () => {
       const second = await saveSnapshot('m1', 'second');
       const third = await saveSnapshot('m1', 'third');
 
+      expect(first.id).toMatch(/\.000Z\.00000000[0-9a-f]{8}$/);
+      expect(second.id).toMatch(/\.000Z\.00000001[0-9a-f]{8}$/);
+      expect(third.id).toMatch(/\.000Z\.00000002[0-9a-f]{8}$/);
       const list = await getHistory('m1');
       expect(list.map((entry) => entry.id)).toEqual([third.id, second.id, first.id]);
     } finally {

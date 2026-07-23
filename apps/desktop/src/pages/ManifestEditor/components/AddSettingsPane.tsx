@@ -109,9 +109,9 @@ export function AddSettingsPane({ open, platform, onClose, onAdd }: AddSettingsP
 
   return createPortal(
     <div className="fixed inset-0 z-[100] flex items-center justify-end bg-slate-950/40 p-3 sm:p-6">
-      <button
-        type="button"
-        aria-label={t("visual.addSettingsPane.close")}
+      <div
+        data-testid="add-settings-backdrop"
+        aria-hidden="true"
         onClick={onClose}
         className="absolute inset-0 cursor-default"
       />

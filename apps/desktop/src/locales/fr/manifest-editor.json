@@ -279,7 +279,7 @@
     },
     "editArrayItem": "Modifier la valeur {{index}} de {{field}} pour {{name}}",
     "editCell": "Modifier {{field}} pour {{name}}",
-    "editHint": " Enter adds another row. Press Escape to cancel.",
+    "editHint": "Cliquez sur une cellule pour la modifier. Appuyez sur Entrée pour appliquer ; dans la dernière cellule, Entrée ajoute une nouvelle ligne. Appuyez sur Échap pour annuler.",
     "editInstructions": "Afficher les instructions d’édition du tableau",
     "editInstructionsText": "Ajoutez les valeurs ligne par ligne. Tabulation enregistre et se déplace vers la droite. Entrée enregistre et descend. Entrée dans la dernière ligne ajoute une nouvelle ligne. Appuyez sur Échap pour annuler.",
     "editToolbar": "Actions d'édition de la feuille de calcul",
