@@ -13,31 +13,26 @@ interface HistoryEntryMeta {
 }
 
 export interface HistoryListApi {
-  list: (request: {
-    name: string;
-    id?: string;
-  }) => Promise<{ data?: unknown }>;
+  list: (request: { name: string; id?: string }) => Promise<{ data?: unknown }>;
 }
 
 function normalizeEntries(response: { data?: unknown }): HistoryEntryMeta[] {
   if (!Array.isArray(response.data)) return [];
-  return response.data
-    .flatMap((entry): HistoryEntryMeta[] => {
-      if (entry === null || typeof entry !== "object") return [];
-      const record = entry as { id?: unknown; timestamp?: unknown };
-      if (typeof record.id !== "string") return [];
-      return [{
+  return response.data.flatMap((entry): HistoryEntryMeta[] => {
+    if (entry === null || typeof entry !== "object") return [];
+    const record = entry as { id?: unknown; timestamp?: unknown };
+    if (typeof record.id !== "string") return [];
+    return [
+      {
         id: record.id,
         timestamp: typeof record.timestamp === "string" ? record.timestamp : "",
-      }];
-    })
-    .sort((left, right) =>
-      (right.timestamp ?? "").localeCompare(left.timestamp ?? ""),
-    );
+      },
+    ];
+  });
 }
 
 function normalizeYaml(source: string): string {
-  return source.replace(/\r\n/g, "\n").trim();
+  return source.replace(/\r\n/g, "\n");
 }
 
 async function findUndoSnapshotId(
@@ -51,10 +46,7 @@ async function findUndoSnapshotId(
   ]);
   const normalizedCurrent = normalizeYaml(currentYaml);
   for (const entry of normalizeEntries(response)) {
-    const snapshot = await restoreClient.fetchSnapshotContent(
-      manifestName,
-      entry.id,
-    );
+    const snapshot = await restoreClient.fetchSnapshotContent(manifestName, entry.id);
     if (normalizeYaml(snapshot) !== normalizedCurrent) return entry.id;
   }
   return null;
@@ -73,11 +65,7 @@ export async function undoLatestManifestChange(
   history: HistoryListApi,
   restoreClient: RestoreClient,
 ): Promise<RestoreResult> {
-  const snapshotId = await findUndoSnapshotId(
-    manifestName,
-    history,
-    restoreClient,
-  );
+  const snapshotId = await findUndoSnapshotId(manifestName, history, restoreClient);
   if (!snapshotId) {
     return {
       ok: false,
