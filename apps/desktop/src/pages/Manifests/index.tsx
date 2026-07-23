@@ -1,13 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { Button, Input, MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components";
 import {
   AddRegular,
   ArrowCounterclockwiseRegular,
+  ArrowSortDownRegular,
+  ArrowSortUpRegular,
   ArrowSyncRegular,
   BranchCompareRegular,
   DeleteRegular,
@@ -102,6 +104,57 @@ type Feedback = {
 };
 
 type OperationKind = "delete" | "undo" | "refresh" | "open" | "diff";
+type ManifestSortColumn =
+  | "baseline"
+  | "operatingSystem"
+  | "settings"
+  | "issues"
+  | "compliant"
+  | "dateModified";
+type ManifestSortDirection = "ascending" | "descending";
+
+interface ManifestSortState {
+  column: ManifestSortColumn | null;
+  direction: ManifestSortDirection | null;
+}
+
+interface SortableHeaderProps {
+  column: ManifestSortColumn;
+  label: string;
+  widthClass?: string;
+  sort: ManifestSortState;
+  onSort: (column: ManifestSortColumn) => void;
+}
+
+function SortableHeader({
+  column,
+  label,
+  widthClass = "",
+  sort,
+  onSort,
+}: SortableHeaderProps) {
+  const active = sort.column === column ? sort.direction : null;
+  return (
+    <th
+      aria-sort={active ?? undefined}
+      className={`${STICKY_HEADER_CELL_CLASS} ${widthClass}`}
+    >
+      <button
+        type="button"
+        onClick={() => onSort(column)}
+        className="-mx-3 -my-2 flex w-[calc(100%+1.5rem)] items-center justify-start gap-1.5 px-3 py-2 text-left transition-colors hover:bg-[#E4E9F0] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-blue-600 dark:hover:bg-slate-700"
+      >
+        <span>{label}</span>
+        {active === "ascending" && (
+          <ArrowSortUpRegular className="h-3.5 w-3.5" aria-hidden="true" />
+        )}
+        {active === "descending" && (
+          <ArrowSortDownRegular className="h-3.5 w-3.5" aria-hidden="true" />
+        )}
+      </button>
+    </th>
+  );
+}
 
 function settingCount(manifest: OscManifest): number {
   return manifest.ResourceCount ?? manifest.Resources?.length ?? 0;
@@ -126,6 +179,10 @@ export function ManifestsPage() {
   const percentFormatter = useNumberFormatter(PERCENT_FORMAT);
   const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [busyAction, setBusyAction] = useState<OperationKind | null>(null);
+  const [sort, setSort] = useState<ManifestSortState>({
+    column: null,
+    direction: null,
+  });
   const operationRef = useRef<{ kind: OperationKind; token: symbol } | null>(null);
 
   const {
@@ -157,6 +214,73 @@ export function ManifestsPage() {
     filteredManifests.every((manifest) => selected.has(manifest.Name));
   const someFilteredSelected = filteredManifests.some((manifest) => selected.has(manifest.Name));
   const selectAllRef = useRef<HTMLInputElement>(null);
+
+  const toggleSort = (column: ManifestSortColumn) => {
+    setSort((current) => {
+      if (current.column !== column || current.direction === null) {
+        return { column, direction: "ascending" };
+      }
+      if (current.direction === "ascending") {
+        return { column, direction: "descending" };
+      }
+      return { column: null, direction: null };
+    });
+  };
+
+  const sortedManifests = useMemo(() => {
+    if (!sort.column || !sort.direction) return filteredManifests;
+    const direction = sort.direction === "ascending" ? 1 : -1;
+    const compareText = (left: string, right: string) =>
+      left.localeCompare(right, undefined, { numeric: true, sensitivity: "base" });
+    const compareNumber = (left: number, right: number) => left - right;
+
+    return filteredManifests
+      .map((manifest, originalIndex) => ({ manifest, originalIndex }))
+      .sort((leftEntry, rightEntry) => {
+        const left = leftEntry.manifest;
+        const right = rightEntry.manifest;
+        let comparison = 0;
+        switch (sort.column) {
+          case "baseline":
+            comparison = compareText(
+              left.DisplayName || left.Name,
+              right.DisplayName || right.Name,
+            );
+            break;
+          case "operatingSystem":
+            comparison = compareText(
+              platformByName.get(left.Name) ?? "unknown",
+              platformByName.get(right.Name) ?? "unknown",
+            );
+            break;
+          case "settings":
+            comparison = compareNumber(settingCount(left), settingCount(right));
+            break;
+          case "issues":
+            comparison = compareNumber(
+              getManifestIssueCount(left),
+              getManifestIssueCount(right),
+            );
+            break;
+          case "compliant":
+            comparison = compareNumber(
+              getManifestCompliance(left).ratio ?? -1,
+              getManifestCompliance(right).ratio ?? -1,
+            );
+            break;
+          case "dateModified":
+            comparison = compareNumber(
+              getManifestLastModifiedDate(left)?.getTime() ?? Number.NEGATIVE_INFINITY,
+              getManifestLastModifiedDate(right)?.getTime() ?? Number.NEGATIVE_INFINITY,
+            );
+            break;
+        }
+        return comparison === 0
+          ? leftEntry.originalIndex - rightEntry.originalIndex
+          : comparison * direction;
+      })
+      .map(({ manifest }) => manifest);
+  }, [filteredManifests, platformByName, sort]);
 
   useEffect(() => {
     if (selectAllRef.current) {
@@ -530,24 +654,47 @@ export function ManifestsPage() {
                       className="h-4 w-4 rounded border-slate-300 accent-blue-600"
                     />
                   </th>
-                  <th className={STICKY_HEADER_CELL_CLASS}>
-                    {t("administration.table.baseline")}
-                  </th>
-                  <th className={`${STICKY_HEADER_CELL_CLASS} w-44`}>
-                    {t("administration.table.operatingSystem")}
-                  </th>
-                  <th className={`${STICKY_HEADER_CELL_CLASS} w-24 text-right`}>
-                    {t("administration.table.settings")}
-                  </th>
-                  <th className={`${STICKY_HEADER_CELL_CLASS} w-36`}>
-                    {t("administration.table.issues")}
-                  </th>
-                  <th className={`${STICKY_HEADER_CELL_CLASS} w-40`}>
-                    {t("administration.table.compliant")}
-                  </th>
-                  <th className={`${STICKY_HEADER_CELL_CLASS} w-32`}>
-                    {t("administration.table.dateModified")}
-                  </th>
+                  <SortableHeader
+                    column="baseline"
+                    label={t("administration.table.baseline")}
+                    sort={sort}
+                    onSort={toggleSort}
+                  />
+                  <SortableHeader
+                    column="operatingSystem"
+                    label={t("administration.table.operatingSystem")}
+                    widthClass="w-44"
+                    sort={sort}
+                    onSort={toggleSort}
+                  />
+                  <SortableHeader
+                    column="settings"
+                    label={t("administration.table.settings")}
+                    widthClass="w-24"
+                    sort={sort}
+                    onSort={toggleSort}
+                  />
+                  <SortableHeader
+                    column="issues"
+                    label={t("administration.table.issues")}
+                    widthClass="w-36"
+                    sort={sort}
+                    onSort={toggleSort}
+                  />
+                  <SortableHeader
+                    column="compliant"
+                    label={t("administration.table.compliant")}
+                    widthClass="w-40"
+                    sort={sort}
+                    onSort={toggleSort}
+                  />
+                  <SortableHeader
+                    column="dateModified"
+                    label={t("administration.table.dateModified")}
+                    widthClass="w-32"
+                    sort={sort}
+                    onSort={toggleSort}
+                  />
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
@@ -561,7 +708,7 @@ export function ManifestsPage() {
                     </td>
                   </tr>
                 ) : (
-                  filteredManifests.map((manifest) => {
+                  sortedManifests.map((manifest) => {
                     const platform = platformByName.get(manifest.Name) ?? "unknown";
                     const issues = getManifestIssueCount(manifest);
                     const compliance = getManifestCompliance(manifest);
@@ -582,6 +729,22 @@ export function ManifestsPage() {
                           : "unknown"
                       }`,
                     );
+                    const issuesTitle =
+                      issues === 0
+                        ? t("administration.status.noValidationIssues")
+                        : manifest.Validation?.issues.join("\n");
+                    const complianceTitle = compliance.audited
+                      ? compliance.unknown > 0
+                        ? t("administration.status.complianceIncompleteTitle", {
+                            compliant: compliance.compliant,
+                            total: compliance.total,
+                            unknown: compliance.unknown,
+                          })
+                        : t("administration.status.complianceTitle", {
+                            compliant: compliance.compliant,
+                            total: compliance.total,
+                          })
+                      : t("administration.status.notAuditedTitle");
 
                     return (
                       <tr
@@ -636,28 +799,23 @@ export function ManifestsPage() {
                             <span className="truncate">{platformLabel}</span>
                           </span>
                         </td>
-                        <td className="px-3 py-2 text-right tabular-nums">
+                        <td className="px-3 py-2 text-left tabular-nums">
                           {settingCount(manifest)}
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2" title={issuesTitle}>
                           <span
                             className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                               issues === 0
                                 ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                                 : "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                             }`}
-                            title={
-                              issues === 0
-                                ? t("administration.status.noValidationIssues")
-                                : manifest.Validation?.issues.join("\n")
-                            }
                           >
                             {issues === 0
                               ? t("administration.status.noIssues")
                               : t("administration.status.issueCount", { count: issues })}
                           </span>
                         </td>
-                        <td className="px-3 py-2">
+                        <td className="px-3 py-2" title={complianceTitle}>
                           <button
                             type="button"
                             onClick={() => handleOpenCompliance(manifest.Name)}
@@ -671,20 +829,6 @@ export function ManifestsPage() {
                                   ? "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300"
                                   : "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                             }`}
-                            title={
-                              compliance.audited
-                                ? compliance.unknown > 0
-                                  ? t("administration.status.complianceIncompleteTitle", {
-                                      compliant: compliance.compliant,
-                                      total: compliance.total,
-                                      unknown: compliance.unknown,
-                                    })
-                                  : t("administration.status.complianceTitle", {
-                                      compliant: compliance.compliant,
-                                      total: compliance.total,
-                                    })
-                                : t("administration.status.notAuditedTitle")
-                            }
                           >
                             {compliance.category === "all-compliant"
                               ? t("administration.status.allCompliant")

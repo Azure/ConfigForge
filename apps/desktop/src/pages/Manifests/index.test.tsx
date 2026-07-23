@@ -271,9 +271,21 @@ describe('ManifestsPage administrative table', () => {
 
     const unauditedRow = screen.getByRole('row', { name: /unaudited/ });
     expect(unauditedRow).toHaveTextContent('Not audited');
-    expect(within(unauditedRow).getByText('Not audited')).toHaveClass(
+    const notAudited = within(unauditedRow).getByText('Not audited');
+    expect(notAudited).toHaveClass(
       'bg-amber-50',
       'text-amber-800',
+    );
+    expect(notAudited).not.toHaveAttribute('title');
+    expect(notAudited.closest('td')).toHaveAttribute(
+      'title',
+      expect.stringContaining('No audit data'),
+    );
+    expect(within(unauditedRow).getAllByRole('cell')[3]).toHaveClass(
+      'text-left',
+    );
+    expect(within(unauditedRow).getAllByRole('cell')[3]).not.toHaveClass(
+      'text-right',
     );
 
     fireEvent.click(
@@ -285,6 +297,43 @@ describe('ManifestsPage administrative table', () => {
     expect(screen.getByLabelText('location-search')).toHaveTextContent(
       '?section=compliance',
     );
+  });
+
+  it('sorts columns through ascending, descending, and unsorted states', async () => {
+    installCfs([
+      makeManifest('charlie', { ResourceCount: 5 }),
+      makeManifest('alpha', { ResourceCount: 30 }),
+      makeManifest('bravo', { ResourceCount: 20 }),
+    ]);
+    renderManifests();
+
+    const table = await screen.findByRole('table', { name: 'My Baselines' });
+    const visibleNames = () =>
+      within(table)
+        .getAllByRole('row')
+        .slice(1)
+        .map((row) => within(row).getAllByRole('cell')[1].textContent?.trim());
+
+    const baselineHeader = within(table).getByRole('columnheader', { name: 'Baseline' });
+    const baselineSort = within(baselineHeader).getByRole('button', { name: 'Baseline' });
+    expect(baselineSort).toHaveClass('hover:bg-[#E4E9F0]');
+
+    fireEvent.click(baselineSort);
+    expect(baselineHeader).toHaveAttribute('aria-sort', 'ascending');
+    expect(visibleNames()).toEqual(['alpha', 'bravo', 'charlie']);
+
+    fireEvent.click(baselineSort);
+    expect(baselineHeader).toHaveAttribute('aria-sort', 'descending');
+    expect(visibleNames()).toEqual(['charlie', 'bravo', 'alpha']);
+
+    fireEvent.click(baselineSort);
+    expect(baselineHeader).not.toHaveAttribute('aria-sort');
+    expect(visibleNames()).toEqual(['charlie', 'alpha', 'bravo']);
+
+    const settingsHeader = within(table).getByRole('columnheader', { name: 'Settings' });
+    fireEvent.click(within(settingsHeader).getByRole('button', { name: 'Settings' }));
+    expect(settingsHeader).toHaveAttribute('aria-sort', 'ascending');
+    expect(visibleNames()).toEqual(['charlie', 'bravo', 'alpha']);
   });
 
   it('omits a secondary namespace line when it only repeats the display name', async () => {

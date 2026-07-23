@@ -869,8 +869,9 @@ export async function registerManifest(
 
   invalidateCache();
 
-  // Best-effort auto-snapshot. NOT awaited — must not delay or fail the
-  // registration response.
+  // Best-effort auto-snapshot. Await completion so consecutive saves retain
+  // their actual order for one-click Undo. Snapshot failure is still
+  // non-fatal: the registration itself has already been persisted.
   //
   // PR (v0.3.47): when the renderer provides a `changeSummary` (computed
   // from the client-side YAML diff, e.g. "AccountLockoutThreshold
@@ -883,34 +884,33 @@ export async function registerManifest(
   const author = req.author;
   const rationale = req.rationale;
   const yamlForSnapshot = yamlContent;
-  Promise.resolve()
-    .then(async () => {
-      let resolvedAuthor: string | undefined;
-      let resolvedEmail: string | undefined;
-      if (author && author.trim()) {
-        resolvedAuthor = author;
-      } else {
-        try {
-          const r = await resolveAuthor();
-          resolvedAuthor = r.name;
-          resolvedEmail = r.email;
-        } catch {
-          resolvedAuthor = undefined;
-        }
+  try {
+    let resolvedAuthor: string | undefined;
+    let resolvedEmail: string | undefined;
+    if (author && author.trim()) {
+      resolvedAuthor = author;
+      resolvedEmail = '';
+    } else {
+      try {
+        const r = await resolveAuthor();
+        resolvedAuthor = r.name;
+        resolvedEmail = r.email;
+      } catch {
+        resolvedAuthor = undefined;
       }
-      await createSnapshot(namespace, yamlForSnapshot, {
-        message: snapshotMessage,
-        ...(resolvedAuthor !== undefined ? { author: resolvedAuthor } : {}),
-        ...(resolvedEmail !== undefined ? { authorEmail: resolvedEmail } : {}),
-        ...(typeof rationale === 'string' && rationale ? { rationale } : {}),
-      });
-    })
-    .catch((err) => {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `[history] auto-snapshot failed for '${namespace}': ${err instanceof Error ? err.message : err}`,
-      );
+    }
+    await createSnapshot(namespace, yamlForSnapshot, {
+      message: snapshotMessage,
+      ...(resolvedAuthor !== undefined ? { author: resolvedAuthor } : {}),
+      ...(resolvedEmail !== undefined ? { authorEmail: resolvedEmail } : {}),
+      ...(typeof rationale === 'string' && rationale ? { rationale } : {}),
     });
+  } catch (err) {
+    // eslint-disable-next-line no-console
+    console.warn(
+      `[history] auto-snapshot failed for '${namespace}': ${err instanceof Error ? err.message : err}`,
+    );
+  }
 
   return {
     message: `Manifest '${req.name}' registered`,
