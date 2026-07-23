@@ -661,6 +661,52 @@ resources:
     ]);
   });
 
+  it.each([
+    ["boolean", "true", false],
+    ["integer", "42", 0],
+    ["decimal", "1.5", 1.5],
+    ["object", "{ enabled: true }", {}],
+    ["nested array", "[alpha]", []],
+  ])("appends a type-preserving placeholder for a %s array", (_label, existing, expected) => {
+    const source = `resources:
+  - name: Typed values
+    type: Example/Typed
+    properties:
+      values:
+        - ${existing}
+`;
+    const setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const appended = appendVisualArrayItemSource(source, setting, "values");
+    expect(appended.ok).toBe(true);
+    if (!appended.ok) return;
+
+    const document = parseVisualManifest(appended.source) as {
+      resources: Array<{ properties: { values: unknown[] } }>;
+    };
+    expect(document.resources[0].properties.values.at(-1)).toEqual(expected);
+  });
+
+  it("appends a bigint placeholder without changing the element type", () => {
+    const source = `resources:
+  - name: QWord values
+    type: Example/Typed
+    properties:
+      values:
+        - 18446744073709551615
+`;
+    const setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const appended = appendVisualArrayItemSource(source, setting, "values");
+    expect(appended.ok).toBe(true);
+    if (!appended.ok) return;
+
+    const document = parseVisualManifest(appended.source) as {
+      resources: Array<{ properties: { values: unknown[] } }>;
+    };
+    const placeholder = document.resources[0].properties.values.at(-1);
+    expect(typeof placeholder).toBe("bigint");
+    expect(placeholder).toBe(BigInt("18446744073709551615"));
+  });
+
   it("preserves scalar types when editing nested array values", () => {
     expect(parseVisualArrayItemInput("false", true)).toEqual({
       ok: true,

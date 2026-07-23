@@ -692,5 +692,11 @@ describe("VisualManifestViewer", () => {
     expect(input).toHaveAttribute("aria-invalid", "true");
     expect(onChange).not.toHaveBeenCalled();
     expect(onValidityChange).toHaveBeenLastCalledWith(false);
+
+    const search = screen.getByRole("searchbox", { name: "Search baseline settings" });
+    await user.click(search);
+    expect(search).toHaveFocus();
+    expect(fireEvent.keyDown(search, { key: "Tab" })).toBe(true);
+    expect(fireEvent.keyDown(search, { key: "Enter" })).toBe(true);
   });
 });

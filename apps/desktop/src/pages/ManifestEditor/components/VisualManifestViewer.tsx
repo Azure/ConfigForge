@@ -615,6 +615,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
         return;
       }
       if (!regionRef.current?.contains(element)) return;
+      if (element.dataset.visualCellEditor !== "true") return;
       const currentActiveCell = activeCellRef.current;
       if (!currentActiveCell) return;
       if (currentActiveCell.arrayIndex !== undefined) {
@@ -1091,6 +1092,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                               {isStructuredValue(item) || draft.includes("\n") ? (
                                                 <textarea
                                                   autoFocus
+                                                  data-visual-cell-editor="true"
                                                   rows={Math.min(
                                                     6,
                                                     Math.max(2, draft.split("\n").length),
@@ -1126,6 +1128,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                               ) : (
                                                 <input
                                                   autoFocus
+                                                  data-visual-cell-editor="true"
                                                   type="text"
                                                   value={draft}
                                                   aria-label={itemLabel}
@@ -1212,6 +1215,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                       {isStructuredValue(rawValue) || draft.includes("\n") ? (
                                         <textarea
                                           autoFocus
+                                          data-visual-cell-editor="true"
                                           rows={Math.min(8, Math.max(2, draft.split("\n").length))}
                                           value={draft}
                                           aria-label={t("visual.editCell", {
@@ -1236,6 +1240,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                       ) : (
                                         <input
                                           autoFocus
+                                          data-visual-cell-editor="true"
                                           type="text"
                                           value={draft}
                                           aria-label={t("visual.editCell", {
