@@ -9,6 +9,7 @@ import {
   DESIRED_VALUE_COLUMN,
   SETTING_NAME_COLUMN,
   addVisualSettingSource,
+  appendVisualArrayItemSource,
   compareVisualValues,
   dumpVisualManifest,
   flattenVisualSettings,
@@ -16,11 +17,13 @@ import {
   groupVisualSettings,
   nextVisualSort,
   parseLosslessJson,
+  parseVisualArrayItemInput,
   parseVisualManifest,
   parseVisualCellInput,
   removeVisualSettingsSource,
   sortVisualSettings,
   stringifyLosslessJson,
+  updateVisualArrayItemSource,
   updateVisualCellSource,
   validateVisualSettings,
 } from "./visual-viewer";
@@ -622,11 +625,59 @@ resources:
     });
   });
 
-  it("identifies incomplete required cells in newly added top-level rows", () => {
-    const added = addVisualSettingSource(
-      "resources: []\n",
-      "Microsoft.Windows/Registry",
+  it("edits and appends multi-value setting attributes without flattening them", () => {
+    const source = `resources:
+  - name: Registry paths
+    type: Microsoft.Windows/UserRightsAssignment
+    properties:
+      name: SeRemoteInteractiveLogonRight
+      value:
+        - BUILTIN\\Administrators
+        - CONTOSO\\Security Admins
+`;
+    let setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const edited = updateVisualArrayItemSource(
+      source,
+      setting,
+      "value",
+      1,
+      "CONTOSO\\Tier 0 Admins",
     );
+    expect(edited.ok).toBe(true);
+    if (!edited.ok) return;
+
+    setting = flattenVisualSettings(parseVisualManifest(edited.source))[0];
+    const appended = appendVisualArrayItemSource(edited.source, setting, "value");
+    expect(appended.ok).toBe(true);
+    if (!appended.ok) return;
+
+    const document = parseVisualManifest(appended.source) as {
+      resources: Array<{ properties: { value: string[] } }>;
+    };
+    expect(document.resources[0].properties.value).toEqual([
+      "BUILTIN\\Administrators",
+      "CONTOSO\\Tier 0 Admins",
+      "",
+    ]);
+  });
+
+  it("preserves scalar types when editing nested array values", () => {
+    expect(parseVisualArrayItemInput("false", true)).toEqual({
+      ok: true,
+      value: false,
+    });
+    expect(parseVisualArrayItemInput("42", 1)).toEqual({
+      ok: true,
+      value: 42,
+    });
+    expect(parseVisualArrayItemInput("4.5", 1)).toEqual({
+      ok: false,
+      error: "wholeNumber",
+    });
+  });
+
+  it("identifies incomplete required cells in newly added top-level rows", () => {
+    const added = addVisualSettingSource("resources: []\n", "Microsoft.Windows/Registry");
     expect(added.ok).toBe(true);
     if (!added.ok) return;
 

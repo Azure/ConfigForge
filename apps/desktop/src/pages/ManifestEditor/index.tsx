@@ -49,6 +49,8 @@ export function ManifestDetailPage() {
   const [deleting, setDeleting] = useState(false);
   const [undoing, setUndoing] = useState(false);
   const [undoAvailable, setUndoAvailable] = useState(false);
+  const [editUndoAvailable, setEditUndoAvailable] = useState(false);
+  const editUndoRef = useRef<(() => void) | null>(null);
   const [visualDraftValid, setVisualDraftValid] = useState(true);
   const visualDraftValidRef = useRef(true);
   const [viewerSelection, setViewerSelection] = useState<{
@@ -321,6 +323,19 @@ export function ManifestDetailPage() {
     undoing,
   ]);
 
+  const handleEditUndoStateChange = useCallback((available: boolean, undo: (() => void) | null) => {
+    editUndoRef.current = undo;
+    setEditUndoAvailable(available);
+  }, []);
+
+  const handleFooterUndo = useCallback(() => {
+    if (editing) {
+      editUndoRef.current?.();
+      return;
+    }
+    void handleUndoLatest();
+  }, [editing, handleUndoLatest]);
+
   // PR27: rationale-prompt wrapper. We intercept the Save click, ask the
   // user "why?", POST the rationale, then run the existing handleSave.
   // The hook is no-op when the YAML is byte-identical or structurally
@@ -543,6 +558,7 @@ export function ManifestDetailPage() {
             viewerMode={viewerMode}
             onViewerModeChange={handleViewerModeChange}
             onVisualDraftValidityChange={handleVisualDraftValidityChange}
+            onEditUndoStateChange={handleEditUndoStateChange}
           />
 
           {/* Compliance Status (Phase C.4 — see components/ComplianceTable.tsx) */}
@@ -567,7 +583,8 @@ export function ManifestDetailPage() {
         duplicating={duplicating}
         deleting={deleting}
         undoing={undoing}
-        undoAvailable={undoAvailable}
+        undoAvailable={editing ? editUndoAvailable : undoAvailable}
+        undoEditing={editing}
         rationaleBusy={rationale.state.busy}
         saveBlocked={!visualEditValid}
         onClose={handleClose}
@@ -575,7 +592,7 @@ export function ManifestDetailPage() {
         onExport={handleExport}
         onExportDocs={handleExportDocs}
         onDelete={handleDelete}
-        onUndo={() => void handleUndoLatest()}
+        onUndo={handleFooterUndo}
         onSaveClick={handleSaveClick}
       />
 

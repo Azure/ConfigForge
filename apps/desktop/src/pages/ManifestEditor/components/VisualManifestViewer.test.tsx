@@ -56,6 +56,7 @@ function EditableHarness({
     <VisualManifestViewer
       source={current}
       editable
+      autoFocusFirstCell={false}
       platform="windows"
       onDraftValidityChange={onValidityChange}
       onSourceChange={(next) => {
@@ -263,18 +264,10 @@ describe("VisualManifestViewer", () => {
     expect(Number.parseFloat(columnWidths[0])).toBeGreaterThan(
       Number.parseFloat(columnWidths.at(-1) ?? "0"),
     );
-    expect(
-      within(table).getByRole("columnheader", { name: "Registry path" }),
-    ).toBeInTheDocument();
-    expect(
-      within(table).getByRole("columnheader", { name: "Value name" }),
-    ).toBeInTheDocument();
-    expect(
-      within(table).getByRole("columnheader", { name: "Value type" }),
-    ).toBeInTheDocument();
-    expect(
-      within(table).getByRole("columnheader", { name: "Applied value" }),
-    ).toBeInTheDocument();
+    expect(within(table).getByRole("columnheader", { name: "Registry path" })).toBeInTheDocument();
+    expect(within(table).getByRole("columnheader", { name: "Value name" })).toBeInTheDocument();
+    expect(within(table).getByRole("columnheader", { name: "Value type" })).toBeInTheDocument();
+    expect(within(table).getByRole("columnheader", { name: "Applied value" })).toBeInTheDocument();
     expect(
       screen.getByText("A very long setting name that must wrap inside its assigned column"),
     ).toHaveClass("[overflow-wrap:anywhere]");
@@ -303,9 +296,7 @@ describe("VisualManifestViewer", () => {
         "Ajouter à la fin",
         "Ignorer la casse",
       ]) {
-        expect(
-          within(table).getByRole("columnheader", { name: header }),
-        ).toBeInTheDocument();
+        expect(within(table).getByRole("columnheader", { name: header })).toBeInTheDocument();
       }
     } finally {
       await i18n.changeLanguage("en");
@@ -317,9 +308,7 @@ describe("VisualManifestViewer", () => {
     const onChange = vi.fn();
     renderEditable(source, onChange);
 
-    await user.click(
-      screen.getByRole("button", { name: "Edit Setting Name for Later" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Edit Setting Name for Later" }));
     const input = screen.getByRole("textbox", {
       name: "Edit Setting Name for Later",
     });
@@ -344,6 +333,7 @@ describe("VisualManifestViewer", () => {
 
     const addActions = within(category!).getAllByRole("button", { name: "Add setting" });
     expect(addActions).toHaveLength(2);
+    expect(addActions.at(-1)?.parentElement).toHaveClass("justify-start");
     await user.click(addActions.at(-1)!);
 
     expect(onChange).toHaveBeenCalledTimes(1);
@@ -352,9 +342,7 @@ describe("VisualManifestViewer", () => {
         name: "Edit Setting Name for Unnamed setting",
       }),
     ).toBeInTheDocument();
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "Complete 1 required cell before saving.",
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent("Complete 1 required cell before saving.");
     const document = parseVisualManifest(onChange.mock.calls[0][0]) as {
       resources: Array<{ type: string; properties: Record<string, unknown> }>;
     };
@@ -367,30 +355,242 @@ describe("VisualManifestViewer", () => {
     });
   });
 
-  it("adds a known resource type without opening the retired form picker", async () => {
+  it("moves down with Enter and appends a row below the final setting", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(source, onChange);
+
+    await user.click(screen.getByRole("button", { name: "Edit Details for Second equal" }));
+    const input = screen.getByRole("textbox", {
+      name: "Edit Details for Second equal",
+    });
+    await user.type(input, "updated{Enter}");
+
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Details for Unnamed setting",
+      }),
+    ).toBeInTheDocument();
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const document = parseVisualManifest(onChange.mock.calls.at(-1)?.[0]) as {
+      resources: Array<{
+        name: string;
+        properties: Record<string, unknown>;
+      }>;
+    };
+    expect(document.resources).toHaveLength(5);
+    expect(document.resources[2].properties.details).toBe("updated");
+    expect(document.resources.at(-1)).toMatchObject({
+      name: "",
+      properties: { priority: "", details: "" },
+    });
+  });
+
+  it("opens the Add settings pane and batch-adds selected templates", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
     renderEditable("resources: []\n", onChange);
 
-    await user.click(screen.getByRole("button", { name: "Add setting" }));
+    await user.click(screen.getByRole("button", { name: "Add settings", exact: true }));
+    const pane = await screen.findByRole("dialog", { name: "Add settings" });
+    expect(within(pane).getByRole("columnheader", { name: "Setting Type" })).toBeInTheDocument();
+    expect(within(pane).getByRole("columnheader", { name: "OS" })).toBeInTheDocument();
+    expect(within(pane).getByRole("columnheader", { name: "Setting Name" })).toBeInTheDocument();
+    expect(within(pane).getByRole("columnheader", { name: "Description" })).toBeInTheDocument();
     await user.click(
-      screen.getByRole("menuitem", { name: /Registry[\s\S]*Microsoft\.Windows\/Registry/ }),
+      within(pane).getByRole("checkbox", {
+        name: "Select Microsoft.Windows/Registry",
+      }),
+    );
+    await user.click(
+      within(pane).getByRole("checkbox", {
+        name: "Select Microsoft.Windows/CSP",
+      }),
+    );
+    await user.click(
+      within(pane).getByRole("button", {
+        name: "Add settings",
+        exact: true,
+      }),
     );
 
     const document = parseVisualManifest(onChange.mock.calls[0][0]) as {
       resources: Array<{ type: string; properties: Record<string, unknown> }>;
     };
-    expect(document.resources[0]).toMatchObject({
-      type: "Microsoft.Windows/Registry",
-      properties: {
-        keyPath: "",
-        valueName: "",
-        valueType: "String",
-        value: "",
-      },
-    });
-    expect(screen.queryByText("Manage Windows registry keys and values")).not.toBeInTheDocument();
+    expect(document.resources.map((resource) => resource.type)).toEqual([
+      "Microsoft.Windows/Registry",
+      "Microsoft.Windows/CSP",
+    ]);
+    expect(screen.queryByRole("dialog", { name: "Add settings" })).not.toBeInTheDocument();
   });
+
+  it("searches settings without flattening category tables", async () => {
+    const user = userEvent.setup();
+    renderEditable();
+
+    await user.type(
+      screen.getByRole("searchbox", { name: "Search baseline settings" }),
+      "completeValue",
+    );
+
+    expect(screen.getByRole("heading", { name: "Other" })).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: "Other settings" })).toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: "Category" })).not.toBeInTheDocument();
+  });
+
+  it("enables Unselect All only while rows are selected", async () => {
+    const user = userEvent.setup();
+    renderEditable();
+
+    const unselect = screen.getByRole("button", { name: "Unselect All" });
+    expect(unselect).toBeDisabled();
+    await user.click(screen.getByRole("checkbox", { name: "Select First equal" }));
+    expect(unselect).toBeEnabled();
+    await user.click(unselect);
+    expect(screen.getByRole("checkbox", { name: "Select First equal" })).not.toBeChecked();
+    expect(unselect).toBeDisabled();
+  });
+
+  it("shows spreadsheet instructions through the info tooltip", async () => {
+    const user = userEvent.setup();
+    renderEditable();
+
+    expect(screen.queryByText("Edit settings in the table")).not.toBeInTheDocument();
+    await user.hover(
+      screen.getByRole("button", {
+        name: "Show spreadsheet editing instructions",
+      }),
+    );
+    expect(await screen.findByText(/Tab saves and moves right/)).toBeInTheDocument();
+  });
+
+  it("focuses the top-left cell when visual editing starts", async () => {
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <VisualManifestViewer
+          source={source}
+          editable
+          platform="windows"
+          onSourceChange={vi.fn()}
+        />
+      </FluentProvider>,
+    );
+
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Setting Name for Later",
+      }),
+    ).toHaveFocus();
+  });
+
+  it("uses Tab to commit right and Enter to commit downward", async () => {
+    const user = userEvent.setup();
+    renderEditable();
+
+    await user.click(screen.getByRole("button", { name: "Edit Setting Name for Later" }));
+    const nameInput = screen.getByRole("textbox", {
+      name: "Edit Setting Name for Later",
+    });
+    await user.clear(nameInput);
+    await user.type(nameInput, "Renamed{Tab}");
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Priority for Renamed",
+      }),
+    ).toHaveFocus();
+
+    await user.keyboard("{Escape}");
+    await user.click(screen.getByRole("button", { name: "Edit Priority for Renamed" }));
+    await user.keyboard("{Enter}");
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Priority for First equal",
+      }),
+    ).toHaveFocus();
+  });
+
+  it("renders multi-value attributes as nested independently editable rows", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: Remote registry paths
+    type: Microsoft.Windows/UserRightsAssignment
+    properties:
+      name: SeRemoteInteractiveLogonRight
+      value:
+        - BUILTIN\\Administrators
+        - CONTOSO\\Security Admins
+`,
+      onChange,
+    );
+
+    expect(screen.getAllByText("BUILTIN\\Administrators").length).toBeGreaterThan(0);
+    expect(screen.getAllByText("CONTOSO\\Security Admins").length).toBeGreaterThan(0);
+    expect(
+      screen.queryByText("BUILTIN\\Administrators, CONTOSO\\Security Admins"),
+    ).not.toBeInTheDocument();
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Edit Applied value value 2 for Remote registry paths",
+      }),
+    );
+    const nestedInput = screen.getByRole("textbox", {
+      name: "Edit Applied value value 2 for Remote registry paths",
+    });
+    await user.clear(nestedInput);
+    await user.type(nestedInput, "CONTOSO\\Tier 0 Admins{Enter}");
+    expect(screen.getAllByText("CONTOSO\\Tier 0 Admins").length).toBeGreaterThan(0);
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Add another Applied value value for Remote registry paths",
+      }),
+    );
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Applied value value 3 for Remote registry paths",
+      }),
+    ).toHaveFocus();
+    expect(onChange).toHaveBeenCalled();
+  });
+
+  it("warns instead of adding the same unfinished template twice", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: ""
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: ""
+      valueName: ""
+      valueType: String
+      value: ""
+`,
+      onChange,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Add settings", exact: true }));
+    const pane = await screen.findByRole("dialog", { name: "Add settings" });
+    await user.click(
+      within(pane).getByRole("checkbox", {
+        name: "Select Microsoft.Windows/Registry",
+      }),
+    );
+    await user.click(
+      within(pane).getByRole("button", {
+        name: "Add settings",
+        exact: true,
+      }),
+    );
+
+    expect(
+      await screen.findByRole("dialog", { name: "Setting already exists" }, { timeout: 5000 }),
+    ).toHaveTextContent("Registry already has an unfinished setting");
+    expect(onChange).not.toHaveBeenCalled();
+  }, 15_000);
 
   it("bulk-deletes selected rows from the spreadsheet", async () => {
     const user = userEvent.setup();

@@ -56,6 +56,7 @@ export interface VisualSettingLocation {
 export interface VisualResourceTemplate {
   type: string;
   platform: "windows" | "linux" | "cross-platform";
+  descriptionKey: string;
   properties: Record<string, unknown>;
   requiredProperties: string[];
 }
@@ -64,60 +65,70 @@ export const VISUAL_RESOURCE_TEMPLATES: readonly VisualResourceTemplate[] = [
   {
     type: "Microsoft.Windows/Registry",
     platform: "windows",
+    descriptionKey: "visual.addSettingsPane.descriptions.registry",
     properties: { keyPath: "", valueName: "", valueType: "String", value: "" },
     requiredProperties: ["keyPath", "valueName", "valueType"],
   },
   {
     type: "Microsoft.Windows/CSP",
     platform: "windows",
+    descriptionKey: "visual.addSettingsPane.descriptions.csp",
     properties: { path: "", type: "string", value: "" },
     requiredProperties: ["path", "type"],
   },
   {
     type: "Microsoft.Windows/AccountPolicy",
     platform: "windows",
+    descriptionKey: "visual.addSettingsPane.descriptions.accountPolicy",
     properties: { name: "", value: 0 },
     requiredProperties: ["name"],
   },
   {
     type: "Microsoft.Windows/AuditPolicy",
     platform: "windows",
+    descriptionKey: "visual.addSettingsPane.descriptions.auditPolicy",
     properties: { subcategory: "", value: 0 },
     requiredProperties: ["subcategory"],
   },
   {
     type: "Microsoft.Windows/UserRightsAssignment",
     platform: "windows",
+    descriptionKey: "visual.addSettingsPane.descriptions.userRights",
     properties: { name: "", value: [] },
     requiredProperties: ["name"],
   },
   {
     type: "Linux/FilePermission",
     platform: "linux",
+    descriptionKey: "visual.addSettingsPane.descriptions.filePermission",
     properties: { path: "", owner: "", group: "", mode: "" },
     requiredProperties: ["path"],
   },
   {
     type: "Linux/KernelModule",
     platform: "linux",
+    descriptionKey: "visual.addSettingsPane.descriptions.kernelModule",
     properties: { name: "", loaded: false },
     requiredProperties: ["name"],
   },
   {
     type: "Linux/User",
     platform: "linux",
+    descriptionKey: "visual.addSettingsPane.descriptions.linuxUser",
     properties: { name: "" },
     requiredProperties: ["name"],
   },
   {
     type: "Microsoft.OSConfig/File",
     platform: "cross-platform",
+    descriptionKey: "visual.addSettingsPane.descriptions.file",
     properties: { path: "", content: "", exists: true },
     requiredProperties: ["path"],
   },
   {
     type: "Microsoft.OSConfig/FileLine",
     platform: "cross-platform",
+    descriptionKey: "visual.addSettingsPane.descriptions.fileLine",
     properties: { path: "", find: "", replace: "", append: true, ignoreCase: false },
     requiredProperties: ["path", "find"],
   },
@@ -197,11 +208,7 @@ function boundDesiredValue(value: unknown, binding: VisualValueBinding): Desired
   return presentDesiredValue(unwrapTypedValue(value), binding);
 }
 
-function existingKey(
-  record: Record<string, unknown>,
-  lower: string,
-  upper: string,
-): string {
+function existingKey(record: Record<string, unknown>, lower: string, upper: string): string {
   if (hasOwn(record, lower)) return lower;
   if (hasOwn(record, upper)) return upper;
   return lower;
@@ -278,10 +285,7 @@ function isNullSchemaBranch(value: unknown): boolean {
  * Prefer a scalar from common Test schema shapes. Complex constraints are
  * retained for readable JSON display instead of being silently discarded.
  */
-function readSchemaDesired(
-  schema: unknown,
-  binding: VisualValueBinding,
-): DesiredValue {
+function readSchemaDesired(schema: unknown, binding: VisualValueBinding): DesiredValue {
   if (schema === undefined) return NO_DESIRED_VALUE;
   const record = asRecord(schema);
   if (!record) return presentDesiredValue(schema, binding);
@@ -382,15 +386,7 @@ export function flattenVisualSettings(document: unknown): VisualSetting[] {
             slash >= 0 && slash < childType.length - 1 ? childType.slice(slash + 1) : childType;
           const childFallback = `${groupName} — ${childTypeName || "Setting"} ${index + 1}`;
           const childPath: VisualResourcePath = [...path, index];
-          walk(
-            child,
-            childPath,
-            undefined,
-            childFallback,
-            desiredOverride,
-            childPath,
-            depth + 1,
-          );
+          walk(child, childPath, undefined, childFallback, desiredOverride, childPath, depth + 1);
         });
         return;
       }
@@ -410,13 +406,11 @@ export function flattenVisualSettings(document: unknown): VisualSetting[] {
           : wrapperSchema.present
             ? wrapperSchema
             : desiredOverride;
-        const wrapperName: NameOverride =
-          nameOverride ??
-          {
-            value: settingName.trim() || fallbackName || "",
-            resourcePath: path,
-            explicit: settingName.trim().length > 0,
-          };
+        const wrapperName: NameOverride = nameOverride ?? {
+          value: settingName.trim() || fallbackName || "",
+          resourcePath: path,
+          explicit: settingName.trim().length > 0,
+        };
         walk(
           innerResource,
           [...path, "resource"],
@@ -643,10 +637,7 @@ export function stringifyLosslessJson(value: unknown, space = 2): string | undef
   if (serialized === undefined) return undefined;
 
   bigintValues.forEach((integer, index) => {
-    serialized = serialized.replaceAll(
-      JSON.stringify(`${BIGINT_JSON_MARKER}${index}`),
-      integer,
-    );
+    serialized = serialized.replaceAll(JSON.stringify(`${BIGINT_JSON_MARKER}${index}`), integer);
   });
   return serialized;
 }
@@ -840,9 +831,7 @@ function cspValueKind(setting: VisualSetting, column: string): string | null {
   const declaredType = String(setting.properties.type ?? setting.properties.Type ?? "")
     .trim()
     .toLowerCase();
-  return ["integer", "boolean", "array", "string"].includes(declaredType)
-    ? declaredType
-    : null;
+  return ["integer", "boolean", "array", "string"].includes(declaredType) ? declaredType : null;
 }
 
 function inferredBlankKind(setting: VisualSetting, column: string): string | null {
@@ -894,9 +883,7 @@ export function parseVisualCellInput(
   if (kind === "string") return { ok: true, value: input };
   if (kind === "boolean" || typeof existing === "boolean") {
     const value = parseBooleanInput(input);
-    return value === null
-      ? { ok: false, error: "boolean" }
-      : { ok: true, value };
+    return value === null ? { ok: false, error: "boolean" } : { ok: true, value };
   }
   if (kind === "bigint" || typeof existing === "bigint") {
     if (!YAML_INTEGER_PATTERN.test(input.trim())) {
@@ -937,9 +924,7 @@ export function parseVisualCellInput(
   if (asRecord(existing)) {
     try {
       const parsed = parseStructuredInput(input);
-      return asRecord(parsed)
-        ? { ok: true, value: parsed }
-        : { ok: false, error: "object" };
+      return asRecord(parsed) ? { ok: true, value: parsed } : { ok: false, error: "object" };
     } catch {
       return { ok: false, error: "structured" };
     }
@@ -995,11 +980,48 @@ export type VisualSourceEditResult =
   | { ok: true; source: string }
   | { ok: false; error: VisualEditError };
 
-export function updateVisualCellSource(
+function applyVisualCellValue(
+  document: unknown,
+  setting: VisualSetting,
+  column: string,
+  value: unknown,
+): VisualEditError | null {
+  if (column === SETTING_NAME_COLUMN) {
+    const nameResource = resolveResourceAtPath(document, setting.location.namePath);
+    if (!nameResource) return "missingSetting";
+    const nameKey = existingKey(nameResource, "name", "Name");
+    nameResource[nameKey] = String(value);
+    return null;
+  }
+
+  if (column === DESIRED_VALUE_COLUMN) {
+    const binding = setting.location.desiredBinding;
+    if (!binding) return "desiredReadOnly";
+    const resource = resolveResourceAtPath(document, binding.resourcePath);
+    if (!resource) return "missingSetting";
+    const root = binding.root === "properties" ? ensureProperties(resource) : resource;
+    let boundValue = value;
+    if (binding.displayWrapper) {
+      const wrapper = asRecord(boundValue);
+      if (wrapper && hasOwn(wrapper, binding.displayWrapper)) {
+        boundValue = wrapper[binding.displayWrapper];
+      }
+    }
+    return setNestedValue(root, binding.path, boundValue) ? null : "desiredPath";
+  }
+
+  const resource = resolveResourceAtPath(document, setting.location.resourcePath);
+  if (!resource) return "missingSetting";
+  const properties = ensureProperties(resource);
+  properties[column] = value;
+  return null;
+}
+
+export function updateVisualCellValueSource(
   source: string,
   setting: VisualSetting,
   column: string,
-  input: string,
+  value: unknown,
 ): VisualSourceEditResult {
   let document: unknown;
   try {
@@ -1008,6 +1030,22 @@ export function updateVisualCellSource(
     return { ok: false, error: "invalidYaml" };
   }
 
+  const error = applyVisualCellValue(document, setting, column, value);
+  if (error) return { ok: false, error };
+
+  try {
+    return { ok: true, source: dumpVisualManifest(document) };
+  } catch {
+    return { ok: false, error: "serialize" };
+  }
+}
+
+export function updateVisualCellSource(
+  source: string,
+  setting: VisualSetting,
+  column: string,
+  input: string,
+): VisualSourceEditResult {
   const parsed = parseVisualCellInput(
     input,
     rawValueForVisualColumn(setting, column),
@@ -1015,40 +1053,77 @@ export function updateVisualCellSource(
     column,
   );
   if (!parsed.ok) return parsed;
+  return updateVisualCellValueSource(
+    source,
+    setting,
+    column,
+    column === SETTING_NAME_COLUMN ? input : parsed.value,
+  );
+}
 
-  if (column === SETTING_NAME_COLUMN) {
-    const nameResource = resolveResourceAtPath(document, setting.location.namePath);
-    if (!nameResource) return { ok: false, error: "missingSetting" };
-    const nameKey = existingKey(nameResource, "name", "Name");
-    nameResource[nameKey] = input;
-  } else if (column === DESIRED_VALUE_COLUMN) {
-    const binding = setting.location.desiredBinding;
-    if (!binding) return { ok: false, error: "desiredReadOnly" };
-    const resource = resolveResourceAtPath(document, binding.resourcePath);
-    if (!resource) return { ok: false, error: "missingSetting" };
-    const root = binding.root === "properties" ? ensureProperties(resource) : resource;
-    let value = parsed.value;
-    if (binding.displayWrapper) {
-      const wrapper = asRecord(value);
-      if (wrapper && hasOwn(wrapper, binding.displayWrapper)) {
-        value = wrapper[binding.displayWrapper];
-      }
-    }
-    if (!setNestedValue(root, binding.path, value)) {
-      return { ok: false, error: "desiredPath" };
-    }
-  } else {
-    const resource = resolveResourceAtPath(document, setting.location.resourcePath);
-    if (!resource) return { ok: false, error: "missingSetting" };
-    const properties = ensureProperties(resource);
-    properties[column] = parsed.value;
+export function parseVisualArrayItemInput(input: string, existing: unknown): VisualCellParseResult {
+  if (typeof existing === "boolean") {
+    const value = parseBooleanInput(input);
+    return value === null ? { ok: false, error: "boolean" } : { ok: true, value };
   }
+  if (typeof existing === "bigint") {
+    if (!YAML_INTEGER_PATTERN.test(input.trim())) {
+      return { ok: false, error: "wholeNumber" };
+    }
+    try {
+      return { ok: true, value: constructLosslessInteger(input.trim()) };
+    } catch {
+      return { ok: false, error: "wholeNumber" };
+    }
+  }
+  if (typeof existing === "number") {
+    const value = Number(input.trim());
+    if (input.trim() === "" || !Number.isFinite(value)) {
+      return { ok: false, error: "number" };
+    }
+    if (Number.isInteger(existing) && !Number.isInteger(value)) {
+      return { ok: false, error: "wholeNumber" };
+    }
+    return { ok: true, value };
+  }
+  if (Array.isArray(existing) || asRecord(existing)) {
+    try {
+      return { ok: true, value: parseStructuredInput(input) };
+    } catch {
+      return { ok: false, error: "structured" };
+    }
+  }
+  return { ok: true, value: input };
+}
 
-  try {
-    return { ok: true, source: dumpVisualManifest(document) };
-  } catch {
-    return { ok: false, error: "serialize" };
+export function updateVisualArrayItemSource(
+  source: string,
+  setting: VisualSetting,
+  column: string,
+  index: number,
+  input: string,
+): VisualSourceEditResult {
+  const current = rawValueForVisualColumn(setting, column);
+  if (!Array.isArray(current) || index < 0 || index >= current.length) {
+    return { ok: false, error: "missingSetting" };
   }
+  const parsed = parseVisualArrayItemInput(input, current[index]);
+  if (!parsed.ok) return parsed;
+  const next = [...current];
+  next[index] = parsed.value;
+  return updateVisualCellValueSource(source, setting, column, next);
+}
+
+export function appendVisualArrayItemSource(
+  source: string,
+  setting: VisualSetting,
+  column: string,
+): VisualSourceEditResult {
+  const current = rawValueForVisualColumn(setting, column);
+  if (!Array.isArray(current)) {
+    return { ok: false, error: "structured" };
+  }
+  return updateVisualCellValueSource(source, setting, column, [...current, ""]);
 }
 
 function pathKey(path: readonly VisualResourcePathSegment[]): string {
@@ -1089,9 +1164,15 @@ export function removeVisualSettingsSource(
   }
 
   const uniquePaths = Array.from(
-    new Map(settings.map((setting) => [pathKey(setting.location.removePath), setting.location.removePath])).values(),
+    new Map(
+      settings.map((setting) => [
+        pathKey(setting.location.removePath),
+        setting.location.removePath,
+      ]),
+    ).values(),
   ).filter(
-    (candidate, _index, all) => !all.some((possibleParent) => isPathPrefix(possibleParent, candidate)),
+    (candidate, _index, all) =>
+      !all.some((possibleParent) => isPathPrefix(possibleParent, candidate)),
   );
 
   const grouped = new Map<string, { parent: VisualResourcePath; indexes: number[] }>();
@@ -1155,9 +1236,7 @@ export function addVisualSettingSource(
   }
 
   const template = templateForType(type);
-  const properties: Record<string, unknown> = template
-    ? structuredClone(template.properties)
-    : {};
+  const properties: Record<string, unknown> = template ? structuredClone(template.properties) : {};
   for (const column of columns) {
     if (
       column !== SETTING_NAME_COLUMN &&

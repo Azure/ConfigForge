@@ -33,6 +33,7 @@ const mocks = vi.hoisted(() => ({
   cancelEditing: vi.fn(),
   setError: vi.fn(),
   setEditView: vi.fn(),
+  setEditedContent: vi.fn(),
   requestSave: vi.fn(),
   closeBaseline: vi.fn(),
   refreshWorkspace: vi.fn().mockResolvedValue([]),
@@ -60,20 +61,29 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../../components/manifest-editor", () => ({
   ManifestEditor: ({
     value,
+    onChange,
     readOnly,
     showResourceExplorer,
   }: {
     value: string;
+    onChange?: (value: string) => void;
     readOnly?: boolean;
     showResourceExplorer?: boolean;
   }) => (
-    <pre
-      data-testid="mock-monaco-model"
-      data-read-only={String(readOnly)}
-      data-resource-explorer={String(showResourceExplorer)}
-    >
-      {value}
-    </pre>
+    <div>
+      <pre
+        data-testid="mock-monaco-model"
+        data-read-only={String(readOnly)}
+        data-resource-explorer={String(showResourceExplorer)}
+      >
+        {value}
+      </pre>
+      {onChange && (
+        <button type="button" onClick={() => onChange(`${value}\n# changed`)}>
+          Change code
+        </button>
+      )}
+    </div>
   ),
 }));
 
@@ -195,7 +205,7 @@ vi.mock("./state/useManifestEditorState", () => ({
     },
     cancelEditing: mocks.cancelEditing,
     editedContent: mocks.editedContent,
-    setEditedContent: vi.fn(),
+    setEditedContent: mocks.setEditedContent,
     savedContent: sampleYaml,
     setSavedContent: vi.fn(),
     editView: mocks.editView,
@@ -318,9 +328,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(footer.querySelectorAll(".cfs-footer-secondary-label").length).toBeGreaterThan(0);
     expect(footer.querySelector(".cfs-footer-actions")).toBeInTheDocument();
     expect(footer.querySelector(".cfs-footer-action-group")).toBeInTheDocument();
-    expect(within(footer).getByRole("link", { name: "Audit Pack" })).toHaveClass(
-      "text-xs",
-    );
+    expect(within(footer).getByRole("link", { name: "Audit Pack" })).toHaveClass("text-sm");
     for (const action of [
       "Close baseline",
       "Delete Baseline",
@@ -408,8 +416,9 @@ describe("ManifestDetailPage Loop viewer", () => {
     rerender(editorShell());
     expect(screen.getByRole("region", { name: "Visual baseline settings" })).toBeInTheDocument();
     expect(screen.getByRole("toolbar", { name: "Spreadsheet editing actions" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Add setting" }).length).toBeGreaterThanOrEqual(3);
-    expect(screen.getByRole("button", { name: /Edit Setting Name/ })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Add setting" })).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "Add settings" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: /Edit Setting Name/ })).toHaveFocus();
     expect(mocks.activeFormat).toBe("yaml");
     expect(mocks.formatCache.current).toEqual({
       yaml: sampleYaml,
@@ -545,6 +554,23 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(undo).toBeDisabled();
   });
 
+  it("uses the footer Undo for unsaved Code edits while editing", async () => {
+    const user = userEvent.setup();
+    mocks.editing = true;
+    mocks.editView = "editor";
+    renderEditor();
+
+    const undo = screen.getByRole("button", { name: "Undo" });
+    expect(undo).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Change code" }));
+    await waitFor(() => expect(undo).toBeEnabled());
+    expect(undo).toHaveAttribute("title", "Undo the most recent edit");
+
+    await user.click(undo);
+    expect(mocks.setEditedContent).toHaveBeenLastCalledWith(sampleYaml);
+    expect(mocks.undoLatestManifestChange).not.toHaveBeenCalled();
+  });
+
   it("uses the localized unavailable message when history changes during Undo", async () => {
     const user = userEvent.setup();
     mocks.hasUndoableHistory.mockResolvedValue(true);
@@ -665,8 +691,9 @@ describe("ManifestDetailPage Loop viewer", () => {
     renderEditor();
 
     expect(screen.getByRole("region", { name: "Visual baseline settings" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Add setting" }).length).toBeGreaterThanOrEqual(3);
-    expect(screen.getByRole("button", { name: /Edit Setting Name/ })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Add setting" })).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "Add settings" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: /Edit Setting Name/ })).toHaveFocus();
     expect(screen.getByRole("button", { name: "Code" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByRole("button", { name: "Visual" })).toHaveAttribute("aria-pressed", "true");
   });
