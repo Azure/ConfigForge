@@ -124,23 +124,23 @@ export function BaselineWorkspaceTabs() {
   return (
     <nav
       aria-label={t("workspace.navigationLabel")}
-      className="shrink-0 border-b border-slate-200 bg-slate-50/95 px-4 pt-2 dark:border-slate-800 dark:bg-slate-950/70"
+      className="shrink-0 border-b border-slate-200 bg-white px-4 py-2 dark:border-slate-800 dark:bg-slate-950"
     >
-      <div className="flex min-w-0 items-end gap-1">
+      <div className="flex min-w-0 items-center gap-2">
         <div
           role="tablist"
           aria-label={t("workspace.openTabsLabel")}
-          className="flex min-w-0 flex-1 items-end gap-1 overflow-x-auto [scrollbar-color:theme(colors.slate.300)_transparent] [scrollbar-width:thin] dark:[scrollbar-color:theme(colors.slate.700)_transparent]"
+          className="flex min-w-0 flex-1 items-center gap-2 overflow-x-auto [scrollbar-color:theme(colors.slate.300)_transparent] [scrollbar-width:thin] dark:[scrollbar-color:theme(colors.slate.700)_transparent]"
         >
           <button
             type="button"
             role="tab"
             aria-selected={allActive}
             onClick={() => navigateWithinWorkspace("/manifests")}
-            className={`inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-2 text-sm font-medium transition-colors ${
+            className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
               allActive
-                ? "border-blue-600 text-blue-700 dark:border-blue-400 dark:text-blue-300"
-                : "border-transparent text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100"
+                ? "border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 dark:border-blue-500 dark:bg-blue-600 dark:hover:border-blue-400 dark:hover:bg-blue-500"
+                : "border-slate-200 bg-white text-slate-700 hover:bg-[#E4E9F0] hover:text-slate-950 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800 dark:hover:text-white"
             }`}
           >
             <DocumentMultipleRegular className="h-4 w-4" aria-hidden="true" />
@@ -153,10 +153,10 @@ export function BaselineWorkspaceTabs() {
               <div
                 key={name}
                 role="presentation"
-                className={`flex shrink-0 items-center border-b-2 ${
+                className={`flex shrink-0 items-center rounded-full border transition-colors ${
                   active
-                    ? "border-blue-600 bg-white dark:border-blue-400 dark:bg-slate-900"
-                    : "border-transparent"
+                    ? "border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 dark:border-blue-500 dark:bg-blue-600 dark:hover:border-blue-400 dark:hover:bg-blue-500"
+                    : "border-slate-200 bg-white text-slate-700 hover:bg-[#E4E9F0] dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"
                 }`}
                 title={name}
               >
@@ -165,10 +165,10 @@ export function BaselineWorkspaceTabs() {
                   role="tab"
                   aria-selected={active}
                   onClick={() => goToBaseline(name)}
-                  className={`inline-flex max-w-56 items-center gap-1.5 px-3 py-2 text-left text-sm font-medium ${
+                  className={`inline-flex max-w-56 items-center gap-1.5 py-1.5 pl-3 pr-1 text-left text-sm font-medium transition-colors ${
                     active
-                      ? "text-slate-950 dark:text-white"
-                      : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
+                      ? "text-white"
+                      : "text-slate-700 hover:text-slate-950 dark:text-slate-300 dark:hover:text-white"
                   }`}
                   title={name}
                 >
@@ -180,7 +180,11 @@ export function BaselineWorkspaceTabs() {
                   onClick={() => closeTab(name)}
                   aria-label={t("workspace.closeTab", { name })}
                   title={t("workspace.closeTab", { name })}
-                  className="mr-1 rounded p-1 text-slate-400 hover:bg-slate-200 hover:text-slate-700 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+                  className={`mr-1 rounded-full p-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-blue-600 ${
+                    active
+                      ? "text-blue-100 hover:bg-blue-700 hover:text-white dark:hover:bg-blue-500"
+                      : "text-slate-400 hover:bg-slate-200 hover:text-slate-700 dark:hover:bg-slate-700 dark:hover:text-slate-100"
+                  }`}
                 >
                   <DismissRegular aria-hidden="true" />
                 </button>
@@ -198,7 +202,7 @@ export function BaselineWorkspaceTabs() {
                 icon={<MoreHorizontalRegular />}
                 aria-label={t("workspace.moreTabs")}
                 title={t("workspace.moreTabs")}
-                className="mb-1 shrink-0"
+                className="shrink-0 rounded-full"
               />
             </MenuTrigger>
             <MenuPopover>
