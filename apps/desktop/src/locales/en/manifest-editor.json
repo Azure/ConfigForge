@@ -18,7 +18,12 @@
     "removeConfirm": "Remove baseline \"{{name}}\"? This action cannot be undone.",
     "revert": "Revert",
     "revertConfirm": "Revert baseline \"{{name}}\"?\n\nIf a pre-deploy snapshot exists, your prior settings will be re-applied to this device. If no snapshot exists, OSConfig enforcement of this baseline will be removed and the baseline will be unregistered. Either way, this baseline will no longer be actively enforced on this device.",
-    "revertTitle": "Undo the last deployment of this baseline from this device. If a pre-deploy snapshot exists, prior settings are re-applied; otherwise OSConfig enforcement is removed."
+    "revertTitle": "Undo the last deployment of this baseline from this device. If a pre-deploy snapshot exists, prior settings are re-applied; otherwise OSConfig enforcement is removed.",
+    "undo": "Undo",
+    "undoEdit": "Undo",
+    "undoEditTitle": "Undo the most recent edit",
+    "undoTitle": "Restore the previous saved baseline version",
+    "undoUnavailable": "No previous saved baseline version is available"
   },
   "compliance": {
     "emptyDescription": "Run Audit or Enforce to check this baseline against the device.",
@@ -78,6 +83,7 @@
     "loadManifestFailed": "Failed to load baseline",
     "revertFailed": "Revert failed",
     "saveFailed": "Save failed",
+    "undoFailed": "Undo failed",
     "unknown": "Unknown error"
   },
   "export": {
@@ -103,7 +109,8 @@
   "messages": {
     "reverted": "Baseline reverted",
     "saveSuccess": "Baseline \"{{name}}\" saved successfully",
-    "savedWithWarning": "Saved with warning: {{warning}}"
+    "savedWithWarning": "Saved with warning: {{warning}}",
+    "undoSuccess": "Restored the previous saved version of \"{{name}}\""
   },
   "platform": {
     "crossPlatform": "⚙️ Cross-platform",

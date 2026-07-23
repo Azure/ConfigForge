@@ -18,7 +18,12 @@
     "removeConfirm": "¿Quitar baseline \"{{name}}\"? Esta acción no puede deshacerse.",
     "revert": "Revert",
     "revertConfirm": "¿Revertir baseline \"{{name}}\"?\n\nSi existe una instantánea previa al despliegue, tus ajustes previos se volverán a aplicar a este dispositivo. Si no existe una instantánea, OSConfig aplicación de esta baseline se eliminará y la baseline se dará de registrar. En cualquier caso, esta baseline ya no se aplicará activamente en este dispositivo.",
-    "revertTitle": "Deshacer el último despliegue de este baseline desde este dispositivo. Si existe una instantánea previa al despliegue, se vuelven a aplicar configuraciones previas; de lo contrario, OSConfig aplicación se elimina."
+    "revertTitle": "Deshacer el último despliegue de este baseline desde este dispositivo. Si existe una instantánea previa al despliegue, se vuelven a aplicar configuraciones previas; de lo contrario, OSConfig aplicación se elimina.",
+    "undo": "Deshacer",
+    "undoEdit": "Deshacer",
+    "undoEditTitle": "Deshacer la edición más reciente",
+    "undoTitle": "Restaurar la versión guardada anterior de la baseline",
+    "undoUnavailable": "No hay ninguna versión guardada anterior de la baseline disponible"
   },
   "compliance": {
     "emptyDescription": "Ejecuta Audit o Enforce para comparar esta baseline con el dispositivo.",
@@ -78,6 +83,7 @@
     "loadManifestFailed": "No se ha podido cargar baseline",
     "revertFailed": "Revert con error",
     "saveFailed": "Guardar con error",
+    "undoFailed": "Error al deshacer",
     "unknown": "Desconocido error"
   },
   "export": {
@@ -103,7 +109,8 @@
   "messages": {
     "reverted": "Baseline revertido",
     "saveSuccess": "Baseline \"{{name}}\" guardado con éxito",
-    "savedWithWarning": "Guardado con advertencia: {{warning}}"
+    "savedWithWarning": "Guardado con advertencia: {{warning}}",
+    "undoSuccess": "Se restauró la versión guardada anterior de « {{name}} »"
   },
   "platform": {
     "crossPlatform": "⚙️ Cross-plataforma",

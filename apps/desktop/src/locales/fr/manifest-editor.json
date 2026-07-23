@@ -18,7 +18,12 @@
     "removeConfirm": "Supprimer baseline « {{name}} » ? Cette action ne peut être annulée.",
     "revert": "Retour",
     "revertConfirm": "Reviens baseline « {{name}} » ?\n\nSi un instantané pré-déploiement existe, vos paramètres précédents seront réappliqués sur cet appareil. Si aucun snapshot n’existe, OSConfig application de ce baseline sera supprimée et le baseline sera désenregistré. Dans tous les cas, cette baseline ne sera plus activement appliquée sur cet appareil.",
-    "revertTitle": "Annulez le dernier déploiement de ce baseline depuis cet appareil. Si un instantané pré-déploiement existe, les réglages précédents sont réappliqués ; sinon, OSConfig application est supprimée."
+    "revertTitle": "Annulez le dernier déploiement de ce baseline depuis cet appareil. Si un instantané pré-déploiement existe, les réglages précédents sont réappliqués ; sinon, OSConfig application est supprimée.",
+    "undo": "Annuler",
+    "undoEdit": "Annuler",
+    "undoEditTitle": "Annuler la modification la plus récente",
+    "undoTitle": "Restaurer la version enregistrée précédente de la baseline",
+    "undoUnavailable": "Aucune version enregistrée précédente de la baseline n’est disponible"
   },
   "compliance": {
     "emptyDescription": "Lancez Audit ou Enforce pour vérifier cette baseline par rapport à l'appareil.",
@@ -78,6 +83,7 @@
     "loadManifestFailed": "Échec de charger baseline",
     "revertFailed": "Revert échoué",
     "saveFailed": "Enregistrer échoué",
+    "undoFailed": "Échec de l’annulation",
     "unknown": "Inconnu erreur"
   },
   "export": {
@@ -103,7 +109,8 @@
   "messages": {
     "reverted": "Baseline annulée",
     "saveSuccess": "Baseline « {{name}} » sauvegardé avec succès",
-    "savedWithWarning": "Sauvegardé avec avertissement : {{warning}}"
+    "savedWithWarning": "Sauvegardé avec avertissement : {{warning}}",
+    "undoSuccess": "Version enregistrée précédente de « {{name}} » restaurée"
   },
   "platform": {
     "crossPlatform": "⚙️ Cross-plateforme",
