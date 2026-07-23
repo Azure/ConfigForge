@@ -21,8 +21,11 @@
     "revert": "Rückgängig machen",
     "revertConfirm": "Zurücksetzen baseline \"{{name}}\"?\n\nWenn ein Pre-Deploy-Snapshot vorhanden ist, werden deine vorherigen Einstellungen auf dieses Gerät erneut angewendet. Wenn kein Snapshot vorhanden ist, wird OSConfig Durchsetzung dieses baseline entfernt und der baseline wird nicht registriert. So oder so wird dieser baseline auf diesem Gerät nicht mehr aktiv durchgesetzt.",
     "revertTitle": "Die letzte Bereitstellung dieses baseline von diesem Gerät rückgängig machen. Wenn ein Pre-Deploy-Snapshot existiert, werden vorherige Einstellungen erneut angewendet; ansonsten wird OSConfig Durchsetzung aufgehoben.",
+    "undo": "Rückgängig",
     "undoEdit": "Rückgängig",
-    "undoEditTitle": "Letzte Bearbeitung rückgängig machen"
+    "undoEditTitle": "Letzte Bearbeitung rückgängig machen",
+    "undoTitle": "Vorherige gespeicherte Baseline-Version wiederherstellen",
+    "undoUnavailable": "Keine vorherige gespeicherte Baseline-Version verfügbar"
   },
   "compliance": {
     "allStatuses": "Alle Status",
@@ -97,6 +100,7 @@
     "loadManifestFailed": "Nicht geladen baseline",
     "revertFailed": "Revert fehlgeschlagen",
     "saveFailed": "Speichern fehlgeschlagen",
+    "undoFailed": "Rückgängig machen fehlgeschlagen",
     "unknown": "Unbekannt Fehler"
   },
   "export": {
@@ -122,7 +126,8 @@
   "messages": {
     "reverted": "Baseline wurde zurückgesetzt",
     "saveSuccess": "Baseline \"{{name}}\" erfolgreich gespeichert",
-    "savedWithWarning": "Mit Warnung gespeichert: {{warning}}"
+    "savedWithWarning": "Mit Warnung gespeichert: {{warning}}",
+    "undoSuccess": "Vorherige gespeicherte Version von „{{name}}“ wurde wiederhergestellt"
   },
   "platform": {
     "crossPlatform": "⚙️ Cross-Plattform",

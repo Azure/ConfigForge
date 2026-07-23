@@ -114,6 +114,12 @@ export interface ManifestEditorState {
   /** Re-fetch the manifest / yaml / status triple. Honours the
    * fetchToken race-guard so rapid URL switches don't show stale data. */
   fetchData: () => Promise<void>;
+  /**
+   * Re-read the registered YAML from the canonical source channel.
+   * Clears editable buffers before the request and rejects on failure so
+   * destructive flows cannot leave stale content available for editing.
+   */
+  reloadCanonicalSource: () => Promise<void>;
 
   // ── Edit lifecycle ─────────────────────────────────────────────
   editing: boolean;
@@ -341,6 +347,47 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
     }
   }, [manifestName, t]);
 
+  const reloadCanonicalSource = useCallback(async () => {
+    if (manifestName !== manifestNameRef.current) return;
+
+    const fetchGeneration = ++fetchGenerationRef.current;
+    const fetchToken = manifestName;
+    const isCurrent = () =>
+      fetchGeneration === fetchGenerationRef.current &&
+      fetchToken === manifestNameRef.current;
+
+    latestFormatRequestRef.current = null;
+    formatCache.current = {};
+    setEditing(false);
+    setEditedContent("");
+    setSavedContent("");
+    setEditBaselineContent("");
+    setEditView("editor");
+    setActiveFormat("yaml");
+    setFormatLoading(false);
+    setError(null);
+
+    try {
+      const response = await cfs.manifests.getSource(manifestName);
+      if (!isCurrent()) return;
+
+      const source = (response as { data?: unknown }).data;
+      if (typeof source !== "string") {
+        throw new Error(
+          `Canonical source YAML is unavailable for manifest '${manifestName}'`,
+        );
+      }
+
+      formatCache.current = { yaml: source };
+      setEditedContent(source);
+      setSavedContent(source);
+      setEditBaselineContent(source);
+    } catch (err) {
+      if (!isCurrent()) return;
+      throw err;
+    }
+  }, [manifestName]);
+
   useEffect(() => {
     fetchData();
   }, [fetchData]);
@@ -456,6 +503,7 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
       setError,
       manifestNameRef,
       fetchData,
+      reloadCanonicalSource,
 
       // Edit lifecycle
       editing,
@@ -501,6 +549,7 @@ export function useManifestEditorState(manifestName: string): ManifestEditorStat
       activeFormat,
       formatLoading,
       fetchData,
+      reloadCanonicalSource,
       fetchFormatContent,
       handleFormatChange,
       isEditable,

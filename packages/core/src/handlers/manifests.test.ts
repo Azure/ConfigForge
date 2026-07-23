@@ -85,6 +85,7 @@ import {
 } from './manifests';
 import * as oscfg from '../oscfg';
 import * as platform from '../platform';
+import * as history from '../history';
 import * as rationaleStore from '../manifest/rationale-store';
 import * as auditResultsStore from '../manifest/audit-results-store';
 
@@ -97,6 +98,7 @@ const deleteNamespaceMock = vi.mocked(oscfg.deleteNamespace);
 const deleteRegistrationMock = vi.mocked(oscfg.deleteRegistration);
 const validateMock = vi.mocked(platform.validateManifestSchema);
 const detectPlatformMock = vi.mocked(platform.detectManifestPlatform);
+const createSnapshotMock = vi.mocked(history.createSnapshot);
 const deleteRationaleMock = vi.mocked(rationaleStore.deleteRationale);
 const readAuditResultMock = vi.mocked(auditResultsStore.readAuditResultForRegistration);
 
@@ -707,6 +709,51 @@ describe('registerManifest', () => {
     expect(result.data.namespace).toBe('mybase');
     expect(saveRegistrationMock).toHaveBeenCalledTimes(1);
     expect(saveRegistrationMock.mock.calls[0][0].source).toBe('user');
+  });
+
+  it('waits for the history snapshot so consecutive saves preserve order', async () => {
+    let markSnapshotStarted!: () => void;
+    let finishSnapshot!: () => void;
+    const snapshotStarted = new Promise<void>((resolve) => {
+      markSnapshotStarted = resolve;
+    });
+    const snapshotPending = new Promise<void>((resolve) => {
+      finishSnapshot = resolve;
+    });
+    createSnapshotMock.mockImplementationOnce(async () => {
+      markSnapshotStarted();
+      await snapshotPending;
+    });
+
+    let settled = false;
+    const registration = registerManifest({
+      name: 'ordered',
+      content: 'resources: []',
+    }).then((result) => {
+      settled = true;
+      return result;
+    });
+
+    await snapshotStarted;
+    expect(settled).toBe(false);
+    finishSnapshot();
+    await expect(registration).resolves.toMatchObject({
+      data: { namespace: 'ordered' },
+    });
+  });
+
+  it('keeps registration successful when the awaited snapshot fails', async () => {
+    const warning = vi.spyOn(console, 'warn').mockImplementation(() => {});
+    createSnapshotMock.mockRejectedValueOnce(new Error('history disk unavailable'));
+
+    await expect(
+      registerManifest({ name: 'snapshot-failure', content: 'resources: []' }),
+    ).resolves.toMatchObject({
+      data: { namespace: 'snapshot-failure' },
+    });
+    expect(warning).toHaveBeenCalledWith(
+      expect.stringMatching(/auto-snapshot failed.*history disk unavailable/),
+    );
   });
 
   it('assigns a fresh revision for identical and changed saves and removes stale audit data', async () => {

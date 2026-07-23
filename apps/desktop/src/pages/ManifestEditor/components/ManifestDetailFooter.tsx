@@ -15,6 +15,7 @@ import {
 import {
   ArrowCounterclockwiseRegular,
   ArrowDownloadRegular,
+  ArrowUndoRegular,
   ChevronDownRegular,
   ClipboardCheckmarkRegular,
   CopyRegular,
@@ -46,6 +47,8 @@ export interface ManifestDetailFooterProps {
   setExportOpen: (open: boolean) => void;
   duplicating: boolean;
   deleting: boolean;
+  undoing: boolean;
+  undoAvailable: boolean;
   rationaleBusy: boolean;
   saveBlocked: boolean;
   onClose: () => void;
@@ -53,6 +56,7 @@ export interface ManifestDetailFooterProps {
   onExport: (format: "yaml" | "json" | "mof" | "excel") => void;
   onExportDocs: () => void;
   onDelete: () => void;
+  onUndo: () => void;
   onCheckCompliance: () => void;
   onSaveClick: () => void;
 }
@@ -70,6 +74,8 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   setExportOpen,
   duplicating,
   deleting,
+  undoing,
+  undoAvailable,
   rationaleBusy,
   saveBlocked,
   onClose,
@@ -77,6 +83,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   onExport,
   onExportDocs,
   onDelete,
+  onUndo,
   onCheckCompliance,
   onSaveClick,
 }: ManifestDetailFooterProps) {
@@ -91,7 +98,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
     handleDeploy,
     handleRevert,
   } = deploy;
-  const busy = deleting || deploying || reverting || saving || editing;
+  const busy = deleting || undoing || deploying || reverting || saving || editing;
   const deployApi = hasCfsNamespace("deploy") ? safeCfs("deploy") : undefined;
   const revertApi = hasCfsNamespace("revert") ? safeCfs("revert") : undefined;
   const canDeploy = HAS_DEPLOY && typeof deployApi?.run === "function";
@@ -138,6 +145,28 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               <span className="cfs-footer-secondary-label">
                 {t("actions.deleteBaseline")}
               </span>
+            </Button>
+
+            <div
+              className="cfs-footer-divider mx-1 h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
+              aria-hidden="true"
+            />
+
+            <Button
+              appearance="subtle"
+              size="small"
+              icon={undoing ? <Spinner size="tiny" /> : <ArrowUndoRegular />}
+              onClick={onUndo}
+              disabled={busy || !undoAvailable}
+              title={
+                undoAvailable
+                  ? t("actions.undoTitle")
+                  : t("actions.undoUnavailable")
+              }
+              aria-label={t("actions.undo")}
+              className="cfs-footer-action shrink-0"
+            >
+              <span className="cfs-footer-secondary-label">{t("actions.undo")}</span>
             </Button>
 
             <div
@@ -360,7 +389,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               if (viewerMode === "visual") beginEditing("visual");
               else beginEditing();
             }}
-            disabled={!canEdit}
+            disabled={busy || !canEdit}
             title={
               !canEdit
                 ? t(

@@ -48,6 +48,11 @@ import {
   validateVisualSettings,
 } from "./visual-viewer";
 import { readManifestViewerMode, writeManifestViewerMode } from "./viewer-mode-preference";
+import { electronRestoreClient } from "../../lib/electron-restore-client";
+import {
+  hasUndoableHistory,
+  undoLatestManifestChange,
+} from "./undo-latest";
 
 interface PendingWorkspaceNavigation {
   destination: string;
@@ -64,6 +69,8 @@ export function ManifestDetailPage() {
   const { closeBaseline, refresh: refreshWorkspace } = useBaselineWorkspace();
 
   const [deleting, setDeleting] = useState(false);
+  const [undoing, setUndoing] = useState(false);
+  const [undoAvailable, setUndoAvailable] = useState(false);
   const [complianceDialogOpen, setComplianceDialogOpen] = useState(false);
   const [pendingNavigation, setPendingNavigation] =
     useState<PendingWorkspaceNavigation | null>(null);
@@ -133,6 +140,7 @@ export function ManifestDetailPage() {
     error,
     setError,
     fetchData,
+    reloadCanonicalSource,
     editing,
     setEditing,
     cancelEditing,
@@ -146,6 +154,36 @@ export function ManifestDetailPage() {
     currentDisplayContent,
     hasUnsavedChanges,
   } = editorState;
+
+  const refreshUndoAvailability = useCallback(
+    async (retries = 0): Promise<boolean> => {
+      for (let attempt = 0; attempt <= retries; attempt += 1) {
+        try {
+          const available = await hasUndoableHistory(
+            manifestName,
+            cfs.history,
+            electronRestoreClient(),
+          );
+          if (available || attempt === retries) {
+            setUndoAvailable(available);
+            return available;
+          }
+        } catch {
+          setUndoAvailable(false);
+          return false;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 120));
+      }
+      setUndoAvailable(false);
+      return false;
+    },
+    [manifestName],
+  );
+
+  useEffect(() => {
+    if (loading) return;
+    void refreshUndoAvailability();
+  }, [loading, refreshUndoAvailability]);
 
   const visualSourceValid = useMemo(() => {
     if (!editing || activeFormat !== "yaml") return true;
@@ -333,6 +371,7 @@ export function ManifestDetailPage() {
         // labeling the JSON buffer as cached YAML would briefly expose the
         // wrong representation and could seed the next edit incorrectly.
         await fetchData();
+        await refreshUndoAvailability(5);
 
         try {
           sessionStorage.setItem(
@@ -349,8 +388,58 @@ export function ManifestDetailPage() {
         setSaving(false);
       }
     },
-    [manifestName, activeFormat, editedContent, fetchData, formatCache, setSavedContent, t],
+    [
+      manifestName,
+      activeFormat,
+      editedContent,
+      fetchData,
+      formatCache,
+      refreshUndoAvailability,
+      setSavedContent,
+      t,
+    ],
   );
+
+  const handleUndoLatest = useCallback(async () => {
+    if (undoing || editing) return;
+    setUndoing(true);
+    setUndoAvailable(false);
+    setError(null);
+    try {
+      const result = await undoLatestManifestChange(
+        manifestName,
+        cfs.history,
+        electronRestoreClient(),
+      );
+      if (!result.ok) {
+        throw new Error(result.error ?? t("errors.undoFailed"));
+      }
+      await fetchData();
+      await reloadCanonicalSource();
+      await refreshUndoAvailability(5);
+      try {
+        sessionStorage.setItem(
+          "configforge-flash",
+          t("messages.undoSuccess", { name: manifestName }),
+        );
+      } catch {
+        /* non-critical */
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : t("errors.undoFailed"));
+    } finally {
+      setUndoing(false);
+    }
+  }, [
+    editing,
+    fetchData,
+    manifestName,
+    reloadCanonicalSource,
+    refreshUndoAvailability,
+    setError,
+    t,
+    undoing,
+  ]);
 
   // PR27: rationale-prompt wrapper. We intercept the Save click, ask the
   // user "why?", POST the rationale, then run the existing handleSave.
@@ -673,6 +762,8 @@ export function ManifestDetailPage() {
         setExportOpen={setExportOpen}
         duplicating={duplicating}
         deleting={deleting}
+        undoing={undoing}
+        undoAvailable={undoAvailable}
         rationaleBusy={rationale.state.busy}
         saveBlocked={!visualEditValid}
         onClose={handleClose}
@@ -680,6 +771,7 @@ export function ManifestDetailPage() {
         onExport={handleExport}
         onExportDocs={handleExportDocs}
         onDelete={handleDelete}
+        onUndo={() => void handleUndoLatest()}
         onCheckCompliance={handleCheckCompliance}
         onSaveClick={handleSaveClick}
       />

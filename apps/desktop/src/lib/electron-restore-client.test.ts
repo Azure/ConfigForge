@@ -11,6 +11,7 @@ const { cfsMock } = vi.hoisted(() => ({
     },
     manifests: {
       status: vi.fn(),
+      getSource: vi.fn(),
       register: vi.fn(),
     },
   },
@@ -37,23 +38,21 @@ describe('electronRestoreClient', () => {
     );
   });
 
-  it('distinguishes a successful missing registration from an IPC failure', async () => {
+  it('reads canonical registered YAML and propagates failures', async () => {
     const client = electronRestoreClient();
-    cfsMock.manifests.status.mockResolvedValueOnce({ data: null });
-    await expect(client.fetchCurrentYaml('m1')).resolves.toBe('');
+    cfsMock.manifests.getSource.mockResolvedValueOnce({ data: 'resources: []\n' });
+    await expect(client.fetchCurrentYaml('m1')).resolves.toBe('resources: []\n');
+    expect(cfsMock.manifests.getSource).toHaveBeenCalledWith('m1');
 
-    cfsMock.manifests.status.mockRejectedValueOnce(new Error('IPC disconnected'));
+    cfsMock.manifests.getSource.mockRejectedValueOnce(new Error('IPC disconnected'));
     await expect(client.fetchCurrentYaml('m1')).rejects.toThrow('IPC disconnected');
   });
 
-  it('preserves string YAML and serializes structured status responses', async () => {
+  it('rejects when canonical source YAML is unavailable', async () => {
     const client = electronRestoreClient();
-    cfsMock.manifests.status.mockResolvedValueOnce({ data: 'resources: []\n' });
-    await expect(client.fetchCurrentYaml('m1')).resolves.toBe('resources: []\n');
-
-    cfsMock.manifests.status.mockResolvedValueOnce({ data: { resources: [] } });
-    await expect(client.fetchCurrentYaml('m1')).resolves.toBe(
-      JSON.stringify({ resources: [] }, null, 2),
+    cfsMock.manifests.getSource.mockResolvedValueOnce({ data: null });
+    await expect(client.fetchCurrentYaml('m1')).rejects.toThrow(
+      /Canonical source YAML is unavailable/,
     );
   });
 
@@ -78,7 +77,7 @@ describe('electronRestoreClient', () => {
 
   it('safeRestore never writes when current-state lookup fails', async () => {
     cfsMock.history.list.mockResolvedValueOnce({ data: { content: 'snapshot-yaml' } });
-    cfsMock.manifests.status.mockRejectedValueOnce(new Error('status unavailable'));
+    cfsMock.manifests.getSource.mockRejectedValueOnce(new Error('status unavailable'));
     const result = await safeRestore('m1', 's1', electronRestoreClient());
 
     expect(result).toMatchObject({
