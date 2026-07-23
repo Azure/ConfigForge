@@ -1114,6 +1114,15 @@ export function updateVisualArrayItemSource(
   return updateVisualCellValueSource(source, setting, column, next);
 }
 
+function placeholderForVisualArrayItem(existing: unknown): unknown {
+  if (typeof existing === "boolean") return false;
+  if (typeof existing === "bigint") return existing;
+  if (typeof existing === "number") return Number.isInteger(existing) ? 0 : existing;
+  if (Array.isArray(existing)) return [];
+  if (asRecord(existing)) return {};
+  return "";
+}
+
 export function appendVisualArrayItemSource(
   source: string,
   setting: VisualSetting,
@@ -1123,7 +1132,9 @@ export function appendVisualArrayItemSource(
   if (!Array.isArray(current)) {
     return { ok: false, error: "structured" };
   }
-  return updateVisualCellValueSource(source, setting, column, [...current, ""]);
+  const placeholder =
+    current.length > 0 ? placeholderForVisualArrayItem(current[current.length - 1]) : "";
+  return updateVisualCellValueSource(source, setting, column, [...current, placeholder]);
 }
 
 function pathKey(path: readonly VisualResourcePathSegment[]): string {
