@@ -3,10 +3,7 @@
 
 import { describe, expect, it, vi } from "vitest";
 import type { RestoreClient } from "@configforge/core/history/restore";
-import {
-  hasUndoableHistory,
-  undoLatestManifestChange,
-} from "./undo-latest";
+import { hasUndoableHistory, undoLatestManifestChange } from "./undo-latest";
 
 function restoreClient(
   snapshots: Record<string, string> = {
@@ -39,14 +36,12 @@ describe("undoLatestManifestChange", () => {
       current: "resources:\n  - name: current\n",
     });
 
-    await expect(
-      undoLatestManifestChange("sample", history, client),
-    ).resolves.toEqual({ ok: true, autoSnapshotted: true });
+    await expect(undoLatestManifestChange("sample", history, client)).resolves.toEqual({
+      ok: true,
+      autoSnapshotted: true,
+    });
 
-    expect(client.fetchSnapshotContent).toHaveBeenCalledWith(
-      "sample",
-      "late-previous",
-    );
+    expect(client.fetchSnapshotContent).toHaveBeenCalledWith("sample", "late-previous");
     expect(client.saveAutoSnapshot).toHaveBeenCalledWith(
       "sample",
       "resources:\n  - name: current\n",
@@ -66,9 +61,7 @@ describe("undoLatestManifestChange", () => {
     };
     const client = restoreClient();
 
-    await expect(
-      undoLatestManifestChange("sample", history, client),
-    ).resolves.toEqual({
+    await expect(undoLatestManifestChange("sample", history, client)).resolves.toEqual({
       ok: false,
       autoSnapshotted: false,
     });
@@ -89,11 +82,43 @@ describe("undoLatestManifestChange", () => {
     };
     const client = restoreClient();
 
-    await expect(
-      hasUndoableHistory("sample", history, client),
-    ).resolves.toBe(false);
-    await expect(
-      hasUndoableHistory("sample", history, client),
-    ).resolves.toBe(true);
+    await expect(hasUndoableHistory("sample", history, client)).resolves.toBe(false);
+    await expect(hasUndoableHistory("sample", history, client)).resolves.toBe(true);
+  });
+
+  it("preserves API order for snapshots that share a timestamp", async () => {
+    const timestamp = "2026-07-22T10:00:00.000Z";
+    const history = {
+      list: vi.fn().mockResolvedValue({
+        data: [
+          { id: "newest-previous", timestamp },
+          { id: "current", timestamp },
+        ],
+      }),
+    };
+    const client = restoreClient({
+      "newest-previous": "resources:\n  - name: previous\n",
+      current: "resources:\n  - name: current\n",
+    });
+
+    await undoLatestManifestChange("sample", history, client);
+
+    expect(client.registerManifest).toHaveBeenCalledWith(
+      "sample",
+      "resources:\n  - name: previous\n",
+    );
+  });
+
+  it("treats boundary whitespace as an undoable saved change", async () => {
+    const history = {
+      list: vi.fn().mockResolvedValue({
+        data: [{ id: "with-blank-line" }],
+      }),
+    };
+    const client = restoreClient({
+      "with-blank-line": "resources:\n  - name: current\n\n",
+    });
+
+    await expect(hasUndoableHistory("sample", history, client)).resolves.toBe(true);
   });
 });
