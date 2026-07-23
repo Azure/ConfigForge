@@ -86,6 +86,7 @@ import {
 import * as oscfg from '../oscfg';
 import * as platform from '../platform';
 import * as history from '../history';
+import * as historyAuthor from '../history/author';
 import * as rationaleStore from '../manifest/rationale-store';
 import * as auditResultsStore from '../manifest/audit-results-store';
 
@@ -99,6 +100,7 @@ const deleteRegistrationMock = vi.mocked(oscfg.deleteRegistration);
 const validateMock = vi.mocked(platform.validateManifestSchema);
 const detectPlatformMock = vi.mocked(platform.detectManifestPlatform);
 const createSnapshotMock = vi.mocked(history.createSnapshot);
+const resolveAuthorMock = vi.mocked(historyAuthor.resolveAuthor);
 const deleteRationaleMock = vi.mocked(rationaleStore.deleteRationale);
 const readAuditResultMock = vi.mocked(auditResultsStore.readAuditResultForRegistration);
 
@@ -740,6 +742,24 @@ describe('registerManifest', () => {
     await expect(registration).resolves.toMatchObject({
       data: { namespace: 'ordered' },
     });
+  });
+
+  it('does not resolve an email when the caller supplies an explicit author', async () => {
+    await registerManifest({
+      name: 'explicit-author',
+      content: 'resources: []',
+      author: 'Release Automation',
+    });
+
+    expect(resolveAuthorMock).not.toHaveBeenCalled();
+    expect(createSnapshotMock).toHaveBeenCalledWith(
+      'explicit-author',
+      'resources: []',
+      expect.objectContaining({
+        author: 'Release Automation',
+        authorEmail: '',
+      }),
+    );
   });
 
   it('keeps registration successful when the awaited snapshot fails', async () => {

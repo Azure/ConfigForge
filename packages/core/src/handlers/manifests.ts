@@ -889,6 +889,7 @@ export async function registerManifest(
     let resolvedEmail: string | undefined;
     if (author && author.trim()) {
       resolvedAuthor = author;
+      resolvedEmail = '';
     } else {
       try {
         const r = await resolveAuthor();
