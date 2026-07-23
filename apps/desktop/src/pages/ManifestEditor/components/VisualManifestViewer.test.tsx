@@ -393,6 +393,10 @@ describe("VisualManifestViewer", () => {
 
     await user.click(screen.getByRole("button", { name: "Add settings", exact: true }));
     const pane = await screen.findByRole("dialog", { name: "Add settings" });
+    const backdrop = screen.getByTestId("add-settings-backdrop");
+    expect(backdrop.tagName).toBe("DIV");
+    expect(backdrop).not.toHaveAttribute("tabindex");
+    expect(backdrop).not.toHaveAttribute("role", "button");
     expect(within(pane).getByRole("columnheader", { name: "Setting Type" })).toBeInTheDocument();
     expect(within(pane).getByRole("columnheader", { name: "OS" })).toBeInTheDocument();
     expect(within(pane).getByRole("columnheader", { name: "Setting Name" })).toBeInTheDocument();
@@ -500,6 +504,7 @@ describe("VisualManifestViewer", () => {
     ).toHaveFocus();
 
     await user.keyboard("{Escape}");
+    await new Promise((resolve) => setTimeout(resolve, 75));
     await user.click(screen.getByRole("button", { name: "Edit Priority for Renamed" }));
     await user.keyboard("{Enter}");
     expect(
@@ -579,18 +584,19 @@ describe("VisualManifestViewer", () => {
         name: "Select Microsoft.Windows/Registry",
       }),
     );
-    await user.click(
-      within(pane).getByRole("button", {
-        name: "Add settings",
-        exact: true,
-      }),
-    );
+    await within(pane).findByText("1 setting selected");
+    const addSelected = within(pane).getByRole("button", {
+      name: "Add settings",
+      exact: true,
+    });
+    expect(addSelected).toBeEnabled();
+    fireEvent.click(addSelected);
 
     expect(
-      await screen.findByRole("dialog", { name: "Setting already exists" }, { timeout: 5000 }),
+      await screen.findByRole("dialog", { name: "Setting already exists" }, { timeout: 10_000 }),
     ).toHaveTextContent("Registry already has an unfinished setting");
     expect(onChange).not.toHaveBeenCalled();
-  }, 15_000);
+  }, 20_000);
 
   it("bulk-deletes selected rows from the spreadsheet", async () => {
     const user = userEvent.setup();

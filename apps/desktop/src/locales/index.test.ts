@@ -72,6 +72,20 @@ describe('i18n initialization', () => {
     expect(i18n.t('language.sectionTitle', { ns: 'settings' })).toBe('Language');
   });
 
+  it('keeps the visual edit hint in the selected target language', async () => {
+    const i18n = getI18n();
+    const expected = {
+      fr: 'Cliquez sur une cellule pour la modifier. Appuyez sur Entrée pour appliquer ; dans la dernière cellule, Entrée ajoute une nouvelle ligne. Appuyez sur Échap pour annuler.',
+      de: 'Klicken Sie auf eine Zelle, um sie zu bearbeiten. Drücken Sie die Eingabetaste zum Übernehmen; in der letzten Zelle fügt die Eingabetaste eine neue Zeile hinzu. Drücken Sie Escape zum Abbrechen.',
+      es: 'Haga clic en cualquier celda para editarla. Pulse Entrar para aplicar; en la última celda, Entrar añade otra fila. Pulse Escape para cancelar.',
+    };
+
+    for (const [locale, editHint] of Object.entries(expected)) {
+      await i18n.changeLanguage(locale);
+      expect(i18n.t('visual.editHint', { ns: 'manifest-editor' })).toBe(editHint);
+    }
+  });
+
   it('handles {{interpolation}} placeholders', () => {
     const i18n = getI18n();
     // Inline addResource lets us test the interpolation pipeline

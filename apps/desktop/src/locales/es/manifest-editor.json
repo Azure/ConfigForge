@@ -262,7 +262,7 @@
     },
     "editArrayItem": "Editar el valor {{index}} de {{field}} para {{name}}",
     "editCell": "Editar {{field}} para {{name}}",
-    "editHint": "Haga clic en cualquier celda para editarla. Presione Entrar para aplicar o Escape para cancelar.",
+    "editHint": "Haga clic en cualquier celda para editarla. Pulse Entrar para aplicar; en la última celda, Entrar añade otra fila. Pulse Escape para cancelar.",
     "editInstructions": "Mostrar instrucciones de edición de la tabla",
     "editInstructionsText": "Añada valores fila por fila. Tab guarda y se mueve a la derecha. Entrar guarda y baja. Entrar en la última fila añade otra fila. Pulse Escape para cancelar.",
     "editToolbar": "Acciones de edición de hoja de cálculo",

@@ -262,7 +262,7 @@
     },
     "editArrayItem": "{{field}}-Wert {{index}} für {{name}} bearbeiten",
     "editCell": "{{field}} für {{name}} bearbeiten",
-    "editHint": "Klicken Sie zum Bearbeiten auf eine Zelle. Drücken Sie zum Anwenden die Eingabetaste oder zum Abbrechen Escape.",
+    "editHint": "Klicken Sie auf eine Zelle, um sie zu bearbeiten. Drücken Sie die Eingabetaste zum Übernehmen; in der letzten Zelle fügt die Eingabetaste eine neue Zeile hinzu. Drücken Sie Escape zum Abbrechen.",
     "editInstructions": "Anweisungen zur Tabellenbearbeitung anzeigen",
     "editInstructionsText": "Fügen Sie Werte zeilenweise hinzu. Tab speichert und bewegt nach rechts. Eingabe speichert und bewegt nach unten. Eingabe in der letzten Zeile fügt eine neue Zeile hinzu. Escape bricht ab.",
     "editToolbar": "Aktionen zur Tabellenbearbeitung",
