@@ -35,6 +35,7 @@ const mocks = vi.hoisted(() => ({
   cancelEditing: vi.fn(),
   setError: vi.fn(),
   setEditView: vi.fn(),
+  setEditedContent: vi.fn(),
   requestSave: vi.fn(),
   rationaleOpen: false,
   rationaleBusy: false,
@@ -65,20 +66,29 @@ const mocks = vi.hoisted(() => ({
 vi.mock("../../components/manifest-editor", () => ({
   ManifestEditor: ({
     value,
+    onChange,
     readOnly,
     showResourceExplorer,
   }: {
     value: string;
+    onChange?: (value: string) => void;
     readOnly?: boolean;
     showResourceExplorer?: boolean;
   }) => (
-    <pre
-      data-testid="mock-monaco-model"
-      data-read-only={String(readOnly)}
-      data-resource-explorer={String(showResourceExplorer)}
-    >
-      {value}
-    </pre>
+    <div>
+      <pre
+        data-testid="mock-monaco-model"
+        data-read-only={String(readOnly)}
+        data-resource-explorer={String(showResourceExplorer)}
+      >
+        {value}
+      </pre>
+      {onChange && (
+        <button type="button" onClick={() => onChange(`${value}\n# changed`)}>
+          Change code
+        </button>
+      )}
+    </div>
   ),
 }));
 
@@ -123,11 +133,7 @@ vi.mock("../../lib/cfs", () => ({
     },
   },
   hasCfsNamespace: (key: string) =>
-    key === "deploy"
-      ? mocks.deployNamespace
-      : key === "revert"
-        ? mocks.revertNamespace
-        : true,
+    key === "deploy" ? mocks.deployNamespace : key === "revert" ? mocks.revertNamespace : true,
   safeCfs: (key: string) => {
     if (key === "deploy") {
       return mocks.deployNamespace && mocks.deployCapability
@@ -200,7 +206,7 @@ vi.mock("./state/useManifestEditorState", () => ({
     },
     cancelEditing: mocks.cancelEditing,
     editedContent: mocks.editedContent,
-    setEditedContent: vi.fn(),
+    setEditedContent: mocks.setEditedContent,
     savedContent: sampleYaml,
     setSavedContent: vi.fn(),
     editView: mocks.editView,
@@ -354,9 +360,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(footer.querySelectorAll(".cfs-footer-secondary-label").length).toBeGreaterThan(0);
     expect(footer.querySelector(".cfs-footer-actions")).toBeInTheDocument();
     expect(footer.querySelector(".cfs-footer-action-group")).toBeInTheDocument();
-    expect(within(footer).getByRole("link", { name: "Audit Pack" })).toHaveClass(
-      "text-xs",
-    );
+    expect(within(footer).getByRole("link", { name: "Audit Pack" })).toHaveClass("text-sm");
     for (const action of [
       "Close baseline",
       "Delete Baseline",
@@ -405,11 +409,7 @@ describe("ManifestDetailPage Loop viewer", () => {
 
     expect(screen.queryByRole("heading", { name: "Compliance Status" })).not.toBeInTheDocument();
     await user.click(screen.getByRole("button", { name: "Check compliance" }));
-    const dialogContent = await screen.findByTestId(
-      "compliance-dialog",
-      {},
-      { timeout: 10_000 },
-    );
+    const dialogContent = await screen.findByTestId("compliance-dialog", {}, { timeout: 10_000 });
     const dialog = dialogContent.closest('[role="dialog"]');
     if (!(dialog instanceof HTMLElement)) throw new Error("Compliance dialog surface not found");
     expect(dialog).toHaveStyle({
@@ -419,9 +419,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(within(dialogContent).getAllByText("Matches desired value")).toHaveLength(2);
 
     await user.keyboard("{Escape}");
-    await waitFor(() =>
-      expect(screen.queryByTestId("compliance-dialog")).not.toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.queryByTestId("compliance-dialog")).not.toBeInTheDocument());
   }, 15_000);
 
   it("consumes the compliance deep link so save refreshes do not reopen the report", async () => {
@@ -431,9 +429,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     await screen.findByTestId("compliance-dialog");
     await waitFor(() => expect(screen.getByLabelText("current-search")).toHaveTextContent(""));
     await user.click(screen.getByRole("button", { name: "Close compliance" }));
-    await waitFor(() =>
-      expect(screen.queryByTestId("compliance-dialog")).not.toBeInTheDocument(),
-    );
+    await waitFor(() => expect(screen.queryByTestId("compliance-dialog")).not.toBeInTheDocument());
 
     mocks.editing = true;
     mocks.rationaleOpen = true;
@@ -508,9 +504,12 @@ describe("ManifestDetailPage Loop viewer", () => {
 
     rerender(editorShell());
     expect(screen.getByRole("region", { name: "Visual baseline settings" })).toBeInTheDocument();
-    expect(screen.getByRole("toolbar", { name: "Spreadsheet editing actions" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Add setting" }).length).toBeGreaterThanOrEqual(3);
-    expect(screen.getByRole("button", { name: /Edit Setting Name/ })).toBeInTheDocument();
+    expect(
+      screen.getByRole("toolbar", { name: "Spreadsheet editing actions" }),
+    ).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Add setting" })).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "Add settings" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: /Edit Setting Name/ })).toHaveFocus();
     expect(mocks.activeFormat).toBe("yaml");
     expect(mocks.formatCache.current).toEqual({
       yaml: sampleYaml,
@@ -728,11 +727,7 @@ describe("ManifestDetailPage Loop viewer", () => {
 
     expect(mocks.beginEditing).toHaveBeenCalledTimes(1);
     await user.click(screen.getByRole("button", { name: "Check compliance" }));
-    const dialogContent = await screen.findByTestId(
-      "compliance-dialog",
-      {},
-      { timeout: 10_000 },
-    );
+    const dialogContent = await screen.findByTestId("compliance-dialog", {}, { timeout: 10_000 });
     expect(within(dialogContent).getAllByText("Matches desired value")).toHaveLength(2);
   }, 15_000);
 
@@ -773,18 +768,14 @@ describe("ManifestDetailPage Loop viewer", () => {
   it("does not report Undo success when the canonical source cannot be reloaded", async () => {
     const user = userEvent.setup();
     mocks.hasUndoableHistory.mockResolvedValue(true);
-    mocks.reloadCanonicalSource.mockRejectedValueOnce(
-      new Error("canonical reload failed"),
-    );
+    mocks.reloadCanonicalSource.mockRejectedValueOnce(new Error("canonical reload failed"));
     renderEditor();
 
     const undo = screen.getByRole("button", { name: "Undo" });
     await waitFor(() => expect(undo).toBeEnabled());
     await user.click(undo);
 
-    await waitFor(() =>
-      expect(mocks.setError).toHaveBeenCalledWith("canonical reload failed"),
-    );
+    await waitFor(() => expect(mocks.setError).toHaveBeenCalledWith("canonical reload failed"));
     expect(mocks.fetchData).toHaveBeenCalledTimes(1);
     expect(mocks.reloadCanonicalSource).toHaveBeenCalledTimes(1);
     expect(mocks.fetchData.mock.invocationCallOrder[0]).toBeLessThan(
@@ -792,6 +783,23 @@ describe("ManifestDetailPage Loop viewer", () => {
     );
     expect(sessionStorage.getItem("configforge-flash")).toBeNull();
     expect(undo).toBeDisabled();
+  });
+
+  it("uses the footer Undo for unsaved Code edits while editing", async () => {
+    const user = userEvent.setup();
+    mocks.editing = true;
+    mocks.editView = "editor";
+    renderEditor();
+
+    const undo = screen.getByRole("button", { name: "Undo" });
+    expect(undo).toBeDisabled();
+    await user.click(screen.getByRole("button", { name: "Change code" }));
+    await waitFor(() => expect(undo).toBeEnabled());
+    expect(undo).toHaveAttribute("title", "Undo the most recent edit");
+
+    await user.click(undo);
+    expect(mocks.setEditedContent).toHaveBeenLastCalledWith(sampleYaml);
+    expect(mocks.undoLatestManifestChange).not.toHaveBeenCalled();
   });
 
   it("uses the localized unavailable message when history changes during Undo", async () => {
@@ -863,9 +871,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     mocks.editView = "visual";
     renderEditor();
 
-    await user.click(
-      screen.getByRole("button", { name: "Edit Applied value for PasswordPolicy" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Edit Applied value for PasswordPolicy" }));
     const editor = screen.getByRole("textbox", {
       name: "Edit Applied value for PasswordPolicy",
     });
@@ -898,9 +904,7 @@ describe("ManifestDetailPage Loop viewer", () => {
 `;
     renderEditor();
 
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "Complete 3 required cells before saving.",
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent("Complete 3 required cells before saving.");
     expect(
       within(screen.getByTestId("manifest-detail-footer")).getByRole("button", {
         name: "Save",
@@ -914,8 +918,9 @@ describe("ManifestDetailPage Loop viewer", () => {
     renderEditor();
 
     expect(screen.getByRole("region", { name: "Visual baseline settings" })).toBeInTheDocument();
-    expect(screen.getAllByRole("button", { name: "Add setting" }).length).toBeGreaterThanOrEqual(3);
-    expect(screen.getByRole("button", { name: /Edit Setting Name/ })).toBeInTheDocument();
+    expect(screen.getAllByRole("button", { name: "Add setting" })).toHaveLength(2);
+    expect(screen.getByRole("button", { name: "Add settings" })).toBeInTheDocument();
+    expect(screen.getByRole("textbox", { name: /Edit Setting Name/ })).toHaveFocus();
     expect(screen.getByRole("button", { name: "Code" })).toHaveAttribute("aria-pressed", "false");
     expect(screen.getByRole("button", { name: "Visual" })).toHaveAttribute("aria-pressed", "true");
   });

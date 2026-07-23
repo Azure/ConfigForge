@@ -3,8 +3,8 @@
 
 import React from "react";
 import { useTranslation } from "react-i18next";
-import { Button, MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components";
-import { ArrowUndoRegular, CodeRegular, TableRegular } from "@fluentui/react-icons";
+import { MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components";
+import { CodeRegular, TableRegular } from "@fluentui/react-icons";
 import { ManifestEditor } from "../../../components/manifest-editor";
 import { FORMAT_TABS, EDITOR_LANGUAGE } from "../helpers";
 import { dumpVisualManifest } from "../visual-viewer";
@@ -21,6 +21,7 @@ export interface ManifestContentProps {
   viewerMode: ManifestViewerMode;
   onViewerModeChange: (mode: ManifestViewerMode) => void;
   onVisualDraftValidityChange?: (valid: boolean) => void;
+  onEditUndoStateChange?: (canUndo: boolean, undo: (() => void) | null) => void;
 }
 
 export const ManifestContent = React.memo(function ManifestContent({
@@ -31,6 +32,7 @@ export const ManifestContent = React.memo(function ManifestContent({
   viewerMode,
   onViewerModeChange,
   onVisualDraftValidityChange,
+  onEditUndoStateChange,
 }: ManifestContentProps) {
   const {
     editing,
@@ -83,7 +85,7 @@ export const ManifestContent = React.memo(function ManifestContent({
     setEditedContent(next);
   };
 
-  const handleUndo = () => {
+  const handleUndo = React.useCallback(() => {
     const previous = undoStack.at(-1);
     if (previous === undefined) return;
     setUndoStack((stack) => stack.slice(0, -1));
@@ -91,7 +93,13 @@ export const ManifestContent = React.memo(function ManifestContent({
     contentRef.current = previous;
     formatCache.current[activeFormat] = previous;
     setEditedContent(previous);
-  };
+  }, [activeFormat, formatCache, setEditedContent, undoStack]);
+
+  React.useEffect(() => {
+    onEditUndoStateChange?.(undoStack.length > 0, undoStack.length > 0 ? handleUndo : null);
+  }, [handleUndo, onEditUndoStateChange, undoStack.length]);
+
+  React.useEffect(() => () => onEditUndoStateChange?.(false, null), [onEditUndoStateChange]);
 
   const switchToVisualEdit = () => {
     if (activeFormat === "json") {
@@ -100,9 +108,7 @@ export const ManifestContent = React.memo(function ManifestContent({
         const yamlSource = dumpVisualManifest(JSON.parse(editedContent));
         formatCache.current.yaml = yamlSource;
         contentRef.current = yamlSource;
-        setUndoStack(
-          previousYaml && previousYaml !== yamlSource ? [previousYaml] : [],
-        );
+        setUndoStack(previousYaml && previousYaml !== yamlSource ? [previousYaml] : []);
         lastCodeEditAtRef.current = 0;
         setEditedContent(yamlSource);
         setActiveFormat("yaml");
@@ -121,7 +127,7 @@ export const ManifestContent = React.memo(function ManifestContent({
 
   const visualActive = editing ? editView === "visual" : viewerMode === "visual";
   const codeActive = !visualActive;
-  const visualSource = editing ? editedContent : formatCache.current.yaml ?? "";
+  const visualSource = editing ? editedContent : (formatCache.current.yaml ?? "");
 
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
@@ -146,57 +152,43 @@ export const ManifestContent = React.memo(function ManifestContent({
         )}
 
         <div className="mt-3 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <div
-              role="group"
-              aria-label={t(editing ? "viewer.editModeLabel" : "viewer.modeLabel")}
-              className="inline-flex rounded-md border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-950"
+          <div
+            role="group"
+            aria-label={t(editing ? "viewer.editModeLabel" : "viewer.modeLabel")}
+            className="inline-flex rounded-md border border-slate-200 bg-slate-50 p-0.5 dark:border-slate-700 dark:bg-slate-950"
+          >
+            <button
+              type="button"
+              onClick={() => {
+                if (editing) setEditView("editor");
+                else onViewerModeChange("code");
+              }}
+              aria-pressed={codeActive}
+              className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
+                codeActive
+                  ? "bg-white text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"
+                  : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
+              }`}
             >
-              <button
-                type="button"
-                onClick={() => {
-                  if (editing) setEditView("editor");
-                  else onViewerModeChange("code");
-                }}
-                aria-pressed={codeActive}
-                className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
-                  codeActive
-                    ? "bg-white text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"
-                    : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
-                }`}
-              >
-                <CodeRegular className="h-4 w-4" aria-hidden="true" />
-                {t("viewer.code")}
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (editing) switchToVisualEdit();
-                  else onViewerModeChange("visual");
-                }}
-                aria-pressed={visualActive}
-                className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
-                  visualActive
-                    ? "bg-white text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"
-                    : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
-                }`}
-              >
-                <TableRegular className="h-4 w-4" aria-hidden="true" />
-                {t("viewer.visual")}
-              </button>
-            </div>
-            {editing && (
-              <Button
-                appearance="subtle"
-                size="small"
-                icon={<ArrowUndoRegular />}
-                onClick={handleUndo}
-                disabled={undoStack.length === 0}
-                title={t("actions.undoEditTitle")}
-              >
-                {t("actions.undoEdit")}
-              </Button>
-            )}
+              <CodeRegular className="h-4 w-4" aria-hidden="true" />
+              {t("viewer.code")}
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                if (editing) switchToVisualEdit();
+                else onViewerModeChange("visual");
+              }}
+              aria-pressed={visualActive}
+              className={`inline-flex items-center gap-1.5 rounded px-3 py-1.5 text-sm font-medium outline-none transition-colors focus-visible:ring-2 focus-visible:ring-blue-600 ${
+                visualActive
+                  ? "bg-white text-blue-700 shadow-sm dark:bg-slate-800 dark:text-blue-300"
+                  : "text-slate-600 hover:text-slate-950 dark:text-slate-400 dark:hover:text-white"
+              }`}
+            >
+              <TableRegular className="h-4 w-4" aria-hidden="true" />
+              {t("viewer.visual")}
+            </button>
           </div>
 
           {codeActive && (
@@ -248,9 +240,7 @@ export const ManifestContent = React.memo(function ManifestContent({
           editable={editing}
           platform={editorPlatform}
           onSourceChange={editing ? handleVisualSourceChange : undefined}
-          onDraftValidityChange={
-            editing ? onVisualDraftValidityChange : undefined
-          }
+          onDraftValidityChange={editing ? onVisualDraftValidityChange : undefined}
         />
       ) : (
         <div className="relative h-[min(62vh,48rem)] min-h-[32rem] p-4">
@@ -261,11 +251,7 @@ export const ManifestContent = React.memo(function ManifestContent({
           )}
           <ManifestEditor
             value={editing ? editedContent : currentDisplayContent}
-            onChange={
-              editing && isEditable
-                ? (next) => applyEditedContent(next, false)
-                : undefined
-            }
+            onChange={editing && isEditable ? (next) => applyEditedContent(next, false) : undefined}
             readOnly={isReadOnly}
             readOnlyMessage={t("content.readOnlyHint")}
             language={EDITOR_LANGUAGE[activeFormat]}

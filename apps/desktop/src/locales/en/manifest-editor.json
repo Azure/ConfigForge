@@ -231,12 +231,57 @@
     "visualRegionLabel": "Visual baseline settings"
   },
   "visual": {
+    "addArrayItem": "Add another {{field}} value for {{name}}",
     "addRow": "Add row",
     "addSetting": "Add setting",
+    "addSettings": "Add settings",
+    "addSettingsPane": {
+      "addSelected": "Add settings",
+      "allOperatingSystems": "All operating systems",
+      "allSettingTypes": "All setting types",
+      "cancel": "Cancel",
+      "close": "Close Add settings",
+      "description": "Search and select one or more setting templates. Results prioritize this baseline's operating system, then setting type and name.",
+      "descriptions": {
+        "accountPolicy": "Configure password, lockout, and other local account policy values.",
+        "auditPolicy": "Configure Windows audit subcategories and their desired state.",
+        "csp": "Author a Windows Policy CSP setting by OMA-URI path and typed value.",
+        "file": "Create or validate a file and its content on Windows or Linux.",
+        "fileLine": "Find, replace, or append a line in a text file.",
+        "filePermission": "Configure Linux file ownership, group, and permission mode.",
+        "kernelModule": "Require a Linux kernel module to be loaded or unloaded.",
+        "linuxUser": "Configure a Linux user account setting.",
+        "registry": "Configure a Windows Registry key, value name, type, and desired value.",
+        "userRights": "Assign one or more principals to a Windows user right."
+      },
+      "noMatches": "No setting templates match the current search and filters.",
+      "operatingSystem": "OS",
+      "osFilter": "Operating system",
+      "searchLabel": "Search setting templates",
+      "searchPlaceholder": "Search Registry, Audit Policy, User Rights, and more",
+      "select": "Select",
+      "selectSetting": "Select {{name}}",
+      "selectedCount_one": "{{count}} setting selected",
+      "selectedCount_other": "{{count}} settings selected",
+      "settingDescription": "Description",
+      "settingName": "Setting Name",
+      "settingType": "Setting Type",
+      "tableLabel": "Available setting templates",
+      "title": "Add settings",
+      "typeFilter": "Setting type"
+    },
     "cannotEditViewOnly": "Cannot edit in view-only mode",
     "deleteSelected": "Delete {{count}} selected",
+    "duplicateDialog": {
+      "close": "Close",
+      "description": "{{settings}} already has an unfinished setting in this baseline and cannot be added again. Existing settings were not changed.",
+      "title": "Setting already exists"
+    },
+    "editArrayItem": "Edit {{field}} value {{index}} for {{name}}",
     "editCell": "Edit {{field}} for {{name}}",
     "editHint": "Click any cell to edit it. Press Enter to apply; in the final cell, Enter adds another row. Press Escape to cancel.",
+    "editInstructions": "Show spreadsheet editing instructions",
+    "editInstructionsText": "Add values row by row. Tab saves and moves right. Enter saves and moves down. Enter in the final row adds another row. Press Escape to cancel.",
     "editToolbar": "Spreadsheet editing actions",
     "errors": {
       "boolean": "Enter true or false.",
@@ -253,12 +298,16 @@
       "wholeNumber": "Enter a whole number."
     },
     "fixValidationBeforeSave": "Complete or correct the highlighted cells before saving.",
+    "noSearchMatches": "No settings match the current search.",
     "requiredCells_one": "Complete {{count}} required cell before saving.",
     "requiredCells_other": "Complete {{count}} required cells before saving.",
     "selectAllInCategory": "Select all {{category}} settings",
     "selectRow": "Select {{name}}",
     "selectedCount_one": "{{count}} setting selected",
     "selectedCount_other": "{{count}} settings selected",
-    "spreadsheetTitle": "Edit settings in the table"
+    "searchLabel": "Search baseline settings",
+    "searchPlaceholder": "Search setting names, types, paths, or values",
+    "spreadsheetTitle": "Edit settings in the table",
+    "unselectAll": "Unselect All"
   }
 }

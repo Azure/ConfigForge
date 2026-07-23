@@ -49,6 +49,7 @@ export interface ManifestDetailFooterProps {
   deleting: boolean;
   undoing: boolean;
   undoAvailable: boolean;
+  undoEditing: boolean;
   rationaleBusy: boolean;
   saveBlocked: boolean;
   onClose: () => void;
@@ -62,7 +63,7 @@ export interface ManifestDetailFooterProps {
 }
 
 const footerLinkClass =
-  "cfs-footer-action cfs-footer-link inline-flex h-8 shrink-0 items-center justify-center gap-2 rounded px-3 text-xs font-medium text-slate-700 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-slate-300 dark:hover:bg-slate-800";
+  "cfs-footer-action cfs-footer-link inline-flex h-8 shrink-0 items-center justify-center gap-2 rounded px-3 text-sm font-medium text-slate-700 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-slate-300 dark:hover:bg-slate-800";
 
 export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   manifestName,
@@ -76,6 +77,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   deleting,
   undoing,
   undoAvailable,
+  undoEditing,
   rationaleBusy,
   saveBlocked,
   onClose,
@@ -98,13 +100,13 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
     handleDeploy,
     handleRevert,
   } = deploy;
-  const busy = deleting || undoing || deploying || reverting || saving || editing;
+  const operationBusy = deleting || undoing || deploying || reverting || saving || rationaleBusy;
+  const busy = operationBusy || editing;
   const deployApi = hasCfsNamespace("deploy") ? safeCfs("deploy") : undefined;
   const revertApi = hasCfsNamespace("revert") ? safeCfs("revert") : undefined;
   const canDeploy = HAS_DEPLOY && typeof deployApi?.run === "function";
   const canRevert = HAS_DEPLOY && typeof revertApi?.apply === "function";
-  const canEdit =
-    viewerMode === "visual" ? formatCache.current.yaml !== undefined : isEditable;
+  const canEdit = viewerMode === "visual" ? formatCache.current.yaml !== undefined : isEditable;
   const disabledLinkClass = editing ? "pointer-events-none opacity-50" : "";
 
   return (
@@ -142,9 +144,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               title={t("actions.deleteBaseline")}
               className="cfs-footer-action shrink-0 text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
             >
-              <span className="cfs-footer-secondary-label">
-                {t("actions.deleteBaseline")}
-              </span>
+              <span className="cfs-footer-secondary-label">{t("actions.deleteBaseline")}</span>
             </Button>
 
             <div
@@ -157,10 +157,10 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               size="small"
               icon={undoing ? <Spinner size="tiny" /> : <ArrowUndoRegular />}
               onClick={onUndo}
-              disabled={busy || !undoAvailable}
+              disabled={operationBusy || !undoAvailable}
               title={
                 undoAvailable
-                  ? t("actions.undoTitle")
+                  ? t(undoEditing ? "actions.undoEditTitle" : "actions.undoTitle")
                   : t("actions.undoUnavailable")
               }
               aria-label={t("actions.undo")}
@@ -212,9 +212,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               title={t("actions.checkCompliance")}
               className="cfs-footer-action shrink-0"
             >
-              <span className="cfs-footer-secondary-label">
-                {t("actions.checkCompliance")}
-              </span>
+              <span className="cfs-footer-secondary-label">{t("actions.checkCompliance")}</span>
             </Button>
 
             <Button
@@ -262,10 +260,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
                   className="cfs-footer-action shrink-0"
                 >
                   <span className="cfs-footer-secondary-label">{t("actions.export")}</span>
-                  <ChevronDownRegular
-                    className="cfs-footer-chevron ml-1"
-                    aria-hidden="true"
-                  />
+                  <ChevronDownRegular className="cfs-footer-chevron ml-1" aria-hidden="true" />
                 </Button>
               </MenuTrigger>
               <MenuPopover>
@@ -312,10 +307,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
                         t("common:features.deploy")
                       )}
                     </span>
-                    <ChevronDownRegular
-                      className="cfs-footer-chevron ml-1"
-                      aria-hidden="true"
-                    />
+                    <ChevronDownRegular className="cfs-footer-chevron ml-1" aria-hidden="true" />
                   </Button>
                 </MenuTrigger>
                 <MenuPopover>
