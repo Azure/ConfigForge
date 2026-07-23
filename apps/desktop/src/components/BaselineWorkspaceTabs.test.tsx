@@ -46,11 +46,21 @@ describe('BaselineWorkspaceTabs', () => {
   it('opens a directly visited baseline and keeps All Baselines constant', async () => {
     renderAt('/manifests/alpha');
 
-    expect(screen.getByRole('tab', { name: 'All Baselines' })).toBeInTheDocument();
+    const allBaselines = screen.getByRole('tab', { name: 'All Baselines' });
+    expect(allBaselines).toHaveClass(
+      'rounded-full',
+      'bg-white',
+      'hover:bg-[#E4E9F0]',
+    );
     const alpha = await screen.findByRole('tab', { name: 'alpha' });
     expect(alpha).toHaveAttribute(
       'aria-selected',
       'true',
+    );
+    expect(alpha.parentElement).toHaveClass(
+      'rounded-full',
+      'bg-blue-600',
+      'hover:bg-blue-700',
     );
     await waitFor(() => {
       expect(alpha.querySelector('[data-platform="windows"]')).toBeInTheDocument();
@@ -59,6 +69,28 @@ describe('BaselineWorkspaceTabs', () => {
       expect(JSON.parse(localStorage.getItem(BASELINE_WORKSPACE_STORAGE_KEY) ?? '[]')).toEqual([
         'alpha',
       ]),
+    );
+
+    fireEvent.click(allBaselines);
+    expect(screen.getByLabelText('current-path')).toHaveTextContent('/manifests');
+  });
+
+  it('renders selected and unselected tabs as pill states', async () => {
+    localStorage.setItem(BASELINE_WORKSPACE_STORAGE_KEY, JSON.stringify(['alpha']));
+    renderAt('/manifests');
+    const allBaselines = screen.getByRole('tab', { name: 'All Baselines' });
+    const alpha = await screen.findByRole('tab', { name: 'alpha' });
+
+    expect(allBaselines).toHaveAttribute('aria-selected', 'true');
+    expect(allBaselines).toHaveClass(
+      'rounded-full',
+      'bg-blue-600',
+      'hover:bg-blue-700',
+    );
+    expect(alpha.parentElement).toHaveClass(
+      'rounded-full',
+      'bg-white',
+      'hover:bg-[#E4E9F0]',
     );
   });
 
