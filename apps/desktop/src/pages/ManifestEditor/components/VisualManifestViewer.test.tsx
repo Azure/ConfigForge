@@ -184,6 +184,77 @@ describe("VisualManifestViewer", () => {
     ).not.toBeInTheDocument();
   });
 
+  it("renders Test enum and range rules as stacked technical rows in view and edit modes", () => {
+    const schemaSource = `resources:
+  - name: Allowed mode
+    type: Microsoft.OSConfig/Test
+    properties:
+      schema:
+        enum:
+          - 0
+          - 1
+          - 2
+          - 99
+          - 100
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKLM:\\Software\\Example
+          valueName: Mode
+          valueType: Dword
+          value: 99
+  - name: Timeout
+    type: Microsoft.OSConfig/Test
+    properties:
+      schema:
+        minimum: 2000
+        maximum: 5000
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKLM:\\Software\\Example
+          valueName: Timeout
+          valueType: Dword
+          value: 3000
+  - name: Complex pattern
+    type: Microsoft.OSConfig/Test
+    properties:
+      schema:
+        pattern: (a)
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKLM:\\Software\\Example
+          valueName: ComplexPattern
+          valueType: String
+          value: a
+`;
+    const view = renderViewer(schemaSource);
+
+    const [enumRules, rangeRules] = screen.getAllByTestId("visual-schema-rules");
+    expect(within(enumRules).getByText("enum")).toBeInTheDocument();
+    expect(
+      within(enumRules)
+        .getAllByText(/^(0|1|2|99|100)$/)
+        .map((element) => element.textContent),
+    ).toEqual(["0", "1", "2", "99", "100"]);
+    expect(within(rangeRules).getByText("minimum")).toBeInTheDocument();
+    expect(within(rangeRules).getByText("2000")).toBeInTheDocument();
+    expect(within(rangeRules).getByText("maximum")).toBeInTheDocument();
+    expect(within(rangeRules).getByText("5000")).toBeInTheDocument();
+    expect(screen.getByText("Reference only")).toHaveAttribute(
+      "title",
+      "Visual editing displays this rule but does not enforce it.",
+    );
+
+    view.unmount();
+    renderEditable(schemaSource);
+    const editButton = screen.getByRole("button", {
+      name: "Edit Expected value for Allowed mode",
+    });
+    expect(within(editButton).getByTestId("visual-schema-rules")).toBeInTheDocument();
+  });
+
   it("displays QWord integers above Number.MAX_SAFE_INTEGER exactly", () => {
     render(
       <FluentProvider theme={webLightTheme}>
@@ -622,11 +693,7 @@ describe("VisualManifestViewer", () => {
       screen.queryByText("BUILTIN\\Administrators, CONTOSO\\Security Admins"),
     ).not.toBeInTheDocument();
     for (const item of screen.getAllByText("BUILTIN\\Administrators")) {
-      expect(item).toHaveClass(
-        "whitespace-pre-wrap",
-        "break-words",
-        "[overflow-wrap:anywhere]",
-      );
+      expect(item).toHaveClass("whitespace-pre-wrap", "break-words", "[overflow-wrap:anywhere]");
     }
 
     await user.click(
@@ -742,5 +809,62 @@ describe("VisualManifestViewer", () => {
     expect(search).toHaveFocus();
     expect(fireEvent.keyDown(search, { key: "Tab" })).toBe(true);
     expect(fireEvent.keyDown(search, { key: "Enter" })).toBe(true);
+  });
+
+  it("rejects governed values outside the displayed schema and accepts valid numeric edits", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const onValidityChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: Allowed mode
+    type: Microsoft.OSConfig/Test
+    properties:
+      schema:
+        enum:
+          - 1
+          - 2
+          - 99
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKLM:\\Software\\Example
+          valueName: Mode
+          valueType: Dword
+          value: '1'
+`,
+      onChange,
+      onValidityChange,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Edit Applied value for Allowed mode" }));
+    const input = screen.getByRole("textbox", { name: "Edit Applied value for Allowed mode" });
+    await user.clear(input);
+    await user.type(input, "3");
+
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      "Enter a value that satisfies the rules shown under Expected value.",
+    );
+    expect(input).toHaveAttribute("aria-invalid", "true");
+    expect(onValidityChange).toHaveBeenLastCalledWith(false);
+    await user.keyboard("{Enter}");
+    expect(onChange).not.toHaveBeenCalled();
+
+    await user.clear(input);
+    await user.type(input, "99");
+    expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+    expect(onValidityChange).toHaveBeenLastCalledWith(true);
+    await user.keyboard("{Tab}");
+
+    expect(onChange).toHaveBeenCalled();
+    const emittedSources = onChange.mock.calls.map(([nextSource]) => nextSource);
+    expect(new Set(emittedSources).size).toBe(1);
+    const document = parseVisualManifest(emittedSources.at(-1) ?? "") as {
+      resources: Array<{
+        properties: { resource: { properties: { value: unknown } } };
+      }>;
+    };
+    expect(document.resources).toHaveLength(1);
+    expect(document.resources[0].properties.resource.properties.value).toBe(99);
   });
 });

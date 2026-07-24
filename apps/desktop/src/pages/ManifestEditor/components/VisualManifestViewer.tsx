@@ -36,8 +36,11 @@ import {
   updateVisualArrayItemSource,
   updateVisualCellSource,
   validateVisualSettings,
+  visualCellSchemaError,
   visualResourceTemplatesForPlatform,
+  visualSchemaConstraintRows,
   type VisualEditError,
+  type VisualSchemaConstraintRow,
   type VisualSetting,
   type VisualSettingGroup,
   type VisualSortState,
@@ -100,6 +103,63 @@ function isVisualCellEditable(setting: VisualSetting, column: string): boolean {
 
 function isStructuredValue(value: unknown): boolean {
   return value !== null && typeof value === "object";
+}
+
+function formatVisualSchemaValue(value: unknown): string {
+  if (typeof value === "string") return JSON.stringify(value);
+  return formatVisualValue(value);
+}
+
+function VisualSchemaRuleList({
+  displayOnlyDescription,
+  displayOnlyLabel,
+  id,
+  rows,
+}: {
+  displayOnlyDescription: string;
+  displayOnlyLabel: string;
+  id?: string;
+  rows: readonly VisualSchemaConstraintRow[];
+}) {
+  return (
+    <span
+      id={id}
+      data-testid="visual-schema-rules"
+      className="block min-w-0 divide-y divide-slate-200/80 dark:divide-slate-700/80"
+    >
+      {rows.map((row, rowIndex) => (
+        <span
+          key={`${row.keyword}:${rowIndex}`}
+          data-schema-keyword={row.keyword}
+          className="grid min-w-0 grid-cols-[minmax(5rem,max-content)_minmax(0,1fr)] gap-x-3 py-1.5 first:pt-0 last:pb-0"
+        >
+          <span className="min-w-0">
+            <code className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              {row.keyword}
+            </code>
+            {row.enforced === false && (
+              <span
+                title={displayOnlyDescription}
+                className="mt-0.5 block text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+              >
+                {displayOnlyLabel}
+              </span>
+            )}
+          </span>
+          <span className="min-w-0 space-y-0.5">
+            {row.values.map((value, valueIndex) => (
+              <code
+                key={`${row.keyword}:${valueIndex}`}
+                className="block whitespace-pre-wrap break-words text-xs text-slate-800 [overflow-wrap:anywhere] dark:text-slate-200"
+              >
+                {formatVisualSchemaValue(value)}
+              </code>
+            ))}
+          </span>
+        </span>
+      ))}
+    </span>
+  );
 }
 
 function visualColumnMinimumWidth(column: string): number {
@@ -338,6 +398,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   }, [allSettings, autoFocusFirstCell, canEdit]);
 
   const errorText = (error: VisualEditError): string => t(`visual.errors.${error}`);
+  const activeEditError = draftError ?? cellError;
 
   const beginEdit = (setting: VisualSetting, column: string, arrayIndex?: number) => {
     navigationRequestRef.current += 1;
@@ -402,17 +463,31 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   const updateDraft = (setting: VisualSetting, column: string, value: string) => {
     setDraft(value);
     const result = parseVisualCellInput(value, valueForColumn(setting, column), setting, column);
-    setDraftError(result.ok ? null : result.error);
+    const error = result.ok ? visualCellSchemaError(setting, column, result.value) : result.error;
+    setDraftError(error);
     setCellError(null);
-    onDraftValidityChange?.(result.ok);
+    onDraftValidityChange?.(error === null);
   };
 
-  const updateArrayDraft = (existing: unknown, value: string) => {
+  const updateArrayDraft = (
+    setting: VisualSetting,
+    column: string,
+    index: number,
+    existing: unknown,
+    value: string,
+  ) => {
     setDraft(value);
-    const result = parseVisualArrayItemInput(value, existing);
-    setDraftError(result.ok ? null : result.error);
+    const result = parseVisualArrayItemInput(value, existing, setting, column);
+    let error: VisualEditError | null = result.ok ? null : result.error;
+    const current = valueForColumn(setting, column);
+    if (result.ok && Array.isArray(current)) {
+      const next = [...current];
+      next[index] = result.value;
+      error = visualCellSchemaError(setting, column, next);
+    }
+    setDraftError(error);
     setCellError(null);
-    onDraftValidityChange?.(result.ok);
+    onDraftValidityChange?.(error === null);
   };
 
   const commitArrayItem = (
@@ -1053,13 +1128,28 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                               const requiredMissing = validationIssueKeys.has(
                                 `${setting.id}:${column}`,
                               );
-                              const arrayValue = Array.isArray(rawValue) ? rawValue : null;
+                              const schemaRows =
+                                column === DESIRED_VALUE_COLUMN &&
+                                setting.validationSchema !== undefined
+                                  ? visualSchemaConstraintRows(setting.validationSchema)
+                                  : [];
+                              const hasSchemaRules = schemaRows.length > 0;
+                              const schemaRulesId = hasSchemaRules
+                                ? `visual-schema-rules-${groupId}-${setting.id.replace(
+                                    /[^a-zA-Z0-9_-]/g,
+                                    "-",
+                                  )}`
+                                : undefined;
+                              const arrayValue =
+                                !hasSchemaRules && Array.isArray(rawValue) ? rawValue : null;
 
                               return (
                                 <td
                                   key={column}
                                   title={
-                                    !arrayValue && !isEditing && formatted ? formatted : undefined
+                                    !arrayValue && !hasSchemaRules && !isEditing && formatted
+                                      ? formatted
+                                      : undefined
                                   }
                                   className={`group relative border-r border-slate-100 p-0 text-slate-700 last:border-r-0 dark:border-slate-700/80 dark:text-slate-300 ${
                                     column === SETTING_NAME_COLUMN
@@ -1099,9 +1189,15 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                                   )}
                                                   value={draft}
                                                   aria-label={itemLabel}
-                                                  aria-invalid={cellError ? true : undefined}
+                                                  aria-invalid={activeEditError ? true : undefined}
                                                   onChange={(event) =>
-                                                    updateArrayDraft(item, event.target.value)
+                                                    updateArrayDraft(
+                                                      setting,
+                                                      column,
+                                                      arrayIndex,
+                                                      item,
+                                                      event.target.value,
+                                                    )
                                                   }
                                                   onBlur={(event) =>
                                                     commitArrayItem(
@@ -1132,9 +1228,15 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                                   type="text"
                                                   value={draft}
                                                   aria-label={itemLabel}
-                                                  aria-invalid={cellError ? true : undefined}
+                                                  aria-invalid={activeEditError ? true : undefined}
                                                   onChange={(event) =>
-                                                    updateArrayDraft(item, event.target.value)
+                                                    updateArrayDraft(
+                                                      setting,
+                                                      column,
+                                                      arrayIndex,
+                                                      item,
+                                                      event.target.value,
+                                                    )
                                                   }
                                                   onBlur={(event) =>
                                                     commitArrayItem(
@@ -1156,12 +1258,12 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                                   className={editorClass}
                                                 />
                                               )}
-                                              {cellError && (
+                                              {activeEditError && (
                                                 <p
                                                   role="alert"
                                                   className="mt-1 text-xs text-red-700 dark:text-red-300"
                                                 >
-                                                  {errorText(cellError)}
+                                                  {errorText(activeEditError)}
                                                 </p>
                                               )}
                                             </div>
@@ -1222,7 +1324,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                             field: cellLabel,
                                             name: setting.settingName || t("viewer.unnamedSetting"),
                                           })}
-                                          aria-invalid={cellError ? true : undefined}
+                                          aria-invalid={activeEditError ? true : undefined}
                                           onChange={(event) =>
                                             updateDraft(setting, column, event.target.value)
                                           }
@@ -1247,7 +1349,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                             field: cellLabel,
                                             name: setting.settingName || t("viewer.unnamedSetting"),
                                           })}
-                                          aria-invalid={cellError ? true : undefined}
+                                          aria-invalid={activeEditError ? true : undefined}
                                           onChange={(event) =>
                                             updateDraft(setting, column, event.target.value)
                                           }
@@ -1263,12 +1365,12 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                           className={editorClass}
                                         />
                                       )}
-                                      {cellError && (
+                                      {activeEditError && (
                                         <p
                                           role="alert"
                                           className="mt-1 text-xs text-red-700 dark:text-red-300"
                                         >
-                                          {errorText(cellError)}
+                                          {errorText(activeEditError)}
                                         </p>
                                       )}
                                     </div>
@@ -1282,6 +1384,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                         field: cellLabel,
                                         name: setting.settingName || t("viewer.unnamedSetting"),
                                       })}
+                                      aria-describedby={schemaRulesId}
                                       aria-invalid={requiredMissing ? true : undefined}
                                       className={`block min-h-10 w-full px-3 py-2.5 text-left outline-none hover:bg-blue-50/70 focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-blue-600 dark:hover:bg-blue-950/20 ${
                                         requiredMissing
@@ -1289,13 +1392,34 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                           : ""
                                       }`}
                                     >
-                                      <span className="block whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
-                                        {visibleValue}
-                                      </span>
+                                      {hasSchemaRules ? (
+                                        <VisualSchemaRuleList
+                                          displayOnlyDescription={t(
+                                            "visual.schemaReferenceOnlyDescription",
+                                          )}
+                                          displayOnlyLabel={t("visual.schemaReferenceOnly")}
+                                          id={schemaRulesId}
+                                          rows={schemaRows}
+                                        />
+                                      ) : (
+                                        <span className="block whitespace-pre-wrap break-words [overflow-wrap:anywhere]">
+                                          {visibleValue}
+                                        </span>
+                                      )}
                                     </button>
                                   ) : (
                                     <span className="block whitespace-pre-wrap break-words px-3 py-2.5 [overflow-wrap:anywhere]">
-                                      {visibleValue}
+                                      {hasSchemaRules ? (
+                                        <VisualSchemaRuleList
+                                          displayOnlyDescription={t(
+                                            "visual.schemaReferenceOnlyDescription",
+                                          )}
+                                          displayOnlyLabel={t("visual.schemaReferenceOnly")}
+                                          rows={schemaRows}
+                                        />
+                                      ) : (
+                                        visibleValue
+                                      )}
                                     </span>
                                   )}
                                 </td>
