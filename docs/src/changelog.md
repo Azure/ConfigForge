@@ -3,6 +3,12 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.89 — 2026-07-23
+
+- **Completed the Baseline Detail authoring follow-up.** Visual editing now has searchable batch setting selection, spreadsheet keyboard navigation, edit-session Undo, filtered-category search, nested multi-value rows, duplicate protection, and accessible modal focus.
+- **Hardened history and typed editing edge cases.** Same-millisecond snapshots dedupe deterministically, filtered additions remain visible, toolbar keyboard input is isolated from cell navigation, and new array entries preserve their scalar or structured type.
+- **Resolved all current Dependabot alerts** with DOMPurify 3.4.12, fast-uri 3.1.4, and an exact sharp 0.35.0 pin.
+
 ## v0.3.88 — 2026-07-22
 
 - **Completed the July Loop revision batch.** Baseline tabs now use the specified pill states; My Baselines has reliable cell-wide status tooltips, fully left-aligned content, and three-state sorting; and Baseline Detail adds recovery-safe one-click Undo between Delete and Duplicate.

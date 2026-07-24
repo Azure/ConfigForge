@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.3.89] - 2026-07-23
+
+### Added
+
+- **Expanded Baseline Detail into a full spreadsheet authoring surface.** The page now includes a searchable, filterable, multi-select Add settings pane; baseline setting search; Unselect All; editing instructions; nested multi-value rows; and independently editable array values.
+- **Added Excel-style keyboard editing.** Visual edit mode focuses the first cell, moves right with Tab, moves down with Enter, and appends another row from the final cell.
+
+### Changed
+
+- **Made footer Undo editing-aware.** While editing, Undo restores the most recent in-memory Code or Visual change; outside edit mode, it continues to restore the latest saved history snapshot.
+- **Kept new settings visible and keyboard-accessible.** Adding while filtered clears the search before focusing the new row, Add settings traps modal focus, and toolbar inputs retain normal Tab and Enter behavior.
+
+### Fixed
+
+- **Preserved typed multi-value settings.** New boolean, numeric, bigint, object, and nested-array slots now retain the existing element type.
+- **Made same-millisecond history dedupe deterministic.** Snapshot IDs break timestamp ties so dedupe and retention always select the newest sequence.
+- **Corrected the French, German, and Spanish spreadsheet editing hints.**
+
+### Security
+
+- **Updated DOMPurify to 3.4.12, fast-uri to 3.1.4, and sharp/libvips to 0.35.0.** These updates resolve all five current Dependabot alerts; sharp is pinned exactly because it is a native cross-platform build dependency.
+
 ## [0.3.88] - 2026-07-22
 
 ### Added
