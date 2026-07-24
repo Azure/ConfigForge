@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.92] - 2026-07-24
+
+### Security
+
+- **Updated `electron-updater` to 6.8.9 and `builder-util-runtime` to 9.7.0.** This prevents update credentials such as `Authorization` and `PRIVATE-TOKEN` from being forwarded across cross-origin redirects (GHSA-p2f4-r6v6-j797).
+
 ## [0.3.91] - 2026-07-24
 
 ### Added
