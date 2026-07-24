@@ -311,6 +311,10 @@ describe("visual viewer helpers", () => {
     const duplicated = { const: 1 };
     expect(visualValueSatisfiesSchema(1, { oneOf: [duplicated, duplicated] })).toBe(false);
     expect(visualValueSatisfiesSchema(2, { oneOf: [duplicated, duplicated] })).toBe(false);
+    expect(visualSchemaConstraintRows({ oneOf: [duplicated, duplicated] })).toEqual([
+      { keyword: "oneOf.const", values: [1] },
+      { keyword: "oneOf", values: [duplicated] },
+    ]);
   });
 
   it("preserves compact YAML aliases during visual serialization", () => {
@@ -1005,6 +1009,10 @@ resources:
     expect(updateVisualCellSource(source, registrySetting, "Value", "3")).toEqual({
       ok: false,
       error: "schemaConstraint",
+    });
+    expect(updateVisualCellSource("resources: [", registrySetting, "Value", "3")).toEqual({
+      ok: false,
+      error: "invalidYaml",
     });
 
     const updated = updateVisualCellSource(source, registrySetting, "Value", "2");

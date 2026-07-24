@@ -412,6 +412,11 @@ function appendVisualSchemaConstraintRows(
       if (!Array.isArray(branches)) continue;
       for (const branch of branches) {
         if (rows.length >= MAX_VISUAL_SCHEMA_ROWS) break;
+        const branchRecord = asRecord(branch);
+        const repeatedAlias =
+          branchRecord !== null &&
+          visitedSchemas.has(branchRecord) &&
+          !activeSchemas.has(branchRecord);
         const before = rows.length;
         appendVisualSchemaConstraintRows(
           branch,
@@ -426,7 +431,7 @@ function appendVisualSchemaConstraintRows(
           rows.push({
             keyword: `${prefix}${keyword}`,
             values: [branch],
-            enforced: false,
+            ...(repeatedAlias ? {} : { enforced: false }),
           });
         }
       }
@@ -1497,15 +1502,15 @@ export function updateVisualCellValueSource(
   column: string,
   value: unknown,
 ): VisualSourceEditResult {
-  const schemaError = visualCellSchemaError(setting, column, value);
-  if (schemaError) return { ok: false, error: schemaError };
-
   let document: unknown;
   try {
     document = parseVisualManifest(source);
   } catch {
     return { ok: false, error: "invalidYaml" };
   }
+
+  const schemaError = visualCellSchemaError(setting, column, value);
+  if (schemaError) return { ok: false, error: schemaError };
 
   const error = applyVisualCellValue(document, setting, column, value);
   if (error) return { ok: false, error };
