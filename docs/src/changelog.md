@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.92 — 2026-07-24
+
+- **Patched the desktop update and packaging toolchains.** `electron-updater` 6.8.9 prevents credentials from crossing redirect origins, while `electron-builder` 26.15.3 closes the AppImage search-path vulnerability.
+
 ## v0.3.91 — 2026-07-24
 
 - **Made Visual schema rules explicit and enforceable.** Expected value cells now show stacked Test constraints, governed edits honor supported enum/range/type rules, malformed Registry/CSP values are repaired to their declared types, and unsupported regex patterns are clearly labeled reference-only.
