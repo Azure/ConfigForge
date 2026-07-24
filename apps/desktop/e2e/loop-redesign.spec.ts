@@ -540,10 +540,10 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await page.setViewportSize({ width: 1440, height: 1000 });
 
     await page.getByRole("button", { name: "Edit" }).click();
-    const editFooterGeometry = await readFooterGeometry();
-    expect(editFooterGeometry.overlaps, "footer control collisions while editing").toEqual([]);
     await expect(footer.getByRole("button", { name: "Save" })).toBeVisible();
     await expect(footer.getByRole("button", { name: "Edit" })).toHaveCount(0);
+    const editFooterGeometry = await readFooterGeometry();
+    expect(editFooterGeometry.overlaps, "footer control collisions while editing").toEqual([]);
     await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
     await expect(page.getByText("Editing", { exact: true })).toBeVisible();
     await expect(visual.getByRole("checkbox")).toHaveCount(3);
