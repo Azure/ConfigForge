@@ -26,6 +26,8 @@ import {
   updateVisualArrayItemSource,
   updateVisualCellSource,
   validateVisualSettings,
+  visualSchemaConstraintRows,
+  visualValueSatisfiesSchema,
 } from "./visual-viewer";
 
 describe("visual viewer helpers", () => {
@@ -89,6 +91,7 @@ describe("visual viewer helpers", () => {
       settingName: "Outer test setting",
       resourceType: "Microsoft.Windows/Registry",
       desiredValue: 2,
+      validationSchema: { const: 2 },
       properties: {
         keyPath: "HKLM:\\Software\\Wrapped",
         valueName: "Mode",
@@ -215,6 +218,127 @@ describe("visual viewer helpers", () => {
     expect(equalsSetting.desiredValue).toBe("enabled");
     expect(constSetting.desiredValue).toBe(true);
     expect(formatVisualValue(constSetting.desiredValue)).toBe("true");
+  });
+
+  it("extracts stacked technical rows from supported Test schema constraints", () => {
+    expect(
+      visualSchemaConstraintRows({
+        type: ["integer", "null"],
+        enum: [0, 1, 2, 99, 100],
+        minimum: 0,
+        maximum: 100,
+        oneOf: [{ const: 99 }, { type: "null" }],
+      }),
+    ).toEqual([
+      { keyword: "type", values: ["integer", "null"] },
+      { keyword: "enum", values: [0, 1, 2, 99, 100] },
+      { keyword: "minimum", values: [0] },
+      { keyword: "maximum", values: [100] },
+      { keyword: "oneOf.const", values: [99] },
+      { keyword: "oneOf.type", values: ["null"] },
+    ]);
+  });
+
+  it("evaluates the supported Test schema subset without weakening oneOf semantics", () => {
+    expect(visualValueSatisfiesSchema(99, { enum: [0, 1, 2, 99, 100] })).toBe(true);
+    expect(visualValueSatisfiesSchema(3, { enum: [0, 1, 2, 99, 100] })).toBe(false);
+    expect(visualValueSatisfiesSchema(2_000, { minimum: 2_000, maximum: 5_000 })).toBe(true);
+    expect(visualValueSatisfiesSchema(1_999, { minimum: 2_000, maximum: 5_000 })).toBe(false);
+    expect(visualValueSatisfiesSchema("audit.log", { type: "string", pattern: "\\.log$" })).toBe(
+      true,
+    );
+    expect(visualValueSatisfiesSchema("audit.txt", { type: "string", pattern: "\\.log$" })).toBe(
+      false,
+    );
+    expect(
+      visualValueSatisfiesSchema(2, {
+        oneOf: [{ type: "integer" }, { minimum: 0 }],
+      }),
+    ).toBe(false);
+    expect(
+      visualValueSatisfiesSchema(null, { anyOf: [{ type: "integer" }, { type: "null" }] }),
+    ).toBe(true);
+    expect(
+      visualValueSatisfiesSchema(4, {
+        allOf: [{ type: "integer" }, { minimum: 1 }, { maximum: 5 }],
+      }),
+    ).toBe(true);
+    expect(
+      visualValueSatisfiesSchema(1, {
+        oneOf: [{ const: 1 }, { not: { const: 1 } }],
+      }),
+    ).toBe(true);
+    expect(
+      visualValueSatisfiesSchema(`${"a".repeat(64)}!`, {
+        pattern: "^(a+)+$",
+      }),
+    ).toBe(true);
+  });
+
+  it("bounds recursive schema aliases while retaining reachable rules", () => {
+    const schema: Record<string, unknown> = {};
+    schema.oneOf = [schema, { const: 1 }];
+
+    expect(visualSchemaConstraintRows(schema)).toEqual([
+      { keyword: "oneOf", values: [schema] },
+      { keyword: "oneOf.const", values: [1] },
+    ]);
+    expect(visualValueSatisfiesSchema(1, schema)).toBe(true);
+  });
+
+  it("bounds shared schema alias fan-out and unsafe brace quantifiers", () => {
+    let shared: Record<string, unknown> = { const: 1 };
+    for (let depth = 0; depth < 20; depth += 1) {
+      shared = { anyOf: [shared, shared] };
+    }
+
+    expect(visualSchemaConstraintRows(shared).length).toBeLessThanOrEqual(128);
+    expect(visualValueSatisfiesSchema(1, shared)).toBe(true);
+    expect(
+      visualValueSatisfiesSchema(`${"a".repeat(80)}!`, {
+        pattern: "^a{0,}a{0,}a{0,}a{0,}a{0,}a{0,}b$",
+      }),
+    ).toBe(true);
+    expect(
+      visualValueSatisfiesSchema(`${"a".repeat(120)}!`, {
+        pattern: "^a{0,20}a{0,20}a{0,20}a{0,20}a{0,20}a{0,20}b$",
+      }),
+    ).toBe(true);
+
+    const duplicated = { const: 1 };
+    expect(visualValueSatisfiesSchema(1, { oneOf: [duplicated, duplicated] })).toBe(false);
+    expect(visualValueSatisfiesSchema(2, { oneOf: [duplicated, duplicated] })).toBe(false);
+  });
+
+  it("preserves compact YAML aliases during visual serialization", () => {
+    let shared: Record<string, unknown> = { const: 1 };
+    for (let depth = 0; depth < 16; depth += 1) {
+      shared = { anyOf: [shared, shared] };
+    }
+    const dumped = dumpVisualManifest({
+      resources: [
+        {
+          name: "Aliased",
+          type: "Microsoft.OSConfig/Test",
+          properties: {
+            schema: shared,
+            resource: {
+              type: "Microsoft.Windows/Registry",
+              properties: {
+                keyPath: "HKLM:\\Software\\Example",
+                valueName: "Aliased",
+                valueType: "Dword",
+                value: 1,
+              },
+            },
+          },
+        },
+      ],
+    });
+
+    expect(dumped.length).toBeLessThan(10_000);
+    expect(dumped).toMatch(/&ref_\d+/);
+    expect(dumped).toMatch(/\*ref_\d+/);
   });
 
   it("derives deterministic names for unnamed children in the shipped Linux SFF Groups", () => {
@@ -519,17 +643,17 @@ resources:
     current = renamed.source;
 
     setting = flattenVisualSettings(parseVisualManifest(current))[0];
-    const propertyEdit = updateVisualCellSource(current, setting, "value", "5");
-    expect(propertyEdit.ok).toBe(true);
-    if (!propertyEdit.ok) return;
-    current = propertyEdit.source;
-
-    setting = flattenVisualSettings(parseVisualManifest(current))[0];
     const desiredEdit = updateVisualCellSource(current, setting, DESIRED_VALUE_COLUMN, "7");
     expect(desiredEdit.ok).toBe(true);
     if (!desiredEdit.ok) return;
+    current = desiredEdit.source;
 
-    const document = parseVisualManifest(desiredEdit.source) as {
+    setting = flattenVisualSettings(parseVisualManifest(current))[0];
+    const propertyEdit = updateVisualCellSource(current, setting, "value", "7");
+    expect(propertyEdit.ok).toBe(true);
+    if (!propertyEdit.ok) return;
+
+    const document = parseVisualManifest(propertyEdit.source) as {
       metadata: { owner: string };
       resources: Array<{
         name: string;
@@ -550,7 +674,7 @@ resources:
     expect(wrapper.customWrapperField).toBe("preserved");
     expect(wrapper.properties.resource.name).toBe("Inner implementation");
     expect(wrapper.properties.resource.customLeafField).toBe("preserved");
-    expect(wrapper.properties.resource.properties.value).toBe(5);
+    expect(wrapper.properties.resource.properties.value).toBe(7);
     expect(wrapper.properties.schema).toEqual({
       const: 7,
       description: "Keep this constraint",
@@ -659,6 +783,41 @@ resources:
       "CONTOSO\\Tier 0 Admins",
       "",
     ]);
+  });
+
+  it("repairs malformed Registry MultiString items as strings", () => {
+    const source = `resources:
+  - name: Principals
+    type: Microsoft.Windows/Registry
+    Properties:
+      KeyPath: HKLM:\\Software\\Example
+      ValueName: Principals
+      ValueType: MultiString
+      Value:
+        - 1
+`;
+    let setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const wholeCell = updateVisualCellSource(source, setting, "Value", "[1, 2]");
+    expect(wholeCell.ok).toBe(true);
+    if (!wholeCell.ok) return;
+    const wholeCellDocument = parseVisualManifest(wholeCell.source) as {
+      resources: Array<{ Properties: { Value: unknown[] } }>;
+    };
+    expect(wholeCellDocument.resources[0].Properties.Value).toEqual(["1", "2"]);
+
+    const edited = updateVisualArrayItemSource(source, setting, "Value", 0, "fixed");
+    expect(edited.ok).toBe(true);
+    if (!edited.ok) return;
+
+    setting = flattenVisualSettings(parseVisualManifest(edited.source))[0];
+    const appended = appendVisualArrayItemSource(edited.source, setting, "Value");
+    expect(appended.ok).toBe(true);
+    if (!appended.ok) return;
+
+    const document = parseVisualManifest(appended.source) as {
+      resources: Array<{ Properties: { Value: unknown[] } }>;
+    };
+    expect(document.resources[0].Properties.Value).toEqual(["fixed", ""]);
   });
 
   it.each([
@@ -786,6 +945,96 @@ resources:
         "sometimes",
       ),
     ).toEqual({ ok: false, error: "boolean" });
+  });
+
+  it("uses declared Registry and CSP types before malformed existing values", () => {
+    const source = `resources:
+  - name: Mode
+    type: Microsoft.OSConfig/Test
+    Properties:
+      Schema:
+        enum:
+          - 1
+          - 2
+      Resource:
+        type: Microsoft.Windows/Registry
+        Properties:
+          KeyPath: HKLM:\\Software\\Example
+          ValueName: Mode
+          ValueType: Dword
+          Value: '1'
+  - name: CSP mode
+    type: Microsoft.OSConfig/Test
+    properties:
+      schema:
+        enum:
+          - 1
+          - 2
+      resource:
+        type: Microsoft.Windows/CSP
+        properties:
+          path: ./Vendor/MSFT/Policy/Config/Example
+          Type: integer
+          Value: '1'
+`;
+    const [registrySetting, cspSetting] = flattenVisualSettings(parseVisualManifest(source));
+
+    expect(
+      parseVisualCellInput("2", registrySetting.properties.Value, registrySetting, "Value"),
+    ).toEqual({
+      ok: true,
+      value: 2,
+    });
+    expect(
+      parseVisualCellInput("'2", registrySetting.properties.Value, registrySetting, "Value"),
+    ).toEqual({
+      ok: false,
+      error: "number",
+    });
+    expect(parseVisualCellInput("2", true, registrySetting, "Value")).toEqual({
+      ok: true,
+      value: 2,
+    });
+    expect(parseVisualCellInput("2", cspSetting.properties.Value, cspSetting, "Value")).toEqual({
+      ok: true,
+      value: 2,
+    });
+    expect(updateVisualCellSource(source, registrySetting, "Value", "3")).toEqual({
+      ok: false,
+      error: "schemaConstraint",
+    });
+
+    const updated = updateVisualCellSource(source, registrySetting, "Value", "2");
+    expect(updated.ok).toBe(true);
+    if (!updated.ok) return;
+    const [nextSetting] = flattenVisualSettings(parseVisualManifest(updated.source));
+    expect(nextSetting.properties.Value).toBe(2);
+    expect(typeof nextSetting.properties.Value).toBe("number");
+  });
+
+  it("keeps existing schema mismatches viewable until the governed value is edited", () => {
+    const source = readFileSync(
+      resolve(process.cwd(), "public", "_baselines", "laps.osc.yaml"),
+      "utf8",
+    );
+    const setting = flattenVisualSettings(parseVisualManifest(source)).find(
+      (candidate) => candidate.settingName === "PasswordBackup",
+    );
+    expect(setting).toBeDefined();
+    if (!setting) return;
+
+    expect(setting.properties.value).toBe(1);
+    expect(setting.validationSchema).toEqual({ const: 2 });
+    expect(validateVisualSettings([setting])).toEqual([]);
+    expect(
+      updateVisualCellSource(source, setting, "keyPath", "HKLM:\\Software\\LAPS"),
+    ).toMatchObject({
+      ok: true,
+    });
+    expect(updateVisualCellSource(source, setting, "value", "3")).toEqual({
+      ok: false,
+      error: "schemaConstraint",
+    });
   });
 
   it("updates unwrapped typed desired values without replacing their wrapper", () => {

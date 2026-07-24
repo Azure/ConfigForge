@@ -86,6 +86,20 @@ describe('i18n initialization', () => {
     }
   });
 
+  it('translates the Visual schema-constraint error in every target language', async () => {
+    const i18n = getI18n();
+    const expected = {
+      fr: 'Saisissez une valeur qui respecte les règles affichées sous Valeur attendue.',
+      de: 'Geben Sie einen Wert ein, der die unter Erwarteter Wert angezeigten Regeln erfüllt.',
+      es: 'Introduzca un valor que cumpla las reglas que se muestran en Valor esperado.',
+    };
+
+    for (const [locale, message] of Object.entries(expected)) {
+      await i18n.changeLanguage(locale);
+      expect(i18n.t('visual.errors.schemaConstraint', { ns: 'manifest-editor' })).toBe(message);
+    }
+  });
+
   it('handles {{interpolation}} placeholders', () => {
     const i18n = getI18n();
     // Inline addResource lets us test the interpolation pipeline
