@@ -11,9 +11,9 @@
 
 | Locale | Translated | Fallback/TODO | Total | Coverage |
 |---|---:|---:|---:|---:|
-| fr | 941 | 63 | 1004 | 93.7% |
-| de | 939 | 65 | 1004 | 93.5% |
-| es | 945 | 59 | 1004 | 94.1% |
+| fr | 990 | 64 | 1054 | 93.9% |
+| de | 989 | 65 | 1054 | 93.8% |
+| es | 995 | 59 | 1054 | 94.4% |
 
 ## Placeholder integrity check
 
@@ -21,7 +21,7 @@
 
 ## Length analysis
 
-Layout warnings (>150% of English): **96**
+Layout warnings (>150% of English): **102**
 
 ### fr: 20 longest values
 
@@ -45,8 +45,8 @@ Layout warnings (>150% of English): **96**
 | compliance | perManifest.extracted.text4 | 216 | 192 | 113% | ConfigForge ne redistribue pas CIS contenu Benchmark (restrictions de licence). Le rapport de pourcentage de conformité compare votre baseline à un CIS baseline, ce qui nécessite l |
 | home | firstRun.sectionDescription | 215 | 185 | 116% | ConfigForge va à l’encontre de OSConfig baselines. Parcourez les Baselines Microsoft inclus (WS2019/2022/2025 rôles serveur, Defender, LAPS) pour trouver du contenu prêt à utiliser |
 | welcome | authorIntro | 213 | 181 | 118% | Créez des baselines de sécurité OSConfig directement depuis votre Mac. La version auteur inclut la bibliothèque de baselines Microsoft, l’édition, la validation, la comparaison et  |
+| manifest-editor | visual.editInstructionsText | 207 | 142 | 146% | Ajoutez les valeurs ligne par ligne. Tabulation enregistre et se déplace vers la droite. Entrée enregistre et descend. Entrée dans la dernière ligne ajoute une nouvelle ligne. Appu |
 | common | health.version-mismatch-hint | 198 | 162 | 122% | ConfigForge a été validé avec {{expectedVersion}}. Le CLI installé peut produire des erreurs inattendues pendant le déploiement ou l’audit. Mettez OSConfig à niveau si vous rencont |
-| manifest-editor | actions.revertTitle | 193 | 166 | 116% | Annulez le dernier déploiement de ce baseline depuis cet appareil. Si un instantané pré-déploiement existe, les réglages précédents sont réappliqués ; sinon, OSConfig application e |
 
 ### de: 20 longest values
 

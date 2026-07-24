@@ -18,7 +18,12 @@
     "removeConfirm": "Entfernen baseline \"{{name}}\"? Diese Maßnahme kann nicht rückgängig gemacht werden.",
     "revert": "Rückgängig machen",
     "revertConfirm": "Zurücksetzen baseline \"{{name}}\"?\n\nWenn ein Pre-Deploy-Snapshot vorhanden ist, werden deine vorherigen Einstellungen auf dieses Gerät erneut angewendet. Wenn kein Snapshot vorhanden ist, wird OSConfig Durchsetzung dieses baseline entfernt und der baseline wird nicht registriert. So oder so wird dieser baseline auf diesem Gerät nicht mehr aktiv durchgesetzt.",
-    "revertTitle": "Die letzte Bereitstellung dieses baseline von diesem Gerät rückgängig machen. Wenn ein Pre-Deploy-Snapshot existiert, werden vorherige Einstellungen erneut angewendet; ansonsten wird OSConfig Durchsetzung aufgehoben."
+    "revertTitle": "Die letzte Bereitstellung dieses baseline von diesem Gerät rückgängig machen. Wenn ein Pre-Deploy-Snapshot existiert, werden vorherige Einstellungen erneut angewendet; ansonsten wird OSConfig Durchsetzung aufgehoben.",
+    "undo": "Rückgängig",
+    "undoEdit": "Rückgängig",
+    "undoEditTitle": "Letzte Bearbeitung rückgängig machen",
+    "undoTitle": "Vorherige gespeicherte Baseline-Version wiederherstellen",
+    "undoUnavailable": "Keine vorherige gespeicherte Baseline-Version verfügbar"
   },
   "compliance": {
     "emptyDescription": "Führen Sie Audit oder Enforce aus, um diese Baseline mit dem Gerät abzugleichen.",
@@ -78,6 +83,7 @@
     "loadManifestFailed": "Nicht geladen baseline",
     "revertFailed": "Revert fehlgeschlagen",
     "saveFailed": "Speichern fehlgeschlagen",
+    "undoFailed": "Rückgängig machen fehlgeschlagen",
     "unknown": "Unbekannt Fehler"
   },
   "export": {
@@ -103,7 +109,8 @@
   "messages": {
     "reverted": "Baseline wurde zurückgesetzt",
     "saveSuccess": "Baseline \"{{name}}\" erfolgreich gespeichert",
-    "savedWithWarning": "Mit Warnung gespeichert: {{warning}}"
+    "savedWithWarning": "Mit Warnung gespeichert: {{warning}}",
+    "undoSuccess": "Vorherige gespeicherte Version von „{{name}}“ wurde wiederhergestellt"
   },
   "platform": {
     "crossPlatform": "⚙️ Cross-Plattform",
@@ -207,12 +214,57 @@
     "visualRegionLabel": "Baselineeinstellungen in Visual"
   },
   "visual": {
+    "addArrayItem": "Weiteren {{field}}-Wert für {{name}} hinzufügen",
     "addRow": "Zeile hinzufügen",
     "addSetting": "Einstellung hinzufügen",
+    "addSettings": "Einstellungen hinzufügen",
+    "addSettingsPane": {
+      "addSelected": "Einstellungen hinzufügen",
+      "allOperatingSystems": "Alle Betriebssysteme",
+      "allSettingTypes": "Alle Einstellungstypen",
+      "cancel": "Abbrechen",
+      "close": "Einstellungen hinzufügen schließen",
+      "description": "Suchen und wählen Sie eine oder mehrere Einstellungsvorlagen. Ergebnisse priorisieren das Betriebssystem dieser Baseline, dann Einstellungstyp und Name.",
+      "descriptions": {
+        "accountPolicy": "Konfigurieren Sie Kennwort-, Sperr- und andere lokale Kontorichtlinienwerte.",
+        "auditPolicy": "Konfigurieren Sie Windows-Überwachungsunterkategorien und ihren gewünschten Zustand.",
+        "csp": "Erstellen Sie eine Windows Policy CSP-Einstellung über OMA-URI-Pfad und typisierten Wert.",
+        "file": "Erstellen oder überprüfen Sie eine Datei und ihren Inhalt unter Windows oder Linux.",
+        "fileLine": "Suchen, ersetzen oder ergänzen Sie eine Zeile in einer Textdatei.",
+        "filePermission": "Konfigurieren Sie Besitzer, Gruppe und Berechtigungsmodus einer Linux-Datei.",
+        "kernelModule": "Legen Sie fest ob ein Linux-Kernelmodul geladen oder entladen sein muss.",
+        "linuxUser": "Konfigurieren Sie eine Linux-Benutzerkontoeinstellung.",
+        "registry": "Konfigurieren Sie Registrierungsschlüssel, Wertname, Typ und gewünschten Wert.",
+        "userRights": "Weisen Sie einem Windows-Benutzerrecht einen oder mehrere Prinzipale zu."
+      },
+      "noMatches": "Keine Einstellungsvorlagen entsprechen der aktuellen Suche und den Filtern.",
+      "operatingSystem": "Betriebssystem",
+      "osFilter": "Betriebssystem",
+      "searchLabel": "Einstellungsvorlagen durchsuchen",
+      "searchPlaceholder": "Registrierung, Überwachungsrichtlinie, Benutzerrechte und mehr durchsuchen",
+      "select": "Auswählen",
+      "selectSetting": "{{name}} auswählen",
+      "selectedCount_one": "{{count}} Einstellung ausgewählt",
+      "selectedCount_other": "{{count}} Einstellungen ausgewählt",
+      "settingDescription": "Beschreibung",
+      "settingName": "Einstellungsname",
+      "settingType": "Einstellungstyp",
+      "tableLabel": "Verfügbare Einstellungsvorlagen",
+      "title": "Einstellungen hinzufügen",
+      "typeFilter": "Einstellungstyp"
+    },
     "cannotEditViewOnly": "Im schreibgeschützten Modus kann nicht bearbeitet werden",
     "deleteSelected": "{{count}} ausgewählte löschen",
+    "duplicateDialog": {
+      "close": "Schließen",
+      "description": "{{settings}} enthält bereits eine unvollständige Einstellung in dieser Baseline und kann nicht erneut hinzugefügt werden. Vorhandene Einstellungen wurden nicht geändert.",
+      "title": "Einstellung ist bereits vorhanden"
+    },
+    "editArrayItem": "{{field}}-Wert {{index}} für {{name}} bearbeiten",
     "editCell": "{{field}} für {{name}} bearbeiten",
-    "editHint": "Klicken Sie zum Bearbeiten auf eine Zelle. Drücken Sie zum Anwenden die Eingabetaste oder zum Abbrechen Escape.",
+    "editHint": "Klicken Sie auf eine Zelle, um sie zu bearbeiten. Drücken Sie die Eingabetaste zum Übernehmen; in der letzten Zelle fügt die Eingabetaste eine neue Zeile hinzu. Drücken Sie Escape zum Abbrechen.",
+    "editInstructions": "Anweisungen zur Tabellenbearbeitung anzeigen",
+    "editInstructionsText": "Fügen Sie Werte zeilenweise hinzu. Tab speichert und bewegt nach rechts. Eingabe speichert und bewegt nach unten. Eingabe in der letzten Zeile fügt eine neue Zeile hinzu. Escape bricht ab.",
     "editToolbar": "Aktionen zur Tabellenbearbeitung",
     "errors": {
       "boolean": "Geben Sie true oder false ein.",
@@ -229,13 +281,17 @@
       "wholeNumber": "Geben Sie eine ganze Zahl ein."
     },
     "fixValidationBeforeSave": "Vervollständigen oder korrigieren Sie die markierten Zellen vor dem Speichern.",
+    "noSearchMatches": "Keine Einstellungen entsprechen der aktuellen Suche.",
     "requiredCells_one": "Vervollständigen Sie vor dem Speichern {{count}} erforderliche Zelle.",
     "requiredCells_other": "Vervollständigen Sie vor dem Speichern {{count}} erforderliche Zellen.",
     "selectAllInCategory": "Alle {{category}}-Einstellungen auswählen",
     "selectRow": "{{name}} auswählen",
     "selectedCount_one": "{{count}} Einstellung ausgewählt",
     "selectedCount_other": "{{count}} Einstellungen ausgewählt",
+    "searchLabel": "Baseline-Einstellungen durchsuchen",
+    "searchPlaceholder": "Einstellungsnamen, Typen, Pfade oder Werte durchsuchen",
     "spreadsheetTitle": "Einstellungen in der Tabelle bearbeiten",
+    "unselectAll": "Auswahl aufheben",
     "addResource": "Einstellung hinzufügen",
     "currentResources": "Aktuelle Einstellungen ({{count}})",
     "groupCount": "Gruppe · {{count}}",

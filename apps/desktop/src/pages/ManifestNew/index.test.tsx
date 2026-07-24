@@ -71,8 +71,9 @@ describe('ManifestNewPage post-registration refresh', () => {
     expect(
       await screen.findByRole('region', { name: 'Visual baseline settings' }),
     ).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: 'Add setting' }).length).toBeGreaterThanOrEqual(3);
-    expect(screen.getByRole('button', { name: /Edit Setting Name/ })).toBeInTheDocument();
+    expect(screen.getAllByRole('button', { name: 'Add setting' })).toHaveLength(2);
+    expect(screen.getByRole('button', { name: 'Add settings' })).toBeInTheDocument();
+    expect(screen.getByRole('textbox', { name: /Edit Setting Name/ })).toHaveFocus();
     expect(screen.queryByTestId('resource-picker')).not.toBeInTheDocument();
   });
 

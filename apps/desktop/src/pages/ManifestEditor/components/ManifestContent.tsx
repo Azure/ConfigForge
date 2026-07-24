@@ -21,6 +21,7 @@ export interface ManifestContentProps {
   viewerMode: ManifestViewerMode;
   onViewerModeChange: (mode: ManifestViewerMode) => void;
   onVisualDraftValidityChange?: (valid: boolean) => void;
+  onEditUndoStateChange?: (canUndo: boolean, undo: (() => void) | null) => void;
 }
 
 export const ManifestContent = React.memo(function ManifestContent({
@@ -31,11 +32,13 @@ export const ManifestContent = React.memo(function ManifestContent({
   viewerMode,
   onViewerModeChange,
   onVisualDraftValidityChange,
+  onEditUndoStateChange,
 }: ManifestContentProps) {
   const {
     editing,
     editedContent,
     setEditedContent,
+    savedContent,
     editView,
     setEditView,
     activeFormat,
@@ -49,12 +52,64 @@ export const ManifestContent = React.memo(function ManifestContent({
     setError,
   } = editorState;
   const { t } = useTranslation("manifest-editor");
+  const contentRef = React.useRef(editedContent);
+  const lastCodeEditAtRef = React.useRef(0);
+  const previousEditingRef = React.useRef(editing);
+  const [undoStack, setUndoStack] = React.useState<string[]>([]);
+
+  React.useEffect(() => {
+    contentRef.current = editedContent;
+  }, [editedContent]);
+
+  React.useEffect(() => {
+    if (editing !== previousEditingRef.current) {
+      setUndoStack([]);
+      lastCodeEditAtRef.current = 0;
+      contentRef.current = editedContent;
+      previousEditingRef.current = editing;
+    }
+  }, [editedContent, editing]);
+
+  const applyEditedContent = (next: string, checkpoint: boolean) => {
+    const current = contentRef.current;
+    if (next === current) return;
+    const now = Date.now();
+    setUndoStack((stack) => {
+      if (!checkpoint && stack.length > 0 && now - lastCodeEditAtRef.current < 750) {
+        return stack;
+      }
+      return [...stack, current].slice(-50);
+    });
+    lastCodeEditAtRef.current = checkpoint ? 0 : now;
+    contentRef.current = next;
+    setEditedContent(next);
+  };
+
+  const handleUndo = React.useCallback(() => {
+    const previous = undoStack.at(-1);
+    if (previous === undefined) return;
+    setUndoStack((stack) => stack.slice(0, -1));
+    lastCodeEditAtRef.current = 0;
+    contentRef.current = previous;
+    formatCache.current[activeFormat] = previous;
+    setEditedContent(previous);
+  }, [activeFormat, formatCache, setEditedContent, undoStack]);
+
+  React.useEffect(() => {
+    onEditUndoStateChange?.(undoStack.length > 0, undoStack.length > 0 ? handleUndo : null);
+  }, [handleUndo, onEditUndoStateChange, undoStack.length]);
+
+  React.useEffect(() => () => onEditUndoStateChange?.(false, null), [onEditUndoStateChange]);
 
   const switchToVisualEdit = () => {
     if (activeFormat === "json") {
       try {
+        const previousYaml = formatCache.current.yaml ?? savedContent;
         const yamlSource = dumpVisualManifest(JSON.parse(editedContent));
         formatCache.current.yaml = yamlSource;
+        contentRef.current = yamlSource;
+        setUndoStack(previousYaml && previousYaml !== yamlSource ? [previousYaml] : []);
+        lastCodeEditAtRef.current = 0;
         setEditedContent(yamlSource);
         setActiveFormat("yaml");
       } catch {
@@ -67,7 +122,7 @@ export const ManifestContent = React.memo(function ManifestContent({
 
   const handleVisualSourceChange = (source: string) => {
     formatCache.current.yaml = source;
-    setEditedContent(source);
+    applyEditedContent(source, true);
   };
 
   const visualActive = editing ? editView === "visual" : viewerMode === "visual";
@@ -177,9 +232,7 @@ export const ManifestContent = React.memo(function ManifestContent({
           editable={editing}
           platform={editorPlatform}
           onSourceChange={editing ? handleVisualSourceChange : undefined}
-          onDraftValidityChange={
-            editing ? onVisualDraftValidityChange : undefined
-          }
+          onDraftValidityChange={editing ? onVisualDraftValidityChange : undefined}
         />
       ) : (
         <div className="relative h-[min(62vh,48rem)] min-h-[32rem] p-4">
@@ -190,7 +243,7 @@ export const ManifestContent = React.memo(function ManifestContent({
           )}
           <ManifestEditor
             value={editing ? editedContent : currentDisplayContent}
-            onChange={editing && isEditable ? setEditedContent : undefined}
+            onChange={editing && isEditable ? (next) => applyEditedContent(next, false) : undefined}
             readOnly={isReadOnly}
             language={EDITOR_LANGUAGE[activeFormat]}
             height="100%"

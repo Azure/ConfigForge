@@ -51,10 +51,12 @@ function deferred<T>(): Promise<T> & Resolver<T> {
 
 function installCfsMocks(overrides?: Partial<{
   get: ReturnType<typeof vi.fn>;
+  getSource: ReturnType<typeof vi.fn>;
   exportGet: ReturnType<typeof vi.fn>;
   status: ReturnType<typeof vi.fn>;
 }>) {
   const get = overrides?.get ?? vi.fn();
+  const getSource = overrides?.getSource ?? vi.fn();
   const exportGet = overrides?.exportGet ?? vi.fn();
   const status = overrides?.status ?? vi.fn();
 
@@ -74,6 +76,9 @@ function installCfsMocks(overrides?: Partial<{
       },
     });
   }
+  if (!overrides?.getSource) {
+    getSource.mockResolvedValue({ data: 'resources: []\n' });
+  }
   if (!overrides?.exportGet) {
     exportGet.mockResolvedValue({ body: 'resources: []\n' });
   }
@@ -86,12 +91,13 @@ function installCfsMocks(overrides?: Partial<{
   Object.assign(window.cfs as Record<string, unknown>, {
     manifests: {
       get,
+      getSource,
       status,
     },
     exportChannel: { get: exportGet },
   });
 
-  return { get, exportGet, status };
+  return { get, getSource, exportGet, status };
 }
 
 beforeEach(() => {
@@ -706,5 +712,75 @@ describe('useManifestEditorState — fetchData re-fetch', () => {
     expect(result.current.editedContent).toContain('submitted');
     expect(result.current.currentDisplayContent).toContain('submitted');
     expect(result.current.isEditable).toBe(true);
+  });
+
+  it('replaces stale buffers only after a canonical source reload succeeds', async () => {
+    const canonicalSource = deferred<{ data: string }>();
+    const getSource = vi.fn().mockReturnValue(canonicalSource);
+    installCfsMocks({ getSource });
+
+    const { result } = renderHook(() => useManifestEditorState('sample'));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => {
+      result.current.formatCache.current = { yaml: 'resources:\n  - name: stale\n' };
+      result.current.setEditedContent('resources:\n  - name: stale\n');
+      result.current.setSavedContent('resources:\n  - name: stale\n');
+    });
+
+    let reload!: Promise<void>;
+    act(() => {
+      reload = result.current.reloadCanonicalSource();
+    });
+
+    await waitFor(() => {
+      expect(result.current.currentDisplayContent).toBe('');
+      expect(result.current.editedContent).toBe('');
+      expect(result.current.savedContent).toBe('');
+      expect(result.current.isEditable).toBe(false);
+    });
+
+    await act(async () => {
+      canonicalSource.resolve({ data: 'resources:\n  - name: restored\n' });
+      await reload;
+    });
+
+    expect(result.current.currentDisplayContent).toContain('restored');
+    expect(result.current.editedContent).toContain('restored');
+    expect(result.current.savedContent).toContain('restored');
+    expect(result.current.formatCache.current).toEqual({
+      yaml: 'resources:\n  - name: restored\n',
+    });
+    expect(result.current.isEditable).toBe(true);
+  });
+
+  it('keeps stale buffers cleared when canonical source reload fails', async () => {
+    const getSource = vi.fn().mockRejectedValue(new Error('canonical IPC unavailable'));
+    installCfsMocks({ getSource });
+
+    const { result } = renderHook(() => useManifestEditorState('sample'));
+    await waitFor(() => expect(result.current.loading).toBe(false));
+
+    act(() => {
+      result.current.formatCache.current = { yaml: 'resources:\n  - name: stale\n' };
+      result.current.setEditedContent('resources:\n  - name: stale\n');
+      result.current.setSavedContent('resources:\n  - name: stale\n');
+    });
+
+    let reloadError: unknown;
+    await act(async () => {
+      try {
+        await result.current.reloadCanonicalSource();
+      } catch (err) {
+        reloadError = err;
+      }
+    });
+
+    expect(reloadError).toEqual(new Error('canonical IPC unavailable'));
+    expect(result.current.currentDisplayContent).toBe('');
+    expect(result.current.editedContent).toBe('');
+    expect(result.current.savedContent).toBe('');
+    expect(result.current.formatCache.current).toEqual({});
+    expect(result.current.isEditable).toBe(false);
   });
 });

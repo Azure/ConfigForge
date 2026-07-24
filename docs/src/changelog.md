@@ -3,6 +3,11 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.89-author.1 — 2026-07-23
+
+- **Brought the macOS author flavor through the full July parity batch.** It now includes workspace pill tabs, sortable baseline data, safe Undo, searchable multi-select setting creation, Excel-style keyboard editing, nested multi-value rows, filtered-add visibility, and accessible modal focus while preserving the author-only capability boundary.
+- **Resolved all current dependency alerts** with DOMPurify 3.4.12, fast-uri 3.1.4, React Router 7.18.0, and an exact sharp 0.35.0 pin.
+
 ## v0.3.87-author.1 — 2026-07-21
 
 - **Removed the local Server 2025 `ImpersonateClient` manifest override** while retaining shared minimum-version handling for oscfg 1.3.9 or newer.

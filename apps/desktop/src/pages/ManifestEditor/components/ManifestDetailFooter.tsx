@@ -15,6 +15,7 @@ import {
 import {
   ArrowCounterclockwiseRegular,
   ArrowDownloadRegular,
+  ArrowUndoRegular,
   ChevronDownRegular,
   ClipboardCheckmarkRegular,
   CopyRegular,
@@ -46,6 +47,9 @@ export interface ManifestDetailFooterProps {
   setExportOpen: (open: boolean) => void;
   duplicating: boolean;
   deleting: boolean;
+  undoing: boolean;
+  undoAvailable: boolean;
+  undoEditing: boolean;
   rationaleBusy: boolean;
   saveBlocked: boolean;
   onClose: () => void;
@@ -53,11 +57,12 @@ export interface ManifestDetailFooterProps {
   onExport: (format: "yaml" | "json" | "mof" | "excel") => void;
   onExportDocs: () => void;
   onDelete: () => void;
+  onUndo: () => void;
   onSaveClick: () => void;
 }
 
 const footerLinkClass =
-  "cfs-footer-action cfs-footer-link inline-flex h-8 shrink-0 items-center justify-center gap-2 rounded px-3 text-xs font-medium text-slate-700 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-slate-300 dark:hover:bg-slate-800";
+  "cfs-footer-action cfs-footer-link inline-flex h-8 shrink-0 items-center justify-center gap-2 rounded px-3 text-sm font-medium text-slate-700 outline-none hover:bg-slate-100 focus-visible:ring-2 focus-visible:ring-blue-600 dark:text-slate-300 dark:hover:bg-slate-800";
 
 export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   manifestName,
@@ -69,6 +74,9 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   setExportOpen,
   duplicating,
   deleting,
+  undoing,
+  undoAvailable,
+  undoEditing,
   rationaleBusy,
   saveBlocked,
   onClose,
@@ -76,6 +84,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   onExport,
   onExportDocs,
   onDelete,
+  onUndo,
   onSaveClick,
 }: ManifestDetailFooterProps) {
   const { t } = useTranslation(["manifest-editor", "common", "manifests"]);
@@ -89,7 +98,8 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
     handleDeploy,
     handleRevert,
   } = deploy;
-  const busy = deleting || deploying || reverting || saving || editing;
+  const operationBusy = deleting || undoing || deploying || reverting || saving || rationaleBusy;
+  const busy = operationBusy || editing;
   const deployApi = hasCfsNamespace("deploy") ? safeCfs("deploy") : undefined;
   const revertApi = hasCfsNamespace("revert") ? safeCfs("revert") : undefined;
   const canDeploy = HAS_DEPLOY && typeof deployApi?.run === "function";
@@ -136,6 +146,28 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               <span className="cfs-footer-secondary-label">
                 {t("actions.deleteBaseline")}
               </span>
+            </Button>
+
+            <div
+              className="cfs-footer-divider mx-1 h-6 w-px shrink-0 bg-slate-200 dark:bg-slate-700"
+              aria-hidden="true"
+            />
+
+            <Button
+              appearance="subtle"
+              size="small"
+              icon={undoing ? <Spinner size="tiny" /> : <ArrowUndoRegular />}
+              onClick={onUndo}
+              disabled={operationBusy || !undoAvailable}
+              title={
+                undoAvailable
+                  ? t(undoEditing ? "actions.undoEditTitle" : "actions.undoTitle")
+                  : t("actions.undoUnavailable")
+              }
+              aria-label={t("actions.undo")}
+              className="cfs-footer-action shrink-0"
+            >
+              <span className="cfs-footer-secondary-label">{t("actions.undo")}</span>
             </Button>
 
             <div
@@ -343,7 +375,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
               if (viewerMode === "visual") beginEditing("visual");
               else beginEditing();
             }}
-            disabled={!canEdit}
+            disabled={busy || !canEdit}
             title={
               !canEdit
                 ? t(

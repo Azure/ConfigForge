@@ -32,15 +32,16 @@ export function electronRestoreClient(): RestoreClient {
       return data.content;
     },
     async fetchCurrentYaml(name) {
-      // `manifests.status` returns reconstructed YAML for the
-      // currently-registered manifest. A successful null response means
-      // there is no current registration; transport/IPC failures must
-      // propagate so safeRestore refuses to overwrite unknown state.
-      const json = await cfs.manifests.status(name);
-      const data = (json as { data?: unknown }).data;
-      if (typeof data === 'string') return data;
-      if (data == null) return '';
-      return JSON.stringify(data, null, 2);
+      // Use the canonical registered source, not `manifests.status` or an
+      // export fallback. Reconstructed live YAML can omit settings that are
+      // not currently visible to oscfg and is unsafe as a recovery snapshot.
+      const result = await cfs.manifests.getSource(name);
+      const data = (result as { data?: unknown }).data;
+      if (data === null) return '';
+      if (typeof data !== 'string') {
+        throw new Error(`Canonical source YAML is unavailable for manifest '${name}'`);
+      }
+      return data;
     },
     async saveAutoSnapshot(name, currentYaml, message) {
       await cfs.history.save({ name, content: currentYaml, message });

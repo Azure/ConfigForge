@@ -9,7 +9,7 @@
  * legacy filename compatibility, sort order, OneDrive mtime drift, missing
  * dirs/files, concurrent ops, large/unicode content, meta files.
  */
-import { afterEach, beforeEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { mkdir, mkdtemp, readdir, readFile, rm, stat, utimes, writeFile } from 'fs/promises';
 import { tmpdir } from 'os';
 import path from 'path';
@@ -233,9 +233,7 @@ describe('deleteSnapshot', () => {
 
   it('is idempotent for non-existent ids', async () => {
     await mkdir(path.join(HISTORY_ROOT, 'm1'), { recursive: true });
-    await expect(
-      deleteSnapshot('m1', '2026-01-01T00-00-00.000Z'),
-    ).resolves.toBeUndefined();
+    await expect(deleteSnapshot('m1', '2026-01-01T00-00-00.000Z')).resolves.toBeUndefined();
   });
 
   it('does not delete content when only meta exists (sanity)', async () => {
@@ -262,13 +260,28 @@ describe('getHistory sort order', () => {
     expect(list.map((e) => e.id)).toEqual([c.id, b.id, a.id]);
   });
 
+  it('keeps same-millisecond snapshots in creation order', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-23T06:00:00.000Z'));
+    try {
+      const first = await saveSnapshot('m1', 'first');
+      const second = await saveSnapshot('m1', 'second');
+      const third = await saveSnapshot('m1', 'third');
+
+      expect(first.id).toMatch(/\.000Z\.00000000[0-9a-f]{8}$/);
+      expect(second.id).toMatch(/\.000Z\.00000001[0-9a-f]{8}$/);
+      expect(third.id).toMatch(/\.000Z\.00000002[0-9a-f]{8}$/);
+      const list = await getHistory('m1');
+      expect(list.map((entry) => entry.id)).toEqual([third.id, second.id, first.id]);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('uses embedded timestamp, not mtime (OneDrive sync drift)', async () => {
     const dir = path.join(HISTORY_ROOT, 'm1');
     await mkdir(dir, { recursive: true });
-    const ids = [
-      '2026-04-21T10-00-00.000Z',
-      '2026-04-22T10-00-00.000Z',
-    ];
+    const ids = ['2026-04-21T10-00-00.000Z', '2026-04-22T10-00-00.000Z'];
     for (const id of ids) {
       await writeFile(path.join(dir, `${id}.osc.yaml`), 'x', 'utf8');
     }
@@ -384,21 +397,28 @@ describe('concurrent operations', () => {
     expect(list.length).toBe(N);
   });
   it('reads while writes are in flight return a consistent slice', async () => {
-    const writes = Array.from({ length: 5 }, (_, i) =>
-      new Promise<void>((resolve) => {
-        setTimeout(async () => {
-          await saveSnapshot('m1', `c${i}`);
-          resolve();
-        }, i * 5);
-      }),
+    const writes = Array.from(
+      { length: 5 },
+      (_, i) =>
+        new Promise<void>((resolve) => {
+          setTimeout(async () => {
+            await saveSnapshot('m1', `c${i}`);
+            resolve();
+          }, i * 5);
+        }),
     );
-    const reads = Array.from({ length: 3 }, (_, i) =>
-      new Promise<number>((resolve) => {
-        setTimeout(async () => {
-          const list = await getHistory('m1');
-          resolve(list.length);
-        }, i * 4 + 1);
-      }),
+    const reads = Array.from(
+      { length: 3 },
+      (_, i) =>
+        new Promise<number>((resolve) => {
+          setTimeout(
+            async () => {
+              const list = await getHistory('m1');
+              resolve(list.length);
+            },
+            i * 4 + 1,
+          );
+        }),
     );
     await Promise.all([...writes, ...reads]);
     const finalList = await getHistory('m1');
@@ -476,6 +496,21 @@ describe('on-disk layout (activity-route compatibility)', () => {
 // ── Dedupe by content hash ────────────────────────────────────────────────
 
 describe('dedupe by content hash', () => {
+  it('dedupes against the latest same-millisecond sequence entry', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-23T06:00:00.000Z'));
+    try {
+      await saveSnapshot('m1', 'first');
+      const latest = await saveSnapshot('m1', 'latest');
+      const deduped = await saveSnapshot('m1', 'latest');
+
+      expect(deduped.id).toBe(latest.id);
+      expect(await getHistory('m1')).toHaveLength(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('does not write a new snapshot when content matches the immediate predecessor', async () => {
     const a = await saveSnapshot('m1', 'identical');
     await new Promise((r) => setTimeout(r, 5));

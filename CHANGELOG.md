@@ -1,5 +1,16 @@
 # Changelog
 
+## [0.3.89-author.1] - 2026-07-23
+
+### Added
+- **Completed the July workspace and Baseline Detail authoring revisions.** The macOS author flavor now includes pill workspace tabs, sortable and left-aligned baseline data, cell-wide status help, safe saved-history Undo, editing-aware Undo, searchable batch setting creation, spreadsheet keyboard navigation, nested multi-value rows, and duplicate protection.
+
+### Changed
+- **Hardened authoring reliability and accessibility.** Filtered additions remain visible, Add settings traps focus, toolbar keyboard input is isolated from cell navigation, typed array additions preserve their element type, and same-millisecond history dedupe is deterministic.
+
+### Security
+- **Updated DOMPurify to 3.4.12, fast-uri to 3.1.4, sharp/libvips to 0.35.0, and React Router to 7.18.0.** The macOS author flavor now carries the same zero-alert dependency baseline as the unified release; sharp remains pinned exactly.
+
 ## [0.3.87-author.1] - 2026-07-21
 
 ### Changed
