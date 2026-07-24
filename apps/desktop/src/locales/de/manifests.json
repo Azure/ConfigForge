@@ -88,11 +88,13 @@
     "table": {
       "baseline": "Baseline",
       "compliant": "Konform",
+      "dateModified": "Änderungsdatum",
       "issues": "Probleme",
       "lastModifiedTitle": "Zuletzt geändert am {{date}}",
       "lastModifiedUnknown": "Datum der letzten Änderung nicht verfügbar",
       "noMatches": "Keine Baselines entsprechen der aktuellen Suche und den Filtern.",
       "openBaseline": "Baseline {{name}} öffnen",
+      "openCompliance": "Konformität für {{name}} öffnen",
       "operatingSystem": "Betriebssystem",
       "selectAll": "Alle gefilterten Baselines auswählen",
       "selectBaseline": "Baseline {{name}} auswählen",
@@ -194,6 +196,77 @@
     "deleteCount": "Löschen {{count}}"
   },
   "new": {
+    "setup": {
+      "browseFiles": "Dateien durchsuchen",
+      "browseTemplates": "Baselinevorlagen durchsuchen",
+      "cancel": "Abbrechen",
+      "changeTemplate": "Ändern",
+      "create": "Baseline erstellen",
+      "creating": "Baseline wird vorbereitet…",
+      "description": "Wählen Sie einen Ausgangspunkt. ConfigForge öffnet den Baseline-Editor, bevor etwas registriert wird.",
+      "emptyDescription": "Die für diese Methode erforderlichen Felder werden hier angezeigt.",
+      "emptyTitle": "Wählen Sie aus, wie Sie beginnen möchten",
+      "excelDropTitle": "Legen Sie hier eine Excel-Baseline ab",
+      "excelFormats": "CSV, TSV oder XLSX bis zu 10 MB",
+      "fileDropTitle": "Legen Sie hier eine Baseline-Datei ab",
+      "fileFormats": "OSConfig-YAML oder -JSON bis zu 10 MB",
+      "importing": "Baseline wird importiert…",
+      "importReady": "Bereit zur Überprüfung im Baseline-Editor.",
+      "methodLabel": "Wählen Sie eine Quelle für Ihre Baseline",
+      "methods": {
+        "custom": {
+          "description": "Beginnen Sie mit einer leeren Windows- oder Linux-Baseline.",
+          "title": "Eigene Baseline erstellen"
+        },
+        "excel": {
+          "description": "Konvertieren Sie eine Einstellungstabelle in eine bearbeitbare Baseline.",
+          "title": "Baseline aus Excel importieren"
+        },
+        "file": {
+          "description": "Verwenden Sie eine vorhandene OSConfig-YAML- oder -JSON-Datei.",
+          "title": "Vorhandene Baseline-Datei importieren"
+        },
+        "template": {
+          "description": "Beginnen Sie mit einer kuratierten Microsoft-Baseline.",
+          "title": "Vorlage aus der Baselinebibliothek auswählen"
+        },
+        "url": {
+          "description": "Rufen Sie eine öffentliche OSConfig-Baseline ab und prüfen Sie sie vor der Registrierung.",
+          "title": "Vorhandene Baseline von URL importieren"
+        }
+      },
+      "platformLabel": "Betriebssystem",
+      "selectedTemplate": "Ausgewählte Vorlage",
+      "templateDescription": "Durchsuchen Sie die Microsoft-Baselinebibliothek und passen Sie die ausgewählte Baseline anschließend im Editor an.",
+      "templatePicker": {
+        "loadFailed": "Die ausgewählte Vorlage konnte nicht geladen werden.",
+        "noMatches": "Keine Baselinevorlagen entsprechen diesen Filtern.",
+        "platforms": {
+          "all": "Alle Plattformen",
+          "linux": "Linux",
+          "windows": "Windows"
+        },
+        "search": "Baselinevorlagen durchsuchen",
+        "title": "Microsoft-Baselinevorlagen",
+        "useTemplate": "Als Vorlage verwenden"
+      },
+      "templateTitle": "Baselinevorlage",
+      "title": "Neue Baseline erstellen",
+      "urlHelp": "Nur öffentliche HTTP- oder HTTPS-Links können abgerufen werden.",
+      "urlLabel": "Baseline-URL",
+      "urlRequired": "Geben Sie vor dem Fortfahren eine Baseline-URL ein.",
+      "urlErrors": {
+        "authentication": "Die URL erfordert eine Authentifizierung oder ist gesperrt. Verwenden Sie einen öffentlichen Link oder laden Sie die Datei herunter und importieren Sie sie.",
+        "generic": "Abruf fehlgeschlagen: {{error}}",
+        "invalid": "Geben Sie eine gültige HTTP- oder HTTPS-URL ein, die auf eine YAML- oder JSON-Baseline verweist.",
+        "network": "ConfigForge konnte den Host nicht erreichen. Prüfen Sie die URL und Ihre Netzwerkverbindung.",
+        "notFound": "Die URL hat 404 zurückgegeben. Prüfen Sie, ob die Baseline unter dieser Adresse noch vorhanden ist.",
+        "privateAddress": "Private Adressen und Loopback-Adressen sind nicht zulässig. Verwenden Sie eine öffentliche Baseline-URL.",
+        "server": "Der Remoteserver hat einen Fehler zurückgegeben. Versuchen Sie es später erneut.",
+        "timeout": "Der Abruf wurde nach 30 Sekunden wegen Zeitüberschreitung beendet. Prüfen Sie die Verbindung oder verwenden Sie eine kleinere Baseline.",
+        "tooLarge": "Die Baseline überschreitet das Importlimit von 10 MB."
+      }
+    },
     "extracted": {
       "text1": "Wird geladen…",
       "text2": "Zurück",

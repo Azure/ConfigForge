@@ -156,11 +156,16 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
       setImportResult(null);
 
       try {
-        const text = await file.text();
-        const result = await importClient.fromContent({
-          filename: file.name,
-          content: text,
-        });
+        const request = file.name.toLowerCase().endsWith(".xlsx")
+          ? {
+              filename: file.name,
+              bytes: new Uint8Array(await file.arrayBuffer()),
+            }
+          : {
+              filename: file.name,
+              content: await file.text(),
+            };
+        const result = await importClient.fromContent(request);
 
         if (result.yaml) {
           setYamlContent(result.yaml);
@@ -183,22 +188,33 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
     [importClient],
   );
 
-  /** Hydrate form from sessionStorage when navigated from Baseline Library. */
-  const hydrateFromLibraryTemplate = useCallback(() => {
-    const content = sessionStorage.getItem("baseline-template-content");
-    const templateName = sessionStorage.getItem("baseline-template-name");
-    const templatePlatform = sessionStorage.getItem("baseline-template-platform") as Platform | null;
+  const clearImport = useCallback(() => {
+    setImportResult(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  }, []);
 
-    if (content) {
+  const applyTemplate = useCallback(
+    (content: string, templateName: string, templatePlatform: Platform) => {
       setYamlContent(content);
       setSourceType("content");
       setActiveTab("yaml");
-    }
-    if (templateName) {
       setName(templateName.replace(/[^a-zA-Z0-9_-]/g, "-").substring(0, 64));
-    }
-    if (templatePlatform === "windows" || templatePlatform === "linux") {
       setPlatform(templatePlatform);
+      requestAnimationFrame(() => window.scrollTo(0, 0));
+    },
+    [],
+  );
+
+  /** Hydrate form from sessionStorage when navigated from Baseline Library. */
+  const hydrateFromLibraryTemplate = useCallback((): boolean => {
+    const content = sessionStorage.getItem("baseline-template-content");
+    const templateName = sessionStorage.getItem("baseline-template-name");
+    const templatePlatform = sessionStorage.getItem("baseline-template-platform") as Platform | null;
+    const validPlatform =
+      templatePlatform === "windows" || templatePlatform === "linux" ? templatePlatform : null;
+
+    if (content) {
+      applyTemplate(content, templateName ?? "Microsoft-Baseline", validPlatform ?? "windows");
     }
 
     sessionStorage.removeItem("baseline-template-content");
@@ -209,10 +225,8 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
     // resources), Monaco's setValue triggers a layout pass + cursor
     // placement that can scroll the page. Re-scroll to top after a
     // rAF so the browser's layout is flushed first.
-    if (content) {
-      requestAnimationFrame(() => window.scrollTo(0, 0));
-    }
-  }, []);
+    return Boolean(content);
+  }, [applyTemplate]);
 
   /** True iff the user has typed or imported anything beyond the default scaffold. */
   const hasUserContent = useCallback(
@@ -259,7 +273,9 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
     handleJsonChange,
     handlePlatformSwitch,
     handleImport,
+    clearImport,
     syncYamlToJson,
+    applyTemplate,
     hydrateFromLibraryTemplate,
     hasUserContent,
   };

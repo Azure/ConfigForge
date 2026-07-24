@@ -235,6 +235,28 @@ describe("useNewManifestForm", () => {
     expect(result.current.importing).toBe(false);
   });
 
+  it("handleImport preserves XLSX files as binary bytes", async () => {
+    const fromContent = vi.fn().mockResolvedValue({
+      type: "baseline-spreadsheet",
+      filename: "baseline.xlsx",
+      yaml: "resources: []\n",
+      data: { settingCount: 0 },
+    });
+    const { result } = renderHook(() =>
+      useNewManifestForm({ importClient: makeImportClient(fromContent) }),
+    );
+    const file = new File([new Uint8Array([0x50, 0x4b, 0x03, 0x04])], "baseline.xlsx");
+
+    await act(async () => {
+      await result.current.handleImport(file);
+    });
+
+    expect(fromContent).toHaveBeenCalledWith({
+      filename: "baseline.xlsx",
+      bytes: new Uint8Array([0x50, 0x4b, 0x03, 0x04]),
+    });
+  });
+
   it("handleImport on failure sets error and leaves yamlContent unchanged", async () => {
     const fromContent = vi.fn().mockRejectedValue(new Error("parse failed"));
     const { result } = renderHook(() =>
@@ -255,6 +277,26 @@ describe("useNewManifestForm", () => {
     expect(result.current.importResult).toBeNull();
   });
 
+  it("clearImport removes a previously selected import", async () => {
+    const fromContent = vi.fn().mockResolvedValue({
+      type: "manifest",
+      filename: "imported.osc.yaml",
+      yaml: "resources: []\n",
+      data: { resourceCount: 0 },
+    });
+    const { result } = renderHook(() =>
+      useNewManifestForm({ importClient: makeImportClient(fromContent) }),
+    );
+    await act(async () => {
+      await result.current.handleImport(new File(["resources: []"], "imported.osc.yaml"));
+    });
+    expect(result.current.importResult).not.toBeNull();
+
+    act(() => result.current.clearImport());
+
+    expect(result.current.importResult).toBeNull();
+  });
+
   it("hydrateFromLibraryTemplate loads name/platform/content from sessionStorage and clears the keys", () => {
     sessionStorage.setItem("baseline-template-content", "resources: []\n");
     sessionStorage.setItem("baseline-template-name", "CIS L1 Workstation");
@@ -262,10 +304,12 @@ describe("useNewManifestForm", () => {
 
     const { result } = renderHook(() => useNewManifestForm({ importClient: makeImportClient() }));
 
+    let hydrated = false;
     act(() => {
-      result.current.hydrateFromLibraryTemplate();
+      hydrated = result.current.hydrateFromLibraryTemplate();
     });
 
+    expect(hydrated).toBe(true);
     expect(result.current.yamlContent).toBe("resources: []\n");
     expect(result.current.name).toBe("CIS-L1-Workstation"); // sanitised
     expect(result.current.platform).toBe("linux");
@@ -274,6 +318,23 @@ describe("useNewManifestForm", () => {
     expect(sessionStorage.getItem("baseline-template-content")).toBeNull();
     expect(sessionStorage.getItem("baseline-template-name")).toBeNull();
     expect(sessionStorage.getItem("baseline-template-platform")).toBeNull();
+  });
+
+  it("applyTemplate loads an in-page library selection", () => {
+    const { result } = renderHook(() => useNewManifestForm({ importClient: makeImportClient() }));
+
+    act(() => {
+      result.current.applyTemplate(
+        "resources: []\n",
+        "Windows Server 2025 - Member Server",
+        "windows",
+      );
+    });
+
+    expect(result.current.yamlContent).toBe("resources: []\n");
+    expect(result.current.name).toBe("Windows-Server-2025---Member-Server");
+    expect(result.current.platform).toBe("windows");
+    expect(result.current.activeTab).toBe("yaml");
   });
 
   it("hasUserContent returns false on the default scaffold and true after the user types a name", () => {
