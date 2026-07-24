@@ -1183,7 +1183,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                           ) : (
                                             <span
                                               key={`${setting.id}:${column}:${arrayIndex}`}
-                                              className="block px-3 py-2"
+                                              className="block min-w-0 max-w-full whitespace-pre-wrap break-words px-3 py-2 [overflow-wrap:anywhere]"
                                             >
                                               {itemValue}
                                             </span>
