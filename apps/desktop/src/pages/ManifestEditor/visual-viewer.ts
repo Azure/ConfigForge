@@ -423,7 +423,11 @@ function appendVisualSchemaConstraintRows(
           depth + 1,
         );
         if (rows.length === before && rows.length < MAX_VISUAL_SCHEMA_ROWS) {
-          rows.push({ keyword: `${prefix}${keyword}`, values: [branch] });
+          rows.push({
+            keyword: `${prefix}${keyword}`,
+            values: [branch],
+            enforced: false,
+          });
         }
       }
     }
