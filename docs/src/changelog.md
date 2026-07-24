@@ -5,7 +5,7 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 ## v0.3.92 — 2026-07-24
 
-- **Patched the desktop update and packaging toolchains.** `electron-updater` 6.8.9 prevents credentials from crossing redirect origins, while `electron-builder` 26.15.3 closes the AppImage search-path vulnerability.
+- **Patched the desktop update, packaging, CSS, and archive toolchains.** The release closes the updater redirect, AppImage search-path, PostCSS source-map traversal, and `tar` recursion advisories.
 
 ## v0.3.91 — 2026-07-24
 

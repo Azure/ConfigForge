@@ -6,6 +6,7 @@
 
 - **Updated `electron-updater` to 6.8.9 and `builder-util-runtime` to 9.7.0.** This prevents update credentials such as `Authorization` and `PRIVATE-TOKEN` from being forwarded across cross-origin redirects (GHSA-p2f4-r6v6-j797).
 - **Updated `electron-builder` and `app-builder-lib` to 26.15.3.** The patched packaging toolchain prevents uncontrolled search path elements from influencing AppImage update execution (GHSA-7g7r-gx96-252g).
+- **Updated PostCSS to 8.5.23 and `tar` to 7.5.22.** These patches prevent previous source-map path traversal and uncontrolled recursion in crafted archive member selection (GHSA-r28c-9q8g-f849, GHSA-r292-9mhp-454m).
 
 ## [0.3.91] - 2026-07-24
 
