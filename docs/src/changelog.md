@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.90-author.1 — 2026-07-23
+
+- **Fixed Baseline Detail layout collisions** so footer actions reflow safely and long multi-value Visual rows remain inside their columns in view and edit modes.
+
 ## v0.3.89-author.1 — 2026-07-23
 
 - **Brought the macOS author flavor through the full July parity batch.** It now includes workspace pill tabs, sortable baseline data, safe Undo, searchable multi-select setting creation, Excel-style keyboard editing, nested multi-value rows, filtered-add visibility, and accessible modal focus while preserving the author-only capability boundary.

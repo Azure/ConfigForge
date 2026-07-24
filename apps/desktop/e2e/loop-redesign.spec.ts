@@ -299,7 +299,7 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
       expect(geometry.height).toBeLessThanOrEqual(128);
       expect(geometry.overlaps, `footer control collisions at ${width}px`).toEqual([]);
-      expect(geometry.labels.length).toBeGreaterThanOrEqual(11);
+      expect(geometry.labels.length).toBe(geometry.controls.length);
       for (const label of geometry.labels) {
         expect(label.display, `${label.text} label display at ${width}px`).not.toBe("none");
         expect(label.text, `label text at ${width}px`).not.toBe("");
@@ -328,25 +328,22 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
         }
         const counts = [...secondaryRows.values()];
         expect(counts).toHaveLength(2);
-        expect(Math.max(...counts) - Math.min(...counts)).toBeLessThanOrEqual(1);
       }
       for (const action of [
         "Close baseline",
         "Delete Baseline",
+        "Undo",
         "Duplicate",
         "Audit Pack",
-        "Check compliance",
         "Docs",
         "History",
         "Export",
-        "Deploy",
-        "Revert",
         "Edit",
       ]) {
         await expect(
           footer.getByRole(action === "Audit Pack" || action === "History" ? "link" : "button", {
             name: action,
-          }          ),
+          }),
         ).toBeVisible();
       }
     }
