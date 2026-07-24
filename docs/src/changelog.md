@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.90 — 2026-07-23
+
+- **Fixed Baseline Detail layout collisions.** The sticky footer reflows before labeled actions overlap, and long multi-value Visual rows remain inside their Expected and Applied columns in both view and edit modes.
+
 ## v0.3.89 — 2026-07-23
 
 - **Completed the Baseline Detail authoring follow-up.** Visual editing now has searchable batch setting selection, spreadsheet keyboard navigation, edit-session Undo, filtered-category search, nested multi-value rows, duplicate protection, and accessible modal focus.
