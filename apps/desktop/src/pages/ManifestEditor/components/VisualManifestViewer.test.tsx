@@ -449,6 +449,36 @@ describe("VisualManifestViewer", () => {
     expect(screen.queryByRole("heading", { name: "Category" })).not.toBeInTheDocument();
   });
 
+  it("wraps long multi-value rows inside their cells in view mode", () => {
+    const longValue = "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384";
+    renderViewer(
+      `resources:
+  - name: CryptographySSLCipherSuites
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Cryptography\\Configuration\\SSL\\00010002
+      valueName: Functions
+      valueType: MultiString
+      value:
+        - ${longValue}
+        - TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
+`,
+    );
+
+    const items = screen.getAllByText(longValue);
+    expect(items).toHaveLength(2);
+    for (const item of items) {
+      expect(item).toHaveClass(
+        "min-w-0",
+        "max-w-full",
+        "whitespace-pre-wrap",
+        "break-words",
+        "[overflow-wrap:anywhere]",
+      );
+      expect(item.closest("button")).toBeNull();
+    }
+  });
+
   it("clears search before focusing a per-table added setting", async () => {
     const user = userEvent.setup();
     renderEditable();
@@ -591,6 +621,13 @@ describe("VisualManifestViewer", () => {
     expect(
       screen.queryByText("BUILTIN\\Administrators, CONTOSO\\Security Admins"),
     ).not.toBeInTheDocument();
+    for (const item of screen.getAllByText("BUILTIN\\Administrators")) {
+      expect(item).toHaveClass(
+        "whitespace-pre-wrap",
+        "break-words",
+        "[overflow-wrap:anywhere]",
+      );
+    }
 
     await user.click(
       screen.getByRole("button", {

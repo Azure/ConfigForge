@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.90-author.1] - 2026-07-23
+
+### Fixed
+- **Prevented Baseline Detail footer actions from colliding at scaled and localized widths.** The labeled action bar reflows before the center strip can overlap Close baseline or Edit/Save.
+- **Contained long multi-value rows inside their Visual table columns.** Read-only Expected and Applied values now wrap like edit mode instead of painting across adjacent cells.
+
 ## [0.3.89-author.1] - 2026-07-23
 
 ### Added

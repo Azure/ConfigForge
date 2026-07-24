@@ -308,7 +308,9 @@
   }
 }
 
-@container manifest-footer (max-width: 1220px) {
+/* Full localized labels plus deploy/revert need roughly 1.7k CSS pixels.
+   Reflow before the center strip can overflow into Close or Edit/Save. */
+@container manifest-footer (max-width: 1760px) {
   .cfs-footer-bar {
     grid-template-areas:
       'close primary'
