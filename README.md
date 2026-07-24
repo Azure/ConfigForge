@@ -147,7 +147,8 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.87-author.1** (current) | macOS author flavor removes the local `ImpersonateClient` manifest override while retaining shared minimum-version handling |
+| **0.3.89-author.1** (current) | macOS author flavor adds the full July workspace and Baseline Detail authoring revisions plus the zero-alert dependency baseline |
+| **0.3.87-author.1** | macOS author flavor removes the local `ImpersonateClient` manifest override while retaining shared minimum-version handling |
 | **0.3.86-author.1** | macOS author flavor includes current OSConfig-compatible `ImpersonateClient` YAML and shared minimum-version handling |
 | **0.3.85-author.1** | macOS author flavor keeps My Baselines rows behind the opaque sticky column header while scrolling |
 | **0.3.84-author.1** | macOS author flavor with exports limited to YAML, JSON, MOF, and CSV plus all high-severity development dependency advisories cleared |
