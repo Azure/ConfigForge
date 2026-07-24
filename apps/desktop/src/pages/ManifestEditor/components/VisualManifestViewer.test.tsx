@@ -401,6 +401,13 @@ describe("VisualManifestViewer", () => {
     expect(within(pane).getByRole("columnheader", { name: "OS" })).toBeInTheDocument();
     expect(within(pane).getByRole("columnheader", { name: "Setting Name" })).toBeInTheDocument();
     expect(within(pane).getByRole("columnheader", { name: "Description" })).toBeInTheDocument();
+    const close = within(pane).getByRole("button", { name: "Close Add settings" });
+    const cancel = within(pane).getByRole("button", { name: "Cancel" });
+    cancel.focus();
+    await user.tab();
+    expect(close).toHaveFocus();
+    await user.tab({ shift: true });
+    expect(cancel).toHaveFocus();
     await user.click(
       within(pane).getByRole("checkbox", {
         name: "Select Microsoft.Windows/Registry",
