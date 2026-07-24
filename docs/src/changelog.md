@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.91-author.1 — 2026-07-24
+
+- **Added Visual Test schema rules to the macOS author flavor.** Expected value cells show stacked constraints, governed edits enforce the supported subset, malformed typed values are repaired safely, and unsupported patterns are identified as reference-only.
+
 ## v0.3.90-author.1 — 2026-07-23
 
 - **Fixed Baseline Detail layout collisions** so footer actions reflow safely and long multi-value Visual rows remain inside their columns in view and edit modes.
