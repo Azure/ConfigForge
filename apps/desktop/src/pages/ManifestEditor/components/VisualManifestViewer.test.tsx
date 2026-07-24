@@ -216,6 +216,18 @@ describe("VisualManifestViewer", () => {
           valueName: Timeout
           valueType: Dword
           value: 3000
+  - name: Complex pattern
+    type: Microsoft.OSConfig/Test
+    properties:
+      schema:
+        pattern: (a)
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKLM:\\Software\\Example
+          valueName: ComplexPattern
+          valueType: String
+          value: a
 `;
     const view = renderViewer(schemaSource);
 
@@ -230,6 +242,10 @@ describe("VisualManifestViewer", () => {
     expect(within(rangeRules).getByText("2000")).toBeInTheDocument();
     expect(within(rangeRules).getByText("maximum")).toBeInTheDocument();
     expect(within(rangeRules).getByText("5000")).toBeInTheDocument();
+    expect(screen.getByText("Reference only")).toHaveAttribute(
+      "title",
+      "Visual editing displays this rule but does not enforce it.",
+    );
 
     view.unmount();
     renderEditable(schemaSource);

@@ -111,9 +111,13 @@ function formatVisualSchemaValue(value: unknown): string {
 }
 
 function VisualSchemaRuleList({
+  displayOnlyDescription,
+  displayOnlyLabel,
   id,
   rows,
 }: {
+  displayOnlyDescription: string;
+  displayOnlyLabel: string;
   id?: string;
   rows: readonly VisualSchemaConstraintRow[];
 }) {
@@ -129,9 +133,19 @@ function VisualSchemaRuleList({
           data-schema-keyword={row.keyword}
           className="grid min-w-0 grid-cols-[minmax(5rem,max-content)_minmax(0,1fr)] gap-x-3 py-1.5 first:pt-0 last:pb-0"
         >
-          <code className="text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-            {row.keyword}
-          </code>
+          <span className="min-w-0">
+            <code className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+              {row.keyword}
+            </code>
+            {row.enforced === false && (
+              <span
+                title={displayOnlyDescription}
+                className="mt-0.5 block text-[10px] font-semibold text-amber-700 dark:text-amber-300"
+              >
+                {displayOnlyLabel}
+              </span>
+            )}
+          </span>
           <span className="min-w-0 space-y-0.5">
             {row.values.map((value, valueIndex) => (
               <code
@@ -1380,6 +1394,10 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                     >
                                       {hasSchemaRules ? (
                                         <VisualSchemaRuleList
+                                          displayOnlyDescription={t(
+                                            "visual.schemaReferenceOnlyDescription",
+                                          )}
+                                          displayOnlyLabel={t("visual.schemaReferenceOnly")}
                                           id={schemaRulesId}
                                           rows={schemaRows}
                                         />
@@ -1392,7 +1410,13 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                   ) : (
                                     <span className="block whitespace-pre-wrap break-words px-3 py-2.5 [overflow-wrap:anywhere]">
                                       {hasSchemaRules ? (
-                                        <VisualSchemaRuleList rows={schemaRows} />
+                                        <VisualSchemaRuleList
+                                          displayOnlyDescription={t(
+                                            "visual.schemaReferenceOnlyDescription",
+                                          )}
+                                          displayOnlyLabel={t("visual.schemaReferenceOnly")}
+                                          rows={schemaRows}
+                                        />
                                       ) : (
                                         visibleValue
                                       )}

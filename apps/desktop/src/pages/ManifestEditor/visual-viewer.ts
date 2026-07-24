@@ -349,6 +349,7 @@ function readSchemaDesired(
 export interface VisualSchemaConstraintRow {
   keyword: string;
   values: unknown[];
+  enforced?: false;
 }
 
 interface VisualSchemaTraversalBudget {
@@ -394,10 +395,14 @@ function appendVisualSchemaConstraintRows(
       if (rows.length >= MAX_VISUAL_SCHEMA_ROWS) break;
       if (!hasOwn(record, keyword)) continue;
       const value = record[keyword];
+      const enforced =
+        keyword !== "pattern" ||
+        (typeof value === "string" && compileVisualSchemaPattern(value) !== null);
       rows.push({
         keyword: `${prefix}${keyword}`,
         values:
           (keyword === "enum" || keyword === "type") && Array.isArray(value) ? value : [value],
+        ...(enforced ? {} : { enforced: false }),
       });
     }
 
@@ -556,8 +561,8 @@ const VISUAL_SCHEMA_SUPPORTED_KEYWORDS = new Set([
   "oneOf",
 ]);
 
-function isSafeVisualSchemaPattern(pattern: string, value: string): boolean {
-  if (pattern.length > 256 || value.length > 4_096) return false;
+function isSafeVisualSchemaPattern(pattern: string): boolean {
+  if (pattern.length > 256) return false;
   let escaped = false;
   let inCharacterClass = false;
   let quantifiers = 0;
@@ -588,6 +593,15 @@ function isSafeVisualSchemaPattern(pattern: string, value: string): boolean {
     if (quantifiers > 1 || character === "{") return false;
   }
   return true;
+}
+
+function compileVisualSchemaPattern(pattern: string): RegExp | null {
+  if (!isSafeVisualSchemaPattern(pattern)) return null;
+  try {
+    return new RegExp(pattern);
+  } catch {
+    return null;
+  }
 }
 
 interface VisualSchemaEvaluationContext {
@@ -652,15 +666,9 @@ function evaluateVisualSchemaRecord(
   if (hasOwn(record, "pattern")) {
     if (typeof record.pattern !== "string") unsupported = true;
     else if (typeof value === "string") {
-      if (!isSafeVisualSchemaPattern(record.pattern, value)) {
-        unsupported = true;
-      } else {
-        try {
-          if (!new RegExp(record.pattern).test(value)) return "mismatch";
-        } catch {
-          unsupported = true;
-        }
-      }
+      const pattern = compileVisualSchemaPattern(record.pattern);
+      if (!pattern) unsupported = true;
+      else if (!pattern.test(value)) return "mismatch";
     }
   }
 

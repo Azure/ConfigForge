@@ -285,6 +285,8 @@
     "noSearchMatches": "No settings match the current search.",
     "requiredCells_one": "Complete {{count}} required cell before saving.",
     "requiredCells_other": "Complete {{count}} required cells before saving.",
+    "schemaReferenceOnly": "Reference only",
+    "schemaReferenceOnlyDescription": "Visual editing displays this rule but does not enforce it.",
     "selectAllInCategory": "Select all {{category}} settings",
     "selectRow": "Select {{name}}",
     "selectedCount_one": "{{count}} setting selected",
