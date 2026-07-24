@@ -293,6 +293,7 @@
       "number": "Enter a number.",
       "object": "Enter an object value.",
       "objectDocument": "The baseline must be a YAML object.",
+      "schemaConstraint": "Enter a value that satisfies the rules shown under Expected value.",
       "serialize": "The edited baseline could not be serialized.",
       "structured": "Enter valid YAML or JSON.",
       "wholeNumber": "Enter a whole number."
@@ -301,6 +302,8 @@
     "noSearchMatches": "No settings match the current search.",
     "requiredCells_one": "Complete {{count}} required cell before saving.",
     "requiredCells_other": "Complete {{count}} required cells before saving.",
+    "schemaReferenceOnly": "Reference only",
+    "schemaReferenceOnlyDescription": "Visual editing displays this rule but does not enforce it.",
     "selectAllInCategory": "Select all {{category}} settings",
     "selectRow": "Select {{name}}",
     "selectedCount_one": "{{count}} setting selected",

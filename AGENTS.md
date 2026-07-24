@@ -456,6 +456,7 @@ When you add a new matcher, **wire it into BOTH paths** or the counter and the p
 - `visual-viewer.ts` assigns stable source paths through nested `Microsoft.OSConfig/Group` arrays and `Microsoft.OSConfig/Test` wrappers. A Test row edits the inner resource properties while its logical name and desired schema remain bound to the wrapper.
 - Mutations parse and dump with `LOSSLESS_MANIFEST_SCHEMA`; QWord integers above `Number.MAX_SAFE_INTEGER` remain exact.
 - Cell coercion follows existing values and resource metadata (`Registry.valueType`, CSP `type`) instead of turning every edit into a string.
+- Test schema constraints render as stacked technical rows in **Expected value** cells. Constraints are enforced only when the governed inner `value` is edited, so existing shipped mismatches remain viewable and unrelated edits are not retroactively blocked.
 - Unknown top-level, wrapper, leaf, property, and schema fields survive edits. Visual row deletion removes the logical Test wrapper or exact Group child rather than rebuilding the resource tree.
 - Add-row templates cover the ten concrete writable types; Group/Test construction remains available in Code because those structures are not safely representable as one blank flat row.
 
