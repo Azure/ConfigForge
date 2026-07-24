@@ -7,7 +7,7 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 - **Completed the Baseline Detail authoring follow-up.** Visual editing now has searchable batch setting selection, spreadsheet keyboard navigation, edit-session Undo, filtered-category search, nested multi-value rows, duplicate protection, and accessible modal focus.
 - **Hardened history and typed editing edge cases.** Same-millisecond snapshots dedupe deterministically, filtered additions remain visible, toolbar keyboard input is isolated from cell navigation, and new array entries preserve their scalar or structured type.
-- **Resolved all current Dependabot alerts** with DOMPurify 3.4.12, fast-uri 3.1.4, and an exact sharp 0.35.0 pin.
+- **Resolved all current Dependabot alerts** with DOMPurify 3.4.12, fast-uri 3.1.4, React Router 7.18.0, and an exact sharp 0.35.0 pin.
 
 ## v0.3.88 — 2026-07-22
 

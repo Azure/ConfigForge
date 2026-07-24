@@ -20,7 +20,7 @@
 
 ### Security
 
-- **Updated DOMPurify to 3.4.12, fast-uri to 3.1.4, and sharp/libvips to 0.35.0.** These updates resolve all five current Dependabot alerts; sharp is pinned exactly because it is a native cross-platform build dependency.
+- **Updated DOMPurify to 3.4.12, fast-uri to 3.1.4, sharp/libvips to 0.35.0, and React Router to 7.18.0.** These updates resolve all current Dependabot alerts; sharp is pinned exactly because it is a native cross-platform build dependency.
 
 ## [0.3.88] - 2026-07-22
 
