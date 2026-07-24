@@ -9,6 +9,7 @@ import {
   DESIRED_VALUE_COLUMN,
   SETTING_NAME_COLUMN,
   addVisualSettingSource,
+  appendVisualArrayItemSource,
   compareVisualValues,
   dumpVisualManifest,
   flattenVisualSettings,
@@ -16,11 +17,13 @@ import {
   groupVisualSettings,
   nextVisualSort,
   parseLosslessJson,
+  parseVisualArrayItemInput,
   parseVisualManifest,
   parseVisualCellInput,
   removeVisualSettingsSource,
   sortVisualSettings,
   stringifyLosslessJson,
+  updateVisualArrayItemSource,
   updateVisualCellSource,
   validateVisualSettings,
 } from "./visual-viewer";
@@ -622,11 +625,105 @@ resources:
     });
   });
 
-  it("identifies incomplete required cells in newly added top-level rows", () => {
-    const added = addVisualSettingSource(
-      "resources: []\n",
-      "Microsoft.Windows/Registry",
+  it("edits and appends multi-value setting attributes without flattening them", () => {
+    const source = `resources:
+  - name: Registry paths
+    type: Microsoft.Windows/UserRightsAssignment
+    properties:
+      name: SeRemoteInteractiveLogonRight
+      value:
+        - BUILTIN\\Administrators
+        - CONTOSO\\Security Admins
+`;
+    let setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const edited = updateVisualArrayItemSource(
+      source,
+      setting,
+      "value",
+      1,
+      "CONTOSO\\Tier 0 Admins",
     );
+    expect(edited.ok).toBe(true);
+    if (!edited.ok) return;
+
+    setting = flattenVisualSettings(parseVisualManifest(edited.source))[0];
+    const appended = appendVisualArrayItemSource(edited.source, setting, "value");
+    expect(appended.ok).toBe(true);
+    if (!appended.ok) return;
+
+    const document = parseVisualManifest(appended.source) as {
+      resources: Array<{ properties: { value: string[] } }>;
+    };
+    expect(document.resources[0].properties.value).toEqual([
+      "BUILTIN\\Administrators",
+      "CONTOSO\\Tier 0 Admins",
+      "",
+    ]);
+  });
+
+  it.each([
+    ["boolean", "true", false],
+    ["integer", "42", 0],
+    ["decimal", "1.5", 1.5],
+    ["object", "{ enabled: true }", {}],
+    ["nested array", "[alpha]", []],
+  ])("appends a type-preserving placeholder for a %s array", (_label, existing, expected) => {
+    const source = `resources:
+  - name: Typed values
+    type: Example/Typed
+    properties:
+      values:
+        - ${existing}
+`;
+    const setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const appended = appendVisualArrayItemSource(source, setting, "values");
+    expect(appended.ok).toBe(true);
+    if (!appended.ok) return;
+
+    const document = parseVisualManifest(appended.source) as {
+      resources: Array<{ properties: { values: unknown[] } }>;
+    };
+    expect(document.resources[0].properties.values.at(-1)).toEqual(expected);
+  });
+
+  it("appends a bigint placeholder without changing the element type", () => {
+    const source = `resources:
+  - name: QWord values
+    type: Example/Typed
+    properties:
+      values:
+        - 18446744073709551615
+`;
+    const setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const appended = appendVisualArrayItemSource(source, setting, "values");
+    expect(appended.ok).toBe(true);
+    if (!appended.ok) return;
+
+    const document = parseVisualManifest(appended.source) as {
+      resources: Array<{ properties: { values: unknown[] } }>;
+    };
+    const placeholder = document.resources[0].properties.values.at(-1);
+    expect(typeof placeholder).toBe("bigint");
+    expect(placeholder).toBe(BigInt("18446744073709551615"));
+  });
+
+  it("preserves scalar types when editing nested array values", () => {
+    expect(parseVisualArrayItemInput("false", true)).toEqual({
+      ok: true,
+      value: false,
+    });
+    expect(parseVisualArrayItemInput("42", 1)).toEqual({
+      ok: true,
+      value: 42,
+    });
+    expect(parseVisualArrayItemInput("4.5", 1)).toEqual({
+      ok: false,
+      error: "wholeNumber",
+    });
+  });
+
+  it("identifies incomplete required cells in newly added top-level rows", () => {
+    const added = addVisualSettingSource("resources: []\n", "Microsoft.Windows/Registry");
     expect(added.ok).toBe(true);
     if (!added.ok) return;
 

@@ -49,10 +49,7 @@ import {
 } from "./visual-viewer";
 import { readManifestViewerMode, writeManifestViewerMode } from "./viewer-mode-preference";
 import { electronRestoreClient } from "../../lib/electron-restore-client";
-import {
-  hasUndoableHistory,
-  undoLatestManifestChange,
-} from "./undo-latest";
+import { hasUndoableHistory, undoLatestManifestChange } from "./undo-latest";
 
 interface PendingWorkspaceNavigation {
   destination: string;
@@ -71,11 +68,15 @@ export function ManifestDetailPage() {
   const [deleting, setDeleting] = useState(false);
   const [undoing, setUndoing] = useState(false);
   const [undoAvailable, setUndoAvailable] = useState(false);
+  const [editUndoAvailable, setEditUndoAvailable] = useState(false);
+  const editUndoRef = useRef<(() => void) | null>(null);
   const [complianceDialogOpen, setComplianceDialogOpen] = useState(false);
-  const [pendingNavigation, setPendingNavigation] =
-    useState<PendingWorkspaceNavigation | null>(null);
-  const [navigationAfterSave, setNavigationAfterSave] =
-    useState<PendingWorkspaceNavigation | null>(null);
+  const [pendingNavigation, setPendingNavigation] = useState<PendingWorkspaceNavigation | null>(
+    null,
+  );
+  const [navigationAfterSave, setNavigationAfterSave] = useState<PendingWorkspaceNavigation | null>(
+    null,
+  );
   const [visualDraftValid, setVisualDraftValid] = useState(true);
   const visualDraftValidRef = useRef(true);
   const [viewerSelection, setViewerSelection] = useState<{
@@ -189,9 +190,8 @@ export function ManifestDetailPage() {
     if (!editing || activeFormat !== "yaml") return true;
     try {
       return (
-        validateVisualSettings(
-          flattenVisualSettings(parseVisualManifest(editedContent)),
-        ).length === 0
+        validateVisualSettings(flattenVisualSettings(parseVisualManifest(editedContent))).length ===
+        0
       );
     } catch {
       return false;
@@ -441,6 +441,19 @@ export function ManifestDetailPage() {
     undoing,
   ]);
 
+  const handleEditUndoStateChange = useCallback((available: boolean, undo: (() => void) | null) => {
+    editUndoRef.current = undo;
+    setEditUndoAvailable(available);
+  }, []);
+
+  const handleFooterUndo = useCallback(() => {
+    if (editing) {
+      editUndoRef.current?.();
+      return;
+    }
+    void handleUndoLatest();
+  }, [editing, handleUndoLatest]);
+
   // PR27: rationale-prompt wrapper. We intercept the Save click, ask the
   // user "why?", POST the rationale, then run the existing handleSave.
   // The hook is no-op when the YAML is byte-identical or structurally
@@ -647,18 +660,18 @@ export function ManifestDetailPage() {
           }}
         >
           <DialogBody className="h-full min-h-0">
-          <DialogTitle
-            action={
-              <Button
-                appearance="subtle"
-                icon={<DismissRegular />}
-                aria-label={t("actions.closeCompliance")}
-                onClick={() => setComplianceDialogOpen(false)}
-              />
-            }
-          >
-            {t("compliance.sectionTitle")}
-          </DialogTitle>
+            <DialogTitle
+              action={
+                <Button
+                  appearance="subtle"
+                  icon={<DismissRegular />}
+                  aria-label={t("actions.closeCompliance")}
+                  onClick={() => setComplianceDialogOpen(false)}
+                />
+              }
+            >
+              {t("compliance.sectionTitle")}
+            </DialogTitle>
             <DialogContent
               data-testid="compliance-dialog"
               className="min-h-0 overflow-y-auto px-0 pb-0"
@@ -747,8 +760,8 @@ export function ManifestDetailPage() {
             viewerMode={viewerMode}
             onViewerModeChange={handleViewerModeChange}
             onVisualDraftValidityChange={handleVisualDraftValidityChange}
+            onEditUndoStateChange={handleEditUndoStateChange}
           />
-
         </div>
       </div>
 
@@ -763,7 +776,8 @@ export function ManifestDetailPage() {
         duplicating={duplicating}
         deleting={deleting}
         undoing={undoing}
-        undoAvailable={undoAvailable}
+        undoAvailable={editing ? editUndoAvailable : undoAvailable}
+        undoEditing={editing}
         rationaleBusy={rationale.state.busy}
         saveBlocked={!visualEditValid}
         onClose={handleClose}
@@ -771,7 +785,7 @@ export function ManifestDetailPage() {
         onExport={handleExport}
         onExportDocs={handleExportDocs}
         onDelete={handleDelete}
-        onUndo={() => void handleUndoLatest()}
+        onUndo={handleFooterUndo}
         onCheckCompliance={handleCheckCompliance}
         onSaveClick={handleSaveClick}
       />

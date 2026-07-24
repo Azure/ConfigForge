@@ -131,11 +131,21 @@ function safeJoin(dir: string, file: string): string {
   return resolved;
 }
 
+let lastSnapshotTimestamp = '';
+let sameTimestampSequence = 0;
+
 function snapshotIdForTimestamp(isoTs: string): string {
-  // 8 random hex chars eliminate same-millisecond collisions and keep the id
-  // sortable by the leading timestamp (ASCII '.' < '0'..'9' < 'a'..'f').
-  const suffix = randomBytes(4).toString('hex');
-  return `${isoTs.replace(/:/g, '-')}.${suffix}`;
+  if (isoTs === lastSnapshotTimestamp) {
+    sameTimestampSequence += 1;
+  } else {
+    lastSnapshotTimestamp = isoTs;
+    sameTimestampSequence = 0;
+  }
+  // Sequence keeps same-millisecond saves ordered; entropy still protects
+  // against collisions across process restarts.
+  const sequence = sameTimestampSequence.toString(16).padStart(8, '0');
+  const entropy = randomBytes(4).toString('hex');
+  return `${isoTs.replace(/:/g, '-')}.${sequence}${entropy}`;
 }
 
 function filenameFromId(id: string): string {
@@ -192,7 +202,7 @@ async function readNewestSnapshot(
     const id = idFromFilename(f);
     // Sort key: parsed timestamp first, then id as tie-breaker.
     const ts = timestampFromId(id) ?? '';
-    const key = ts || id;
+    const key = ts ? `${ts}|${id}` : id;
     if (bestKey === null || key > bestKey) {
       bestKey = key;
       bestId = id;
@@ -226,11 +236,11 @@ async function pruneToRetention(dir: string, keep: number): Promise<number> {
     .filter((f) => f.endsWith('.osc.yaml'))
     .map((f) => {
       const id = idFromFilename(f);
-      return { id, file: f, sortKey: timestampFromId(id) ?? id };
+      return { id, file: f, timestamp: timestampFromId(id) ?? '' };
     });
   if (entries.length <= keep) return 0;
   // Sort newest first, then drop everything past `keep`.
-  entries.sort((a, b) => (a.sortKey < b.sortKey ? 1 : a.sortKey > b.sortKey ? -1 : 0));
+  entries.sort((a, b) => b.timestamp.localeCompare(a.timestamp) || b.id.localeCompare(a.id));
   const losers = entries.slice(keep);
   let removed = 0;
   for (const l of losers) {
@@ -240,7 +250,9 @@ async function pruneToRetention(dir: string, keep: number): Promise<number> {
       removed++;
     } catch (err) {
       // eslint-disable-next-line no-console
-      console.warn(`[history] retention prune failed for ${l.id}: ${err instanceof Error ? err.message : err}`);
+      console.warn(
+        `[history] retention prune failed for ${l.id}: ${err instanceof Error ? err.message : err}`,
+      );
     }
   }
   return removed;
@@ -295,9 +307,7 @@ export async function saveSnapshot(
       // resolveAuthor is documented as never-throws, but be defensive
       // anyway — author metadata is best-effort.
       // eslint-disable-next-line no-console
-      console.warn(
-        `[history] resolveAuthor failed: ${err instanceof Error ? err.message : err}`,
-      );
+      console.warn(`[history] resolveAuthor failed: ${err instanceof Error ? err.message : err}`);
       if (author === undefined) author = '';
       if (authorEmail === undefined) authorEmail = '';
     }
@@ -321,7 +331,9 @@ export async function saveSnapshot(
     let existingSize: number | undefined;
     try {
       existingSize = (await stat(newest.file)).size;
-    } catch { /* fine */ }
+    } catch {
+      /* fine */
+    }
     return {
       id: newest.id,
       manifestName,
@@ -492,15 +504,12 @@ export async function getHistory(manifestName: string): Promise<HistoryEntryMeta
   }
 
   // Sort newest first by parsed timestamp (deterministic, OneDrive-safe).
-  entries.sort((a, b) => (a.timestamp < b.timestamp ? 1 : a.timestamp > b.timestamp ? -1 : 0));
+  entries.sort((a, b) => b.timestamp.localeCompare(a.timestamp) || b.id.localeCompare(a.id));
   return entries;
 }
 
 /** Retrieve a specific snapshot by id, including full content. */
-export async function getSnapshot(
-  manifestName: string,
-  id: string,
-): Promise<HistoryEntry | null> {
+export async function getSnapshot(manifestName: string, id: string): Promise<HistoryEntry | null> {
   const dir = manifestDir(manifestName);
   assertValidId(id);
   const file = safeJoin(dir, filenameFromId(id));

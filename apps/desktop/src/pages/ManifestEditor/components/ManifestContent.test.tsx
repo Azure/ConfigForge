@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor } from "@testing-library/react";
+import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import type { ManifestEditorState } from "../state/useManifestEditorState";
@@ -94,6 +94,10 @@ describe("ManifestContent read-only Visual mode", () => {
       path: before
 `;
     const setEditedContent = vi.fn();
+    let undoEdit: (() => void) | null = null;
+    const onEditUndoStateChange = vi.fn((canUndo: boolean, undo: (() => void) | null) => {
+      undoEdit = canUndo ? undo : null;
+    });
     const state = {
       ...visualState(),
       editing: true,
@@ -116,32 +120,30 @@ describe("ManifestContent read-only Visual mode", () => {
           manifestName="sample"
           viewerMode="visual"
           onViewerModeChange={vi.fn()}
+          onEditUndoStateChange={onEditUndoStateChange}
         />
       </FluentProvider>,
     );
 
-    const undo = screen.getByRole("button", { name: "Undo" });
-    expect(undo).toBeDisabled();
-    await user.click(
-      screen.getByRole("button", { name: "Edit Path for Example setting" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Edit Path for Example setting" }));
     const input = screen.getByRole("textbox", {
       name: "Edit Path for Example setting",
     });
     await user.clear(input);
     await user.type(input, "after{Enter}");
 
-    expect(undo).toBeEnabled();
-    await user.click(undo);
     await waitFor(() =>
-      expect(setEditedContent).toHaveBeenLastCalledWith(source),
+      expect(onEditUndoStateChange).toHaveBeenLastCalledWith(true, expect.any(Function)),
     );
+    act(() => undoEdit?.());
+    await waitFor(() => expect(setEditedContent).toHaveBeenLastCalledWith(source));
   });
 
   it("undoes a coalesced Code editor change", async () => {
     const user = userEvent.setup();
     const source = "resources: []\n";
     const setEditedContent = vi.fn();
+    let undoEdit: (() => void) | null = null;
     const state = {
       ...visualState(),
       editing: true,
@@ -164,14 +166,16 @@ describe("ManifestContent read-only Visual mode", () => {
           manifestName="sample"
           viewerMode="code"
           onViewerModeChange={vi.fn()}
+          onEditUndoStateChange={(canUndo, undo) => {
+            undoEdit = canUndo ? undo : null;
+          }}
         />
       </FluentProvider>,
     );
 
     await user.click(screen.getByRole("button", { name: "Change code" }));
-    const undo = screen.getByRole("button", { name: "Undo" });
-    expect(undo).toBeEnabled();
-    await user.click(undo);
+    await waitFor(() => expect(undoEdit).not.toBeNull());
+    act(() => undoEdit?.());
     expect(setEditedContent).toHaveBeenLastCalledWith(source);
   });
 
@@ -180,6 +184,7 @@ describe("ManifestContent read-only Visual mode", () => {
     const originalYaml = "resources:\n  - name: before\n";
     const editedJson = '{"resources":[{"name":"after"}]}';
     const setEditedContent = vi.fn();
+    let undoEdit: (() => void) | null = null;
     const state = {
       ...visualState(),
       editing: true,
@@ -207,14 +212,16 @@ describe("ManifestContent read-only Visual mode", () => {
           manifestName="sample"
           viewerMode="code"
           onViewerModeChange={vi.fn()}
+          onEditUndoStateChange={(canUndo, undo) => {
+            undoEdit = canUndo ? undo : null;
+          }}
         />
       </FluentProvider>,
     );
 
     await user.click(screen.getByRole("button", { name: "Visual" }));
-    const undo = screen.getByRole("button", { name: "Undo" });
-    expect(undo).toBeEnabled();
-    await user.click(undo);
+    await waitFor(() => expect(undoEdit).not.toBeNull());
+    act(() => undoEdit?.());
     expect(setEditedContent).toHaveBeenLastCalledWith(originalYaml);
   });
 });

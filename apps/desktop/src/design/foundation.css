@@ -26,19 +26,19 @@
 @layer base {
   :root {
     /* Light theme variables — sync with Fluent v2 light. */
-    --cfs-color-bg-1: #FFFFFF;
-    --cfs-color-bg-2: #FAFAFA;
-    --cfs-color-bg-3: #F5F5F5;
+    --cfs-color-bg-1: #ffffff;
+    --cfs-color-bg-2: #fafafa;
+    --cfs-color-bg-3: #f5f5f5;
     --cfs-color-fg-1: #242424;
     --cfs-color-fg-2: #424242;
     --cfs-color-fg-3: #616161;
-    --cfs-color-stroke-1: #D1D1D1;
-    --cfs-color-stroke-2: #E0E0E0;
-    --cfs-color-brand: #0078D4;
-    --cfs-color-brand-hover: #0063B1;
-    --cfs-color-status-red: #C50F1F;
-    --cfs-color-status-yellow: #8A6404;
-    --cfs-color-status-green: #0E700E;
+    --cfs-color-stroke-1: #d1d1d1;
+    --cfs-color-stroke-2: #e0e0e0;
+    --cfs-color-brand: #0078d4;
+    --cfs-color-brand-hover: #0063b1;
+    --cfs-color-status-red: #c50f1f;
+    --cfs-color-status-yellow: #8a6404;
+    --cfs-color-status-green: #0e700e;
 
     /* Existing app-level tokens (kept for back-compat with the
        hsl-based shadcn-style variables we ported from Next.js). */
@@ -65,18 +65,18 @@
   .dark {
     /* Dark theme variables — sync with Fluent v2 dark. */
     --cfs-color-bg-1: #292929;
-    --cfs-color-bg-2: #1F1F1F;
+    --cfs-color-bg-2: #1f1f1f;
     --cfs-color-bg-3: #141414;
-    --cfs-color-fg-1: #FFFFFF;
-    --cfs-color-fg-2: #D6D6D6;
-    --cfs-color-fg-3: #ADADAD;
+    --cfs-color-fg-1: #ffffff;
+    --cfs-color-fg-2: #d6d6d6;
+    --cfs-color-fg-3: #adadad;
     --cfs-color-stroke-1: #595959;
     --cfs-color-stroke-2: #404040;
-    --cfs-color-brand: #0078D4;
-    --cfs-color-brand-hover: #2B88D8;
-    --cfs-color-status-red: #FF6B6B;
-    --cfs-color-status-yellow: #FCE100;
-    --cfs-color-status-green: #54B054;
+    --cfs-color-brand: #0078d4;
+    --cfs-color-brand-hover: #2b88d8;
+    --cfs-color-status-red: #ff6b6b;
+    --cfs-color-status-yellow: #fce100;
+    --cfs-color-status-green: #54b054;
 
     --background: 210 11% 12%;
     --foreground: 30 14% 97%;
@@ -102,7 +102,9 @@
     @apply border-[hsl(var(--border))];
   }
 
-  html, body, #root {
+  html,
+  body,
+  #root {
     height: 100%;
   }
 
@@ -110,7 +112,13 @@
     margin: 0;
     background-color: var(--cfs-color-bg-1);
     color: var(--cfs-color-fg-1);
-    font-family: 'Segoe UI Variable Text', 'Segoe UI', Inter, system-ui, -apple-system, sans-serif;
+    font-family:
+      'Segoe UI Variable Text',
+      'Segoe UI',
+      Inter,
+      system-ui,
+      -apple-system,
+      sans-serif;
     font-size: 14px;
     line-height: 20px;
     -webkit-font-smoothing: antialiased;
@@ -119,10 +127,25 @@
   }
 
   /* Native-feel scrollbar (Win11 thin overlay style). */
-  ::-webkit-scrollbar { width: 14px; height: 14px; background: transparent; }
-  ::-webkit-scrollbar-thumb { background: var(--cfs-color-stroke-1); border-radius: 7px; border: 4px solid transparent; background-clip: padding-box; }
-  ::-webkit-scrollbar-thumb:hover { background: var(--cfs-color-stroke-2); border: 4px solid transparent; background-clip: padding-box; }
-  ::-webkit-scrollbar-corner { background: transparent; }
+  ::-webkit-scrollbar {
+    width: 14px;
+    height: 14px;
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--cfs-color-stroke-1);
+    border-radius: 7px;
+    border: 4px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--cfs-color-stroke-2);
+    border: 4px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
+  }
 
   ::selection {
     background: color-mix(in srgb, var(--cfs-color-brand) 30%, transparent);
@@ -154,23 +177,78 @@
   /* Typography utility classes (mirror tokens.ts type ramp).
      Use these instead of arbitrary text- classes when a component
      plays a known semantic role (page title, body copy, etc.). */
-  .cfs-display { font-family: 'Segoe UI Variable Display', 'Segoe UI', Inter, system-ui, sans-serif; font-size: 68px; line-height: 92px; font-weight: 600; }
-  .cfs-large-title { font-size: 40px; line-height: 52px; font-weight: 600; }
-  .cfs-title1 { font-size: 32px; line-height: 40px; font-weight: 600; }
-  .cfs-title2 { font-size: 28px; line-height: 36px; font-weight: 600; }
-  .cfs-title3 { font-size: 24px; line-height: 32px; font-weight: 600; }
-  .cfs-subtitle1 { font-size: 20px; line-height: 28px; font-weight: 600; }
-  .cfs-subtitle2 { font-size: 16px; line-height: 22px; font-weight: 600; }
-  .cfs-body1 { font-size: 14px; line-height: 20px; font-weight: 400; }
-  .cfs-body1-strong { font-size: 14px; line-height: 20px; font-weight: 600; }
-  .cfs-body2 { font-size: 16px; line-height: 22px; font-weight: 400; }
-  .cfs-caption1 { font-size: 12px; line-height: 16px; font-weight: 400; }
-  .cfs-caption2 { font-size: 10px; line-height: 14px; font-weight: 400; }
-  .cfs-numeric { font-variant-numeric: tabular-nums; }
+  .cfs-display {
+    font-family: 'Segoe UI Variable Display', 'Segoe UI', Inter, system-ui, sans-serif;
+    font-size: 68px;
+    line-height: 92px;
+    font-weight: 600;
+  }
+  .cfs-large-title {
+    font-size: 40px;
+    line-height: 52px;
+    font-weight: 600;
+  }
+  .cfs-title1 {
+    font-size: 32px;
+    line-height: 40px;
+    font-weight: 600;
+  }
+  .cfs-title2 {
+    font-size: 28px;
+    line-height: 36px;
+    font-weight: 600;
+  }
+  .cfs-title3 {
+    font-size: 24px;
+    line-height: 32px;
+    font-weight: 600;
+  }
+  .cfs-subtitle1 {
+    font-size: 20px;
+    line-height: 28px;
+    font-weight: 600;
+  }
+  .cfs-subtitle2 {
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 600;
+  }
+  .cfs-body1 {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 400;
+  }
+  .cfs-body1-strong {
+    font-size: 14px;
+    line-height: 20px;
+    font-weight: 600;
+  }
+  .cfs-body2 {
+    font-size: 16px;
+    line-height: 22px;
+    font-weight: 400;
+  }
+  .cfs-caption1 {
+    font-size: 12px;
+    line-height: 16px;
+    font-weight: 400;
+  }
+  .cfs-caption2 {
+    font-size: 10px;
+    line-height: 14px;
+    font-weight: 400;
+  }
+  .cfs-numeric {
+    font-variant-numeric: tabular-nums;
+  }
 
   /* Drag region utilities for the Phase 6 custom titlebar. */
-  .cfs-drag { -webkit-app-region: drag; }
-  .cfs-no-drag { -webkit-app-region: no-drag; }
+  .cfs-drag {
+    -webkit-app-region: drag;
+  }
+  .cfs-no-drag {
+    -webkit-app-region: no-drag;
+  }
 
   /* Baseline detail footer ──────────────────────────────────────────
      Preserve every labeled action. The toolbar stays on one row while
@@ -221,7 +299,7 @@
   .cfs-footer-action {
     min-width: 0 !important;
     padding-inline: clamp(6px, 0.65cqi, 12px) !important;
-    font-size: clamp(11px, 0.72cqi, 13px) !important;
+    font-size: 14px !important;
   }
 
   .cfs-footer-action svg {
@@ -277,25 +355,51 @@
 
   .cfs-footer-action {
     padding-inline: 4px !important;
-    font-size: 11px !important;
+    font-size: 12px !important;
   }
 }
 
 @layer utilities {
   /* Surface elevation utilities — sync with tokens.ts elevation. */
-  .cfs-elevation-2 { box-shadow: 0 1px 2px rgba(0,0,0,0.14), 0 0 2px rgba(0,0,0,0.12); }
-  .cfs-elevation-4 { box-shadow: 0 2px 4px rgba(0,0,0,0.14), 0 0 2px rgba(0,0,0,0.12); }
-  .cfs-elevation-8 { box-shadow: 0 4px 8px rgba(0,0,0,0.14), 0 0 2px rgba(0,0,0,0.12); }
-  .cfs-elevation-16 { box-shadow: 0 8px 16px rgba(0,0,0,0.14), 0 0 2px rgba(0,0,0,0.12); }
-  .cfs-elevation-28 { box-shadow: 0 14px 28px rgba(0,0,0,0.24), 0 0 8px rgba(0,0,0,0.20); }
-  .cfs-elevation-64 { box-shadow: 0 32px 64px rgba(0,0,0,0.24), 0 0 8px rgba(0,0,0,0.20); }
+  .cfs-elevation-2 {
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.14),
+      0 0 2px rgba(0, 0, 0, 0.12);
+  }
+  .cfs-elevation-4 {
+    box-shadow:
+      0 2px 4px rgba(0, 0, 0, 0.14),
+      0 0 2px rgba(0, 0, 0, 0.12);
+  }
+  .cfs-elevation-8 {
+    box-shadow:
+      0 4px 8px rgba(0, 0, 0, 0.14),
+      0 0 2px rgba(0, 0, 0, 0.12);
+  }
+  .cfs-elevation-16 {
+    box-shadow:
+      0 8px 16px rgba(0, 0, 0, 0.14),
+      0 0 2px rgba(0, 0, 0, 0.12);
+  }
+  .cfs-elevation-28 {
+    box-shadow:
+      0 14px 28px rgba(0, 0, 0, 0.24),
+      0 0 8px rgba(0, 0, 0, 0.2);
+  }
+  .cfs-elevation-64 {
+    box-shadow:
+      0 32px 64px rgba(0, 0, 0, 0.24),
+      0 0 8px rgba(0, 0, 0, 0.2);
+  }
 }
 
 /* Accessibility opt-outs ─────────────────────────────────────────── */
 
 /* Honor user OS-level reduced-motion preference. */
 @media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     animation-duration: 0ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0ms !important;
