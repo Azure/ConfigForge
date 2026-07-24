@@ -339,9 +339,8 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(page.getByRole("heading", { name: "Compliance Status" })).toHaveCount(0);
     const footer = page.getByTestId("manifest-detail-footer");
     await expect(footer).toBeVisible();
-    for (const width of [2000, 1440, 1100, 1000, 900, 880]) {
-      await page.setViewportSize({ width, height: 900 });
-      const geometry = await footer.evaluate((element) => {
+    const readFooterGeometry = () =>
+      footer.evaluate((element) => {
         const footerRect = element.getBoundingClientRect();
         const controls = Array.from(element.querySelectorAll<HTMLElement>("button, a"))
           .filter((control) => {
@@ -352,11 +351,24 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
             const rect = control.getBoundingClientRect();
             return {
               label: control.getAttribute("aria-label") ?? control.textContent?.trim() ?? "",
+              bottom: rect.bottom,
               centerY: (rect.top + rect.bottom) / 2,
               left: rect.left,
               right: rect.right,
+              top: rect.top,
             };
           });
+        const overlaps = controls.flatMap((control, index) =>
+          controls.slice(index + 1).flatMap((candidate) => {
+            const horizontalOverlap =
+              Math.min(control.right, candidate.right) - Math.max(control.left, candidate.left);
+            const verticalOverlap =
+              Math.min(control.bottom, candidate.bottom) - Math.max(control.top, candidate.top);
+            return horizontalOverlap > 1 && verticalOverlap > 1
+              ? [`${control.label} overlaps ${candidate.label}`]
+              : [];
+          }),
+        );
         const labels = Array.from(
           element.querySelectorAll<HTMLElement>(
             ".cfs-footer-close-label, .cfs-footer-secondary-label, .cfs-footer-primary-label",
@@ -371,12 +383,17 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
           height: footerRect.height,
           labels,
           left: footerRect.left,
+          overlaps,
           right: footerRect.right,
           scrollWidth: element.scrollWidth,
         };
       });
+    for (const width of [2000, 1800, 1760, 1600, 1440, 1280, 1100, 940, 880]) {
+      await page.setViewportSize({ width, height: 900 });
+      const geometry = await readFooterGeometry();
       expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
       expect(geometry.height).toBeLessThanOrEqual(128);
+      expect(geometry.overlaps, `footer control collisions at ${width}px`).toEqual([]);
       expect(geometry.labels.length).toBeGreaterThanOrEqual(11);
       for (const label of geometry.labels) {
         expect(label.display, `${label.text} label display at ${width}px`).not.toBe("none");
@@ -391,7 +408,7 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
         );
       }
       const rows = new Set(geometry.controls.map((control) => Math.round(control.centerY)));
-      if (geometry.clientWidth <= 1220) {
+      if (geometry.clientWidth <= 1760) {
         expect(rows.size, `responsive rows at ${width}px`).toBeGreaterThan(1);
       } else {
         expect(rows.size, `single footer row at ${width}px`).toBe(1);
@@ -523,6 +540,8 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await page.setViewportSize({ width: 1440, height: 1000 });
 
     await page.getByRole("button", { name: "Edit" }).click();
+    const editFooterGeometry = await readFooterGeometry();
+    expect(editFooterGeometry.overlaps, "footer control collisions while editing").toEqual([]);
     await expect(footer.getByRole("button", { name: "Save" })).toBeVisible();
     await expect(footer.getByRole("button", { name: "Edit" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
