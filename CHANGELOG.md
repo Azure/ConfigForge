@@ -1,5 +1,11 @@
 # Changelog
 
+## [0.3.92-author.1] - 2026-07-24
+
+### Security
+- **Patched the macOS author update and packaging toolchains.** `electron-updater` 6.8.9 prevents credentials from crossing redirect origins, and `electron-builder` 26.15.3 closes the AppImage search-path vulnerability.
+- **Updated PostCSS to 8.5.23 and `tar` to 7.5.22.** These releases close the source-map path traversal and crafted-archive recursion advisories.
+
 ## [0.3.91-author.1] - 2026-07-24
 
 ### Added
