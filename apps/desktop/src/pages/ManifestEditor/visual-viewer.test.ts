@@ -283,7 +283,7 @@ describe("visual viewer helpers", () => {
     schema.oneOf = [schema, { const: 1 }];
 
     expect(visualSchemaConstraintRows(schema)).toEqual([
-      { keyword: "oneOf", values: [schema] },
+      { keyword: "oneOf", values: [schema], enforced: false },
       { keyword: "oneOf.const", values: [1] },
     ]);
     expect(visualValueSatisfiesSchema(1, schema)).toBe(true);

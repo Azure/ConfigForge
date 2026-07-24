@@ -30,11 +30,11 @@ const BASELINE_YAML = `resources:
           value: '1'
 `;
 
-let app: ElectronApplication;
+let app: ElectronApplication | null = null;
 let page: Page;
-let configHome: string;
-let browserProfile: string;
-let publicRoot: string;
+let configHome = '';
+let browserProfile = '';
+let publicRoot = '';
 
 test.beforeAll(async () => {
   configHome = await mkdtemp(path.join(os.tmpdir(), 'configforge-schema-home-'));
@@ -72,13 +72,15 @@ test.beforeAll(async () => {
 
 test.afterAll(async () => {
   try {
-    await app.close();
+    await app?.close();
+  } catch {
+    // Preserve the original test failure when Electron already exited.
   } finally {
-    await Promise.all([
-      rm(configHome, { recursive: true, force: true }),
-      rm(browserProfile, { recursive: true, force: true }),
-      rm(publicRoot, { recursive: true, force: true }),
-    ]);
+    await Promise.allSettled(
+      [configHome, browserProfile, publicRoot]
+        .filter(Boolean)
+        .map((directory) => rm(directory, { recursive: true, force: true })),
+    );
   }
 });
 
