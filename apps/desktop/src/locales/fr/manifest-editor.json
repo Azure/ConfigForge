@@ -293,6 +293,7 @@
       "number": "Saisissez un nombre.",
       "object": "Saisissez une valeur d'objet.",
       "objectDocument": "La baseline doit être un objet YAML.",
+      "schemaConstraint": "Saisissez une valeur qui respecte les règles affichées sous Valeur attendue.",
       "serialize": "Impossible de sérialiser la baseline modifiée.",
       "structured": "Saisissez du YAML ou du JSON valide.",
       "wholeNumber": "Saisissez un nombre entier."

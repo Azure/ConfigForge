@@ -293,6 +293,7 @@
       "number": "Geben Sie eine Zahl ein.",
       "object": "Geben Sie einen Objektwert ein.",
       "objectDocument": "Die Baseline muss ein YAML-Objekt sein.",
+      "schemaConstraint": "Geben Sie einen Wert ein, der die unter Erwarteter Wert angezeigten Regeln erfüllt.",
       "serialize": "Die bearbeitete Baseline konnte nicht serialisiert werden.",
       "structured": "Geben Sie gültiges YAML oder JSON ein.",
       "wholeNumber": "Geben Sie eine ganze Zahl ein."

@@ -293,6 +293,7 @@
       "number": "Enter a number.",
       "object": "Enter an object value.",
       "objectDocument": "The baseline must be a YAML object.",
+      "schemaConstraint": "Enter a value that satisfies the rules shown under Expected value.",
       "serialize": "The edited baseline could not be serialized.",
       "structured": "Enter valid YAML or JSON.",
       "wholeNumber": "Enter a whole number."

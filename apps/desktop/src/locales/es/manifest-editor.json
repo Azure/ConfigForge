@@ -293,6 +293,7 @@
       "number": "Introduzca un número.",
       "object": "Introduzca un valor de objeto.",
       "objectDocument": "La baseline debe ser un objeto YAML.",
+      "schemaConstraint": "Introduzca un valor que cumpla las reglas que se muestran en Valor esperado.",
       "serialize": "No se pudo serializar la baseline editada.",
       "structured": "Introduzca YAML o JSON válido.",
       "wholeNumber": "Introduzca un número entero."

@@ -6,6 +6,9 @@ import yaml from "js-yaml";
 const GROUP_RESOURCE_TYPE = "Microsoft.OSConfig/Group";
 const TEST_RESOURCE_TYPE = "Microsoft.OSConfig/Test";
 const MAX_RESOURCE_DEPTH = 50;
+const MAX_VISUAL_SCHEMA_DEPTH = 32;
+const MAX_VISUAL_SCHEMA_NODES = 256;
+const MAX_VISUAL_SCHEMA_ROWS = 128;
 
 /** Internal column key used for the required, non-property setting-name column. */
 export const SETTING_NAME_COLUMN = "$setting-name";
@@ -25,6 +28,7 @@ export interface VisualSetting {
   resourceType: string;
   properties: Record<string, unknown>;
   desiredValue?: unknown;
+  validationSchema?: unknown;
   sourceOrder: number;
   location: VisualSettingLocation;
   hasExplicitName: boolean;
@@ -285,43 +289,457 @@ function isNullSchemaBranch(value: unknown): boolean {
  * Prefer a scalar from common Test schema shapes. Complex constraints are
  * retained for readable JSON display instead of being silently discarded.
  */
-function readSchemaDesired(schema: unknown, binding: VisualValueBinding): DesiredValue {
+function readSchemaDesired(
+  schema: unknown,
+  binding: VisualValueBinding,
+  activeSchemas = new WeakSet<object>(),
+  depth = 0,
+): DesiredValue {
   if (schema === undefined) return NO_DESIRED_VALUE;
   const record = asRecord(schema);
   if (!record) return presentDesiredValue(schema, binding);
   if (Object.keys(record).length === 0) return NO_DESIRED_VALUE;
+  if (depth > MAX_VISUAL_SCHEMA_DEPTH || activeSchemas.has(record)) {
+    return presentDesiredValue({ ...record }, binding);
+  }
 
-  for (const key of ["const", "equals"] as const) {
-    if (hasOwn(record, key)) {
-      return presentDesiredValue(record[key], {
+  activeSchemas.add(record);
+  try {
+    for (const key of ["const", "equals"] as const) {
+      if (hasOwn(record, key)) {
+        return presentDesiredValue(record[key], {
+          ...binding,
+          path: [...binding.path, key],
+        });
+      }
+    }
+
+    if (Array.isArray(record.enum) && record.enum.length === 1) {
+      return presentDesiredValue(record.enum[0], {
         ...binding,
-        path: [...binding.path, key],
+        path: [...binding.path, "enum", 0],
       });
+    }
+
+    if (Array.isArray(record.oneOf)) {
+      const nonNullBranches = record.oneOf
+        .map((branch, index) => ({ branch, index }))
+        .filter(({ branch }) => !isNullSchemaBranch(branch));
+      if (nonNullBranches.length === 1) {
+        const [{ branch, index }] = nonNullBranches;
+        const concise = readSchemaDesired(
+          branch,
+          {
+            ...binding,
+            path: [...binding.path, "oneOf", index],
+          },
+          activeSchemas,
+          depth + 1,
+        );
+        if (concise.present) return concise;
+      }
+    }
+
+    return presentDesiredValue({ ...record }, binding);
+  } finally {
+    activeSchemas.delete(record);
+  }
+}
+
+export interface VisualSchemaConstraintRow {
+  keyword: string;
+  values: unknown[];
+}
+
+interface VisualSchemaTraversalBudget {
+  remaining: number;
+}
+
+const VISUAL_SCHEMA_KEYWORDS = [
+  "type",
+  "const",
+  "equals",
+  "enum",
+  "minimum",
+  "maximum",
+  "pattern",
+] as const;
+
+function appendVisualSchemaConstraintRows(
+  schema: unknown,
+  rows: VisualSchemaConstraintRow[],
+  prefix = "",
+  activeSchemas = new WeakSet<object>(),
+  visitedSchemas = new WeakSet<object>(),
+  budget: VisualSchemaTraversalBudget = { remaining: MAX_VISUAL_SCHEMA_NODES },
+  depth = 0,
+): void {
+  const record = asRecord(schema);
+  if (
+    !record ||
+    rows.length >= MAX_VISUAL_SCHEMA_ROWS ||
+    budget.remaining <= 0 ||
+    depth > MAX_VISUAL_SCHEMA_DEPTH ||
+    activeSchemas.has(record) ||
+    visitedSchemas.has(record)
+  ) {
+    return;
+  }
+
+  activeSchemas.add(record);
+  visitedSchemas.add(record);
+  budget.remaining -= 1;
+  try {
+    for (const keyword of VISUAL_SCHEMA_KEYWORDS) {
+      if (rows.length >= MAX_VISUAL_SCHEMA_ROWS) break;
+      if (!hasOwn(record, keyword)) continue;
+      const value = record[keyword];
+      rows.push({
+        keyword: `${prefix}${keyword}`,
+        values:
+          (keyword === "enum" || keyword === "type") && Array.isArray(value) ? value : [value],
+      });
+    }
+
+    for (const keyword of ["oneOf", "anyOf", "allOf"] as const) {
+      if (rows.length >= MAX_VISUAL_SCHEMA_ROWS) break;
+      const branches = record[keyword];
+      if (!Array.isArray(branches)) continue;
+      for (const branch of branches) {
+        if (rows.length >= MAX_VISUAL_SCHEMA_ROWS) break;
+        const before = rows.length;
+        appendVisualSchemaConstraintRows(
+          branch,
+          rows,
+          `${prefix}${keyword}.`,
+          activeSchemas,
+          visitedSchemas,
+          budget,
+          depth + 1,
+        );
+        if (rows.length === before && rows.length < MAX_VISUAL_SCHEMA_ROWS) {
+          rows.push({ keyword: `${prefix}${keyword}`, values: [branch] });
+        }
+      }
+    }
+  } finally {
+    activeSchemas.delete(record);
+  }
+}
+
+export function visualSchemaConstraintRows(schema: unknown): VisualSchemaConstraintRow[] {
+  const rows: VisualSchemaConstraintRow[] = [];
+  appendVisualSchemaConstraintRows(schema, rows);
+  return rows;
+}
+
+function visualSchemaTypeMatches(value: unknown, expected: unknown): boolean | null {
+  if (Array.isArray(expected)) {
+    let unsupported = false;
+    for (const candidate of expected) {
+      const matches = visualSchemaTypeMatches(value, candidate);
+      if (matches === true) return true;
+      if (matches === null) unsupported = true;
+    }
+    return unsupported ? null : false;
+  }
+  switch (expected) {
+    case "null":
+      return value === null;
+    case "boolean":
+      return typeof value === "boolean";
+    case "integer":
+      return typeof value === "bigint" || (typeof value === "number" && Number.isInteger(value));
+    case "number":
+      return typeof value === "bigint" || (typeof value === "number" && Number.isFinite(value));
+    case "string":
+      return typeof value === "string";
+    case "array":
+      return Array.isArray(value);
+    case "object":
+      return asRecord(value) !== null;
+    default:
+      return null;
+  }
+}
+
+function compareVisualSchemaNumbers(left: unknown, right: unknown): number | null {
+  if (typeof left === "bigint" && typeof right === "bigint") {
+    return left === right ? 0 : left < right ? -1 : 1;
+  }
+  if (typeof left === "number" && typeof right === "number") {
+    if (!Number.isFinite(left) || !Number.isFinite(right)) return null;
+    return left === right ? 0 : left < right ? -1 : 1;
+  }
+  if (typeof left === "bigint" && typeof right === "number" && Number.isSafeInteger(right)) {
+    const comparable = BigInt(right);
+    return left === comparable ? 0 : left < comparable ? -1 : 1;
+  }
+  if (typeof left === "number" && Number.isSafeInteger(left) && typeof right === "bigint") {
+    const comparable = BigInt(left);
+    return comparable === right ? 0 : comparable < right ? -1 : 1;
+  }
+  return null;
+}
+
+function visualSchemaValuesEqual(
+  left: unknown,
+  right: unknown,
+  seenPairs = new WeakMap<object, WeakSet<object>>(),
+  depth = 0,
+): boolean {
+  const numericComparison = compareVisualSchemaNumbers(left, right);
+  if (numericComparison !== null) return numericComparison === 0;
+  if (Object.is(left, right)) return true;
+  if (depth > MAX_VISUAL_SCHEMA_DEPTH) return false;
+
+  if (Array.isArray(left) || Array.isArray(right)) {
+    if (!Array.isArray(left) || !Array.isArray(right) || left.length !== right.length) {
+      return false;
+    }
+    const seenRight = seenPairs.get(left);
+    if (seenRight?.has(right)) return true;
+    const nextSeenRight = seenRight ?? new WeakSet<object>();
+    nextSeenRight.add(right);
+    seenPairs.set(left, nextSeenRight);
+    return left.every((value, index) =>
+      visualSchemaValuesEqual(value, right[index], seenPairs, depth + 1),
+    );
+  }
+
+  const leftRecord = asRecord(left);
+  const rightRecord = asRecord(right);
+  if (!leftRecord || !rightRecord) return false;
+  const seenRight = seenPairs.get(leftRecord);
+  if (seenRight?.has(rightRecord)) return true;
+  const nextSeenRight = seenRight ?? new WeakSet<object>();
+  nextSeenRight.add(rightRecord);
+  seenPairs.set(leftRecord, nextSeenRight);
+  const leftKeys = Object.keys(leftRecord).sort();
+  const rightKeys = Object.keys(rightRecord).sort();
+  return (
+    leftKeys.length === rightKeys.length &&
+    leftKeys.every(
+      (key, index) =>
+        key === rightKeys[index] &&
+        visualSchemaValuesEqual(
+          leftRecord[key],
+          rightRecord[rightKeys[index]],
+          seenPairs,
+          depth + 1,
+        ),
+    )
+  );
+}
+
+type VisualSchemaEvaluation = "match" | "mismatch" | "unsupported";
+
+const VISUAL_SCHEMA_ANNOTATION_KEYWORDS = new Set([
+  "$comment",
+  "$defs",
+  "$id",
+  "$schema",
+  "default",
+  "definitions",
+  "deprecated",
+  "description",
+  "examples",
+  "readOnly",
+  "title",
+  "writeOnly",
+]);
+
+const VISUAL_SCHEMA_SUPPORTED_KEYWORDS = new Set([
+  ...VISUAL_SCHEMA_KEYWORDS,
+  "allOf",
+  "anyOf",
+  "oneOf",
+]);
+
+function isSafeVisualSchemaPattern(pattern: string, value: string): boolean {
+  if (pattern.length > 256 || value.length > 4_096) return false;
+  let escaped = false;
+  let inCharacterClass = false;
+  let quantifiers = 0;
+
+  for (let index = 0; index < pattern.length; index += 1) {
+    const character = pattern[index];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (character === "\\") {
+      escaped = true;
+      continue;
+    }
+    if (character === "[") {
+      inCharacterClass = true;
+      continue;
+    }
+    if (character === "]") {
+      inCharacterClass = false;
+      continue;
+    }
+    if (inCharacterClass) continue;
+    if (character === "(" || character === ")") return false;
+    if (character === "*" || character === "+" || character === "?") {
+      quantifiers += 1;
+    }
+    if (quantifiers > 1 || character === "{") return false;
+  }
+  return true;
+}
+
+interface VisualSchemaEvaluationContext {
+  activeSchemas: WeakSet<object>;
+  memo: WeakMap<object, VisualSchemaEvaluation>;
+  budget: VisualSchemaTraversalBudget;
+}
+
+function evaluateVisualSchemaRecord(
+  value: unknown,
+  record: Record<string, unknown>,
+  context: VisualSchemaEvaluationContext,
+  depth: number,
+): VisualSchemaEvaluation {
+  let unsupported = Object.keys(record).some(
+    (keyword) =>
+      !VISUAL_SCHEMA_SUPPORTED_KEYWORDS.has(keyword) &&
+      !VISUAL_SCHEMA_ANNOTATION_KEYWORDS.has(keyword),
+  );
+
+  if (hasOwn(record, "const") && !visualSchemaValuesEqual(value, record.const)) {
+    return "mismatch";
+  }
+  if (hasOwn(record, "equals") && !visualSchemaValuesEqual(value, record.equals)) {
+    return "mismatch";
+  }
+  if (hasOwn(record, "enum")) {
+    if (!Array.isArray(record.enum)) unsupported = true;
+    else if (!record.enum.some((candidate) => visualSchemaValuesEqual(value, candidate))) {
+      return "mismatch";
+    }
+  }
+  if (hasOwn(record, "type")) {
+    const typeMatches = visualSchemaTypeMatches(value, record.type);
+    if (typeMatches === false) return "mismatch";
+    if (typeMatches === null) unsupported = true;
+  }
+
+  if (hasOwn(record, "minimum")) {
+    if (
+      (typeof record.minimum !== "number" || !Number.isFinite(record.minimum)) &&
+      typeof record.minimum !== "bigint"
+    ) {
+      unsupported = true;
+    } else {
+      const minimumComparison = compareVisualSchemaNumbers(value, record.minimum);
+      if (minimumComparison !== null && minimumComparison < 0) return "mismatch";
+    }
+  }
+  if (hasOwn(record, "maximum")) {
+    if (
+      (typeof record.maximum !== "number" || !Number.isFinite(record.maximum)) &&
+      typeof record.maximum !== "bigint"
+    ) {
+      unsupported = true;
+    } else {
+      const maximumComparison = compareVisualSchemaNumbers(value, record.maximum);
+      if (maximumComparison !== null && maximumComparison > 0) return "mismatch";
     }
   }
 
-  if (Array.isArray(record.enum) && record.enum.length === 1) {
-    return presentDesiredValue(record.enum[0], {
-      ...binding,
-      path: [...binding.path, "enum", 0],
-    });
-  }
-
-  if (Array.isArray(record.oneOf)) {
-    const nonNullBranches = record.oneOf
-      .map((branch, index) => ({ branch, index }))
-      .filter(({ branch }) => !isNullSchemaBranch(branch));
-    if (nonNullBranches.length === 1) {
-      const [{ branch, index }] = nonNullBranches;
-      const concise = readSchemaDesired(branch, {
-        ...binding,
-        path: [...binding.path, "oneOf", index],
-      });
-      if (concise.present) return concise;
+  if (hasOwn(record, "pattern")) {
+    if (typeof record.pattern !== "string") unsupported = true;
+    else if (typeof value === "string") {
+      if (!isSafeVisualSchemaPattern(record.pattern, value)) {
+        unsupported = true;
+      } else {
+        try {
+          if (!new RegExp(record.pattern).test(value)) return "mismatch";
+        } catch {
+          unsupported = true;
+        }
+      }
     }
   }
 
-  return presentDesiredValue({ ...record }, binding);
+  if (hasOwn(record, "oneOf") && !Array.isArray(record.oneOf)) unsupported = true;
+  else if (Array.isArray(record.oneOf)) {
+    let matchingBranches = 0;
+    let unsupportedBranch = false;
+    for (const branch of record.oneOf) {
+      const result = evaluateVisualSchema(value, branch, context, depth + 1);
+      if (result === "match") matchingBranches += 1;
+      if (result === "unsupported") unsupportedBranch = true;
+    }
+    if (matchingBranches > 1) return "mismatch";
+    if (unsupportedBranch) unsupported = true;
+    else if (matchingBranches !== 1) return "mismatch";
+  }
+
+  if (hasOwn(record, "anyOf") && !Array.isArray(record.anyOf)) unsupported = true;
+  else if (Array.isArray(record.anyOf)) {
+    const results = record.anyOf.map((branch) =>
+      evaluateVisualSchema(value, branch, context, depth + 1),
+    );
+    if (!results.includes("match")) {
+      if (results.includes("unsupported")) unsupported = true;
+      else return "mismatch";
+    }
+  }
+
+  if (hasOwn(record, "allOf") && !Array.isArray(record.allOf)) unsupported = true;
+  else if (Array.isArray(record.allOf)) {
+    for (const branch of record.allOf) {
+      const result = evaluateVisualSchema(value, branch, context, depth + 1);
+      if (result === "mismatch") return "mismatch";
+      if (result === "unsupported") unsupported = true;
+    }
+  }
+
+  return unsupported ? "unsupported" : "match";
+}
+
+function evaluateVisualSchema(
+  value: unknown,
+  schema: unknown,
+  context: VisualSchemaEvaluationContext = {
+    activeSchemas: new WeakSet<object>(),
+    memo: new WeakMap<object, VisualSchemaEvaluation>(),
+    budget: { remaining: MAX_VISUAL_SCHEMA_NODES },
+  },
+  depth = 0,
+): VisualSchemaEvaluation {
+  if (schema === true) return "match";
+  if (schema === false) return "mismatch";
+  const record = asRecord(schema);
+  if (!record) return "unsupported";
+  if (Object.keys(record).length === 0) return "match";
+  const cached = context.memo.get(record);
+  if (cached) return cached;
+  if (
+    context.budget.remaining <= 0 ||
+    depth > MAX_VISUAL_SCHEMA_DEPTH ||
+    context.activeSchemas.has(record)
+  ) {
+    return "unsupported";
+  }
+
+  context.activeSchemas.add(record);
+  context.budget.remaining -= 1;
+  let result: VisualSchemaEvaluation;
+  try {
+    result = evaluateVisualSchemaRecord(value, record, context, depth);
+  } finally {
+    context.activeSchemas.delete(record);
+  }
+  context.memo.set(record, result);
+  return result;
+}
+
+export function visualValueSatisfiesSchema(value: unknown, schema: unknown): boolean {
+  return evaluateVisualSchema(value, schema) !== "mismatch";
 }
 
 function readResources(document: unknown): unknown[] {
@@ -353,6 +771,7 @@ export function flattenVisualSettings(document: unknown): VisualSetting[] {
     nameOverride: NameOverride | undefined,
     fallbackName: string | undefined,
     desiredOverride: DesiredValue,
+    validationSchema: unknown | undefined,
     removePath: VisualResourcePath,
     depth: number,
   ): void => {
@@ -386,7 +805,16 @@ export function flattenVisualSettings(document: unknown): VisualSetting[] {
             slash >= 0 && slash < childType.length - 1 ? childType.slice(slash + 1) : childType;
           const childFallback = `${groupName} — ${childTypeName || "Setting"} ${index + 1}`;
           const childPath: VisualResourcePath = [...path, index];
-          walk(child, childPath, undefined, childFallback, desiredOverride, childPath, depth + 1);
+          walk(
+            child,
+            childPath,
+            undefined,
+            childFallback,
+            desiredOverride,
+            validationSchema,
+            childPath,
+            depth + 1,
+          );
         });
         return;
       }
@@ -396,7 +824,8 @@ export function flattenVisualSettings(document: unknown): VisualSetting[] {
         if (!asRecord(innerResource)) return;
         const wrapperCompliance = readComplianceDesired(resource, path);
         const schemaKey = existingKey(properties, "schema", "Schema");
-        const wrapperSchema = readSchemaDesired(properties[schemaKey], {
+        const rawWrapperSchema = properties[schemaKey];
+        const wrapperSchema = readSchemaDesired(rawWrapperSchema, {
           resourcePath: path,
           root: "properties",
           path: [schemaKey],
@@ -406,6 +835,11 @@ export function flattenVisualSettings(document: unknown): VisualSetting[] {
           : wrapperSchema.present
             ? wrapperSchema
             : desiredOverride;
+        const wrapperSchemaRecord = asRecord(rawWrapperSchema);
+        const nextValidationSchema =
+          wrapperSchemaRecord && Object.keys(wrapperSchemaRecord).length > 0
+            ? rawWrapperSchema
+            : validationSchema;
         const wrapperName: NameOverride = nameOverride ?? {
           value: settingName.trim() || fallbackName || "",
           resourcePath: path,
@@ -417,6 +851,7 @@ export function flattenVisualSettings(document: unknown): VisualSetting[] {
           wrapperName,
           fallbackName,
           wrapperDesired,
+          nextValidationSchema,
           removePath,
           depth + 1,
         );
@@ -432,6 +867,7 @@ export function flattenVisualSettings(document: unknown): VisualSetting[] {
         resourceType,
         properties: { ...properties },
         ...(desiredValue.present ? { desiredValue: desiredValue.value } : {}),
+        ...(validationSchema !== undefined ? { validationSchema } : {}),
         sourceOrder: flattened.length,
         hasExplicitName: nameOverride?.explicit ?? settingName.trim().length > 0,
         location: {
@@ -447,7 +883,7 @@ export function flattenVisualSettings(document: unknown): VisualSetting[] {
   };
 
   readResources(document).forEach((resource, index) => {
-    walk(resource, [index], undefined, undefined, NO_DESIRED_VALUE, [index], 0);
+    walk(resource, [index], undefined, undefined, NO_DESIRED_VALUE, undefined, [index], 0);
   });
 
   return flattened;
@@ -702,7 +1138,7 @@ export function dumpVisualManifest(document: unknown): string {
     schema: LOSSLESS_MANIFEST_SCHEMA,
     indent: 2,
     lineWidth: 120,
-    noRefs: true,
+    noRefs: false,
     sortKeys: false,
   });
 }
@@ -815,7 +1251,9 @@ function parseStructuredInput(input: string): unknown {
 }
 
 function registryValueKind(setting: VisualSetting, column: string): string | null {
-  if (setting.resourceType !== "Microsoft.Windows/Registry" || column !== "value") return null;
+  if (setting.resourceType !== "Microsoft.Windows/Registry" || column.toLowerCase() !== "value") {
+    return null;
+  }
   const valueType = String(setting.properties.valueType ?? setting.properties.ValueType ?? "")
     .trim()
     .toLowerCase();
@@ -827,7 +1265,9 @@ function registryValueKind(setting: VisualSetting, column: string): string | nul
 }
 
 function cspValueKind(setting: VisualSetting, column: string): string | null {
-  if (setting.resourceType !== "Microsoft.Windows/CSP" || column !== "value") return null;
+  if (setting.resourceType !== "Microsoft.Windows/CSP" || column.toLowerCase() !== "value") {
+    return null;
+  }
   const declaredType = String(setting.properties.type ?? setting.properties.Type ?? "")
     .trim()
     .toLowerCase();
@@ -835,14 +1275,15 @@ function cspValueKind(setting: VisualSetting, column: string): string | null {
 }
 
 function inferredBlankKind(setting: VisualSetting, column: string): string | null {
+  const normalizedColumn = column.toLowerCase();
   const registryKind = registryValueKind(setting, column);
   if (registryKind) return registryKind;
   const cspKind = cspValueKind(setting, column);
   if (cspKind) return cspKind;
-  if (["append", "exists", "ignoreCase", "loaded"].includes(column)) return "boolean";
+  if (["append", "exists", "ignorecase", "loaded"].includes(normalizedColumn)) return "boolean";
   if (
-    column === "gid" ||
-    (column === "value" &&
+    normalizedColumn === "gid" ||
+    (normalizedColumn === "value" &&
       ["Microsoft.Windows/AccountPolicy", "Microsoft.Windows/AuditPolicy"].includes(
         setting.resourceType,
       ))
@@ -865,9 +1306,25 @@ export type VisualEditError =
   | "number"
   | "object"
   | "objectDocument"
+  | "schemaConstraint"
   | "serialize"
   | "structured"
   | "wholeNumber";
+
+export function visualCellSchemaError(
+  setting: VisualSetting,
+  column: string,
+  value: unknown,
+): VisualEditError | null {
+  if (
+    column.toLowerCase() !== "value" ||
+    setting.validationSchema === undefined ||
+    visualValueSatisfiesSchema(value, setting.validationSchema)
+  ) {
+    return null;
+  }
+  return "schemaConstraint";
+}
 
 export function parseVisualCellInput(
   input: string,
@@ -875,17 +1332,14 @@ export function parseVisualCellInput(
   setting: VisualSetting,
   column: string,
 ): VisualCellParseResult {
-  const kind =
-    typeof existing === "string" && existing.length === 0
-      ? inferredBlankKind(setting, column)
-      : null;
+  const kind = inferredBlankKind(setting, column);
 
   if (kind === "string") return { ok: true, value: input };
-  if (kind === "boolean" || typeof existing === "boolean") {
+  if (kind === "boolean" || (kind === null && typeof existing === "boolean")) {
     const value = parseBooleanInput(input);
     return value === null ? { ok: false, error: "boolean" } : { ok: true, value };
   }
-  if (kind === "bigint" || typeof existing === "bigint") {
+  if (kind === "bigint" || (kind === null && typeof existing === "bigint")) {
     if (!YAML_INTEGER_PATTERN.test(input.trim())) {
       return { ok: false, error: "wholeNumber" };
     }
@@ -895,7 +1349,7 @@ export function parseVisualCellInput(
       return { ok: false, error: "wholeNumber" };
     }
   }
-  if (kind === "integer" || typeof existing === "number") {
+  if (kind === "integer" || (kind === null && typeof existing === "number")) {
     const value = Number(input.trim());
     if (input.trim() === "" || !Number.isFinite(value)) {
       return { ok: false, error: "number" };
@@ -905,11 +1359,19 @@ export function parseVisualCellInput(
     }
     return { ok: true, value };
   }
-  if (kind === "array" || Array.isArray(existing)) {
+  if (kind === "array" || (kind === null && Array.isArray(existing))) {
+    const registryStringArray = registryValueKind(setting, column) === "array";
     if (input.trim() === "") return { ok: true, value: [] };
     try {
       const parsed = parseStructuredInput(input);
-      if (Array.isArray(parsed)) return { ok: true, value: parsed };
+      if (Array.isArray(parsed)) {
+        return {
+          ok: true,
+          value: registryStringArray
+            ? parsed.map((item) => (typeof item === "string" ? item : formatVisualValue(item)))
+            : parsed,
+        };
+      }
     } catch {
       // Fall back to a comma-delimited list for quick spreadsheet entry.
     }
@@ -921,7 +1383,7 @@ export function parseVisualCellInput(
         .filter(Boolean),
     };
   }
-  if (asRecord(existing)) {
+  if (kind === null && asRecord(existing)) {
     try {
       const parsed = parseStructuredInput(input);
       return asRecord(parsed) ? { ok: true, value: parsed } : { ok: false, error: "object" };
@@ -1023,6 +1485,9 @@ export function updateVisualCellValueSource(
   column: string,
   value: unknown,
 ): VisualSourceEditResult {
+  const schemaError = visualCellSchemaError(setting, column, value);
+  if (schemaError) return { ok: false, error: schemaError };
+
   let document: unknown;
   try {
     document = parseVisualManifest(source);
@@ -1061,7 +1526,23 @@ export function updateVisualCellSource(
   );
 }
 
-export function parseVisualArrayItemInput(input: string, existing: unknown): VisualCellParseResult {
+function visualArrayItemKind(
+  setting: VisualSetting | undefined,
+  column: string | undefined,
+): "string" | null {
+  if (!setting || !column) return null;
+  return registryValueKind(setting, column) === "array" ? "string" : null;
+}
+
+export function parseVisualArrayItemInput(
+  input: string,
+  existing: unknown,
+  setting?: VisualSetting,
+  column?: string,
+): VisualCellParseResult {
+  if (visualArrayItemKind(setting, column) === "string") {
+    return { ok: true, value: input };
+  }
   if (typeof existing === "boolean") {
     const value = parseBooleanInput(input);
     return value === null ? { ok: false, error: "boolean" } : { ok: true, value };
@@ -1107,14 +1588,19 @@ export function updateVisualArrayItemSource(
   if (!Array.isArray(current) || index < 0 || index >= current.length) {
     return { ok: false, error: "missingSetting" };
   }
-  const parsed = parseVisualArrayItemInput(input, current[index]);
+  const parsed = parseVisualArrayItemInput(input, current[index], setting, column);
   if (!parsed.ok) return parsed;
   const next = [...current];
   next[index] = parsed.value;
   return updateVisualCellValueSource(source, setting, column, next);
 }
 
-function placeholderForVisualArrayItem(existing: unknown): unknown {
+function placeholderForVisualArrayItem(
+  existing: unknown,
+  setting: VisualSetting,
+  column: string,
+): unknown {
+  if (visualArrayItemKind(setting, column) === "string") return "";
   if (typeof existing === "boolean") return false;
   if (typeof existing === "bigint") return existing;
   if (typeof existing === "number") return Number.isInteger(existing) ? 0 : existing;
@@ -1133,7 +1619,9 @@ export function appendVisualArrayItemSource(
     return { ok: false, error: "structured" };
   }
   const placeholder =
-    current.length > 0 ? placeholderForVisualArrayItem(current[current.length - 1]) : "";
+    current.length > 0
+      ? placeholderForVisualArrayItem(current[current.length - 1], setting, column)
+      : "";
   return updateVisualCellValueSource(source, setting, column, [...current, placeholder]);
 }
 
