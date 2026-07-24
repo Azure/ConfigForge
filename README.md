@@ -144,7 +144,7 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.92** (current) | Ships Visual Test schema rules with a patched desktop update client that does not forward credentials across cross-origin redirects |
+| **0.3.92** (current) | Ships Visual Test schema rules with patched desktop update and AppImage packaging toolchains |
 | **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
 | **0.3.90** | Prevents Baseline Detail footer collisions and keeps long multi-value Visual rows inside their table columns |
 | **0.3.89** | Completes Baseline Detail spreadsheet authoring, typed multi-value editing, accessible Add settings, deterministic history, and all current Dependabot fixes |

@@ -5,7 +5,7 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 ## v0.3.92 — 2026-07-24
 
-- **Patched the desktop update client.** `electron-updater` 6.8.9 now uses `builder-util-runtime` 9.7.0 so update credentials are not forwarded across cross-origin redirects.
+- **Patched the desktop update and packaging toolchains.** `electron-updater` 6.8.9 prevents credentials from crossing redirect origins, while `electron-builder` 26.15.3 closes the AppImage search-path vulnerability.
 
 ## v0.3.91 — 2026-07-24
 
