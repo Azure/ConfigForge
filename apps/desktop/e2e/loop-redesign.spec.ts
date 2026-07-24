@@ -242,7 +242,114 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       await expect(page.getByRole("tab", { name: format })).toBeVisible();
     }
     await expect(page.getByRole("heading", { name: "Compliance Status" })).toBeVisible();
-    await expect(page.getByTestId("manifest-detail-footer")).toBeVisible();
+    const footer = page.getByTestId("manifest-detail-footer");
+    await expect(footer).toBeVisible();
+    const readFooterGeometry = () =>
+      footer.evaluate((element) => {
+        const footerRect = element.getBoundingClientRect();
+        const controls = Array.from(element.querySelectorAll<HTMLElement>("button, a"))
+          .filter((control) => {
+            const style = getComputedStyle(control);
+            return style.display !== "none" && style.visibility !== "hidden";
+          })
+          .map((control) => {
+            const rect = control.getBoundingClientRect();
+            return {
+              label: control.getAttribute("aria-label") ?? control.textContent?.trim() ?? "",
+              bottom: rect.bottom,
+              centerY: (rect.top + rect.bottom) / 2,
+              left: rect.left,
+              right: rect.right,
+              top: rect.top,
+            };
+          });
+        const overlaps = controls.flatMap((control, index) =>
+          controls.slice(index + 1).flatMap((candidate) => {
+            const horizontalOverlap =
+              Math.min(control.right, candidate.right) - Math.max(control.left, candidate.left);
+            const verticalOverlap =
+              Math.min(control.bottom, candidate.bottom) - Math.max(control.top, candidate.top);
+            return horizontalOverlap > 1 && verticalOverlap > 1
+              ? [`${control.label} overlaps ${candidate.label}`]
+              : [];
+          }),
+        );
+        const labels = Array.from(
+          element.querySelectorAll<HTMLElement>(
+            ".cfs-footer-close-label, .cfs-footer-secondary-label, .cfs-footer-primary-label",
+          ),
+        ).map((label) => ({
+          display: getComputedStyle(label).display,
+          text: label.textContent?.trim() ?? "",
+        }));
+        return {
+          clientWidth: element.clientWidth,
+          controls,
+          height: footerRect.height,
+          labels,
+          left: footerRect.left,
+          overlaps,
+          right: footerRect.right,
+          scrollWidth: element.scrollWidth,
+        };
+      });
+    for (const width of [2000, 1800, 1760, 1600, 1440, 1280, 1100, 940, 880]) {
+      await page.setViewportSize({ width, height: 900 });
+      const geometry = await readFooterGeometry();
+      expect(geometry.scrollWidth).toBeLessThanOrEqual(geometry.clientWidth + 1);
+      expect(geometry.height).toBeLessThanOrEqual(128);
+      expect(geometry.overlaps, `footer control collisions at ${width}px`).toEqual([]);
+      expect(geometry.labels.length).toBeGreaterThanOrEqual(11);
+      for (const label of geometry.labels) {
+        expect(label.display, `${label.text} label display at ${width}px`).not.toBe("none");
+        expect(label.text, `label text at ${width}px`).not.toBe("");
+      }
+      for (const control of geometry.controls) {
+        expect(control.left, `${control.label} left edge at ${width}px`).toBeGreaterThanOrEqual(
+          geometry.left,
+        );
+        expect(control.right, `${control.label} right edge at ${width}px`).toBeLessThanOrEqual(
+          geometry.right,
+        );
+      }
+      const rows = new Set(geometry.controls.map((control) => Math.round(control.centerY)));
+      if (geometry.clientWidth <= 1760) {
+        expect(rows.size, `responsive rows at ${width}px`).toBeGreaterThan(1);
+      } else {
+        expect(rows.size, `single footer row at ${width}px`).toBe(1);
+      }
+      if (geometry.clientWidth <= 940) {
+        const secondaryRows = new Map<number, number>();
+        for (const control of geometry.controls.filter(
+          (control) => control.label !== "Close baseline" && control.label !== "Edit",
+        )) {
+          const row = Math.round(control.centerY);
+          secondaryRows.set(row, (secondaryRows.get(row) ?? 0) + 1);
+        }
+        const counts = [...secondaryRows.values()];
+        expect(counts).toHaveLength(2);
+        expect(Math.max(...counts) - Math.min(...counts)).toBeLessThanOrEqual(1);
+      }
+      for (const action of [
+        "Close baseline",
+        "Delete Baseline",
+        "Duplicate",
+        "Audit Pack",
+        "Check compliance",
+        "Docs",
+        "History",
+        "Export",
+        "Deploy",
+        "Revert",
+        "Edit",
+      ]) {
+        await expect(
+          footer.getByRole(action === "Audit Pack" || action === "History" ? "link" : "button", {
+            name: action,
+          }          ),
+        ).toBeVisible();
+      }
+    }
 
     await page.getByRole("button", { name: "Visual" }).click();
     const visual = page.getByRole("region", { name: "Visual baseline settings" });
@@ -299,9 +406,10 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await page.setViewportSize({ width: 1440, height: 1000 });
 
     await page.getByRole("button", { name: "Edit" }).click();
-    const footer = page.getByTestId("manifest-detail-footer");
     await expect(footer.getByRole("button", { name: "Save" })).toBeVisible();
     await expect(footer.getByRole("button", { name: "Edit" })).toHaveCount(0);
+    const editFooterGeometry = await readFooterGeometry();
+    expect(editFooterGeometry.overlaps, "footer control collisions while editing").toEqual([]);
     await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
     await expect(page.getByText("Editing", { exact: true })).toBeVisible();
     await expect(visual.getByRole("checkbox")).toHaveCount(3);
