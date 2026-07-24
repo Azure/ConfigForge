@@ -24,6 +24,14 @@ import {
 } from "./BaselineWorkspace";
 import { WindowsLogo } from "./WindowsLogo";
 
+export const BASELINE_CLOSE_REQUEST_EVENT = "configforge:request-close-baseline";
+export const BASELINE_NAVIGATION_REQUEST_EVENT = "configforge:request-baseline-navigation";
+
+export interface BaselineNavigationRequestDetail {
+  name: string;
+  destination: string;
+}
+
 function BaselineTabPlatformIcon({
   platform,
 }: {
@@ -81,11 +89,34 @@ export function BaselineWorkspaceTabs() {
     if (activeBaseline) openBaseline(activeBaseline);
   }, [activeBaseline, openBaseline]);
 
+  const navigateWithinWorkspace = (destination: string) => {
+    if (activeBaseline && destination !== location.pathname) {
+      const event = new CustomEvent<BaselineNavigationRequestDetail>(
+        BASELINE_NAVIGATION_REQUEST_EVENT,
+        {
+          detail: { name: activeBaseline, destination },
+          cancelable: true,
+        },
+      );
+      window.dispatchEvent(event);
+      if (event.defaultPrevented) return;
+    }
+    navigate(destination);
+  };
+
   const goToBaseline = (name: string) => {
-    navigate(`/manifests/${encodeURIComponent(name)}`);
+    navigateWithinWorkspace(`/manifests/${encodeURIComponent(name)}`);
   };
 
   const closeTab = (name: string) => {
+    if (activeBaseline === name) {
+      const event = new CustomEvent<{ name: string }>(BASELINE_CLOSE_REQUEST_EVENT, {
+        detail: { name },
+        cancelable: true,
+      });
+      window.dispatchEvent(event);
+      if (event.defaultPrevented) return;
+    }
     closeBaseline(name);
     if (activeBaseline === name) navigate("/manifests");
   };
@@ -105,7 +136,7 @@ export function BaselineWorkspaceTabs() {
             type="button"
             role="tab"
             aria-selected={allActive}
-            onClick={() => navigate("/manifests")}
+            onClick={() => navigateWithinWorkspace("/manifests")}
             className={`inline-flex shrink-0 items-center gap-1.5 rounded-full border px-3 py-1.5 text-sm font-medium transition-colors ${
               allActive
                 ? "border-blue-600 bg-blue-600 text-white hover:border-blue-700 hover:bg-blue-700 dark:border-blue-500 dark:bg-blue-600 dark:hover:border-blue-400 dark:hover:bg-blue-500"

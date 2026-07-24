@@ -3,7 +3,9 @@
     "auditPack": "Audit Pack",
     "auditPackTitle": "Generar entregables PDF / Markdown listos para auditores",
     "back": "Atrás",
+    "checkCompliance": "Comprobar cumplimiento",
     "closeBaseline": "Cerrar la baseline",
+    "closeCompliance": "Cerrar cumplimiento",
     "deleteBaseline": "Eliminar la baseline",
     "docs": "Docs",
     "duplicate": "Duplicado",
@@ -26,14 +28,29 @@
     "undoUnavailable": "No hay ninguna versión guardada anterior de la baseline disponible"
   },
   "compliance": {
+    "allStatuses": "Todos los estados",
     "emptyDescription": "Ejecuta Audit o Enforce para comparar esta baseline con el dispositivo.",
     "emptyTitle": "Aún no hay datos de cumplimiento.",
-    "sectionTitle": "Cumplimiento Estado"
+    "filterStatus": "Filtrar estado de cumplimiento",
+    "noMatches": "Ninguna configuración de cumplimiento coincide con la búsqueda y el filtro de estado actuales.",
+    "searchLabel": "Buscar en el informe de cumplimiento",
+    "searchPlaceholder": "Buscar configuraciones, tipos o motivos",
+    "sectionTitle": "Cumplimiento Estado",
+    "showing": "Mostrando {{filtered}} de {{total}} configuraciones",
+    "sortStatus": "Ordenar por estado de cumplimiento"
+  },
+  "closeUnsaved": {
+    "cancel": "Cancelar",
+    "description": "\"{{name}}\" tiene cambios que no se han guardado.",
+    "discard": "Descartar cambios",
+    "save": "Guardar baseline",
+    "title": "¿Cerrar sin guardar?"
   },
   "content": {
     "editorView": "Editaror",
     "mofEditUnsupported": "No se soporta edición en MOF formato",
     "mofReadOnly": "MOF es de solo lectura",
+    "readOnlyHint": "Vista de solo lectura. Seleccione Editar en el pie para realizar cambios.",
     "sectionTitle": "Baseline Contenido",
     "unsavedFormatChanges": "Tienes cambios no guardados en {{format}}. Cambiar de pestaña los preserva; Guarda antes de navegar y alejarte.",
     "visualEditUnavailable": "La edición requiere YAML canónico, que no está disponible actualmente."

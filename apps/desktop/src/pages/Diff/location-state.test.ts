@@ -5,7 +5,9 @@ import { describe, expect, it } from 'vitest';
 import {
   clearMatrixDiffLocationState,
   createMatrixDiffLocationState,
+  createPairwiseDiffLocationState,
   readMatrixDiffLocationState,
+  readPairwiseDiffLocationState,
 } from './location-state';
 
 describe('Diff matrix location state', () => {
@@ -38,6 +40,22 @@ describe('Diff matrix location state', () => {
     expect(
       readMatrixDiffLocationState({
         configForgeDiff: { version: 1, tab: 'pairwise', baselineNames: ['alpha'] },
+      }),
+    ).toEqual([]);
+  });
+
+  it('round-trips exactly two unique pairwise baseline names', () => {
+    const state = createPairwiseDiffLocationState(['before', 'after']);
+    expect(readPairwiseDiffLocationState(state)).toEqual(['before', 'after']);
+    expect(createPairwiseDiffLocationState(['only-one'])).toBeNull();
+    expect(createPairwiseDiffLocationState(['same', 'same'])).toBeNull();
+    expect(
+      readPairwiseDiffLocationState({
+        configForgeDiff: {
+          version: 1,
+          tab: 'pairwise',
+          baselineNames: ['before', 'after', 'extra'],
+        },
       }),
     ).toEqual([]);
   });

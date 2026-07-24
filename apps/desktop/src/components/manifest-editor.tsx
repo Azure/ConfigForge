@@ -86,6 +86,8 @@ interface ConfigEditorProps {
   value?: string;
   onChange?: (value: string) => void;
   readOnly?: boolean;
+  /** Message Monaco shows when input is attempted in read-only mode. */
+  readOnlyMessage?: string;
   language?: 'yaml' | 'json' | 'plaintext';
   height?: string;
   platform?: Platform;
@@ -140,6 +142,7 @@ export function ConfigEditor({
   value,
   onChange,
   readOnly = false,
+  readOnlyMessage,
   language = 'yaml',
   height = '100%',
   platform,
@@ -731,6 +734,9 @@ export function ConfigEditor({
         height={height}
         options={{
           readOnly,
+          readOnlyMessage: readOnly
+            ? { value: readOnlyMessage ?? "Read-only view. Select Edit to make changes." }
+            : undefined,
           minimap: { enabled: false },
           lineNumbers: "on",
           fontSize: 13,

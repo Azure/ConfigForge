@@ -29,7 +29,9 @@ const useDiffMatrixSpy = vi.hoisted(() => vi.fn());
 const reconcileMatrixSelectionSpy = vi.hoisted(() => vi.fn());
 
 vi.mock('../../components/manifest-editor', () => ({
-  ManifestEditor: () => <div data-testid="mock-manifest-editor" />,
+  ManifestEditor: ({ value }: { value?: string }) => (
+    <div data-testid="mock-manifest-editor" data-value={value ?? ""} />
+  ),
   ConfigEditor: () => <div data-testid="mock-manifest-editor" />,
 }));
 vi.mock('../../components/diff-viewer', () => ({
@@ -183,6 +185,101 @@ describe('DiffPage — dropdown stability (v0.3.53)', () => {
       screen.getByText('No baselines match the current search and filters.'),
     ).toBeInTheDocument();
   });
+
+  it('activates Pairwise Diff and loads two route-selected baselines', async () => {
+    const get = vi.fn().mockImplementation(({ name }: { name: string }) =>
+      Promise.resolve({ body: `resources:\n  - name: ${name}\n` }),
+    );
+    Object.assign(window.cfs!, {
+      manifests: {
+        list: vi.fn().mockResolvedValue({
+          data: [
+            { Name: 'before', Source: 'user', Resources: [] },
+            { Name: 'after', Source: 'user', Resources: [] },
+          ],
+        }),
+      },
+      exportChannel: { get },
+    });
+
+    renderDiff({
+      pathname: '/diff',
+      state: {
+        configForgeDiff: {
+          version: 1,
+          tab: 'pairwise',
+          baselineNames: ['before', 'after'],
+        },
+      },
+    });
+
+    expect(screen.getByRole('tab', { name: 'Pairwise' })).toHaveAttribute(
+      'aria-selected',
+      'true',
+    );
+    await waitFor(() => {
+      const manifestSelects = screen
+        .getAllByRole('combobox')
+        .filter((select) => select.querySelector('option[value="before"]'));
+      expect(manifestSelects).toHaveLength(2);
+      expect(manifestSelects[0]).toHaveValue('before');
+      expect(manifestSelects[1]).toHaveValue('after');
+    });
+    await waitFor(() => expect(get).toHaveBeenCalledTimes(2));
+    expect(get).toHaveBeenCalledWith({ name: 'before', format: 'yaml' });
+    expect(get).toHaveBeenCalledWith({ name: 'after', format: 'yaml' });
+    await waitFor(() =>
+      expect(screen.getByLabelText('location-state')).toHaveTextContent('null'),
+    );
+  });
+
+  it('does not let late pairwise preload replace manual input mode', async () => {
+    let resolveGet!: (value: { body: string }) => void;
+    const pendingGet = new Promise<{ body: string }>((resolve) => {
+      resolveGet = resolve;
+    });
+    Object.assign(window.cfs!, {
+      manifests: {
+        list: vi.fn().mockResolvedValue({
+          data: [
+            { Name: 'before', Source: 'user', Resources: [] },
+            { Name: 'after', Source: 'user', Resources: [] },
+          ],
+        }),
+      },
+      exportChannel: { get: vi.fn().mockReturnValue(pendingGet) },
+    });
+
+    renderDiff({
+      pathname: '/diff',
+      state: {
+        configForgeDiff: {
+          version: 1,
+          tab: 'pairwise',
+          baselineNames: ['before', 'after'],
+        },
+      },
+    });
+
+    await waitFor(() => expect(window.cfs!.exportChannel.get).toHaveBeenCalledTimes(2));
+    const modeSelects = screen
+      .getAllByRole('combobox')
+      .filter(
+        (select) =>
+          select.querySelector('option[value="paste"]') &&
+          select.querySelector('option[value="manifest"]'),
+      );
+    fireEvent.change(modeSelects[0], { target: { value: 'paste' } });
+    resolveGet({ body: 'late preload content' });
+
+    await waitFor(() => {
+      expect(screen.getAllByTestId('mock-manifest-editor')[0]).toHaveAttribute(
+        'data-value',
+        '',
+      );
+    });
+  });
+
   it('Pairwise "Before" select stays interactive while manifest list IPC is pending', () => {
     renderDiff();
     // Two manifest pickers render on the Pairwise tab (Before + After).
