@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.3.91] - 2026-07-24
+
+### Added
+
+- **Surfaced Test schema rules directly in Visual Expected value cells.** `const`, `enum`, range, type, and supported composition rules now render as compact stacked technical rows, with each allowed enum value on its own line.
+
+### Fixed
+
+- **Aligned Visual edits with Test schema constraints.** Newly edited governed values are rejected when they violate supported rules, while existing shipped mismatches remain viewable and unrelated edits stay unblocked.
+- **Repaired typed Registry and CSP values before serialization.** Declared types now override malformed string or boolean values, MultiString edits emit strings, and valid numeric edits are written as numeric YAML.
+- **Bounded complex schema behavior.** Recursive/shared YAML aliases remain compact, unsafe regex patterns are labeled reference-only, and invalid YAML errors take precedence over value constraints.
+
 ## [0.3.90] - 2026-07-23
 
 ### Fixed

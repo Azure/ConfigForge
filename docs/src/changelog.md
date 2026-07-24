@@ -3,6 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## v0.3.91 — 2026-07-24
+
+- **Made Visual schema rules explicit and enforceable.** Expected value cells now show stacked Test constraints, governed edits honor supported enum/range/type rules, malformed Registry/CSP values are repaired to their declared types, and unsupported regex patterns are clearly labeled reference-only.
+
 ## v0.3.90 — 2026-07-23
 
 - **Fixed Baseline Detail layout collisions.** The sticky footer reflows before labeled actions overlap, and long multi-value Visual rows remain inside their Expected and Applied columns in both view and edit modes.
