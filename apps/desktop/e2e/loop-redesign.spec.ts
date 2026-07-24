@@ -448,6 +448,87 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     ).toHaveCount(0);
   });
 
+  test("long multi-value rows stay inside their cells in view and edit modes", async () => {
+    const baselineName = "LoopMultiValue";
+    const settingName = "CryptographySSLCipherSuites";
+    const longValue = "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384";
+    const source = `resources:
+  - name: ${settingName}
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Cryptography\\Configuration\\SSL\\00010002
+      valueName: Functions
+      valueType: MultiString
+      value:
+        - ${longValue}
+        - TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
+`;
+
+    const assertContainedByCell = async (locator: ReturnType<typeof page.getByText>) => {
+      const geometry = await locator.evaluate((element) => {
+        const cell = element.closest("td");
+        if (!cell) throw new Error("Multi-value item is not inside a table cell");
+        const itemRect = element.getBoundingClientRect();
+        const cellRect = cell.getBoundingClientRect();
+        const style = getComputedStyle(element);
+        return {
+          cellLeft: cellRect.left,
+          cellRight: cellRect.right,
+          itemLeft: itemRect.left,
+          itemRight: itemRect.right,
+          overflowWrap: style.overflowWrap,
+          whiteSpace: style.whiteSpace,
+        };
+      });
+      expect(geometry.itemLeft).toBeGreaterThanOrEqual(geometry.cellLeft);
+      expect(geometry.itemRight).toBeLessThanOrEqual(geometry.cellRight + 1);
+      expect(geometry.overflowWrap).toBe("anywhere");
+      expect(geometry.whiteSpace).toBe("pre-wrap");
+    };
+
+    try {
+      await registerBaseline(baselineName, source);
+      await page.reload();
+      await page.waitForLoadState("domcontentloaded");
+      await goToMyBaselines();
+      await page.getByRole("button", { name: `Open baseline ${baselineName}` }).click();
+      await page.getByRole("button", { name: "Visual" }).click();
+      const visual = page.getByRole("region", { name: "Visual baseline settings" });
+      const viewItems = visual.getByText(longValue, { exact: true });
+      await expect(viewItems).toHaveCount(2);
+      for (let index = 0; index < 2; index += 1) {
+        const viewItem = viewItems.nth(index);
+        await expect(viewItem).toBeVisible();
+        await assertContainedByCell(viewItem);
+      }
+
+      await page.getByRole("button", { name: "Edit" }).click();
+      await expect(page.getByTestId("manifest-detail-footer").getByRole("button", { name: "Save" }))
+        .toBeVisible();
+      const editItem = visual
+        .getByRole("button", {
+          name: `Edit Applied value value 1 for ${settingName}`,
+        })
+        .getByText(longValue, { exact: true });
+      await expect(editItem).toBeVisible();
+      await assertContainedByCell(editItem);
+
+      await page.getByRole("button", { name: "Cancel" }).click();
+      await page.getByRole("button", { name: "Close baseline" }).click();
+      await expect(page.getByRole("heading", { name: "My Baselines" })).toBeVisible();
+    } finally {
+      await page.evaluate(async (name) => {
+        try {
+          await window.cfs!.manifests.delete(name);
+        } catch {
+          // Cleanup should not hide the layout assertion.
+        }
+      }, baselineName);
+      await page.reload();
+      await page.waitForLoadState("domcontentloaded");
+    }
+  });
+
   test("Delete and session Undo restore captured baseline content", async () => {
     await page.getByRole("checkbox", { name: `Select baseline ${BASELINE_B}` }).check();
     page.once("dialog", (dialog) => dialog.accept());
