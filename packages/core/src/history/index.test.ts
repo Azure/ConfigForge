@@ -496,6 +496,21 @@ describe('on-disk layout (activity-route compatibility)', () => {
 // ── Dedupe by content hash ────────────────────────────────────────────────
 
 describe('dedupe by content hash', () => {
+  it('dedupes against the latest same-millisecond sequence entry', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date('2026-07-23T06:00:00.000Z'));
+    try {
+      await saveSnapshot('m1', 'first');
+      const latest = await saveSnapshot('m1', 'latest');
+      const deduped = await saveSnapshot('m1', 'latest');
+
+      expect(deduped.id).toBe(latest.id);
+      expect(await getHistory('m1')).toHaveLength(2);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
   it('does not write a new snapshot when content matches the immediate predecessor', async () => {
     const a = await saveSnapshot('m1', 'identical');
     await new Promise((r) => setTimeout(r, 5));

@@ -202,7 +202,7 @@ async function readNewestSnapshot(
     const id = idFromFilename(f);
     // Sort key: parsed timestamp first, then id as tie-breaker.
     const ts = timestampFromId(id) ?? '';
-    const key = ts || id;
+    const key = ts ? `${ts}|${id}` : id;
     if (bestKey === null || key > bestKey) {
       bestKey = key;
       bestId = id;
