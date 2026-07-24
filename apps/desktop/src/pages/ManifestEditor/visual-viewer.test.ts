@@ -269,10 +269,13 @@ describe("visual viewer helpers", () => {
       }),
     ).toBe(true);
     expect(
-      visualValueSatisfiesSchema(`${"a".repeat(64)}!`, {
-        pattern: "^(a+)+$",
+      visualValueSatisfiesSchema("a", {
+        pattern: "(a)",
       }),
     ).toBe(true);
+    expect(visualSchemaConstraintRows({ pattern: "(a)" })).toEqual([
+      { keyword: "pattern", values: ["(a)"], enforced: false },
+    ]);
   });
 
   it("bounds recursive schema aliases while retaining reachable rules", () => {

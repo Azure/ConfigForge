@@ -302,6 +302,8 @@
     "noSearchMatches": "Ninguna configuración coincide con la búsqueda actual.",
     "requiredCells_one": "Complete {{count}} celda obligatoria antes de guardar.",
     "requiredCells_other": "Complete {{count}} celdas obligatorias antes de guardar.",
+    "schemaReferenceOnly": "Solo como referencia",
+    "schemaReferenceOnlyDescription": "La edición visual muestra esta regla, pero no la aplica.",
     "selectAllInCategory": "Seleccionar todas las configuraciones de {{category}}",
     "selectRow": "Seleccionar {{name}}",
     "selectedCount_one": "{{count}} configuración seleccionada",

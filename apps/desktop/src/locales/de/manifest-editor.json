@@ -302,6 +302,8 @@
     "noSearchMatches": "Keine Einstellungen entsprechen der aktuellen Suche.",
     "requiredCells_one": "Vervollständigen Sie vor dem Speichern {{count}} erforderliche Zelle.",
     "requiredCells_other": "Vervollständigen Sie vor dem Speichern {{count}} erforderliche Zellen.",
+    "schemaReferenceOnly": "Nur zur Referenz",
+    "schemaReferenceOnlyDescription": "Die visuelle Bearbeitung zeigt diese Regel an, setzt sie jedoch nicht durch.",
     "selectAllInCategory": "Alle {{category}}-Einstellungen auswählen",
     "selectRow": "{{name}} auswählen",
     "selectedCount_one": "{{count}} Einstellung ausgewählt",

@@ -302,6 +302,8 @@
     "noSearchMatches": "Aucun paramètre ne correspond à la recherche actuelle.",
     "requiredCells_one": "Complétez {{count}} cellule obligatoire avant d'enregistrer.",
     "requiredCells_other": "Complétez {{count}} cellules obligatoires avant d'enregistrer.",
+    "schemaReferenceOnly": "Référence uniquement",
+    "schemaReferenceOnlyDescription": "L’édition visuelle affiche cette règle, mais ne l’applique pas.",
     "selectAllInCategory": "Sélectionner tous les paramètres {{category}}",
     "selectRow": "Sélectionner {{name}}",
     "selectedCount_one": "{{count}} paramètre sélectionné",
