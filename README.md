@@ -147,7 +147,8 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.91-author.1** (current) | macOS author flavor shows stacked Test schema rules and enforces supported constraints on newly edited values |
+| **0.3.92-author.1** (current) | macOS author flavor patches the updater, packaging, PostCSS, and archive toolchains |
+| **0.3.91-author.1** | macOS author flavor shows stacked Test schema rules and enforces supported constraints on newly edited values |
 | **0.3.90-author.1** | macOS author flavor prevents Baseline Detail footer and multi-value table collisions |
 | **0.3.89-author.1** | macOS author flavor adds the full July workspace and Baseline Detail authoring revisions plus the zero-alert dependency baseline |
 | **0.3.87-author.1** | macOS author flavor removes the local `ImpersonateClient` manifest override while retaining shared minimum-version handling |
