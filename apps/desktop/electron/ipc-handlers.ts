@@ -839,6 +839,9 @@ export function registerCfsIpcHandlers(): void {
       // Optional sanity log when the on-disk size shrinks unexpectedly
       // post-stat (sparse files, truncate-races). Best-effort only.
       void preReadSize;
+      if (filename.toLowerCase().endsWith('.xlsx')) {
+        return importFile({ filename, bytes: new Uint8Array(fullBuffer) });
+      }
       const content = fullBuffer.toString('utf-8');
       return importFile({ filename, content });
     } catch (err) {

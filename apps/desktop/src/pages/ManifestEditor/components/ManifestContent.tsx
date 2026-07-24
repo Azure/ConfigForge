@@ -127,7 +127,7 @@ export const ManifestContent = React.memo(function ManifestContent({
 
   const visualActive = editing ? editView === "visual" : viewerMode === "visual";
   const codeActive = !visualActive;
-  const visualSource = editing ? editedContent : formatCache.current.yaml ?? "";
+  const visualSource = editing ? editedContent : (formatCache.current.yaml ?? "");
 
   return (
     <div className="overflow-hidden rounded-lg border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900">
@@ -226,6 +226,14 @@ export const ManifestContent = React.memo(function ManifestContent({
         </div>
       </div>
 
+      {!editing && (
+        <div className="border-b border-slate-200 px-6 py-2 dark:border-slate-800">
+          <MessageBar intent="info">
+            <MessageBarBody>{t("content.readOnlyHint")}</MessageBarBody>
+          </MessageBar>
+        </div>
+      )}
+
       {visualActive ? (
         <VisualManifestViewer
           source={visualSource}
@@ -245,6 +253,7 @@ export const ManifestContent = React.memo(function ManifestContent({
             value={editing ? editedContent : currentDisplayContent}
             onChange={editing && isEditable ? (next) => applyEditedContent(next, false) : undefined}
             readOnly={isReadOnly}
+            readOnlyMessage={t("content.readOnlyHint")}
             language={EDITOR_LANGUAGE[activeFormat]}
             height="100%"
             platform={editorPlatform}

@@ -162,6 +162,7 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       "Settings",
       "Issues",
       "Compliant",
+      "Date Modified",
     ]) {
       await expect(
         table.getByRole("columnheader", { name: heading, exact: true }),
@@ -169,6 +170,9 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     }
     await expect(page.getByRole("textbox", { name: "Search Baselines" })).toBeVisible();
     await expect(page.getByRole("combobox", { name: "Operating System" })).toBeVisible();
+    await expect(page.getByRole("row", { name: new RegExp(BASELINE_A) })).toContainText(
+      /\d{4}-\d{2}-\d{2}/,
+    );
 
     await page.getByRole("combobox", { name: "Operating System" }).selectOption("linux");
     await expect(page.getByRole("button", { name: `Open baseline ${BASELINE_LINUX}` })).toBeVisible();
@@ -176,7 +180,7 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await page.getByRole("combobox", { name: "Operating System" }).selectOption("all");
   });
 
-  test("selection actions open workspace tabs and preselect Matrix Diff", async () => {
+  test("selection actions open workspace tabs and preselect Pairwise Diff for two", async () => {
     await page.getByRole("checkbox", { name: `Select baseline ${BASELINE_A}` }).check();
     await page.getByRole("checkbox", { name: `Select baseline ${BASELINE_B}` }).check();
     await expect(page.getByRole("button", { name: "Open selected baselines" })).toBeEnabled();
@@ -190,12 +194,18 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(tablist.getByRole("tab", { name: BASELINE_B })).toBeVisible();
 
     await page.getByRole("button", { name: "Diff selected baselines" }).click();
-    await expect(page.getByRole("tab", { name: "Matrix (N-way)" })).toHaveAttribute(
+    await expect(page.getByRole("tab", { name: "Pairwise" })).toHaveAttribute(
       "aria-selected",
       "true",
     );
-    await expect(page.getByRole("checkbox", { name: BASELINE_A })).toBeChecked();
-    await expect(page.getByRole("checkbox", { name: BASELINE_B })).toBeChecked();
+    const pairwiseSelects = page
+      .locator("select")
+      .filter({ has: page.locator(`option[value="${BASELINE_A}"]`) });
+    await expect(pairwiseSelects).toHaveCount(2);
+    await expect(pairwiseSelects.nth(0)).toHaveValue(BASELINE_A);
+    await expect(pairwiseSelects.nth(1)).toHaveValue(BASELINE_B);
+
+    await page.getByRole("tab", { name: "Matrix (N-way)" }).click();
     const matrixPicker = page
       .getByRole("heading", { name: "Pick 2–10 baselines to compare" })
       .locator("..");
@@ -234,10 +244,36 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
 
     await expect(page.getByTestId("baseline-document-icon")).toBeVisible();
     await expect(page.getByText("Viewing", { exact: true })).toBeVisible();
+    await expect(
+      page.getByText("Read-only view. Select Edit in the footer to make changes."),
+    ).toBeVisible();
     await expect(page.getByRole("button", { name: "Code" })).toHaveAttribute(
       "aria-pressed",
       "true",
     );
+    const codeEditor = page.locator(".monaco-editor").first();
+    await codeEditor.click();
+    await page.keyboard.type("x");
+    const readOnlyMessage = page.locator(
+      ".monaco-overflow-host .monaco-editor-overlaymessage .message",
+    );
+    await expect(readOnlyMessage).toBeVisible();
+    expect(
+      await readOnlyMessage.evaluate((element) => {
+        const style = getComputedStyle(element);
+        return {
+          backgroundColor: style.backgroundColor,
+          borderColor: style.borderColor,
+          color: style.color,
+          opacity: style.opacity,
+        };
+      }),
+    ).toEqual({
+      backgroundColor: "rgb(37, 37, 38)",
+      borderColor: "rgb(0, 122, 204)",
+      color: "rgb(204, 204, 204)",
+      opacity: "1",
+    });
     for (const format of ["YAML", "JSON", "MOF"]) {
       await expect(page.getByRole("tab", { name: format })).toBeVisible();
     }
@@ -410,6 +446,13 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(page.getByRole("button", { name: "Cancel" })).toBeVisible();
     await expect(page.getByText("Editing", { exact: true })).toBeVisible();
     await expect(visual.getByRole("checkbox")).toHaveCount(3);
+    const firstSelection = visual.getByRole("checkbox").first();
+    const unselectAll = visual.getByRole("button", { name: "Unselect All" });
+    await expect(unselectAll).toBeDisabled();
+    await firstSelection.check();
+    await expect(unselectAll).toBeEnabled();
+    await unselectAll.click();
+    await expect(firstSelection).not.toBeChecked();
     const registrySection = visual
       .getByRole("heading", { name: "Registry" })
       .locator("xpath=../..");
@@ -422,6 +465,13 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       name: "Edit Applied value for AlphaSetting",
     });
     await valueEditor.fill("5");
+    await page.getByRole("button", { name: "Close baseline" }).click();
+    const closeDialog = page.getByRole("dialog", {
+      name: "Close without saving?",
+    });
+    await expect(closeDialog).toBeVisible();
+    await closeDialog.getByRole("button", { name: "Cancel" }).click();
+    await expect(page.getByText("Editing", { exact: true })).toBeVisible();
     // Save directly while the cell still has focus. Blur must commit the
     // valid draft before the footer's Save handler reads editedContent.
     await footer.getByRole("button", { name: "Save" }).click();
@@ -443,6 +493,12 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
         name: BASELINE_A,
       }),
     ).toHaveCount(0);
+
+    await page.getByRole("button", { name: `Open baseline ${BASELINE_A}` }).click();
+    await expect(page.getByRole("button", { name: "Visual" })).toHaveAttribute(
+      "aria-pressed",
+      "true",
+    );
   });
 
   test("long multi-value rows stay inside their cells in view and edit modes", async () => {
@@ -548,9 +604,9 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
       .getByRole("list", { name: "CIS catalog setup" })
       .getByRole("heading", { level: 2 });
     await expect(steps).toHaveText([
-      /Step 1: Download CIS baselines/,
-      /Step 2: Import the CIS baseline files/,
-      /Step 3: Re-check catalog/,
+      /Download CIS baselines/,
+      /Import the CIS baseline files/,
+      /Re-check catalog/,
     ]);
     await expect(page.getByText("No CIS data found")).toBeVisible();
 
@@ -614,9 +670,9 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
     await expect(page.getByText("Unrecognized files")).toHaveCount(0);
     await expect(page.getByText(`${xccdfPrefix}-cpe-oval.xml`)).toHaveCount(0);
     await expect(steps).toHaveText([
-      /Step 1: Download CIS baselines/,
-      /Step 2: Import the CIS baseline files/,
-      /Step 3: Re-check catalog/,
+      /Download CIS baselines/,
+      /Import the CIS baseline files/,
+      /Re-check catalog/,
     ]);
   });
 

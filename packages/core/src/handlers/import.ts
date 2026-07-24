@@ -4,12 +4,13 @@
 /**
  * Pure handler for `cfs:import:fromContent` and POST /api/import.
  *
- * Takes a filename + raw text content and detects the file type from
+ * Takes a filename plus text content or binary workbook bytes and detects the file type from
  * the extension, then delegates to the appropriate parser:
  *
  *   .osc.yaml / .osc.yml / .yaml / .yml  → parseOscYaml
  *   .json                                 → manifest-JSON or security-definition
- *   .csv / .tsv / .xlsx                   → parseExcelBaseline
+ *   .csv / .tsv                           → parseExcelBaseline
+ *   .xlsx                                 → XLSX worksheet extraction + parseExcelBaseline
  *
  * The two hosts differ in HOW they obtain `content`:
  *
@@ -18,8 +19,7 @@
  *   - Electron: opens dialog.showOpenDialog, reads the selected file
  *     from disk, passes here.
  *
- * This handler doesn't care which path the bytes took — it just
- * parses + validates.
+ * This handler doesn't care which host obtained the payload — it just parses + validates.
  */
 import {
   parseOscYaml,
@@ -32,16 +32,18 @@ import {
   type ParsedSecurityDefinition,
 } from '../import-export';
 import { HandlerError } from './errors';
+import { xlsxToDelimitedText } from './xlsx-import';
 
 export const MAX_IMPORT_BYTES = 10 * 1024 * 1024; // 10 MB
 
-export type DetectedType = 'osc-yaml' | 'yaml' | 'json' | 'csv';
+export type DetectedType = 'osc-yaml' | 'yaml' | 'json' | 'csv' | 'xlsx';
 
 export { inferRegistryValueType };
 
 export interface ImportRequest {
   filename: string;
-  content: string;
+  content?: string;
+  bytes?: Uint8Array;
 }
 
 export interface ImportResult {
@@ -56,7 +58,8 @@ export function detectFileType(filename: string): DetectedType {
   if (lower.endsWith('.osc.yaml') || lower.endsWith('.osc.yml')) return 'osc-yaml';
   if (lower.endsWith('.yaml') || lower.endsWith('.yml')) return 'yaml';
   if (lower.endsWith('.json')) return 'json';
-  if (lower.endsWith('.csv') || lower.endsWith('.tsv') || lower.endsWith('.xlsx')) return 'csv';
+  if (lower.endsWith('.csv') || lower.endsWith('.tsv')) return 'csv';
+  if (lower.endsWith('.xlsx')) return 'xlsx';
   return 'yaml';
 }
 
@@ -349,31 +352,40 @@ function ruleMetadataRejection(doc: Record<string, unknown>): HandlerError {
 
 export function importFile(req: ImportRequest): ImportResult {
   if (!req || typeof req !== 'object') {
-    throw new HandlerError(400, 'Request must include filename + content');
+    throw new HandlerError(400, 'Request must include filename plus content or bytes');
   }
   if (typeof req.filename !== 'string' || !req.filename) {
     throw new HandlerError(400, 'filename is required');
   }
-  if (typeof req.content !== 'string') {
-    throw new HandlerError(400, 'content is required');
+  const hasContent = typeof req.content === 'string';
+  const hasBytes = req.bytes instanceof Uint8Array;
+  if (hasContent === hasBytes) {
+    throw new HandlerError(400, 'Request must include exactly one of content or bytes');
   }
-  const byteLength = Buffer.byteLength(req.content, 'utf-8');
+  const byteLength = hasBytes ? req.bytes!.byteLength : Buffer.byteLength(req.content!, 'utf-8');
   if (byteLength > MAX_IMPORT_BYTES) {
     throw new HandlerError(
       413,
       `File too large (${byteLength.toLocaleString()} bytes). Limit: ${MAX_IMPORT_BYTES.toLocaleString()} bytes (10 MB).`,
     );
   }
-  if (!req.content.trim()) {
+  if ((hasContent && !req.content!.trim()) || (hasBytes && req.bytes!.byteLength === 0)) {
     throw new HandlerError(400, 'File is empty');
   }
 
   const fileType = detectFileType(req.filename);
+  if (fileType === 'xlsx' && !hasBytes) {
+    throw new HandlerError(400, 'Excel workbooks must be imported as binary bytes');
+  }
+  if (fileType !== 'xlsx' && !hasContent) {
+    throw new HandlerError(400, 'Text-based imports require string content');
+  }
+  const content = req.content ?? '';
 
   switch (fileType) {
     case 'osc-yaml':
     case 'yaml': {
-      const parsed = parseOscYaml(req.content);
+      const parsed = parseOscYaml(content);
       return {
         type: 'manifest',
         filename: req.filename,
@@ -389,7 +401,7 @@ export function importFile(req: ImportRequest): ImportResult {
     case 'json': {
       let parsedJson: unknown;
       try {
-        parsedJson = JSON.parse(req.content);
+        parsedJson = JSON.parse(content);
       } catch {
         throw new HandlerError(400, 'File is not valid JSON');
       }
@@ -433,7 +445,7 @@ export function importFile(req: ImportRequest): ImportResult {
         }
 
         case 'securityDefinition': {
-          const parsed = parseSecurityDefinition(req.content);
+          const parsed = parseSecurityDefinition(content);
           const manifest =
             parsed.origin === 'settingsReference'
               ? buildPlaceholderManifestFromSettingsReference(parsed.settings)
@@ -480,7 +492,14 @@ export function importFile(req: ImportRequest): ImportResult {
     }
 
     case 'csv': {
-      return spreadsheetImportResult(req.filename, parseExcelBaseline(req.content));
+      return spreadsheetImportResult(req.filename, parseExcelBaseline(content));
+    }
+
+    case 'xlsx': {
+      return spreadsheetImportResult(
+        req.filename,
+        parseExcelBaseline(xlsxToDelimitedText(req.bytes!)),
+      );
     }
 
     default:

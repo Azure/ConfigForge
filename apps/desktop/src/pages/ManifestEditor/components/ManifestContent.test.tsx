@@ -77,6 +77,9 @@ describe("ManifestContent read-only Visual mode", () => {
     );
 
     expect(screen.getByRole("region", { name: "Visual baseline settings" })).toBeInTheDocument();
+    expect(
+      screen.getAllByText("Read-only view. Select Edit in the footer to make changes."),
+    ).not.toHaveLength(0);
     expect(screen.getByRole("cell", { name: "Canonical YAML Setting" })).toBeInTheDocument();
     expect(screen.queryByText("not canonical")).not.toBeInTheDocument();
     expect(screen.queryByText("Hidden_Mof")).not.toBeInTheDocument();

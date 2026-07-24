@@ -3,7 +3,9 @@
     "auditPack": "Audit Pack",
     "auditPackTitle": "Générez un PDF / livrable Markdown prêt pour l’auditeur",
     "back": "Retour",
+    "checkCompliance": "Vérifier la conformité",
     "closeBaseline": "Fermer la baseline",
+    "closeCompliance": "Fermer la conformité",
     "deleteBaseline": "Supprimer la baseline",
     "docs": "Docs",
     "duplicate": "Duplique",
@@ -26,14 +28,29 @@
     "undoUnavailable": "Aucune version enregistrée précédente de la baseline n’est disponible"
   },
   "compliance": {
+    "allStatuses": "Tous les états",
     "emptyDescription": "Lancez Audit ou Enforce pour vérifier cette baseline par rapport à l'appareil.",
     "emptyTitle": "Non compliance data yet.",
-    "sectionTitle": "Conformité État"
+    "filterStatus": "Filtrer l’état de conformité",
+    "noMatches": "Aucun paramètre de conformité ne correspond à la recherche et au filtre d’état actuels.",
+    "searchLabel": "Rechercher dans le rapport de conformité",
+    "searchPlaceholder": "Rechercher des paramètres, des types ou des raisons",
+    "sectionTitle": "Conformité État",
+    "showing": "Affichage de {{filtered}} paramètres sur {{total}}",
+    "sortStatus": "Trier par état de conformité"
+  },
+  "closeUnsaved": {
+    "cancel": "Annuler",
+    "description": "\"{{name}}\" contient des modifications qui n'ont pas été enregistrées.",
+    "discard": "Ignorer les modifications",
+    "save": "Enregistrer la baseline",
+    "title": "Fermer sans enregistrer ?"
   },
   "content": {
     "editorView": "Modifieror",
     "mofEditUnsupported": "L’édition n’est pas prise en charge dans MOF format",
     "mofReadOnly": "MOF est en lecture seule",
+    "readOnlyHint": "Vue en lecture seule. Sélectionnez Modifier dans le pied de page pour apporter des modifications.",
     "sectionTitle": "Baseline Contenu",
     "unsavedFormatChanges": "Vous avez des modifications non enregistrées dans {{format}}. Changer d’onglet les préserve ; Sauvegarder avant de s’éloigner.",
     "visualEditUnavailable": "La modification nécessite un YAML canonique, actuellement indisponible."

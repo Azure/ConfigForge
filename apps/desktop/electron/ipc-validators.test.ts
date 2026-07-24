@@ -265,6 +265,15 @@ describe('validateImportRequest', () => {
     ).toBeNull();
   });
 
+  it('accepts binary workbook bytes', () => {
+    expect(
+      validateImportRequest({
+        filename: 'baseline.xlsx',
+        bytes: new Uint8Array([0x50, 0x4b]),
+      }),
+    ).toBeNull();
+  });
+
   it('rejects missing filename', () => {
     expect(validateImportRequest({ content: 'r' })).toMatch(/filename/);
   });
@@ -279,7 +288,7 @@ describe('validateImportRequest', () => {
   });
 
   it('rejects non-string content', () => {
-    expect(validateImportRequest({ filename: 'x', content: 42 })).toMatch(/content/);
+    expect(validateImportRequest({ filename: 'x', content: 42 })).toMatch(/content or bytes/);
   });
 });
 

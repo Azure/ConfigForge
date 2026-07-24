@@ -62,12 +62,11 @@ vi.mock('../import-export', () => ({
   exportToYaml: vi.fn(() => 'resources:\n  - name: out\n'),
 }));
 
-import {
-  importFile,
-  detectFileType,
-  inferRegistryValueType,
-  MAX_IMPORT_BYTES,
-} from './import';
+vi.mock('./xlsx-import', () => ({
+  xlsxToDelimitedText: vi.fn(() => 'name\tpath\tvalue\nx\ty\tz\n'),
+}));
+
+import { importFile, detectFileType, inferRegistryValueType, MAX_IMPORT_BYTES } from './import';
 import { exportToYaml } from '../import-export';
 
 beforeEach(() => {
@@ -87,7 +86,7 @@ describe('detectFileType', () => {
     ['data.json', 'json'],
     ['baseline.csv', 'csv'],
     ['baseline.TSV', 'csv'],
-    ['baseline.xlsx', 'csv'],
+    ['baseline.xlsx', 'xlsx'],
     ['unknown.bin', 'yaml'],
   ])('detects %s as %s', (filename, expected) => {
     expect(detectFileType(filename)).toBe(expected);
@@ -107,10 +106,28 @@ describe('importFile', () => {
     );
   });
 
-  it('rejects non-string content', () => {
+  it('rejects payloads without string content or binary bytes', () => {
     expect(() => importFile({ filename: 'a.yaml', content: 42 as never })).toThrowError(
       expect.objectContaining({ status: 400 }),
     );
+  });
+
+  it('parses .xlsx bytes as a baseline spreadsheet', () => {
+    const result = importFile({
+      filename: 'baseline.xlsx',
+      bytes: new Uint8Array([0x50, 0x4b]),
+    });
+    expect(result.type).toBe('baseline-spreadsheet');
+    expect(result.data.settingCount).toBe(1);
+  });
+
+  it('rejects .xlsx content that was decoded as text', () => {
+    expect(() =>
+      importFile({
+        filename: 'baseline.xlsx',
+        content: 'PK\u0003\u0004',
+      }),
+    ).toThrow(/binary bytes/);
   });
 
   it('rejects empty/whitespace content', () => {

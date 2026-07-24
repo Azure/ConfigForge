@@ -11,7 +11,17 @@ import { useCisAvailable } from "../../components/use-cis-available";
 import { useBaselineWorkspace } from "../../components/BaselineWorkspace";
 import yaml from "js-yaml";
 import { ArrowLeftRegular, WarningRegular } from "@fluentui/react-icons";
-import { MessageBar, MessageBarBody } from "@fluentui/react-components";
+import {
+  Button,
+  Dialog,
+  DialogActions,
+  DialogBody,
+  DialogContent,
+  DialogSurface,
+  DialogTitle,
+  MessageBar,
+  MessageBarBody,
+} from "@fluentui/react-components";
 import type { OscResource } from "@configforge/core/types";
 import type { DeployProgressEvent as _DeployProgressEvent } from "@configforge/core/handlers/deploy";
 import { detectManifestPlatform } from "@configforge/core/platform";
@@ -28,15 +38,23 @@ import { ManifestHeader } from "./components/ManifestHeader";
 import { ManifestDetailFooter } from "./components/ManifestDetailFooter";
 import { Breadcrumb } from "../../components/Breadcrumb";
 import {
+  BASELINE_CLOSE_REQUEST_EVENT,
+  BASELINE_NAVIGATION_REQUEST_EVENT,
+  type BaselineNavigationRequestDetail,
+} from "../../components/BaselineWorkspaceTabs";
+import {
   flattenVisualSettings,
   parseVisualManifest,
   validateVisualSettings,
 } from "./visual-viewer";
+import { readManifestViewerMode, writeManifestViewerMode } from "./viewer-mode-preference";
 import { electronRestoreClient } from "../../lib/electron-restore-client";
-import {
-  hasUndoableHistory,
-  undoLatestManifestChange,
-} from "./undo-latest";
+import { hasUndoableHistory, undoLatestManifestChange } from "./undo-latest";
+
+interface PendingWorkspaceNavigation {
+  destination: string;
+  closeCurrent: boolean;
+}
 
 export function ManifestDetailPage() {
   const params = useParams<{ id: string }>();
@@ -51,17 +69,42 @@ export function ManifestDetailPage() {
   const [undoAvailable, setUndoAvailable] = useState(false);
   const [editUndoAvailable, setEditUndoAvailable] = useState(false);
   const editUndoRef = useRef<(() => void) | null>(null);
+  const [pendingNavigation, setPendingNavigation] = useState<PendingWorkspaceNavigation | null>(
+    null,
+  );
+  const [navigationAfterSave, setNavigationAfterSave] = useState<PendingWorkspaceNavigation | null>(
+    null,
+  );
   const [visualDraftValid, setVisualDraftValid] = useState(true);
   const visualDraftValidRef = useRef(true);
   const [viewerSelection, setViewerSelection] = useState<{
     manifestName: string;
     mode: ManifestViewerMode;
-  }>({ manifestName, mode: "code" });
-  const viewerMode = viewerSelection.manifestName === manifestName ? viewerSelection.mode : "code";
+  }>(() => ({
+    manifestName,
+    mode: readManifestViewerMode(manifestName),
+  }));
+  const viewerMode =
+    viewerSelection.manifestName === manifestName
+      ? viewerSelection.mode
+      : readManifestViewerMode(manifestName);
   const handleViewerModeChange = useCallback(
-    (mode: ManifestViewerMode) => setViewerSelection({ manifestName, mode }),
+    (mode: ManifestViewerMode) => {
+      writeManifestViewerMode(manifestName, mode);
+      setViewerSelection({ manifestName, mode });
+    },
     [manifestName],
   );
+  useEffect(() => {
+    setViewerSelection((current) =>
+      current.manifestName === manifestName
+        ? current
+        : {
+            manifestName,
+            mode: readManifestViewerMode(manifestName),
+          },
+    );
+  }, [manifestName]);
   const [expandedResource, setExpandedResource] = useState<number | null>(null);
   // perf W2 / C1: large compliance + deploy-result tables (typical
   // tenant: ~326 resources) used to render synchronously, dropping
@@ -103,6 +146,7 @@ export function ManifestDetailPage() {
     editedContent,
     savedContent,
     setSavedContent,
+    saving,
     setSaving,
     activeFormat,
     formatCache,
@@ -144,9 +188,8 @@ export function ManifestDetailPage() {
     if (!editing || activeFormat !== "yaml") return true;
     try {
       return (
-        validateVisualSettings(
-          flattenVisualSettings(parseVisualManifest(editedContent)),
-        ).length === 0
+        validateVisualSettings(flattenVisualSettings(parseVisualManifest(editedContent))).length ===
+        0
       );
     } catch {
       return false;
@@ -216,10 +259,57 @@ export function ManifestDetailPage() {
     }
   };
 
-  const handleClose = () => {
-    closeBaseline(manifestName);
-    navigate("/manifests");
-  };
+  const completeWorkspaceNavigation = useCallback(
+    ({ destination, closeCurrent }: PendingWorkspaceNavigation) => {
+      if (closeCurrent) closeBaseline(manifestName);
+      navigate(destination);
+    },
+    [closeBaseline, manifestName, navigate],
+  );
+
+  const handleClose = useCallback(() => {
+    const request = { destination: "/manifests", closeCurrent: true };
+    if (hasUnsavedChanges) {
+      setPendingNavigation(request);
+      return;
+    }
+    completeWorkspaceNavigation(request);
+  }, [completeWorkspaceNavigation, hasUnsavedChanges]);
+
+  useEffect(() => {
+    const handleWorkspaceClose = (event: Event) => {
+      const closeEvent = event as CustomEvent<{ name?: string }>;
+      if (closeEvent.detail?.name !== manifestName) return;
+      event.preventDefault();
+      handleClose();
+    };
+    window.addEventListener(BASELINE_CLOSE_REQUEST_EVENT, handleWorkspaceClose);
+    return () => {
+      window.removeEventListener(BASELINE_CLOSE_REQUEST_EVENT, handleWorkspaceClose);
+    };
+  }, [handleClose, manifestName]);
+
+  useEffect(() => {
+    const handleWorkspaceNavigation = (event: Event) => {
+      const navigationEvent = event as CustomEvent<BaselineNavigationRequestDetail>;
+      if (
+        navigationEvent.detail?.name !== manifestName ||
+        typeof navigationEvent.detail.destination !== "string" ||
+        !hasUnsavedChanges
+      ) {
+        return;
+      }
+      event.preventDefault();
+      setPendingNavigation({
+        destination: navigationEvent.detail.destination,
+        closeCurrent: false,
+      });
+    };
+    window.addEventListener(BASELINE_NAVIGATION_REQUEST_EVENT, handleWorkspaceNavigation);
+    return () => {
+      window.removeEventListener(BASELINE_NAVIGATION_REQUEST_EVENT, handleWorkspaceNavigation);
+    };
+  }, [hasUnsavedChanges, manifestName]);
 
   const handleSave = useCallback(
     async (extra?: { rationale?: string; skipped?: boolean; changeSummary?: string }) => {
@@ -354,6 +444,47 @@ export function ManifestDetailPage() {
     const before = savedContent || formatCache.current.yaml || "";
     await rationale.requestSave(before, editedContent);
   }, [rationale, editedContent, savedContent, formatCache, visualSourceValid]);
+
+  const handleSaveAndNavigate = useCallback(() => {
+    if (!pendingNavigation) return;
+    setNavigationAfterSave(pendingNavigation);
+    setPendingNavigation(null);
+    void handleSaveClick().catch(() => {
+      setNavigationAfterSave(null);
+    });
+  }, [handleSaveClick, pendingNavigation]);
+
+  const handleDiscardAndNavigate = useCallback(() => {
+    if (!pendingNavigation) return;
+    const destination = pendingNavigation;
+    setNavigationAfterSave(null);
+    setPendingNavigation(null);
+    handleCancelEditing();
+    completeWorkspaceNavigation(destination);
+  }, [completeWorkspaceNavigation, handleCancelEditing, pendingNavigation]);
+
+  useEffect(() => {
+    if (
+      navigationAfterSave &&
+      !editing &&
+      !hasUnsavedChanges &&
+      !saving &&
+      !rationale.state.open &&
+      !rationale.state.busy
+    ) {
+      const destination = navigationAfterSave;
+      setNavigationAfterSave(null);
+      completeWorkspaceNavigation(destination);
+    }
+  }, [
+    completeWorkspaceNavigation,
+    editing,
+    hasUnsavedChanges,
+    navigationAfterSave,
+    rationale.state.busy,
+    rationale.state.open,
+    saving,
+  ]);
 
   // v0.1.13 / v0.1.15 — unsaved-changes navigation guard.
   //
@@ -596,12 +727,46 @@ export function ManifestDetailPage() {
         onSaveClick={handleSaveClick}
       />
 
+      <Dialog
+        open={pendingNavigation !== null}
+        onOpenChange={(_, data) => {
+          if (!data.open) {
+            setPendingNavigation(null);
+          }
+        }}
+      >
+        <DialogSurface>
+          <DialogBody>
+            <DialogTitle>{t("closeUnsaved.title")}</DialogTitle>
+            <DialogContent>{t("closeUnsaved.description", { name: manifestName })}</DialogContent>
+            <DialogActions>
+              <Button appearance="secondary" onClick={() => setPendingNavigation(null)}>
+                {t("closeUnsaved.cancel")}
+              </Button>
+              <Button appearance="secondary" onClick={handleDiscardAndNavigate}>
+                {t("closeUnsaved.discard")}
+              </Button>
+              <Button
+                appearance="primary"
+                onClick={handleSaveAndNavigate}
+                disabled={!visualEditValid || saving}
+              >
+                {t("closeUnsaved.save")}
+              </Button>
+            </DialogActions>
+          </DialogBody>
+        </DialogSurface>
+      </Dialog>
+
       {/* PR27: Rationale prompt — appears on Save when content has changed */}
       <RationalePromptModal
         state={rationale.state}
         submitReason={rationale.submitReason}
         skip={rationale.skip}
-        cancel={rationale.cancel}
+        cancel={() => {
+          setNavigationAfterSave(null);
+          rationale.cancel();
+        }}
       />
     </div>
   );

@@ -3,7 +3,9 @@
     "auditPack": "Audit Pack",
     "auditPackTitle": "Generate auditor-ready PDF / Markdown deliverable",
     "back": "Back",
+    "checkCompliance": "Check compliance",
     "closeBaseline": "Close baseline",
+    "closeCompliance": "Close compliance",
     "deleteBaseline": "Delete Baseline",
     "docs": "Docs",
     "duplicate": "Duplicate",
@@ -26,14 +28,29 @@
     "undoUnavailable": "No previous saved baseline version is available"
   },
   "compliance": {
+    "allStatuses": "All statuses",
     "emptyDescription": "Run Audit or Enforce to check this baseline against the device.",
     "emptyTitle": "No compliance data yet.",
-    "sectionTitle": "Compliance Status"
+    "filterStatus": "Filter compliance status",
+    "noMatches": "No compliance settings match the current search and status filter.",
+    "searchLabel": "Search compliance report",
+    "searchPlaceholder": "Search settings, types, or reasons",
+    "sectionTitle": "Compliance Status",
+    "showing": "Showing {{filtered}} of {{total}} settings",
+    "sortStatus": "Sort by compliance status"
+  },
+  "closeUnsaved": {
+    "cancel": "Cancel",
+    "description": "\"{{name}}\" has changes that have not been saved.",
+    "discard": "Discard changes",
+    "save": "Save baseline",
+    "title": "Close without saving?"
   },
   "content": {
     "editorView": "Editor",
     "mofEditUnsupported": "Editing is not supported in MOF format",
     "mofReadOnly": "MOF is read-only",
+    "readOnlyHint": "Read-only view. Select Edit in the footer to make changes.",
     "sectionTitle": "Baseline Content",
     "unsavedFormatChanges": "You have unsaved changes in {{format}}. Switching tabs preserves them; save before navigating away.",
     "visualEditUnavailable": "Editing requires canonical YAML, which is currently unavailable."
@@ -262,7 +279,7 @@
     },
     "editArrayItem": "Edit {{field}} value {{index}} for {{name}}",
     "editCell": "Edit {{field}} for {{name}}",
-    "editHint": "Click any cell to edit it. Press Enter to apply or Escape to cancel.",
+    "editHint": "Click any cell to edit it. Press Enter to apply; in the final cell, Enter adds another row. Press Escape to cancel.",
     "editInstructions": "Show spreadsheet editing instructions",
     "editInstructionsText": "Add values row by row. Tab saves and moves right. Enter saves and moves down. Enter in the final row adds another row. Press Escape to cancel.",
     "editToolbar": "Spreadsheet editing actions",

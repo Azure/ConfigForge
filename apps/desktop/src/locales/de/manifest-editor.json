@@ -3,7 +3,9 @@
     "auditPack": "Audit Pack",
     "auditPackTitle": "Erstelle prüferbereite PDF-/Markdown-Lieferergebnisse",
     "back": "Zurück",
+    "checkCompliance": "Konformität prüfen",
     "closeBaseline": "Baseline schließen",
+    "closeCompliance": "Konformität schließen",
     "deleteBaseline": "Baseline löschen",
     "docs": "Docs",
     "duplicate": "Duplikat",
@@ -26,14 +28,29 @@
     "undoUnavailable": "Keine vorherige gespeicherte Baseline-Version verfügbar"
   },
   "compliance": {
+    "allStatuses": "Alle Status",
     "emptyDescription": "Führen Sie Audit oder Enforce aus, um diese Baseline mit dem Gerät abzugleichen.",
     "emptyTitle": "Nein compliance data yet.",
-    "sectionTitle": "Konformität Status"
+    "filterStatus": "Konformitätsstatus filtern",
+    "noMatches": "Keine Konformitätseinstellungen entsprechen der aktuellen Suche und dem Statusfilter.",
+    "searchLabel": "Konformitätsbericht durchsuchen",
+    "searchPlaceholder": "Einstellungen, Typen oder Gründe durchsuchen",
+    "sectionTitle": "Konformität Status",
+    "showing": "{{filtered}} von {{total}} Einstellungen werden angezeigt",
+    "sortStatus": "Nach Konformitätsstatus sortieren"
+  },
+  "closeUnsaved": {
+    "cancel": "Abbrechen",
+    "description": "\"{{name}}\" enthält nicht gespeicherte Änderungen.",
+    "discard": "Änderungen verwerfen",
+    "save": "Baseline speichern",
+    "title": "Ohne Speichern schließen?"
   },
   "content": {
     "editorView": "Bearbeitenor",
     "mofEditUnsupported": "Das Bearbeiten wird im MOF Format nicht unterstützt.",
     "mofReadOnly": "MOF ist nur lesegeschützt",
+    "readOnlyHint": "Schreibgeschützte Ansicht. Wählen Sie im Fußbereich Bearbeiten aus um Änderungen vorzunehmen.",
     "sectionTitle": "Baseline Inhalt",
     "unsavedFormatChanges": "Du hast in {{format}} nicht gespeicherte Änderungen. Das Wechseln der Tabs bewahrt sie; Speichere, bevor du wegnavigierst.",
     "visualEditUnavailable": "Zum Bearbeiten ist kanonisches YAML erforderlich, das derzeit nicht verfügbar ist."

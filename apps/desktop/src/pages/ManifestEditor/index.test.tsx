@@ -2,10 +2,10 @@
 // Licensed under the MIT License.
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { render, screen, waitFor, within } from "@testing-library/react";
+import { act, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
-import { MemoryRouter, Route, Routes } from "react-router-dom";
+import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import { getI18n } from "../../locales";
 
 const sampleYaml = `resources:
@@ -19,8 +19,10 @@ const sampleYaml = `resources:
 `;
 
 const mocks = vi.hoisted(() => ({
+  loading: false,
   editing: false,
   editView: "editor" as "editor" | "visual",
+  hasUnsavedChanges: false,
   activeFormat: "yaml" as "yaml" | "json" | "mof",
   editedContent: "",
   isEditable: true,
@@ -35,6 +37,9 @@ const mocks = vi.hoisted(() => ({
   setEditView: vi.fn(),
   setEditedContent: vi.fn(),
   requestSave: vi.fn(),
+  rationaleOpen: false,
+  rationaleBusy: false,
+  cancelRationale: vi.fn(),
   closeBaseline: vi.fn(),
   refreshWorkspace: vi.fn().mockResolvedValue([]),
   deleteManifest: vi.fn().mockResolvedValue({ ok: true }),
@@ -104,11 +109,11 @@ vi.mock("../../hooks/useCliPresence", () => ({
 
 vi.mock("../../components/use-rationale-prompt", () => ({
   useRationalePrompt: () => ({
-    state: { open: false, busy: false },
+    state: { open: mocks.rationaleOpen, busy: mocks.rationaleBusy },
     requestSave: mocks.requestSave,
     submitReason: vi.fn(),
     skip: vi.fn(),
-    cancel: vi.fn(),
+    cancel: mocks.cancelRationale,
   }),
   RationalePromptModal: () => null,
 }));
@@ -128,11 +133,7 @@ vi.mock("../../lib/cfs", () => ({
     },
   },
   hasCfsNamespace: (key: string) =>
-    key === "deploy"
-      ? mocks.deployNamespace
-      : key === "revert"
-        ? mocks.revertNamespace
-        : true,
+    key === "deploy" ? mocks.deployNamespace : key === "revert" ? mocks.revertNamespace : true,
   safeCfs: (key: string) => {
     if (key === "deploy") {
       return mocks.deployNamespace && mocks.deployCapability
@@ -181,7 +182,7 @@ vi.mock("./state/useManifestEditorState", () => ({
       ],
     },
     setStatus: vi.fn(),
-    loading: false,
+    loading: mocks.loading,
     setLoading: vi.fn(),
     error: mocks.error,
     setError: (value: string | null | ((current: string | null) => string | null)) => {
@@ -222,7 +223,7 @@ vi.mock("./state/useManifestEditorState", () => ({
     isEditable: mocks.isEditable,
     isReadOnly: !mocks.editing,
     currentDisplayContent: mocks.currentDisplayContent,
-    hasUnsavedChanges: false,
+    hasUnsavedChanges: mocks.hasUnsavedChanges,
   }),
 }));
 
@@ -252,11 +253,21 @@ vi.mock("./state/useDeployFlow", () => ({
 }));
 
 import { ManifestDetailPage } from "./index";
+import {
+  BASELINE_CLOSE_REQUEST_EVENT,
+  BASELINE_NAVIGATION_REQUEST_EVENT,
+} from "../../components/BaselineWorkspaceTabs";
+
+function CurrentPath() {
+  const location = useLocation();
+  return <output aria-label="current-path">{location.pathname}</output>;
+}
 
 function editorShell(initialEntry = "/manifests/sample") {
   return (
     <FluentProvider theme={webLightTheme}>
       <MemoryRouter initialEntries={[initialEntry]}>
+        <CurrentPath />
         <Routes>
           <Route path="/manifests/:id" element={<ManifestDetailPage />} />
           <Route path="/manifests" element={<div>All baselines route</div>} />
@@ -267,16 +278,32 @@ function editorShell(initialEntry = "/manifests/sample") {
   );
 }
 
-function renderEditor() {
-  return render(editorShell());
+function renderEditor(initialEntry = "/manifests/sample") {
+  return render(editorShell(initialEntry));
+}
+
+async function requestWorkspaceNavigation(destination = "/manifests/beta") {
+  const event = new CustomEvent(BASELINE_NAVIGATION_REQUEST_EVENT, {
+    detail: { name: "sample", destination },
+    cancelable: true,
+  });
+  await act(async () => {
+    window.dispatchEvent(event);
+  });
+  return event;
 }
 
 describe("ManifestDetailPage Loop viewer", () => {
   beforeEach(async () => {
     await getI18n().changeLanguage("en");
+    localStorage.clear();
     sessionStorage.clear();
+    mocks.loading = false;
     mocks.editing = false;
     mocks.editView = "editor";
+    mocks.hasUnsavedChanges = false;
+    mocks.rationaleOpen = false;
+    mocks.rationaleBusy = false;
     mocks.activeFormat = "yaml";
     mocks.editedContent = sampleYaml;
     mocks.isEditable = true;
@@ -386,6 +413,19 @@ describe("ManifestDetailPage Loop viewer", () => {
     expect(screen.getByTestId("mock-monaco-model")).toBeInTheDocument();
   });
 
+  it("restores the last Code or Visual viewer mode for each baseline", async () => {
+    const user = userEvent.setup();
+    const first = renderEditor();
+
+    await user.click(screen.getByRole("button", { name: "Visual" }));
+    expect(screen.getByRole("button", { name: "Visual" })).toHaveAttribute("aria-pressed", "true");
+
+    first.unmount();
+    renderEditor();
+
+    expect(screen.getByRole("button", { name: "Visual" })).toHaveAttribute("aria-pressed", "true");
+  });
+
   it("keeps Edit available in Visual mode after MOF and opens the YAML spreadsheet", async () => {
     const user = userEvent.setup();
     const mofSource = "instance of Hidden_Mof {}";
@@ -415,7 +455,9 @@ describe("ManifestDetailPage Loop viewer", () => {
 
     rerender(editorShell());
     expect(screen.getByRole("region", { name: "Visual baseline settings" })).toBeInTheDocument();
-    expect(screen.getByRole("toolbar", { name: "Spreadsheet editing actions" })).toBeInTheDocument();
+    expect(
+      screen.getByRole("toolbar", { name: "Spreadsheet editing actions" }),
+    ).toBeInTheDocument();
     expect(screen.getAllByRole("button", { name: "Add setting" })).toHaveLength(2);
     expect(screen.getByRole("button", { name: "Add settings" })).toBeInTheDocument();
     expect(screen.getByRole("textbox", { name: /Edit Setting Name/ })).toHaveFocus();
@@ -452,6 +494,83 @@ describe("ManifestDetailPage Loop viewer", () => {
 
     expect(mocks.closeBaseline).toHaveBeenCalledWith("sample");
     expect(screen.getByText("All baselines route")).toBeInTheDocument();
+  });
+
+  it("offers Save, Discard, and Cancel before closing an edited baseline", async () => {
+    const user = userEvent.setup();
+    mocks.editing = true;
+    mocks.hasUnsavedChanges = true;
+    renderEditor();
+
+    await user.click(screen.getByRole("button", { name: "Close baseline" }));
+
+    const closeDialog = await screen.findByRole("dialog", {
+      name: "Close without saving?",
+    });
+    expect(within(closeDialog).getByRole("button", { name: "Save baseline" })).toBeInTheDocument();
+    expect(
+      within(closeDialog).getByRole("button", { name: "Discard changes" }),
+    ).toBeInTheDocument();
+
+    await user.click(within(closeDialog).getByRole("button", { name: "Cancel" }));
+    expect(mocks.closeBaseline).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("current-path")).toHaveTextContent("/manifests/sample");
+  });
+
+  it("discards edits before closing the active baseline", async () => {
+    const user = userEvent.setup();
+    mocks.editing = true;
+    mocks.hasUnsavedChanges = true;
+    renderEditor();
+
+    await user.click(screen.getByRole("button", { name: "Close baseline" }));
+    await user.click(
+      within(await screen.findByRole("dialog", { name: "Close without saving?" })).getByRole(
+        "button",
+        { name: "Discard changes" },
+      ),
+    );
+
+    expect(mocks.cancelEditing).toHaveBeenCalledTimes(1);
+    expect(mocks.closeBaseline).toHaveBeenCalledWith("sample");
+    expect(screen.getByText("All baselines route")).toBeInTheDocument();
+  });
+
+  it("handles an active workspace-tab close through the same unsaved dialog", async () => {
+    mocks.editing = true;
+    mocks.hasUnsavedChanges = true;
+    renderEditor();
+
+    const event = new CustomEvent(BASELINE_CLOSE_REQUEST_EVENT, {
+      detail: { name: "sample" },
+      cancelable: true,
+    });
+    window.dispatchEvent(event);
+
+    expect(event.defaultPrevented).toBe(true);
+    expect(
+      await screen.findByRole("dialog", { name: "Close without saving?" }),
+    ).toBeInTheDocument();
+    expect(mocks.closeBaseline).not.toHaveBeenCalled();
+  });
+
+  it("cancels editing before navigating to the requested destination on Discard", async () => {
+    const user = userEvent.setup();
+    mocks.editing = true;
+    mocks.hasUnsavedChanges = true;
+    renderEditor();
+
+    const event = await requestWorkspaceNavigation();
+    expect(event.defaultPrevented).toBe(true);
+    await user.click(
+      within(screen.getByRole("dialog", { name: "Close without saving?" })).getByRole("button", {
+        name: "Discard changes",
+      }),
+    );
+
+    expect(mocks.cancelEditing).toHaveBeenCalledTimes(1);
+    expect(mocks.closeBaseline).not.toHaveBeenCalled();
+    expect(screen.getByLabelText("current-path")).toHaveTextContent("/manifests/beta");
   });
 
   it("deletes after confirmation, closes the tab, refreshes workspace counts, and navigates", async () => {
@@ -533,18 +652,14 @@ describe("ManifestDetailPage Loop viewer", () => {
   it("does not report Undo success when the canonical source cannot be reloaded", async () => {
     const user = userEvent.setup();
     mocks.hasUndoableHistory.mockResolvedValue(true);
-    mocks.reloadCanonicalSource.mockRejectedValueOnce(
-      new Error("canonical reload failed"),
-    );
+    mocks.reloadCanonicalSource.mockRejectedValueOnce(new Error("canonical reload failed"));
     renderEditor();
 
     const undo = screen.getByRole("button", { name: "Undo" });
     await waitFor(() => expect(undo).toBeEnabled());
     await user.click(undo);
 
-    await waitFor(() =>
-      expect(mocks.setError).toHaveBeenCalledWith("canonical reload failed"),
-    );
+    await waitFor(() => expect(mocks.setError).toHaveBeenCalledWith("canonical reload failed"));
     expect(mocks.fetchData).toHaveBeenCalledTimes(1);
     expect(mocks.reloadCanonicalSource).toHaveBeenCalledTimes(1);
     expect(mocks.fetchData.mock.invocationCallOrder[0]).toBeLessThan(
@@ -640,9 +755,7 @@ describe("ManifestDetailPage Loop viewer", () => {
     mocks.editView = "visual";
     renderEditor();
 
-    await user.click(
-      screen.getByRole("button", { name: "Edit Applied value for PasswordPolicy" }),
-    );
+    await user.click(screen.getByRole("button", { name: "Edit Applied value for PasswordPolicy" }));
     const editor = screen.getByRole("textbox", {
       name: "Edit Applied value for PasswordPolicy",
     });
@@ -675,9 +788,7 @@ describe("ManifestDetailPage Loop viewer", () => {
 `;
     renderEditor();
 
-    expect(screen.getByRole("alert")).toHaveTextContent(
-      "Complete 3 required cells before saving.",
-    );
+    expect(screen.getByRole("alert")).toHaveTextContent("Complete 3 required cells before saving.");
     expect(
       within(screen.getByTestId("manifest-detail-footer")).getByRole("button", {
         name: "Save",

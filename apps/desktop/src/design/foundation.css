@@ -428,3 +428,46 @@
     outline-offset: 2px;
   }
 }
+
+/* Monaco read-only message fix ───────────────────────────────────────
+   Monaco hosts editor-overflow widgets — including the read-only
+   message shown when a user tries to type into a locked baseline —
+   inside our detached `.monaco-overflow-host`. That host lives outside
+   any `.monaco-editor`, so Monaco's scoped theme styles and
+   `--vscode-*` variables do not reach it. Restore the known-good
+   vs-dark appearance explicitly. */
+.monaco-overflow-host .monaco-editor-overlaymessage {
+  padding-bottom: 8px;
+  z-index: 10000;
+}
+
+.monaco-overflow-host .monaco-editor-overlaymessage.below {
+  padding-bottom: 0;
+  padding-top: 8px;
+}
+
+.monaco-overflow-host .monaco-editor-overlaymessage .message {
+  padding: 2px 6px;
+  color: #cccccc;
+  background-color: #252526;
+  border: 1px solid #007acc;
+  border-radius: 3px;
+  font-size: 12px;
+  opacity: 1;
+}
+
+.monaco-overflow-host .monaco-editor-overlaymessage .anchor {
+  position: absolute;
+  left: 2px;
+  width: 0;
+  height: 0;
+  border: 8px solid transparent;
+}
+
+.monaco-overflow-host .monaco-editor-overlaymessage .anchor.top {
+  border-bottom-color: #007acc;
+}
+
+.monaco-overflow-host .monaco-editor-overlaymessage .anchor.below {
+  border-top-color: #007acc;
+}

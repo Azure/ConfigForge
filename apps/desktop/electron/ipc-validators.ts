@@ -207,9 +207,16 @@ export function validateImportRequest(v: unknown): string | null {
   const o = v as Record<string, unknown>;
   const e1 = validateNonEmptyString(o.filename, 'filename', MAX_FILENAME_LEN);
   if (e1) return e1;
-  if (typeof o.content !== 'string') return 'content must be a string';
-  if (o.content.length > MAX_MANIFEST_CONTENT_LEN) {
+  const hasContent = typeof o.content === 'string';
+  const hasBytes = o.bytes instanceof Uint8Array;
+  if (hasContent === hasBytes) {
+    return 'exactly one of content or bytes must be provided';
+  }
+  if (hasContent && o.content.length > MAX_MANIFEST_CONTENT_LEN) {
     return `content exceeds maximum length (${MAX_MANIFEST_CONTENT_LEN})`;
+  }
+  if (hasBytes && o.bytes.byteLength > MAX_MANIFEST_CONTENT_LEN) {
+    return `bytes exceeds maximum length (${MAX_MANIFEST_CONTENT_LEN})`;
   }
   return null;
 }
