@@ -260,6 +260,9 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   const allSettingsRef = useRef<VisualSetting[]>([]);
   const pendingNavigationRef = useRef<ActiveCell | null>(null);
   const navigationRequestRef = useRef(0);
+  const latestSourceRef = useRef(source);
+  const lastEmittedSourceRef = useRef(source);
+  const pendingBlurEmissionRef = useRef<{ source: string } | null>(null);
   const commitAndNavigateRef = useRef<
     | ((
         setting: VisualSetting,
@@ -278,6 +281,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
         element: HTMLInputElement | HTMLTextAreaElement,
         nextCell: ActiveCell | null,
         appendItem?: boolean,
+        focusTarget?: HTMLElement | null,
       ) => void)
     | null
   >(null);
@@ -354,6 +358,9 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   );
 
   useEffect(() => {
+    latestSourceRef.current = source;
+    lastEmittedSourceRef.current = source;
+    pendingBlurEmissionRef.current = null;
     setSelected(new Set());
     setPageError(null);
     setDraftError(null);
@@ -364,6 +371,13 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
       pendingNavigationRef.current = null;
     }
   }, [source]);
+
+  useEffect(
+    () => () => {
+      pendingBlurEmissionRef.current = null;
+    },
+    [],
+  );
 
   useEffect(() => {
     if (!canEdit) return;
@@ -446,23 +460,63 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     onDraftValidityChange?.(true);
   };
 
+  const emitSourceChange = (nextSource: string) => {
+    pendingBlurEmissionRef.current = null;
+    latestSourceRef.current = nextSource;
+    if (lastEmittedSourceRef.current === nextSource) return;
+    lastEmittedSourceRef.current = nextSource;
+    onSourceChange?.(nextSource);
+  };
+
+  const scheduleBlurEmission = (nextSource: string) => {
+    latestSourceRef.current = nextSource;
+    const pending = { source: nextSource };
+    pendingBlurEmissionRef.current = pending;
+    // The edit is already applied synchronously; queue only its notification so
+    // a Tab or click mutation in the same turn can publish one merged source.
+    window.queueMicrotask(() => {
+      if (
+        pendingBlurEmissionRef.current !== pending ||
+        latestSourceRef.current !== pending.source
+      ) {
+        return;
+      }
+      pendingBlurEmissionRef.current = null;
+      emitSourceChange(pending.source);
+    });
+  };
+
+  const settingForSource = (baseSource: string, setting: VisualSetting): VisualSetting | null => {
+    if (baseSource === source) return setting;
+    try {
+      const currentSetting = groupVisualSettings(parseVisualManifest(baseSource))
+        .flatMap((group) => group.settings)
+        .find((candidate) => candidate.id === setting.id);
+      if (!currentSetting) {
+        setPageError("missingSetting");
+        return null;
+      }
+      return currentSetting;
+    } catch {
+      setPageError("invalidYaml");
+      return null;
+    }
+  };
+
   const commitEdit = (
     setting: VisualSetting,
     column: string,
     emitChange = true,
     blurTarget?: HTMLElement,
-    deferBlurCommit = true,
   ): string | null => {
-    if (blurTarget && deferBlurCommit) {
-      // Defer blur so Enter/Tab navigation can mark its follow-up commit as handled.
-      window.setTimeout(() => commitEdit(setting, column, emitChange, blurTarget, false), 0);
-      return null;
-    }
     if (blurTarget && ignoredBlurTargetsRef.current.has(blurTarget)) {
       ignoredBlurTargetsRef.current.delete(blurTarget);
       return null;
     }
-    const result = updateVisualCellSource(source, setting, column, draft);
+    const baseSource = latestSourceRef.current;
+    const currentSetting = settingForSource(baseSource, setting);
+    if (!currentSetting) return null;
+    const result = updateVisualCellSource(baseSource, currentSetting, column, draft);
     if (!result.ok) {
       setDraftError(result.error);
       setCellError(result.error);
@@ -480,7 +534,11 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     setDraftError(null);
     setCellError(null);
     onDraftValidityChange?.(true);
-    if (emitChange) onSourceChange?.(result.source);
+    latestSourceRef.current = result.source;
+    if (emitChange) {
+      if (blurTarget) scheduleBlurEmission(result.source);
+      else emitSourceChange(result.source);
+    }
     return result.source;
   };
 
@@ -520,21 +578,15 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     index: number,
     blurTarget?: HTMLElement,
     emitChange = true,
-    deferBlurCommit = true,
   ): string | null => {
-    if (blurTarget && deferBlurCommit) {
-      // Defer blur so Enter/Tab navigation can mark its follow-up commit as handled.
-      window.setTimeout(
-        () => commitArrayItem(setting, column, index, blurTarget, emitChange, false),
-        0,
-      );
-      return null;
-    }
     if (blurTarget && ignoredBlurTargetsRef.current.has(blurTarget)) {
       ignoredBlurTargetsRef.current.delete(blurTarget);
       return null;
     }
-    const result = updateVisualArrayItemSource(source, setting, column, index, draft);
+    const baseSource = latestSourceRef.current;
+    const currentSetting = settingForSource(baseSource, setting);
+    if (!currentSetting) return null;
+    const result = updateVisualArrayItemSource(baseSource, currentSetting, column, index, draft);
     if (!result.ok) {
       setDraftError(result.error);
       setCellError(result.error);
@@ -552,7 +604,11 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     setDraftError(null);
     setCellError(null);
     onDraftValidityChange?.(true);
-    if (emitChange) onSourceChange?.(result.source);
+    latestSourceRef.current = result.source;
+    if (emitChange) {
+      if (blurTarget) scheduleBlurEmission(result.source);
+      else emitSourceChange(result.source);
+    }
     return result.source;
   };
 
@@ -603,7 +659,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   const handleAdd = (
     type: string,
     columns: readonly string[] = [],
-    baseSource = source,
+    baseSource = latestSourceRef.current,
     focusColumn = SETTING_NAME_COLUMN,
   ) => {
     const result = addVisualSettingSource(baseSource, type, columns);
@@ -617,7 +673,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
       settingId: result.settingId,
       column: focusColumn,
     });
-    onSourceChange?.(result.source);
+    emitSourceChange(result.source);
   };
 
   const handleAddTypes = (types: string[]) => {
@@ -630,7 +686,8 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
         .map((setting) => setting.resourceType),
     );
     const duplicates: string[] = [];
-    let nextSource = source;
+    const baseSource = latestSourceRef.current;
+    let nextSource = baseSource;
     let firstSettingId: string | null = null;
 
     for (const type of types) {
@@ -657,7 +714,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     } else {
       setDuplicateTypes([]);
     }
-    if (nextSource !== source) {
+    if (nextSource !== baseSource) {
       setPageError(null);
       setFilterQuery("");
       if (firstSettingId) {
@@ -666,7 +723,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
           column: SETTING_NAME_COLUMN,
         });
       }
-      onSourceChange?.(nextSource);
+      emitSourceChange(nextSource);
     }
   };
 
@@ -690,24 +747,10 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     setting: VisualSetting,
     column: string,
     currentLength: number,
-    baseSource = source,
+    baseSource = latestSourceRef.current,
   ): boolean => {
-    let sourceSetting = setting;
-    if (baseSource !== source) {
-      try {
-        const parsedSetting = groupVisualSettings(parseVisualManifest(baseSource))
-          .flatMap((group) => group.settings)
-          .find((candidate) => candidate.id === setting.id);
-        if (!parsedSetting) {
-          setPageError("missingSetting");
-          return false;
-        }
-        sourceSetting = parsedSetting;
-      } catch {
-        setPageError("invalidYaml");
-        return false;
-      }
-    }
+    const sourceSetting = settingForSource(baseSource, setting);
+    if (!sourceSetting) return false;
     const result = appendVisualArrayItemSource(baseSource, sourceSetting, column);
     if (!result.ok) {
       setPageError(result.error);
@@ -719,7 +762,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
       column,
       arrayIndex: currentLength,
     });
-    onSourceChange?.(result.source);
+    emitSourceChange(result.source);
     return true;
   };
 
@@ -736,7 +779,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
         0,
         committed,
       );
-      if (!appended && committed !== source) onSourceChange?.(committed);
+      if (!appended && committed !== source) emitSourceChange(committed);
       return;
     }
     const resolvedNextCell = navigationTarget.cell;
@@ -753,9 +796,9 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     } else {
       queueNavigationAfterSourceChange(resolvedNextCell);
       if (resolvedNextCell) {
-        window.setTimeout(() => onSourceChange?.(committed), 0);
+        window.setTimeout(() => emitSourceChange(committed), 0);
       } else {
-        onSourceChange?.(committed);
+        emitSourceChange(committed);
       }
     }
   };
@@ -770,9 +813,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     ignoredBlurTargetsRef.current.add(element);
     const committed = commitEdit(setting, column, false);
     if (!committed) {
-      if (document.activeElement === element) {
-        ignoredBlurTargetsRef.current.delete(element);
-      }
+      ignoredBlurTargetsRef.current.delete(element);
       return;
     }
     if (appendRow) {
@@ -790,13 +831,12 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     element: HTMLInputElement | HTMLTextAreaElement,
     nextCell: ActiveCell | null,
     appendItem = false,
+    focusTarget: HTMLElement | null = null,
   ) => {
     ignoredBlurTargetsRef.current.add(element);
     const committed = commitArrayItem(setting, column, index, undefined, false);
     if (!committed) {
-      if (document.activeElement === element) {
-        ignoredBlurTargetsRef.current.delete(element);
-      }
+      ignoredBlurTargetsRef.current.delete(element);
       window.setTimeout(() => {
         const current = activeCellRef.current;
         if (
@@ -813,11 +853,12 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
 
     if (appendItem) {
       const appended = handleAppendArrayItem(setting, column, index + 1, committed);
-      if (!appended && committed !== source) onSourceChange?.(committed);
+      if (!appended && committed !== source) emitSourceChange(committed);
       return;
     }
 
     navigateAfterCommit(committed, nextCell, column);
+    if (focusTarget?.isConnected) focusTarget.focus();
   };
   commitArrayItemAndNavigateRef.current = commitArrayItemAndNavigate;
 
@@ -859,12 +900,22 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
         const commitArrayItemAndNavigateCurrent = commitArrayItemAndNavigateRef.current;
         if (!commitArrayItemAndNavigateCurrent) return;
         if (event.key === "Tab") {
+          const nextCell = currentNavigationCells[currentIndex + 1] ?? null;
+          const focusTarget =
+            nextCell === null
+              ? (element
+                  .closest("td")
+                  ?.querySelector<HTMLButtonElement>('button[data-array-add-button="true"]') ??
+                null)
+              : null;
           commitArrayItemAndNavigateCurrent(
             setting,
             current.column,
             currentActiveCell.arrayIndex,
             element,
-            currentNavigationCells[currentIndex + 1] ?? null,
+            nextCell,
+            false,
+            focusTarget,
           );
           return;
         }
@@ -924,14 +975,14 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   const handleDelete = () => {
     const rows = allSettings.filter((setting) => selected.has(setting.id));
     if (rows.length === 0) return;
-    const result = removeVisualSettingsSource(source, rows);
+    const result = removeVisualSettingsSource(latestSourceRef.current, rows);
     if (!result.ok) {
       setPageError(result.error);
       return;
     }
     setPageError(null);
     setSelected(new Set());
-    onSourceChange?.(result.source);
+    emitSourceChange(result.source);
   };
 
   const handleReadOnlyClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -1455,6 +1506,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                                       {visuallyEditable && (
                                         <button
                                           type="button"
+                                          data-array-add-button="true"
                                           onClick={() =>
                                             handleAppendArrayItem(
                                               setting,
