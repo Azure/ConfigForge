@@ -55,6 +55,9 @@ describe('public release metadata', () => {
     expect(workflow).toContain('test "$(git rev-parse HEAD)" = "$tag_commit"');
     expect(workflow).toContain('Expected exactly 5 macOS author assets');
     expect(workflow).toContain('gh release create $TAG --draft --verify-tag');
+    expect(workflow).toContain('shasum -a 256 "$file"');
+    expect(workflow).not.toContain('sha256sum');
+    expect(workflow).not.toContain('sort -z');
     expect(workflow).not.toContain('default:');
   });
 
