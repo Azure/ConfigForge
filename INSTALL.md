@@ -1,16 +1,23 @@
 # Installing ConfigForge and the OSConfig CLI
 
-ConfigForge v0.3.48 ships in two editions:
+ConfigForge has two editions:
 
 - **Full edition** — Windows + Linux from the `main` branch. Authoring works without the CLI; Deploy, Audit, and Revert require `oscfg`.
-- **Author edition** — macOS from the `mac-author-build` branch. Authoring, validation, library, diff, CIS mapping, and export flows are available; Deploy / Audit / Revert are intentionally omitted.
+- **Author edition** — macOS from the `mac-author-build` branch. Authoring,
+  validation, Microsoft Baselines, Diff, Benchmark Mapping, history, rationale,
+  and Audit Pack export are available. Device Deploy, Audit, and Revert are
+  intentionally omitted.
+
+The latest tagged Full-edition release is `v0.3.92`; the latest tagged macOS
+Author release is `mac-v0.3.92-author.1`. The next planned macOS Author
+version is `0.3.93-author.1`; its tag and release do not exist yet.
 
 ConfigForge does **not** bundle the OSConfig CLI. To use the Full edition's Deploy, Audit, or Revert features against a real Windows or Linux machine, install `oscfg` separately from its upstream source.
 
-The editor, library, diff/compare, import/export, and audit-pack PDF features
-work without `oscfg` installed, that's Editor mode, and it's the default on
-first launch. The Welcome dialog and the footer health pill both surface the
-CLI state, so you can flip into Deploy-capable mode whenever the CLI lands.
+The editor, Microsoft Baselines, Diff, import/export, and Audit Pack features
+work without `oscfg`. This is Editor mode, and it is the default on first
+launch. In the Full edition, the Welcome dialog and footer health pill surface
+CLI state so you can switch to device operations after installing the CLI.
 
 ---
 
@@ -18,7 +25,7 @@ CLI state, so you can flip into Deploy-capable mode whenever the CLI lands.
 
 - **Repository**: https://github.com/microsoft/osconfig
 - **CLI docs**: https://github.com/microsoft/osconfig/tree/main/docs/cli
-- **Targeted version**: `oscfg 1.3.9-preview11` (ConfigForge v0.3.48)
+- **Targeted version**: `oscfg 1.3.9-preview11`
 
 Older or newer `oscfg` releases may work but are not tested. The health probe
 in ConfigForge (footer pill + Settings) reports the resolved CLI version
@@ -114,15 +121,41 @@ unprivileged.
 
 ## macOS Author edition
 
-The macOS Author edition is currently unsigned / not notarized. If macOS blocks or quarantines the copied app, clear quarantine metadata after installing it into Applications:
+The macOS Author edition is available only for Apple Silicon Macs (M1 or
+later). The release contains an ARM64-only binary. It is not an x64 or
+universal build and does not support Intel Macs. Rosetta does not provide
+ARM64-on-Intel compatibility.
+
+Download an existing macOS Author asset from the
+[Azure/ConfigForge releases](https://github.com/Azure/ConfigForge/releases).
+The source and build instructions are in the
+[Azure/ConfigForge repository](https://github.com/Azure/ConfigForge). The
+planned `0.3.93-author.1` release is not available until its tag and draft
+release are created.
+
+The app is unsigned and not notarized. Copy **ConfigForge Author.app** to
+`/Applications`, then clear the browser-added quarantine attribute once:
 
 ```bash
 xattr -cr "/Applications/ConfigForge Author.app"
 ```
 
-The Author edition does not expose Deploy / Audit / Revert. Use the Full edition on Windows or Linux for device operations with `oscfg`.
+If that command reports a permission error, use:
 
-Public docs site: https://abmfst.github.io/ConfigForge/
+```bash
+sudo xattr -rd com.apple.quarantine "/Applications/ConfigForge Author.app"
+```
+
+The Author edition supports baseline authoring, validation, import, Diff,
+Benchmark Mapping, history, rationale, and Audit Pack PDF/Markdown export. It
+does not expose device Deploy, Audit, Enforce, Revert, elevation, device
+health, or OSConfig CLI features. Use the Full edition on Windows or Linux for
+device operations.
+
+Repository documentation is maintained under
+[`docs/src`](https://github.com/Azure/ConfigForge/tree/main/docs/src). No
+replacement public Azure Pages URL is documented until its destination is
+confirmed.
 
 ---
 
@@ -132,12 +165,15 @@ If you don't want to add `oscfg` to `PATH`, set the `OSCFG_BIN` environment
 variable before launching ConfigForge to point at the binary directly:
 
 ```bash
-# Linux / macOS
+# Linux
 export OSCFG_BIN=/opt/osconfig/oscfg
 
 # Windows PowerShell
 $env:OSCFG_BIN = "C:\Tools\osconfig\oscfg.exe"
 ```
+
+The macOS Author edition does not load `oscfg`, so `OSCFG_BIN` has no effect
+there.
 
 The resolver order is:
 

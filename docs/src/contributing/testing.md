@@ -4,7 +4,12 @@ Minimum bar before opening a PR:
 
 1. `npm run lint` passes clean (0 errors; `warn`-level `max-lines` / `complexity` is tracked-but-not-blocking).
 2. `npm run desktop:build` passes clean. **This step catches Node-only imports leaking into the renderer Vite bundle** - `vitest` alone misses them because vitest runs in Node and accepts `crypto`/`fs`/`path` happily.
-3. `npm test` (= `vitest run`) passes clean. Current scale is approximately **1,178 Vitest tests on `main`** and **1,114 on `mac-author-build`**. Playwright Electron smoke tests are separate from this count.
+3. `npm test` (= `vitest run`) passes clean. Test counts change as features
+   land; use the command's current summary rather than copying an old count.
+   For reference, macOS parity PR #75 passed 1,584 tests in 117 files, and
+   main PR #76 passed the full suite plus 32 focused nested-navigation tests.
+   Mac port PR #77 passed 79 focused tests and two isolated Playwright
+   scenarios; those focused results do not replace a final full-suite run.
 4. `npm audit --omit=dev --audit-level=high` returns 0 vulnerabilities (CF-SEC-014).
 5. If you changed anything under `packages/core/src/oscfg/` or the elevation / health code, exercise an actual `oscfg` operation in an elevated shell on Windows (smoke-testing notes below).
 6. If you added a registered type, add it to `packages/core/src/oscfg/registered-types.ts` and make sure the type-allowlist tests still pass.

@@ -191,4 +191,4 @@ re-throws as a regular `Error` with `.status` (and `.code`) attached.
 - [Architecture - Registration semantics](../architecture/registration-semantics.md)
 - [Architecture - Module map](../architecture/module-map.md)
 - [API Reference - `cfs.deploy.*` + `cfs.health.*`](./deploy-health.md)
-- [`AGENTS.md` - registration semantics](https://github.com/ABMFST/ConfigForge/blob/main/AGENTS.md#registration-semantics)
+- [`AGENTS.md` - registration semantics](https://github.com/Azure/ConfigForge/blob/main/AGENTS.md#registration-semantics)

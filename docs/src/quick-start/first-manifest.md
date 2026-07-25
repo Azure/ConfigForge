@@ -45,7 +45,7 @@ resources:
 
 In the UI:
 
-1. Open **Manifests** in the sidebar, then click **Register New**.
+1. Open **My Baselines** in the sidebar, then click **Register New**.
 2. Paste your YAML, upload a `.osc.yaml` / `.json` / `.csv` file, or
    edit settings directly in the Visual spreadsheet.
 3. Pick the target platform (Windows or Linux). The editor's
@@ -57,10 +57,10 @@ you're authoring a Windows manifest on Linux (or vice versa), you'll
 get a soft `warnings[]` entry instead of a hard error - that's by
 design (see [Architecture → Registration semantics](../architecture/registration-semantics.md)).
 
-To open the editor afterwards: **Manifests → click the manifest row**.
+To open the editor afterwards: **My Baselines → click the baseline row**.
 The detail/editor view loads with Code / Visual modes,
-deploy/audit controls (gated on CLI presence), version history, and
-the **Audit Pack** button in the Full edition.
+version history, and the **Audit Pack** button in both editions. The Full
+edition also shows device deploy/audit controls gated on CLI presence.
 
 ## Confirm via CLI (optional)
 
@@ -101,7 +101,7 @@ posted; it's what the Export action returns and what the
 - Compare manifests on the [Diff page](../user-guide/matrix-diff.md):
   Pairwise, CIS Diff, or Matrix.
 - Score a manifest against a CIS benchmark using
-  [CIS Mapping](../user-guide/cis-compliance.md) (requires
+  [Benchmark Mapping](../user-guide/cis-compliance.md) (requires
   user-supplied CIS data files - see that page for setup).
 - Install the OSConfig CLI from the
   [OSConfig CLI docs](https://github.com/microsoft/osconfig/tree/main/docs/cli)

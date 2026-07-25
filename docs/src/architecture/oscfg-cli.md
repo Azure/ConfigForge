@@ -62,7 +62,7 @@ anywhere else in the tree.
 CLI doesn't know about. ConfigForge treats this as a **soft warning**
 (the registration still succeeds and other resources still apply).
 The set of types the targeted CLI version knows about lives in
-[`packages/core/src/oscfg/registered-types.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts)
+[`packages/core/src/oscfg/registered-types.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts)
 keyed by version (`OSCFG_CLI_VERSION`). Types missing from that
 whitelist trigger the soft-warning path at register time, only
 when the manifest targets this host's platform, to avoid spamming
@@ -74,7 +74,7 @@ When you bump the targeted CLI version, re-run
 
 > **Warning:** Treating "Unsupported resource type" as a hard
 > failure is explicitly forbidden in
-> [`AGENTS.md`](https://github.com/ABMFST/ConfigForge/blob/main/AGENTS.md).
+> [`AGENTS.md`](https://github.com/Azure/ConfigForge/blob/main/AGENTS.md).
 > Don't regress this behaviour.
 
 ## Translated CLI errors
