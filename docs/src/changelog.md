@@ -4,7 +4,7 @@ A concise release history for ConfigForge. Newer entries use their release
 tags and state publication status explicitly; older entries summarize the
 foundational work by theme.
 
-## macOS Author v0.3.93-author.1 — 2026-07-25 (draft, unpublished)
+## macOS Author mac-v0.3.93-author.1 — 2026-07-25 (draft, unpublished)
 
 Annotated tag `mac-v0.3.93-author.1` resolves to the current
 `mac-author-build` head,
