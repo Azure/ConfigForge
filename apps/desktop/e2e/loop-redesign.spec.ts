@@ -690,6 +690,7 @@ test.describe.serial("Loop redesign end-to-end flow", () => {
   });
 
   test("Delete and session Undo restore captured baseline content", async () => {
+    await goToMyBaselines();
     await page.getByRole("checkbox", { name: `Select baseline ${BASELINE_B}` }).check();
     page.once("dialog", (dialog) => dialog.accept());
     await page.getByRole("button", { name: "Delete selected baselines" }).click();
