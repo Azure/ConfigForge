@@ -56,6 +56,7 @@ export const ManifestContent = React.memo(function ManifestContent({
   const lastCodeEditAtRef = React.useRef(0);
   const previousEditingRef = React.useRef(editing);
   const [undoStack, setUndoStack] = React.useState<string[]>([]);
+  const undoStackRef = React.useRef<string[]>([]);
 
   React.useEffect(() => {
     contentRef.current = editedContent;
@@ -63,6 +64,7 @@ export const ManifestContent = React.memo(function ManifestContent({
 
   React.useEffect(() => {
     if (editing !== previousEditingRef.current) {
+      undoStackRef.current = [];
       setUndoStack([]);
       lastCodeEditAtRef.current = 0;
       contentRef.current = editedContent;
@@ -74,30 +76,40 @@ export const ManifestContent = React.memo(function ManifestContent({
     const current = contentRef.current;
     if (next === current) return;
     const now = Date.now();
-    setUndoStack((stack) => {
-      if (!checkpoint && stack.length > 0 && now - lastCodeEditAtRef.current < 750) {
-        return stack;
-      }
-      return [...stack, current].slice(-50);
-    });
+    const currentStack = undoStackRef.current;
+    const nextStack =
+      !checkpoint && currentStack.length > 0 && now - lastCodeEditAtRef.current < 750
+        ? currentStack
+        : [...currentStack, current].slice(-50);
+    undoStackRef.current = nextStack;
+    if (nextStack !== currentStack) setUndoStack(nextStack);
     lastCodeEditAtRef.current = checkpoint ? 0 : now;
     contentRef.current = next;
     setEditedContent(next);
   };
 
   const handleUndo = React.useCallback(() => {
-    const previous = undoStack.at(-1);
+    const currentStack = undoStackRef.current;
+    const previous = currentStack.at(-1);
     if (previous === undefined) return;
-    setUndoStack((stack) => stack.slice(0, -1));
+    const nextStack = currentStack.slice(0, -1);
+    undoStackRef.current = nextStack;
+    setUndoStack(nextStack);
     lastCodeEditAtRef.current = 0;
     contentRef.current = previous;
     formatCache.current[activeFormat] = previous;
     setEditedContent(previous);
-  }, [activeFormat, formatCache, setEditedContent, undoStack]);
+  }, [activeFormat, formatCache, setEditedContent]);
+
+  const requestUndo = React.useCallback(() => {
+    // A focused Visual cell publishes its blur checkpoint in a microtask.
+    // Queue Undo behind it so the ref includes that checkpoint before restoring.
+    window.queueMicrotask(handleUndo);
+  }, [handleUndo]);
 
   React.useEffect(() => {
-    onEditUndoStateChange?.(undoStack.length > 0, undoStack.length > 0 ? handleUndo : null);
-  }, [handleUndo, onEditUndoStateChange, undoStack.length]);
+    onEditUndoStateChange?.(undoStack.length > 0, undoStack.length > 0 ? requestUndo : null);
+  }, [onEditUndoStateChange, requestUndo, undoStack.length]);
 
   React.useEffect(() => () => onEditUndoStateChange?.(false, null), [onEditUndoStateChange]);
 
@@ -108,7 +120,9 @@ export const ManifestContent = React.memo(function ManifestContent({
         const yamlSource = dumpVisualManifest(JSON.parse(editedContent));
         formatCache.current.yaml = yamlSource;
         contentRef.current = yamlSource;
-        setUndoStack(previousYaml && previousYaml !== yamlSource ? [previousYaml] : []);
+        const nextStack = previousYaml && previousYaml !== yamlSource ? [previousYaml] : [];
+        undoStackRef.current = nextStack;
+        setUndoStack(nextStack);
         lastCodeEditAtRef.current = 0;
         setEditedContent(yamlSource);
         setActiveFormat("yaml");

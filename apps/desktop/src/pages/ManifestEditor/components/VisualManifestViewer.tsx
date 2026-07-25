@@ -253,6 +253,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
   const { t } = useTranslation("manifest-editor");
   const canEdit = editable && onSourceChange !== undefined;
   const regionRef = useRef<HTMLDivElement>(null);
+  const searchInputRef = useRef<HTMLInputElement>(null);
   const ignoredBlurTargetsRef = useRef(new WeakSet<HTMLElement>());
   const wasEditableRef = useRef(false);
   const activeCellRef = useRef<ActiveCell | null>(null);
@@ -857,6 +858,11 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
 
     navigateAfterCommit(committed, nextCell, column);
     if (focusTarget?.isConnected) focusTarget.focus();
+    if (focusTarget) {
+      window.setTimeout(() => {
+        if (!focusTarget.isConnected) searchInputRef.current?.focus();
+      }, 0);
+    }
   };
   commitArrayItemAndNavigateRef.current = commitArrayItemAndNavigate;
 
@@ -1049,6 +1055,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
                 aria-hidden="true"
               />
               <input
+                ref={searchInputRef}
                 type="search"
                 value={filterQuery}
                 onChange={(event) => setFilterQuery(event.target.value)}

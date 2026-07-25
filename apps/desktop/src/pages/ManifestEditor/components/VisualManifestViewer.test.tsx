@@ -3,7 +3,7 @@
 
 import React, { useState } from "react";
 import { describe, expect, it, vi } from "vitest";
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import { getI18n } from "../../../locales";
@@ -818,6 +818,48 @@ describe("VisualManifestViewer", () => {
     });
     expect(addAnother).toHaveFocus();
     expect(document.body).not.toHaveFocus();
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const parsed = parseVisualManifest(onChange.mock.calls[0][0]) as {
+      resources: Array<{ properties: { priority: string[] } }>;
+    };
+    expect(parsed.resources[0].properties.priority).toEqual(["updated"]);
+  });
+
+  it("falls back to search when filtered terminal Tab removes the edited row", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: Filtered multi-value setting
+    type: Example/Category
+    properties:
+      priority:
+        - first
+`,
+      onChange,
+    );
+
+    const search = screen.getByRole("searchbox", { name: "Search baseline settings" });
+    await user.type(search, "first");
+    await user.click(
+      screen.getByRole("button", {
+        name: "Edit Priority value 1 for Filtered multi-value setting",
+      }),
+    );
+    const finalItem = screen.getByRole("textbox", {
+      name: "Edit Priority value 1 for Filtered multi-value setting",
+    });
+    await user.clear(finalItem);
+    await user.keyboard("updated");
+    fireEvent.keyDown(finalItem, { key: "Tab" });
+
+    await waitFor(() => expect(search).toHaveFocus());
+    expect(document.body).not.toHaveFocus();
+    expect(
+      screen.queryByRole("button", {
+        name: "Add another Priority value for Filtered multi-value setting",
+      }),
+    ).not.toBeInTheDocument();
     expect(onChange).toHaveBeenCalledTimes(1);
     const parsed = parseVisualManifest(onChange.mock.calls[0][0]) as {
       resources: Array<{ properties: { priority: string[] } }>;
