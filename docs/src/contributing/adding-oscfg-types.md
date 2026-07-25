@@ -7,7 +7,7 @@ checklist to surface it in ConfigForge.
 
 Run `scripts/probe-types.ps1` from an elevated PowerShell on a
 machine with the user-installed `oscfg` CLI on `PATH` (ConfigForge
-no longer bundles the binary - see [INSTALL.md](https://github.com/ABMFST/ConfigForge/blob/main/INSTALL.md)).
+no longer bundles the binary - see [INSTALL.md](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md)).
 The script walks every supported verb and captures the schema
 evidence under `.probe/` (gitignored). Diff `.probe/` against the
 prior run to see what's new.
@@ -15,7 +15,7 @@ prior run to see what's new.
 ## 2. Update the registered-types whitelist
 
 Add the type to
-[`packages/core/src/oscfg/registered-types.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts).
+[`packages/core/src/oscfg/registered-types.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts).
 The whitelist is two `as const` arrays - one for Windows, one for
 Linux. Add the new type to the appropriate array:
 
@@ -41,7 +41,7 @@ persisted).
 
 If the new type is platform-specific, make sure
 `detectManifestPlatform()` in
-[`packages/core/src/platform.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/platform.ts)
+[`packages/core/src/platform.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/platform.ts)
 correctly classifies it. The classifier walks
 `Microsoft.OSConfig/Group` and `Microsoft.OSConfig/Test` wrappers
 recursively - your test should include both wrapped and bare cases.
@@ -54,7 +54,7 @@ Two places need to agree on the new type's `properties` shape:
    `packages/core/src/platform.ts` (and any per-type validators it
    delegates to) must accept the new shape.
 2. **Renderer-side JSON schema.**
-   [`apps/desktop/src/data/osc-manifest-schema.json`](https://github.com/ABMFST/ConfigForge/blob/main/apps/desktop/src/data/osc-manifest-schema.json)
+   [`apps/desktop/src/data/osc-manifest-schema.json`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/src/data/osc-manifest-schema.json)
    is loaded by Monaco's JSON-mode validator so the editor
    surfaces inline errors as the user types. Add a `oneOf` /
    `properties` entry for the new type so the editor matches the

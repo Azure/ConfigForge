@@ -35,7 +35,7 @@ baselines.
 ## How rows are merged
 
 The matrix builder lives in
-[`packages/core/src/diff/matrix.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/diff/matrix.ts).
+[`packages/core/src/diff/matrix.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/diff/matrix.ts).
 It keys rows by a stable composite of
 `(type, valueName | name | keyPath\\valueName)`, *not* the raw
 `name:` field, because two baselines for "MaxAuthTries" may use
@@ -90,7 +90,7 @@ compliance assertion, not a literal).
 
 The Matrix tab is hard-capped at **10 selected manifests**
 (`MATRIX_MAX_SELECTION` in
-[`useDiffMatrix.ts`](https://github.com/ABMFST/ConfigForge/blob/main/apps/desktop/src/pages/Diff/state/useDiffMatrix.ts)).
+[`useDiffMatrix.ts`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/src/pages/Diff/state/useDiffMatrix.ts)).
 Clicking an 11th checkbox surfaces an inline message:
 *"Matrix compare is limited to 10 manifests. Deselect one before
 adding another."* Instead of silently no-op'ing the click
@@ -127,7 +127,7 @@ v0.1.13 regression fix and is locked in by a hook test.
 ## CIS Diff tab
 
 The CIS Diff tab appears on the Diff page when CIS data is loaded (see
-[CIS Mapping](./cis-compliance.md)). It scores coverage as **unique CIS
+[Benchmark Mapping](./cis-compliance.md)). It scores coverage as **unique CIS
 rules covered / total benchmark rules**, not resources matched / total
 manifest resources.
 
@@ -184,4 +184,4 @@ came from:
 
 - [API Reference → Diff matrix](../api-reference/diff.md)
 - [User Guide → AI analysis with provenance](./ai-provenance.md)
-- [User Guide → CIS Mapping](./cis-compliance.md)
+- [User Guide → Benchmark Mapping](./cis-compliance.md)

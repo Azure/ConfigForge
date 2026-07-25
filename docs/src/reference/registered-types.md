@@ -2,7 +2,7 @@
 
 The whitelist of resource types ConfigForge knows about for the
 targeted CLI version. **Source of truth:**
-[`packages/core/src/oscfg/registered-types.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts),
+[`packages/core/src/oscfg/registered-types.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts),
 including the `OSCFG_CLI_VERSION` constant currently set to
 `1.3.9-preview11`. This page is a documentation copy of that source;
 if it disagrees with the source file, the source file wins. The

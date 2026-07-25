@@ -1,7 +1,7 @@
 # Mixed-platform classification
 
 `detectManifestPlatform()` (in
-[`packages/core/src/platform.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/platform.ts))
+[`packages/core/src/platform.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/platform.ts))
 classifies a manifest into one of four buckets based on the resource
 types it contains. The classification drives soft warnings at
 register time and hard gates at deploy time.
@@ -59,7 +59,12 @@ Audit mode also shells out to `oscfg`; on Windows, read-only audit still require
 
 ## Mac author flavor
 
-The `main` branch is the Windows/Linux full-build line. Renderer helper functions `safeCfs()` and `hasCfsNamespace()` exist because the sibling macOS author flavor can omit deploy/elevation/health/audit namespaces. Code that may be shared with that flavor should feature-detect those namespaces before calling them.
+The `main` branch is the Windows/Linux full-build line. Renderer helpers
+`safeCfs()` and `hasCfsNamespace()` exist because the sibling macOS author
+flavor omits `health`, `deploy`, `deployRecovery`, `revert`, `auditResults`,
+and `system`. Code shared with that flavor must feature-detect those
+namespaces before calling them. Diff and Audit Pack generation remain
+available in the author flavor.
 
 ## See also
 

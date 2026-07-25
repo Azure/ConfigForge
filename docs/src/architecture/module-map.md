@@ -7,7 +7,7 @@ A conservative map of the current `apps/desktop/` and `packages/core/` split. It
 | File | Role |
 | --- | --- |
 | `main.ts` | BrowserWindow construction, app lifecycle, IPC + protocol registration. |
-| `preload.ts` | `contextBridge.exposeInMainWorld('cfs', { … })`. Single contract source for the renderer-side `window.cfs.*` shape. **Flavor-specific**: the macOS author preload omits deploy / elevation / health / auditResults. |
+| `preload.ts` | `contextBridge.exposeInMainWorld('cfs', { … })`. Single contract source for the renderer-side `window.cfs.*` shape. **Flavor-specific**: the macOS author preload omits `health`, `deploy`, `deployRecovery`, `revert`, `auditResults`, and `system`. |
 | `ipc-handlers.ts` | Registers every `cfs:*` IPC channel. Each channel is a thin wrapper around a `packages/core/handlers/` export. |
 | `ipc-validators.ts` | Typed payload validators per channel (CF-SEC-002). Rejects malformed payloads at the IPC boundary, before they reach handlers. |
 | `navigation-guard.ts` | Blocks `will-navigate` outside the bundled UI + file:// navigation (CF-SEC-001). |
@@ -47,7 +47,7 @@ The five Phase A-E lighthouse pages are directory-based:
 | `Library/` | `useLibraryFilters` (+ tests) | none extracted yet |
 | `Diff/` | `useDiffMatrix` (+ tests) | `CisDiffTab`; other panels remain in `index.tsx` |
 
-Other current page files are still flat files: `Home.tsx` (Dashboard), `Compliance.tsx` (Validation), `CisCatalog.tsx` (CIS Mapping), `Settings.tsx`, `ManifestAuditPack.tsx`, `ManifestCompliance.tsx`, `ManifestHistory.tsx`, `ManifestRationale.tsx`, and `NotFound.tsx`.
+Other current page files are still flat files: `Home.tsx` (Dashboard), `Compliance.tsx` (Export Readiness), `CisCatalog.tsx` (Benchmark Mapping), `Settings.tsx`, `ManifestAuditPack.tsx`, `ManifestCompliance.tsx`, `ManifestHistory.tsx`, `ManifestRationale.tsx`, and `NotFound.tsx`.
 
 Routes are wired in `apps/desktop/src/App.tsx`; sidebar labels are wired in `apps/desktop/src/components/Sidebar.tsx`.
 

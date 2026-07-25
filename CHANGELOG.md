@@ -1,5 +1,42 @@
 # Changelog
 
+## [Unreleased] - 0.3.93-author.1-ready
+
+> `0.3.93-author.1` is planned, not released. No package version, tag, or
+> GitHub release has been created. PR #77 has ported PR #76 to
+> `mac-author-build`, but the exact macOS release candidate must still pass
+> its full validation and packaging gates before tagging.
+
+### Added
+
+- **Restored complete macOS baseline-creation workflows.** PR
+  [#75](https://github.com/Azure/ConfigForge/pull/75), merged to
+  `mac-author-build` at `3086ef0`, adds blank, starter-template, Microsoft
+  Baseline, URL, local-file, and validated binary XLSX flows.
+- **Completed nested multi-value keyboard navigation on `main`.** PR
+  [#76](https://github.com/Azure/ConfigForge/pull/76), merged at `278dad6`,
+  makes Enter commit and move down, final Enter append and focus, Tab commit
+  and move right, empty arrays focusable, and invalid drafts focus-retaining.
+- **Ported nested navigation to the macOS author line.** PR
+  [#77](https://github.com/Azure/ConfigForge/pull/77), merged at `aec0775`,
+  carries all five PR #76 commits to `mac-author-build` without changing
+  package metadata or public baselines.
+
+### Changed
+
+- **Restored shared macOS authoring parity.** My Baselines now uses localized
+  catalog content and local-calendar Date Modified values; selected baselines
+  prepopulate Pairwise or Matrix Diff; unsaved tab/navigation guards,
+  per-baseline Code/Visual preferences, read-only Code guidance, and current
+  Benchmark Mapping setup headings match the shared experience. (#75)
+- **Preserved the author-only boundary.** Diff and Audit Pack PDF/Markdown
+  export remain available, while device deploy, audit, enforce, revert,
+  elevation, health, and audit-results storage remain excluded.
+- **Restored public lockfile portability.** Normalized 31 Microsoft-mirror
+  tarball URLs back to `registry.npmjs.org` without changing package versions
+  or integrity hashes; the Microsoft mirror remains an optional local restore
+  fallback, not committed metadata.
+
 ## [0.3.92] - 2026-07-24
 
 ### Security
@@ -313,7 +350,7 @@
 - **Rebrand: "ConfigForge Spark" → "ConfigForge".** Dropped the "Spark" suffix across the entire codebase, build configuration, and documentation (112 files).
   - **App identity (clean rebrand):** `appId` `community.configforge.spark` → `community.configforge`; `executableName` / npm package `name` `configforge-spark` → `configforge`; `productName` / `shortcutName` "ConfigForge Spark" → "ConfigForge". The Windows install path and `%APPDATA%` data folder move from `configforge-spark` to `configforge`, so preview users' local settings do not carry over (acceptable pre-GA).
   - **Installer artifacts:** `ConfigForgeSpark-Setup-${version}` → `ConfigForge-Setup-${version}`.
-  - **Repo URLs:** `github.com/ABMFST/ConfigForgeSpark` → `github.com/ABMFST/ConfigForge` (repo already renamed; old URLs auto-redirect). Local git remote updated to match.
+  - **Repo URLs at that release:** `github.com/ABMFST/ConfigForgeSpark` → `github.com/ABMFST/ConfigForge` (the repository was later transferred to `Azure/ConfigForge`). Local git remote was updated to match the then-current rename.
   - **Author flavor (mac):** "ConfigForge Spark Author" → "ConfigForge Author"; `appId` `community.configforge.spark.author` → `community.configforge.author`. Ported on `mac-author-build` separately.
   - **Preserved:** the unrelated `SparkleRegular` FluentUI icon in `ai-analysis-panel.tsx` (false-positive match on "spark").
 
@@ -1274,7 +1311,7 @@ Hooks extracted (with regression tests that lock in race-guards, timer cleanup, 
 - **CF-SEC-012** — CycloneDX SBOM generated per platform (`sbom-windows-latest.cdx.json`, `sbom-ubuntu-latest.cdx.json`) and uploaded to release artifacts alongside SHA256SUMS. `@cyclonedx/cyclonedx-npm` exact-pinned at the root.
 - **CF-SEC-013** — Postinstall script audited.
 - **CF-SEC-014** — `npm audit --omit=dev --audit-level=high` gate in the release workflow; `electron` + `electron-builder` repinned with tilde (`~`) instead of caret (`^`) so minor-version updates are intentional. Locally validated: 0 prod-dep vulnerabilities at the high/critical level.
-- **CF-SEC-015** — `safeCfs(key)` + `hasCfsNamespace(key)` helpers added to `apps/desktop/src/lib/cfs.ts` for flavor-conditional renderer code. The macOS author build omits `deploy` / `elevation` / `health` / `auditResults` preload namespaces; renderer code that may run on either flavor should now use the new helpers instead of bare `cfs.X` (which throws on mac).
+- **CF-SEC-015** — `safeCfs(key)` + `hasCfsNamespace(key)` helpers added to `apps/desktop/src/lib/cfs.ts` for flavor-conditional renderer code. The macOS author build omits `health`, `deploy`, `deployRecovery`, `revert`, `auditResults`, and `system`; renderer code that may run on either flavor should use the helpers instead of bare access to an omitted namespace.
 
 #### Added (developer experience)
 

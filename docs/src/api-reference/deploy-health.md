@@ -45,7 +45,7 @@ machine. If the CLI isn't installed it throws `cliRequiredError(...)` -
 `HandlerError(412)` with `code: 'CLI_REQUIRED'`. The IPC envelope
 preserves the code; the renderer's `useCliPresence()` +
 `<CliRequiredModal />` branch on it. See
-[`AGENTS.md` - bring-your-own-CLI contract](https://github.com/ABMFST/ConfigForge/blob/main/AGENTS.md#v020-bring-your-own-cli-contract).
+[`AGENTS.md` - bring-your-own-CLI contract](https://github.com/Azure/ConfigForge/blob/main/AGENTS.md#v020-bring-your-own-cli-contract).
 
 ### Cancellation contract
 
@@ -181,6 +181,6 @@ type SettingsSchema = {
 
 - [Architecture - `oscfg` CLI contract](../architecture/oscfg-cli.md)
 - [Architecture - Module map](../architecture/module-map.md)
-- [`AGENTS.md` - CLI contract](https://github.com/ABMFST/ConfigForge/blob/main/AGENTS.md#cli-contract-things-runoscfg-guarantees)
-- [`apps/desktop/CI.md`](https://github.com/ABMFST/ConfigForge/blob/main/apps/desktop/CI.md) - release & smoke-test pipeline
+- [`AGENTS.md` - CLI contract](https://github.com/Azure/ConfigForge/blob/main/AGENTS.md#cli-contract-things-runoscfg-guarantees)
+- [`apps/desktop/CI.md`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/CI.md) - release & smoke-test pipeline
 - [API Reference - `cfs.manifests.*`](./manifests.md)

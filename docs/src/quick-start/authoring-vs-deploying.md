@@ -4,7 +4,8 @@ ConfigForge draws a sharp line between *authoring a manifest*
 (safe, platform-agnostic, no CLI required) and *deploying it* (the
 Full-edition operations that touch the live OS, and the only ones that
 need the `oscfg` CLI installed). The macOS Author edition is for
-authoring-only workflows and omits deploy/diff/audit-pack surfaces.
+authoring-only workflows. It includes Diff and Audit Pack export but omits
+device deploy, audit, enforce, revert, elevation, and CLI-health surfaces.
 Mixing the two was the single biggest design defect of the pre-`unified`
 editions, and unmixing them is what lets you safely author Linux
 manifests on a Windows laptop - even with no CLI at all.
@@ -80,10 +81,9 @@ baseline for a Linux fleet (no `oscfg` installed yet - that's fine):
    targets `linux`, host is `windows` - deploy from a Linux
    machine."*
 3. The manifest now lives in `~/.configforge/manifests/<ns>.json`.
-   In the Full edition, you can run [Diff](../user-guide/matrix-diff.md),
-   score it against [CIS](../user-guide/cis-compliance.md), and export an
-   [audit-pack](../user-guide/audit-pack.md) - none of which need
-   `oscfg`.
+   In either edition, you can run [Diff](../user-guide/matrix-diff.md), score
+   it against [CIS](../user-guide/cis-compliance.md), and export an
+   [audit-pack](../user-guide/audit-pack.md) - none of which need `oscfg`.
 4. **Deploy** is rejected on the Windows machine (`'CLI_REQUIRED'`
    if the CLI isn't installed; `'mixed'`/platform-mismatch if it
    is). Install the target device's OSConfig CLI from

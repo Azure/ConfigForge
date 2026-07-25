@@ -9,7 +9,7 @@
 > flavor lives on the `mac-author-build` branch and uses its own
 > `electron-builder.author.yml`.
 >
-> **Current through v0.3.48:** the release pipeline generates a
+> **Current through v0.3.92:** the release pipeline generates a
 > CycloneDX SBOM per platform, enforces
 > `npm audit --omit=dev --audit-level=high` as a release gate,
 > pins `electron-builder` invocation via `npx --no-install`, and
@@ -43,18 +43,18 @@ After `npm run desktop:dist:win` from a Windows host:
 
 | File | Format | Size | Use case |
 |---|---|---|---|
-| `ConfigForge-Setup-0.3.48-x64.exe` | NSIS installer | ~113 MB | End-user install (Start menu shortcut, Add/Remove Programs entry, optional desktop shortcut) |
-| `ConfigForge-Setup-0.3.48-x64.zip` | Portable zip | ~149 MB | Unzip-and-run, no install. Useful for sandbox testing or restricted environments. |
-| `ConfigForge-Setup-0.3.48-x64.exe.blockmap` | Block map | ~120 KB | electron-updater delta updates |
+| `ConfigForge-Setup-${version}-x64.exe` | NSIS installer | ~113 MB | End-user install (Start menu shortcut, Add/Remove Programs entry, optional desktop shortcut) |
+| `ConfigForge-Setup-${version}-x64.zip` | Portable zip | ~149 MB | Unzip-and-run, no install. Useful for sandbox testing or restricted environments. |
+| `ConfigForge-Setup-${version}-x64.exe.blockmap` | Block map | ~120 KB | electron-updater delta updates |
 
 After `npm run desktop:dist:linux` (or from Linux host):
 
 | File | Format | Size | Use case |
 |---|---|---|---|
-| `configforge-0.3.48-x64.tar.gz` | Tarball | ~140 MB | Universal portable Linux. Unpack, `chmod +x configforge`, run. |
-| `configforge-0.3.48-x86_64.AppImage` | AppImage | ~140 MB ⚠️ Linux host only | Self-contained universal Linux binary. Most user-friendly. |
-| `configforge_0.3.48_amd64.deb` | Debian | ~100 MB ⚠️ Linux host only | Debian/Ubuntu native install. |
-| `configforge-0.3.48.x86_64.rpm` | RPM | ~100 MB ⚠️ Linux host only | Fedora/RHEL/openSUSE native install. |
+| `configforge-${version}-x64.tar.gz` | Tarball | ~140 MB | Universal portable Linux. Unpack, `chmod +x configforge`, run. |
+| `configforge-${version}-x86_64.AppImage` | AppImage | ~140 MB ⚠️ Linux host only | Self-contained universal Linux binary. Most user-friendly. |
+| `configforge_${version}_amd64.deb` | Debian | ~100 MB ⚠️ Linux host only | Debian/Ubuntu native install. |
+| `configforge-${version}.x86_64.rpm` | RPM | ~100 MB ⚠️ Linux host only | Fedora/RHEL/openSUSE native install. |
 
 ## Cross-platform build matrix
 
@@ -76,7 +76,7 @@ After `npm run desktop:dist:linux` (or from Linux host):
 - macOS .dmg can only be built on macOS, and it's intentionally
   scoped to the `mac-author-build` branch — that branch's
   `electron-builder.author.yml` ships an author-only flavor with
-  a distinct appId and no deploy/elevation/health capabilities.
+  a distinct appId and no device-operation capabilities.
 
 **Workaround on Windows (development only):**
 - Build inside WSL Ubuntu: `wsl npm run desktop:dist:linux`. Slower
@@ -116,8 +116,9 @@ After `npm run desktop:dist:win`:
    the NSIS installer first then launch the installed copy):
    - [ ] Window opens within 3 seconds
    - [ ] Mica titlebar visible on Win11 22000+
-   - [ ] Sidebar shows all seven nav items in order: Dashboard, Manifests,
-         Validation, Library, Diff, CIS Mapping, Settings
+   - [ ] Sidebar shows all seven nav items in order: Dashboard, My Baselines,
+         Microsoft Baselines, Export Readiness, Diff, Benchmark Mapping,
+         Settings
    - [ ] Clicking each nav item routes correctly
 
 2. **IPC bridge** — open DevTools (F12) → Console:
@@ -139,7 +140,7 @@ After `npm run desktop:dist:win`:
          `<install-dir>\resources\` — v0.2.0+ ships **no** CLI
          binary. `scripts/verify-no-cli-binary.sh` enforces this
          at release time. Users install `oscfg` separately per
-         [INSTALL.md](https://github.com/ABMFST/ConfigForge/blob/main/INSTALL.md).
+         [INSTALL.md](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md).
 
 5. **SBOM artifact (release builds only)** — when triggered via
    the release workflow, verify the per-platform SBOM is staged
@@ -155,8 +156,13 @@ After Linux tarball / AppImage / deb / rpm:
 
 1. **Extract test** — on a Linux host:
    ```bash
-   tar -xzf configforge-0.3.48-x64.tar.gz
-   cd configforge-0.3.48-x64
+   VERSION=''
+   [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+     echo 'Set VERSION to X.Y.Z before continuing.'
+     exit 1
+   }
+   tar -xzf "configforge-${VERSION}-x64.tar.gz"
+   cd "configforge-${VERSION}-x64"
    chmod +x configforge
    ./configforge
    ```
@@ -178,8 +184,8 @@ After Linux tarball / AppImage / deb / rpm:
 | GitHub Actions release workflow | ✅ Shipped — see [`.github/workflows/release.yml`](../../.github/workflows/release.yml) |
 | SBOM + audit gate + tooling pinning | ✅ v0.2.1 hardening — see [`CHANGELOG.md`](../../CHANGELOG.md) entries for CF-SEC-010 / 011 / 012 / 014 |
 | Code signing | None — all artifacts are unsigned by design (no signing credentials in CI). Optional local self-sign: `scripts/generate-dev-cert.ps1`. |
-| macOS .dmg build (author flavor) | `mac-author-build` branch + `electron-builder.author.yml`. Mac flavor is **not** built from `main`; it has its own appId, drops deploy/elevation/health namespaces, and is unsigned/not notarized for the preview. Users may need `xattr -cr "/Applications/ConfigForge Author.app"`. |
-| arm64 builds | post-1.0 |
+| macOS .dmg build (author flavor) | `mac-author-build` branch + `electron-builder.author.yml`. Mac flavor is **not** built from `main`; it has its own appId, omits device-operation namespaces, and is unsigned/not notarized. Users must clear quarantine with `xattr -cr "/Applications/ConfigForge Author.app"`. |
+| macOS architecture | ARM64 only for Apple Silicon Macs (M1 or later). Intel and universal builds are not produced. |
 | Notarization | macOS Author notarization is not wired yet |
 
 ## Troubleshooting

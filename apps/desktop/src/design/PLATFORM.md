@@ -118,12 +118,17 @@ The macOS build is **not** produced from `main`. It lives on its own branch — 
 |---|---|---|
 | `appId` | `community.configforge` | `community.configforge.author` |
 | `productName` | `ConfigForge` | `ConfigForge Author` |
-| Target | NSIS / zip / AppImage / deb / rpm / tar.gz | `.dmg` (arm64 — Apple Silicon, Intel via Rosetta) |
-| Code signing | None — unsigned (no signing in CI; optional local self-sign via `scripts/generate-dev-cert.ps1`) | `identity: null` (unsigned — preview build, users right-click → Open past Gatekeeper) |
+| Target | NSIS / zip / AppImage / deb / rpm / tar.gz | ARM64-only `.dmg` for Apple Silicon (M1 or later); no Intel or universal build |
+| Code signing | None — unsigned (no signing in CI; optional local self-sign via `scripts/generate-dev-cert.ps1`) | `identity: null` (unsigned and not notarized; clear quarantine with `xattr -cr`) |
 | Bundled CLI | None (BYO-CLI per v0.2.0 contract) | None |
-| Preload namespaces | Full surface (`cfs.deploy`, `cfs.elevation`, `cfs.health`, `cfs.auditResults`, …) | **Drops `deploy`, `elevation`, `health`, `auditResults`** — the author flavor cannot apply / audit / enforce on a device, so those handlers are tree-shaken out at build time |
+| Preload namespaces | Full surface | **Drops `health`, `deploy`, `deployRecovery`, `revert`, `auditResults`, and `system`** — the author flavor cannot apply, audit, enforce, revert, or elevate on a device |
 
-**Rule:** renderer code that may run on either flavor must use the `safeCfs(key)` / `hasCfsNamespace(key)` helpers from `apps/desktop/src/lib/cfs.ts` (CF-SEC-015) instead of bare `cfs.deploy.X()` / `cfs.health.Y()`. Direct calls into dropped namespaces throw on macOS. See the root `AGENTS.md` "Things to never do" list.
+**Rule:** renderer code that may run on either flavor must use the
+`safeCfs(key)` / `hasCfsNamespace(key)` helpers from
+`apps/desktop/src/lib/cfs.ts` (CF-SEC-015) instead of direct calls into an
+omitted namespace. Elevation methods are under `cfs.system`; there is no
+`cfs.elevation` namespace. Direct calls into dropped namespaces throw on
+macOS.
 
 **Rule:** branch parity is maintained by cherry-pick. **Do not cross-merge** `main` ↔ `mac-author-build`. Mac-flavor-specific changes (anything that touches `electron-builder.author.yml`, the deploy/elevation/health drop list, or the unsigned-Gatekeeper UX) belong on `mac-author-build`. Everything else lands on `main` first and gets cherry-picked across.
 

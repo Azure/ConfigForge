@@ -1,10 +1,20 @@
 # ConfigForge
 
-> ⚠️ **Disclaimer:**  This tool is provided as-is without Microsoft support. This is an experimental project to help customers accelerate their use of security baselines while helping IT architects validate desired configurations., ConfigForge is **not** an officially supported Microsoft product. **Not intended for production use** — for experimentation, learning, and community contributions only. **Use at your own risk.**
+> ⚠️ **Disclaimer:** This tool is provided as-is without Microsoft support. This is an experimental project to help customers accelerate their use of security baselines while helping IT architects validate desired configurations. ConfigForge is **not** an officially supported Microsoft product. **Not intended for production use** — for experimentation, learning, and community contributions only. **Use at your own risk.**
 
-**Cross-platform OSConfig security baseline authoring desktop app.** Electron 42 + React 18 + FluentUI v9 + Vite. Windows + Linux from the `main` branch, macOS author flavor from `mac-author-build`. Author, validate, compare, export, and (when the OSConfig CLI is installed) deploy / audit baselines on **Windows Server 2025 / Windows 11** and **Ubuntu 22.04+** via the native [`oscfg`](https://github.com/microsoft/osconfig/tree/main/docs/cli) CLI. Targets `oscfg`.
+**Cross-platform OSConfig security baseline authoring desktop app.** Electron 42 + React 18 + FluentUI v9 + Vite. Windows + Linux use the full build from `main`; macOS uses the author-only flavor from `mac-author-build`. Author, validate, compare, and export on every supported edition. Device deploy and audit are Full-edition features that use the native [`oscfg`](https://github.com/microsoft/osconfig/tree/main/docs/cli) CLI on Windows or Linux.
 
-> The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, diff, Benchmark Mapping, and audit-pack PDF features all work without it. Deploy and Audit require the CLI and degrade gracefully when it is missing. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
+> The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
+
+The latest tagged Full-edition release is `v0.3.92`; the latest tagged macOS
+Author release is `mac-v0.3.92-author.1`. The next planned macOS Author
+version is `0.3.93-author.1`, but no corresponding tag or release exists yet.
+PR [#75](https://github.com/Azure/ConfigForge/pull/75) restored macOS
+authoring parity; PR [#76](https://github.com/Azure/ConfigForge/pull/76) is
+merged on `main`, and PR
+[#77](https://github.com/Azure/ConfigForge/pull/77) ports that navigation
+series to `mac-author-build`. Package metadata remains at `0.3.92-author.1`;
+the planned candidate still needs final release validation before tagging.
 
 ## What it looks like
 
@@ -12,7 +22,10 @@ Left rail order is **Dashboard, My Baselines, Microsoft Baselines, Export Readin
 
 ### Microsoft Baselines: start from a curated catalog
 
-Browse pre-built security baselines (Windows Server 2016/2019/2022/2025, member, DC, workgroup; Microsoft Defender; LAPS; Secured Core; SSH; Linux Security Baseline) and click **Use as Template** to fork one into your own baseline.
+Browse pre-built security baselines (Windows Server 2016/2019/2022/2025,
+member, domain controller, and workgroup; Microsoft Defender; LAPS; Secured
+Core; and Linux Security Baseline) and click **Use as Template** to fork one
+into your own baseline.
 
 ![Microsoft Baselines: pre-built security baselines you can fork into your own baseline](./docs/images/screenshots/library.png)
 
@@ -22,33 +35,63 @@ See the resolved `oscfg` version, admin status, server type, and OS version at a
 
 ![Dashboard: system health, registered-baseline count, quick actions, and recent activity](./docs/images/screenshots/home.png)
 
-### Baseline editor: author, deploy, audit pack
+### My Baselines: localized catalog and persistent workspaces
 
-YAML / JSON / Visual triple-format editor with live validation, deploy/audit dropdown, version history, CIS cross-reference drawer (shows matched CIS rules while editing), and a one-click **Audit Pack** button that produces an auditor-ready PDF (baseline header, compliance score, version history with author + rationale, heuristic AI provenance labels).
+Search and filter the localized administration table, see real Date Modified
+values in the local calendar, open multiple baselines in persistent tabs, and
+compare selected baselines. Unsaved edits are protected before a tab closes or
+navigation leaves the workspace.
+
+### Baseline editor: author and export an Audit Pack
+
+YAML / JSON / Visual editing includes live validation, version history, CIS
+cross-reference, and one-click Audit Pack PDF/Markdown export. Each baseline
+remembers its Code or Visual view. Read-only Code view explains how to enter
+editing, and unsaved changes are protected when a baseline tab closes or
+navigation leaves the editor. The Full edition also exposes CLI-gated device
+deploy/audit controls; the macOS Author edition does not.
 
 ![Baseline editor: YAML/JSON/Visual tabs, deploy + audit, history, and Audit Pack button](./docs/images/screenshots/manifest-detail.png)
 
 ### Visual spreadsheet: edit settings in place
 
-Switch to **Visual** mode and click **Edit** to work directly in the grouped setting tables. Click a cell to change it, add a blank row in any category, add a known Windows/Linux setting type from the compact menu, or select rows for deletion. Test wrappers and Group children stay bound to their original YAML structure, typed values remain typed, and QWord integers retain full precision. All visual edits batch into the editor buffer; one Save produces one rationale prompt covering every change.
+Switch to **Visual** mode and click **Edit** to work directly in grouped setting
+tables. Edit cells, add known Windows or Linux setting types, add blank rows,
+or select rows for deletion. Test wrappers and Group children remain bound to
+their original YAML structure, typed values remain typed, and QWord integers
+retain full precision. On current `main`, Tab commits and moves right, Enter
+moves down through nested values, final Enter appends and focuses a new value,
+and invalid drafts retain focus. PR #77 carries that PR #76 behavior on the
+current macOS branch.
 
 ![Visual spreadsheet with inline setting editing](./docs/images/screenshots/visual-builder.png)
 
 ### Audit pack: the auditor deliverable
 
-One click on **Audit Pack** opens a download surface with PDF + Markdown buttons, an inline PDF preview, and a sidebar showing exactly what's in the pack (baseline header, compliance report, version history, rationale log, AI provenance labels) with availability check-marks.
+One click on **Audit Pack** opens a download surface with PDF + Markdown
+buttons, an inline PDF preview, and a sidebar showing exactly what's in the
+pack (baseline header, compliance report, version history, rationale log, and
+AI provenance labels). This authoring/export workflow is available in both the
+Full and macOS Author editions; it does not perform a device audit.
 
 ![Audit pack download page: PDF + Markdown buttons, inline preview, what's-included sidebar](./docs/images/screenshots/audit-pack.png)
 
-### Register a new baseline: type, paste, or import
+### Create a new baseline: choose from five starting points
 
-Drag-drop a `.osc.yaml` / `.json` / `.csv` file, paste from a URL, or start from a starter template. Pick Windows or Linux as the target platform and the editor adjusts validation accordingly. Imported CSV/spreadsheet rows are converted into schema-valid Registry settings (the importer now emits `valueName` and an inferred `valueType` so the editor stops flagging every imported row).
+Create a blank Windows or Linux baseline, start from a starter template,
+choose a Microsoft Baseline in place, load from a public URL, or import a local
+`.osc.yaml`, `.json`, `.csv`, or binary `.xlsx` file. The validated import path
+converts supported spreadsheet data into editable OSConfig settings.
 
 ![Register new baseline: import/paste/build with platform-aware validation](./docs/images/screenshots/new-manifest.png)
 
 ### Compare baselines: Pairwise, CIS, Matrix
 
-The Diff page has three tabs: **Pairwise**, **CIS**, and **Matrix**. Pairwise shows YAML side-by-side with diff stats (e.g. WS2019 → WS2025: **137 added / 84 removed / 12 changed**), then a Setting Changes panel grouped by status (Changed / Added / Removed / Identical) with before/after values. Matrix collapses cross-baseline rules via hive normalization and word-set overlap so registry-keyed and CSP-keyed views of the same setting collide cleanly.
+The Diff page has **Pairwise**, **CIS**, and **Matrix** views. Starting a
+comparison with exactly two selected baselines preselects them in Pairwise.
+Starting with three through ten selected baselines preselects them in Matrix.
+Pairwise shows source and setting changes; Matrix aligns equivalent rules
+across multiple baselines.
 
 ![Compare baselines: pairwise diff with diff stats, AI insights, and Setting Changes panel](./docs/images/screenshots/diff.png)
 
@@ -70,14 +113,17 @@ The Diff page includes a **CIS Diff** tab that scores any baseline against any u
 # Requires Node 22 LTS (see .nvmrc): `nvm use` if you have nvm.
 git clone https://github.com/Azure/ConfigForge.git
 cd ConfigForge
-git checkout main                 # Windows + Linux full build (default)
-# OR
-git checkout mac-author-build     # macOS author-only flavor (parallel branch)
+git checkout main
 npm ci
-npm run desktop:dev               # opens the Electron window
+npm run desktop:dev               # Windows + Linux full flavor
+
+# On an Apple Silicon Mac, use the author flavor instead:
+git checkout mac-author-build
+npm ci
+npm run dev:author -w @configforge/desktop
 ```
 
-`desktop:dev` runs Vite (renderer) + Electron in parallel with hot-reload.
+Both development commands run Vite (renderer) + Electron with hot-reload.
 
 ### Optional: install the OSConfig CLI for Deploy / Audit
 
@@ -101,6 +147,11 @@ npm run desktop:dist:linux
 
 Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `release.yml` uses `ubuntu-latest` for that. See [`apps/desktop/PACKAGING.md`](./apps/desktop/PACKAGING.md) for the full build matrix and the post-build smoke checklist.
 
+The macOS Author DMG targets Apple Silicon (`arm64`) and is built from
+`mac-author-build` with `npm run dist:mac:author -w @configforge/desktop`. It
+is ARM64-only, unsigned, and not notarized. It does not support Intel Macs and
+is not a universal binary.
+
 > **Builds are unsigned.** This project holds no code-signing credentials, so installers are unsigned by design — Windows SmartScreen and macOS Gatekeeper will warn. The trust path is building from source (above); you can optionally self-sign your own local build via [`apps/desktop/scripts/generate-dev-cert.ps1`](./apps/desktop/scripts/generate-dev-cert.ps1).
 
 ## Repo layout
@@ -111,10 +162,10 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 | `apps/desktop/src/pages/<Page>/` | Each lighthouse page lives in its own directory with `index.tsx` (composition), `state/` (custom hooks + their tests), `components/` (memoised sub-components), and optional `helpers.tsx`. Pattern landed during the Phase A-E renderer-page split |
 | `packages/core/**` | Platform-neutral core: manifests, history, audit-pack, oscfg wrapper, AI provenance labeling (`circular-guard`, `provenance`; local heuristic, advisory). Imported as `@configforge/core` from the desktop app |
 | `resources/oscfg/**` | **Dev-only convenience drop** for contributors who bring their own `oscfg` binary. Never shipped to users; the installer carries no Microsoft-owned binaries |
-| `public/_baselines/**` | Curated baseline manifests (Windows Server, Defender, LAPS, Secured Core, OpenSSH, etc.), bundled into installers |
+| `public/_baselines/**` | Curated baseline manifests (Windows Server, Defender, LAPS, Secured Core, Linux SFF, etc.), bundled into installers |
 | `docs/**` | mdbook documentation site (separate from the app) |
 | `scripts/**` | Postinstall + helper scripts (oscfg chmod, dev-cert generator, screenshot capture, etc.) |
-| `.github/workflows/**` | `pr-check.yml` (lint + vitest + Playwright Electron smoke), `release.yml` (tag-driven installer builds with SBOM + npm-audit gate + pinned electron-builder), `docs.yml` (mdbook site) |
+| `.github/workflows/**` | `pr-check.yml` (lint + vitest + Playwright Electron smoke), `release.yml` (Full-edition tagged releases), `release-mac.yml` (explicit-tag macOS Author draft assets), and `docs.yml` (mdBook site) |
 
 ## Documentation
 
@@ -122,8 +173,12 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 - **[`apps/desktop/PACKAGING.md`](./apps/desktop/PACKAGING.md)**: installer build workflow, cross-platform matrix, smoke checklists, troubleshooting. Builds are unsigned (optional local self-sign helper included).
 - **[`apps/desktop/CI.md`](./apps/desktop/CI.md)**: GitHub Actions workflows (PR check + release pipeline), supply-chain hardening (`npm audit` gate, CycloneDX SBOM, `npx --no-install` tooling pin), trigger scope, release-cutting walkthrough.
 - **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
-- **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current release line is `v0.3.48`.
-- **[Public docs site](https://abmfst.github.io/ConfigForge/)**: Quick Start, User Guide (matrix diff, CIS compliance, rationale capture, audit-pack PDF, AI provenance, history snapshots), Architecture, API Reference, Operations.
+- **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes, including the
+  unreleased `0.3.93-author.1` readiness work.
+- **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
+  Quick Start, User Guide, Architecture, API Reference, and Operations. No
+  Azure-hosted Pages URL is documented until its public destination is
+  confirmed.
 
 ## Contributing
 
@@ -144,7 +199,8 @@ Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `re
 
 | Version | Highlights |
 |---|---|
-| **0.3.92** (current) | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
+| **Unreleased — 0.3.93-author.1 candidate** | PR #75 restored macOS baseline creation, XLSX import, localized My Baselines dates, selection-aware Diff, close guards, and per-baseline views. PR #76 completed nested Enter/Tab editing on `main`, and PR #77 ported it to macOS. The package bump, exact-candidate validation, tag, and release remain TBD. |
+| **0.3.92** (latest tagged Full edition) | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
 | **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
 | **0.3.90** | Prevents Baseline Detail footer collisions and keeps long multi-value Visual rows inside their table columns |
 | **0.3.89** | Completes Baseline Detail spreadsheet authoring, typed multi-value editing, accessible Add settings, deterministic history, and all current Dependabot fixes |

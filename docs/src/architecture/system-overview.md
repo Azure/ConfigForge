@@ -81,11 +81,11 @@ Registration does **not** call `oscfg apply`.
 The sidebar is defined in `apps/desktop/src/components/Sidebar.tsx` and exposes seven top-level pages:
 
 1. **Dashboard** (`/`, `HomePage`)
-2. **Manifests** (`/manifests`)
-3. **Validation** (`/compliance`, `CompliancePage`)
-4. **Library** (`/library`)
+2. **My Baselines** (`/manifests`)
+3. **Microsoft Baselines** (`/library`)
+4. **Export Readiness** (`/compliance`, `CompliancePage`)
 5. **Diff** (`/diff`)
-6. **CIS Mapping** (`/cis`, `CisCatalogPage`)
+6. **Benchmark Mapping** (`/cis`, `CisCatalogPage`)
 7. **Settings** (`/settings`)
 
 The Diff page has Pairwise, Matrix (N-way), and CIS Diff tabs. The CIS Diff tab is shown when CIS data is available.

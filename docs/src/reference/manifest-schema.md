@@ -2,7 +2,7 @@
 
 This page describes the current app-side manifest validation surfaces.
 The on-disk JSON Schema at
-[`apps/desktop/src/data/osc-manifest-schema.json`](https://github.com/ABMFST/ConfigForge/blob/main/apps/desktop/src/data/osc-manifest-schema.json)
+[`apps/desktop/src/data/osc-manifest-schema.json`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/src/data/osc-manifest-schema.json)
 drives Monaco/editor validation for the form-supported Windows resource
 types. Registration also runs the core shape validator in
 `packages/core/src/platform.ts`. The targeted `oscfg` version is tracked
