@@ -749,9 +749,7 @@ export const VisualManifestViewer = React.memo(function VisualManifestViewer({
     currentLength: number,
     baseSource = latestSourceRef.current,
   ): boolean => {
-    const sourceSetting = settingForSource(baseSource, setting);
-    if (!sourceSetting) return false;
-    const result = appendVisualArrayItemSource(baseSource, sourceSetting, column);
+    const result = appendVisualArrayItemSource(baseSource, setting, column);
     if (!result.ok) {
       setPageError(result.error);
       return false;

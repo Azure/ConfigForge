@@ -766,7 +766,7 @@ resources:
         - BUILTIN\\Administrators
         - CONTOSO\\Security Admins
 `;
-    let setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const setting = flattenVisualSettings(parseVisualManifest(source))[0];
     const edited = updateVisualArrayItemSource(
       source,
       setting,
@@ -777,7 +777,8 @@ resources:
     expect(edited.ok).toBe(true);
     if (!edited.ok) return;
 
-    setting = flattenVisualSettings(parseVisualManifest(edited.source))[0];
+    // Keep the original projection: append must read the current array through
+    // its stable location binding instead of requiring another flatten pass.
     const appended = appendVisualArrayItemSource(edited.source, setting, "value");
     expect(appended.ok).toBe(true);
     if (!appended.ok) return;

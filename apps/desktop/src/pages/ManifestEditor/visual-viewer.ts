@@ -1449,6 +1449,26 @@ function setNestedValue(
   return true;
 }
 
+function getNestedValue(
+  root: Record<string, unknown>,
+  path: readonly (string | number)[],
+): { found: true; value: unknown } | { found: false } {
+  let current: unknown = root;
+  for (const segment of path) {
+    if (typeof segment === "number") {
+      if (!Array.isArray(current) || segment < 0 || segment >= current.length) {
+        return { found: false };
+      }
+      current = current[segment];
+    } else {
+      const record = asRecord(current);
+      if (!record || !hasOwn(record, segment)) return { found: false };
+      current = record[segment];
+    }
+  }
+  return { found: true, value: current };
+}
+
 function rawValueForVisualColumn(setting: VisualSetting, column: string): unknown {
   if (column === SETTING_NAME_COLUMN) return setting.settingName;
   if (column === DESIRED_VALUE_COLUMN) return setting.desiredValue;
@@ -1496,6 +1516,61 @@ function applyVisualCellValue(
   return null;
 }
 
+function readVisualCellValue(
+  document: unknown,
+  setting: VisualSetting,
+  column: string,
+): { ok: true; value: unknown } | { ok: false; error: VisualEditError } {
+  if (column === SETTING_NAME_COLUMN) {
+    const nameResource = resolveResourceAtPath(document, setting.location.namePath);
+    if (!nameResource) return { ok: false, error: "missingSetting" };
+    const nameKey = existingKey(nameResource, "name", "Name");
+    return { ok: true, value: nameResource[nameKey] };
+  }
+
+  if (column === DESIRED_VALUE_COLUMN) {
+    const binding = setting.location.desiredBinding;
+    if (!binding) return { ok: false, error: "desiredReadOnly" };
+    const resource = resolveResourceAtPath(document, binding.resourcePath);
+    if (!resource) return { ok: false, error: "missingSetting" };
+    const root = binding.root === "properties" ? ensureProperties(resource) : resource;
+    const boundValue = getNestedValue(root, binding.path);
+    if (!boundValue.found) return { ok: false, error: "desiredPath" };
+    return {
+      ok: true,
+      value: binding.displayWrapper
+        ? { [binding.displayWrapper]: boundValue.value }
+        : boundValue.value,
+    };
+  }
+
+  const resource = resolveResourceAtPath(document, setting.location.resourcePath);
+  if (!resource) return { ok: false, error: "missingSetting" };
+  const properties = ensureProperties(resource);
+  return hasOwn(properties, column)
+    ? { ok: true, value: properties[column] }
+    : { ok: false, error: "missingSetting" };
+}
+
+function updateParsedVisualCellValue(
+  document: unknown,
+  setting: VisualSetting,
+  column: string,
+  value: unknown,
+): VisualSourceEditResult {
+  const schemaError = visualCellSchemaError(setting, column, value);
+  if (schemaError) return { ok: false, error: schemaError };
+
+  const error = applyVisualCellValue(document, setting, column, value);
+  if (error) return { ok: false, error };
+
+  try {
+    return { ok: true, source: dumpVisualManifest(document) };
+  } catch {
+    return { ok: false, error: "serialize" };
+  }
+}
+
 export function updateVisualCellValueSource(
   source: string,
   setting: VisualSetting,
@@ -1508,18 +1583,7 @@ export function updateVisualCellValueSource(
   } catch {
     return { ok: false, error: "invalidYaml" };
   }
-
-  const schemaError = visualCellSchemaError(setting, column, value);
-  if (schemaError) return { ok: false, error: schemaError };
-
-  const error = applyVisualCellValue(document, setting, column, value);
-  if (error) return { ok: false, error };
-
-  try {
-    return { ok: true, source: dumpVisualManifest(document) };
-  } catch {
-    return { ok: false, error: "serialize" };
-  }
+  return updateParsedVisualCellValue(document, setting, column, value);
 }
 
 export function updateVisualCellSource(
@@ -1631,7 +1695,15 @@ export function appendVisualArrayItemSource(
   setting: VisualSetting,
   column: string,
 ): VisualSourceEditResult {
-  const current = rawValueForVisualColumn(setting, column);
+  let document: unknown;
+  try {
+    document = parseVisualManifest(source);
+  } catch {
+    return { ok: false, error: "invalidYaml" };
+  }
+  const currentValue = readVisualCellValue(document, setting, column);
+  if (!currentValue.ok) return currentValue;
+  const current = currentValue.value;
   if (!Array.isArray(current)) {
     return { ok: false, error: "structured" };
   }
@@ -1639,7 +1711,7 @@ export function appendVisualArrayItemSource(
     current.length > 0
       ? placeholderForVisualArrayItem(current[current.length - 1], setting, column)
       : "";
-  return updateVisualCellValueSource(source, setting, column, [...current, placeholder]);
+  return updateParsedVisualCellValue(document, setting, column, [...current, placeholder]);
 }
 
 function pathKey(path: readonly VisualResourcePathSegment[]): string {
