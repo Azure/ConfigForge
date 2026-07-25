@@ -6,15 +6,16 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The latest tagged Full-edition release is `v0.3.92`; the latest tagged macOS
-Author release is `mac-v0.3.92-author.1`. The next planned macOS Author
-version is `0.3.93-author.1`, but no corresponding tag or release exists yet.
+The latest tagged Full-edition release is `v0.3.92`. The current macOS Author
+line is `0.3.93-author.1` with tag `mac-v0.3.93-author.1`; its GitHub release
+is intentionally a draft and is not published.
 PR [#75](https://github.com/Azure/ConfigForge/pull/75) restored macOS
 authoring parity; PR [#76](https://github.com/Azure/ConfigForge/pull/76) is
 merged on `main`, and PR
 [#77](https://github.com/Azure/ConfigForge/pull/77) ports that navigation
-series to `mac-author-build`. Package metadata remains at `0.3.92-author.1`;
-the planned candidate still needs final release validation before tagging.
+series to `mac-author-build`. PR
+[#79](https://github.com/Azure/ConfigForge/pull/79) finalizes the current
+documentation and immutable-tag release tooling.
 
 ## What it looks like
 
@@ -173,8 +174,8 @@ is not a universal binary.
 - **[`apps/desktop/PACKAGING.md`](./apps/desktop/PACKAGING.md)**: installer build workflow, cross-platform matrix, smoke checklists, troubleshooting. Builds are unsigned (optional local self-sign helper included).
 - **[`apps/desktop/CI.md`](./apps/desktop/CI.md)**: GitHub Actions workflows (PR check + release pipeline), supply-chain hardening (`npm audit` gate, CycloneDX SBOM, `npx --no-install` tooling pin), trigger scope, release-cutting walkthrough.
 - **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
-- **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes, including the
-  unreleased `0.3.93-author.1` readiness work.
+- **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current macOS
+  Author line is `0.3.93-author.1`.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
   Quick Start, User Guide, Architecture, API Reference, and Operations. No
   Azure-hosted Pages URL is documented until its public destination is
@@ -199,24 +200,18 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **Unreleased — 0.3.93-author.1 candidate** | PR #75 restored macOS baseline creation, XLSX import, localized My Baselines dates, selection-aware Diff, close guards, and per-baseline views. PR #76 completed nested Enter/Tab editing on `main`, and PR #77 ported it to macOS. The package bump, exact-candidate validation, tag, and release remain TBD. |
-| **0.3.92** (latest tagged Full edition) | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
-| **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
-| **0.3.90** | Prevents Baseline Detail footer collisions and keeps long multi-value Visual rows inside their table columns |
-| **0.3.89** | Completes Baseline Detail spreadsheet authoring, typed multi-value editing, accessible Add settings, deterministic history, and all current Dependabot fixes |
-| **0.3.88** | Completes the July Loop revisions with pill tabs, sortable and left-aligned baseline data, reliable status tooltips, and safe one-click Undo |
-| **0.3.87** | Removes the local `ImpersonateClient` manifest override while retaining minimum-version handling for oscfg 1.3.9 or newer |
-| **0.3.86** | Current OSConfig-compatible `ImpersonateClient` YAML and minimum-version handling for oscfg 1.3.9 or newer |
-| **0.3.85** | My Baselines rows stay behind the opaque sticky column header while scrolling |
-| **0.3.84** | Export options are limited to YAML, JSON, MOF, and CSV; all remaining high-severity development dependency advisories are cleared |
-| **0.3.83** | Development dependency security refresh: `tar` 7.5.20 and `axios` 1.18.1; no runtime feature changes |
-| **0.3.82** | Baseline document identity, view-only Visual feedback, top/bottom Add setting actions, and Matrix baseline search |
-| **0.3.81** | Footer actions retain labels and reflow into balanced compact rows across Electron resolutions |
-| **0.3.80** | First-class OSConfig CSV imports, a responsive no-scroll Baseline Detail footer, and correct Save → Skip navigation after compliance deep links |
-| **0.3.79** | Search compliance reports, filter by Compliant / Non-compliant / Could not read, and sort by status |
-| **0.3.78** | Correct baseline platform icons and Monaco warning styling; persist compliance reports and move them into a large centered dialog |
-| **0.3.77** | Completed Loop design pass: five-source baseline wizard with in-place Microsoft template selection, real XLSX import, visible Date Modified values, per-baseline Code/Visual memory, and Save/Discard/Cancel close protection |
-| **0.3.76** | Cognitive Walkthrough polish: Pairwise Diff for two selections, shared Code/Visual Undo, a device-compliance drawer, final-cell Enter row creation, faster OSConfig recheck, corrected platform/status presentation, and streamlined onboarding/Benchmark Mapping |
+| **0.3.93-author.1** (current draft) | Restores complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77; PR #79 finalizes documentation and immutable-tag release tooling. The GitHub release remains unpublished. |
+| **0.3.92-author.1** | macOS author flavor patches the updater, packaging, PostCSS, and archive toolchains |
+| **0.3.91-author.1** | macOS author flavor shows stacked Test schema rules and enforces supported constraints on newly edited values |
+| **0.3.90-author.1** | macOS author flavor prevents Baseline Detail footer and multi-value table collisions |
+| **0.3.89-author.1** | macOS author flavor adds the full July workspace and Baseline Detail authoring revisions plus the zero-alert dependency baseline |
+| **0.3.87-author.1** | macOS author flavor removes the local `ImpersonateClient` manifest override while retaining shared minimum-version handling |
+| **0.3.86-author.1** | macOS author flavor includes current OSConfig-compatible `ImpersonateClient` YAML and shared minimum-version handling |
+| **0.3.85-author.1** | macOS author flavor keeps My Baselines rows behind the opaque sticky column header while scrolling |
+| **0.3.84-author.1** | macOS author flavor with exports limited to YAML, JSON, MOF, and CSV plus all high-severity development dependency advisories cleared |
+| **0.3.82-author.1** | macOS author flavor with clearer Baseline Detail identity and view-only feedback, top/bottom Add setting actions, Matrix baseline search, and the `js-yaml` 4.3.0 security patch |
+| **0.3.81-author.1** | macOS author flavor with first-class OSConfig CSV imports, fully labeled responsive Baseline Detail actions, author-only Recent Activity, spreadsheet editing, and full FR/DE/ES coverage |
+| **0.3.76-author.1** | macOS author flavor with author-only Recent Activity for registration/edit history, predictable namespace/display-name search in My Baselines, responsive Visual tables, spreadsheet editing shared by Baseline Detail and Register New Baseline, and full FR/DE/ES coverage |
 | **0.3.62 – 0.3.68** | Rebrand **ConfigForge Spark → ConfigForge**; vocabulary refresh (**Manifests → My Baselines**, **Library → Microsoft Baselines**, **Validation → Export Readiness**, **CIS Mapping → Benchmark Mapping**, *resource* → *setting*, **OSConfig vNext → Gen 2**); unsigned OSS release pipeline with `SHA256SUMS` + SBOM verification; MOF export targets the `Microsoft.OSConfig` module; Monaco overflow-widget dropdown root-cause fix; "Could not read" compliance bucket on baseline cards |
 | **0.3.54 – 0.3.61** | Localization rollout (FR / DE / ES) — five extraction waves, machine-translation + review tooling, `Intl` date/number/relative-time formatters, and length/overflow visual QA |
 | **0.3.45 – 0.3.53** | Benchmark (CIS) Mapping subtitle + Diff › CIS tab; real History change summaries + auto-scroll Compare; CIS fuzzy-matching tightening; Group resources expand inline in Visual Builder; Diff "Select baseline" dropdown stability (Monaco overflow fix) |

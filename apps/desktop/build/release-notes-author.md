@@ -1,20 +1,21 @@
-# ConfigForge Author 0.3.93-author.1 - macOS release draft
+# ConfigForge Author 0.3.93-author.1 - macOS
 
-> **Status: planned, not released.** No `mac-v0.3.93-author.1` tag or GitHub
-> release exists. PR [#75](https://github.com/Azure/ConfigForge/pull/75) is on
-> `mac-author-build` at `3086ef0`. PR
+> **Release state: draft and unpublished.** The
+> `mac-v0.3.93-author.1` GitHub release must remain a draft. PR
+> [#75](https://github.com/Azure/ConfigForge/pull/75) is on
+> `mac-author-build` at `3086ef0`; PR
 > [#76](https://github.com/Azure/ConfigForge/pull/76) is on `main` at
 > `278dad6`; PR [#77](https://github.com/Azure/ConfigForge/pull/77) ports that
-> complete series to `mac-author-build` at `aec0775`. Package metadata remains
-> at `0.3.92-author.1`. Create no tag or release until the exact
-> `0.3.93-author.1` candidate passes final validation.
+> complete series to `mac-author-build` at `aec0775`; and PR
+> [#79](https://github.com/Azure/ConfigForge/pull/79) supplies the final
+> documentation and tag-pinned release tooling.
 
-This planned release restores the macOS author flavor to the shared authoring
+This release restores the macOS author flavor to the shared authoring
 experience and completes nested multi-value keyboard editing. It remains
 author-only: device deployment, audit, enforcement, revert, elevation,
 OSConfig CLI health, and device audit-results storage are not included.
 
-## Planned authoring parity
+## Authoring parity
 
 - **Complete New Baseline setup:** create a blank Windows or Linux baseline,
   use a starter template, choose a Microsoft Baseline in place, load from a
@@ -44,10 +45,11 @@ macOS author line:
 - Invalid drafts retain focus and do not mutate the manifest.
 - Shift+Enter remains a newline for structured nested values.
 
-PR #77 reports 79 focused Manifest Editor tests, two isolated Playwright
-scenarios, lint with zero errors, a successful desktop build, and a clean
-production audit. The exact versioned candidate still requires the complete
-release gate before tagging.
+The final preparation tree passes 1,598 Vitest tests in 117 files, 79 focused
+Manifest Editor tests, both isolated Loop Playwright scenarios, lint with zero
+errors, full and author-flavor desktop builds, locale review with zero
+placeholder/glossary/plural issues, and a clean production audit. The
+tag-pinned macOS workflow is the final artifact gate.
 
 ## Included authoring capabilities
 
@@ -93,7 +95,7 @@ If that command reports a permission error, use:
 sudo xattr -rd com.apple.quarantine "/Applications/ConfigForge Author.app"
 ```
 
-## Expected candidate assets
+## Expected release assets
 
 The draft release must contain exactly these five assets after the packaging
 workflow succeeds:
@@ -108,8 +110,8 @@ Verify the DMG, blockmap, and update metadata against the SHA-256 manifest.
 
 ## Contributors
 
-Historical implementation attribution for PRs #75 through #77: @ABMFST and
-Copilot.
+Historical implementation attribution for PRs #75 through #77 and release
+documentation/tooling in PR #79: @ABMFST and Copilot.
 
 ## Reporting issues
 

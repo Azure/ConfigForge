@@ -17,17 +17,16 @@ The renderer is built with Vite and routes through a typed IPC bridge (`window.c
 
 The following snapshot is current through 2026-07-25:
 
-| Line | Head | State |
+| Line | Reference | State |
 |---|---|---|
 | `main` | `278dad6` (PR [#76](https://github.com/Azure/ConfigForge/pull/76)) | Full Windows/Linux line. Latest tag is `v0.3.92`; PR #76 adds complete nested multi-value keyboard navigation after that tag. |
-| `mac-author-build` | `aec0775` (PR [#77](https://github.com/Azure/ConfigForge/pull/77)) | Author-only macOS line. PR #75 restored shared authoring parity, and PR #77 ports the complete PR #76 navigation series. Latest tag is `mac-v0.3.92-author.1`. |
+| `mac-author-build` | `aec0775` (PR [#77](https://github.com/Azure/ConfigForge/pull/77)) | Author-only macOS parity base. PR #75 restored shared authoring parity, PR #77 ports the complete PR #76 navigation series, and PR [#79](https://github.com/Azure/ConfigForge/pull/79) supplies the final documentation and tag-pinned release tooling used by `0.3.93-author.1`. |
 
-The next planned macOS package version is `0.3.93-author.1`, but its tag,
-release, and final candidate commit remain **TBD**. PR #77 satisfied the source
-port gate, but package metadata remains at `0.3.92-author.1` and the exact
-release candidate still requires the full validation and packaging gates. Do
-not bump package metadata, create a tag, or publish a release based only on
-this plan.
+The current macOS package version is `0.3.93-author.1` in the root package,
+desktop package, and lockfile records. Its tag is
+`mac-v0.3.93-author.1`. The matching GitHub release is intentionally a draft
+and must remain unpublished unless a maintainer separately approves
+publication.
 
 ### Current feature inventory
 
@@ -117,8 +116,7 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
 - The macOS tag must resolve to the exact final validated commit on
   `mac-author-build`. `scripts/ship-mac.ps1` accepts only the `mac-v` form and
   defaults to `Azure/ConfigForge`.
-- The planned `0.3.93-author.1` candidate is expected to produce exactly these
-  draft-release assets:
+- The `0.3.93-author.1` draft release produces exactly these assets:
 
   | Asset | Exact name |
   |---|---|
@@ -440,10 +438,12 @@ When touching IPC contracts or `packages/core/src/handlers/`, exercise the chann
 - PR #77 at `aec0775` ported all five PR #76 commits and passed 79 focused
   Manifest Editor tests, two isolated Playwright scenarios, lint with 0
   errors, the desktop build, and a production audit with 0 vulnerabilities.
-- PR #75's full-suite count predates the PR #77 port. Before tagging
-  `mac-v0.3.93-author.1`, rerun and record every gate on the exact macOS
-  candidate, including current full-suite counts and the packaging workflow
-  run. Do not copy earlier counts forward.
+- The final `0.3.93-author.1` preparation tree passed 1,598 Vitest tests in
+  117 files, the 79 focused Manifest Editor tests, both isolated Loop
+  Playwright scenarios, lint with 0 errors, full and author-flavor desktop
+  builds, locale review with 0 placeholder/glossary/plural issues, and a
+  production audit with 0 vulnerabilities. The tag-pinned macOS packaging
+  workflow remains the final artifact gate.
 
 ---
 

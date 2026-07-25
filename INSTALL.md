@@ -8,9 +8,9 @@ ConfigForge has two editions:
   and Audit Pack export are available. Device Deploy, Audit, and Revert are
   intentionally omitted.
 
-The latest tagged Full-edition release is `v0.3.92`; the latest tagged macOS
-Author release is `mac-v0.3.92-author.1`. The next planned macOS Author
-version is `0.3.93-author.1`; its tag and release do not exist yet.
+The latest tagged Full-edition release is `v0.3.92`. The current macOS Author
+line is `0.3.93-author.1` with tag `mac-v0.3.93-author.1`; its GitHub release
+is intentionally a draft and is not published.
 
 ConfigForge does **not** bundle the OSConfig CLI. To use the Full edition's Deploy, Audit, or Revert features against a real Windows or Linux machine, install `oscfg` separately from its upstream source.
 
@@ -130,8 +130,8 @@ Download an existing macOS Author asset from the
 [Azure/ConfigForge releases](https://github.com/Azure/ConfigForge/releases).
 The source and build instructions are in the
 [Azure/ConfigForge repository](https://github.com/Azure/ConfigForge). The
-planned `0.3.93-author.1` release is not available until its tag and draft
-release are created.
+`0.3.93-author.1` assets are attached to the unpublished draft release for
+`mac-v0.3.93-author.1`.
 
 The app is unsigned and not notarized. Copy **ConfigForge Author.app** to
 `/Applications`, then clear the browser-added quarantine attribute once:

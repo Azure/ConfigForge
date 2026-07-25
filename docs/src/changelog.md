@@ -3,11 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
-## Unreleased - macOS Author 0.3.93-author.1-ready
+## macOS Author v0.3.93-author.1 — 2026-07-25
 
-`0.3.93-author.1` is a planned version. It has no package bump, tag, or GitHub
-release yet. PR #77 has completed the PR #76 source port; the exact release
-candidate still requires final full-suite and packaging validation.
+The `mac-v0.3.93-author.1` GitHub release is intentionally a draft and has not
+been published.
 
 - PR [#75](https://github.com/Azure/ConfigForge/pull/75) at `3086ef0`
   restores macOS parity for the five-source New Baseline setup, binary XLSX
@@ -27,6 +26,9 @@ candidate still requires final full-suite and packaging validation.
 - Thirty-one mirror-specific lockfile URLs are normalized to
   `registry.npmjs.org` without package-version or integrity changes so public
   restores do not depend on the optional Microsoft mirror.
+- PR [#79](https://github.com/Azure/ConfigForge/pull/79) at `3778319`
+  refreshes the current documentation, pins the macOS build to the supplied
+  immutable tag, and uses checksum commands available on macOS runners.
 
 ## v0.3.92-author.1 — 2026-07-24
 

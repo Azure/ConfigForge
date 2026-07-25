@@ -1,11 +1,9 @@
 # Changelog
 
-## [Unreleased] - 0.3.93-author.1-ready
+## [0.3.93-author.1] - 2026-07-25
 
-> `0.3.93-author.1` is planned, not released. No package version, tag, or
-> GitHub release has been created. PR #77 has ported PR #76 to
-> `mac-author-build`, but the exact macOS release candidate must still pass
-> its full validation and packaging gates before tagging.
+> The `mac-v0.3.93-author.1` GitHub release is intentionally a draft. This
+> entry does not indicate publication.
 
 ### Added
 
@@ -36,6 +34,11 @@
   tarball URLs back to `registry.npmjs.org` without changing package versions
   or integrity hashes; the Microsoft mirror remains an optional local restore
   fallback, not committed metadata.
+- **Finalized macOS release documentation and tooling.** PR
+  [#79](https://github.com/Azure/ConfigForge/pull/79), merged to `main` at
+  `3778319`, refreshes the current docs, validates `mac-v` tags, builds the
+  supplied immutable tag, and uses checksum commands available on macOS
+  runners.
 
 ## [0.3.92-author.1] - 2026-07-24
 
