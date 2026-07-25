@@ -671,6 +671,233 @@ describe("VisualManifestViewer", () => {
     ).toHaveFocus();
   });
 
+  it("uses Enter to commit and move down through nested multi-value items", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: Multi-value setting
+    type: Example/Category
+    properties:
+      priority:
+        - first
+        - second
+      details: right
+`,
+      onChange,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Edit Priority value 1 for Multi-value setting",
+      }),
+    );
+    const firstItem = screen.getByRole("textbox", {
+      name: "Edit Priority value 1 for Multi-value setting",
+    });
+    await user.clear(firstItem);
+    await user.type(firstItem, "updated{Enter}");
+
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Priority value 2 for Multi-value setting",
+      }),
+    ).toHaveFocus();
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const document = parseVisualManifest(onChange.mock.calls.at(-1)?.[0]) as {
+      resources: Array<{ properties: { priority: string[] } }>;
+    };
+    expect(document.resources[0].properties.priority).toEqual(["updated", "second"]);
+  });
+
+  it("uses Tab to commit a nested multi-value item and move right", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: Multi-value setting
+    type: Example/Category
+    properties:
+      priority:
+        - first
+        - second
+      details: right
+`,
+      onChange,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Edit Priority value 1 for Multi-value setting",
+      }),
+    );
+    const firstItem = screen.getByRole("textbox", {
+      name: "Edit Priority value 1 for Multi-value setting",
+    });
+    await user.clear(firstItem);
+    await user.type(firstItem, "updated{Tab}");
+
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Details for Multi-value setting",
+      }),
+    ).toHaveFocus();
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const document = parseVisualManifest(onChange.mock.calls.at(-1)?.[0]) as {
+      resources: Array<{ properties: { priority: string[] } }>;
+    };
+    expect(document.resources[0].properties.priority).toEqual(["updated", "second"]);
+  });
+
+  it("appends and focuses an empty array when spreadsheet navigation reaches it", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: Empty multi-value setting
+    type: Example/Category
+    properties:
+      priority: []
+      details: right
+`,
+      onChange,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Edit Setting Name for Empty multi-value setting",
+      }),
+    );
+    const nameInput = screen.getByRole("textbox", {
+      name: "Edit Setting Name for Empty multi-value setting",
+    });
+    await user.clear(nameInput);
+    await user.type(nameInput, "Renamed{Tab}");
+
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Priority value 1 for Renamed",
+      }),
+    ).toHaveFocus();
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const document = parseVisualManifest(onChange.mock.calls[0][0]) as {
+      resources: Array<{ name: string; properties: { priority: string[] } }>;
+    };
+    expect(document.resources[0]).toMatchObject({
+      name: "Renamed",
+      properties: { priority: [""] },
+    });
+  });
+
+  it("keeps an invalid nested draft active instead of navigating", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: Typed values
+    type: Example/Typed
+    properties:
+      values:
+        - true
+        - false
+      details: right
+`,
+      onChange,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Edit Values value 1 for Typed values",
+      }),
+    );
+    const firstItem = screen.getByRole("textbox", {
+      name: "Edit Values value 1 for Typed values",
+    });
+    await user.clear(firstItem);
+    await user.type(firstItem, "sometimes{Enter}");
+
+    expect(screen.getByRole("alert")).toHaveTextContent("Enter true or false.");
+    expect(firstItem).toHaveFocus();
+    await user.keyboard("{Tab}");
+    expect(firstItem).toHaveFocus();
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
+  it("appends and focuses a nested item when Enter reaches the final item", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: Multi-value setting
+    type: Example/Category
+    properties:
+      priority:
+        - first
+        - second
+      details: right
+`,
+      onChange,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Edit Priority value 2 for Multi-value setting",
+      }),
+    );
+    const finalItem = screen.getByRole("textbox", {
+      name: "Edit Priority value 2 for Multi-value setting",
+    });
+    await user.clear(finalItem);
+    await user.type(finalItem, "updated{Enter}");
+
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Priority value 3 for Multi-value setting",
+      }),
+    ).toHaveFocus();
+    expect(onChange).toHaveBeenCalledTimes(1);
+    const document = parseVisualManifest(onChange.mock.calls[0][0]) as {
+      resources: Array<{ properties: { priority: string[] } }>;
+    };
+    expect(document.resources[0].properties.priority).toEqual(["first", "updated", ""]);
+  });
+
+  it("preserves Shift+Enter newlines in structured nested items", async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    renderEditable(
+      `resources:
+  - name: Structured values
+    type: Example/Category
+    properties:
+      details:
+        - enabled: true
+          paths:
+            - C:\\One
+`,
+      onChange,
+    );
+
+    await user.click(
+      screen.getByRole("button", {
+        name: "Edit Details value 1 for Structured values",
+      }),
+    );
+    const structuredItem = screen.getByRole("textbox", {
+      name: "Edit Details value 1 for Structured values",
+    });
+    const initialDraft = (structuredItem as HTMLTextAreaElement).value;
+    (structuredItem as HTMLTextAreaElement).setSelectionRange(
+      initialDraft.length,
+      initialDraft.length,
+    );
+    await user.keyboard("{Shift>}{Enter}{/Shift}");
+
+    expect(structuredItem).toHaveFocus();
+    expect(structuredItem).toHaveValue(`${initialDraft}\n`);
+    expect(onChange).not.toHaveBeenCalled();
+  });
+
   it("renders multi-value attributes as nested independently editable rows", async () => {
     const user = userEvent.setup();
     const onChange = vi.fn();
@@ -707,6 +934,12 @@ describe("VisualManifestViewer", () => {
     await user.clear(nestedInput);
     await user.type(nestedInput, "CONTOSO\\Tier 0 Admins{Enter}");
     expect(screen.getAllByText("CONTOSO\\Tier 0 Admins").length).toBeGreaterThan(0);
+    expect(
+      await screen.findByRole("textbox", {
+        name: "Edit Applied value value 3 for Remote registry paths",
+      }),
+    ).toHaveFocus();
+    await user.keyboard("{Escape}");
 
     await user.click(
       screen.getByRole("button", {
@@ -715,7 +948,7 @@ describe("VisualManifestViewer", () => {
     );
     expect(
       await screen.findByRole("textbox", {
-        name: "Edit Applied value value 3 for Remote registry paths",
+        name: "Edit Applied value value 4 for Remote registry paths",
       }),
     ).toHaveFocus();
     expect(onChange).toHaveBeenCalled();
