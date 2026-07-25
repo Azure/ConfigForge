@@ -15,19 +15,22 @@ The renderer is built with Vite and routes through a typed IPC bridge (`window.c
 
 ### Current repository snapshot
 
-The following snapshot is current through 2026-07-25:
+The following release references were verified on 2026-07-25:
 
-| Line | Head | State |
+| Line | Reference | State |
 |---|---|---|
-| `main` | `278dad6` (PR [#76](https://github.com/Azure/ConfigForge/pull/76)) | Full Windows/Linux line. Latest tag is `v0.3.92`; PR #76 adds complete nested multi-value keyboard navigation after that tag. |
-| `mac-author-build` | `aec0775` (PR [#77](https://github.com/Azure/ConfigForge/pull/77)) | Author-only macOS line. PR #75 restored shared authoring parity, and PR #77 ports the complete PR #76 navigation series. Latest tag is `mac-v0.3.92-author.1`. |
+| `main` | `3778319` (PR [#79](https://github.com/Azure/ConfigForge/pull/79)) | Full Windows/Linux line. Latest tag and package version are `v0.3.92` and `0.3.92`. PR #79 adds the reviewed, tag-pinned macOS release tooling after that tag. |
+| `mac-author-build` | `099be06` (PR [#80](https://github.com/Azure/ConfigForge/pull/80)) | Current author-only macOS head and target of annotated tag `mac-v0.3.93-author.1`. The matching GitHub release exists with five verified assets, but it is a draft and is unpublished. |
 
-The next planned macOS package version is `0.3.93-author.1`, but its tag,
-release, and final candidate commit remain **TBD**. PR #77 satisfied the source
-port gate, but package metadata remains at `0.3.92-author.1` and the exact
-release candidate still requires the full validation and packaging gates. Do
-not bump package metadata, create a tag, or publish a release based only on
-this plan.
+On `mac-author-build`, the root package, desktop package, and lockfile records
+use `0.3.93-author.1`. The annotated `mac-v0.3.93-author.1` tag resolves to
+`099be065e895a2bb3fb62b2ab345cb6a46ba43a9`, which is also the current macOS
+branch head. The matching GitHub release is intentionally a draft and must
+remain unpublished unless a maintainer separately approves publication.
+Workflow run
+[#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
+completed successfully and verified all five assets. The package versions on
+`main` remain `0.3.92`; do not copy macOS package metadata to `main`.
 
 ### Current feature inventory
 
@@ -117,8 +120,8 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
 - The macOS tag must resolve to the exact final validated commit on
   `mac-author-build`. `scripts/ship-mac.ps1` accepts only the `mac-v` form and
   defaults to `Azure/ConfigForge`.
-- The planned `0.3.93-author.1` candidate is expected to produce exactly these
-  draft-release assets:
+- The existing `0.3.93-author.1` draft release contains exactly these verified
+  assets:
 
   | Asset | Exact name |
   |---|---|
@@ -440,10 +443,17 @@ When touching IPC contracts or `packages/core/src/handlers/`, exercise the chann
 - PR #77 at `aec0775` ported all five PR #76 commits and passed 79 focused
   Manifest Editor tests, two isolated Playwright scenarios, lint with 0
   errors, the desktop build, and a production audit with 0 vulnerabilities.
-- PR #75's full-suite count predates the PR #77 port. Before tagging
-  `mac-v0.3.93-author.1`, rerun and record every gate on the exact macOS
-  candidate, including current full-suite counts and the packaging workflow
-  run. Do not copy earlier counts forward.
+- The final `0.3.93-author.1` preparation tree passed 1,598 Vitest tests in
+  117 files, the 79 focused Manifest Editor tests, both isolated Loop
+  Playwright scenarios, lint with 0 errors, full and author-flavor desktop
+  builds, locale review with 0 placeholder/glossary/plural issues, and a
+  production audit with 0 vulnerabilities.
+- Annotated tag `mac-v0.3.93-author.1` and `mac-author-build` both resolve to
+  merge `099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. Tag-pinned workflow run
+  [#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
+  passed the install, production audit, build, SBOM, checksum, and upload
+  gates and verified the five expected assets. The GitHub release remains a
+  draft and is unpublished.
 
 ---
 

@@ -8,8 +8,12 @@ Benchmark Mapping, history, rationale, and Audit Pack export while omitting
 device operations. The native `oscfg` CLI is **not bundled** and is **not
 required** for authoring in either edition.
 
-The latest tagged Full-edition release is `v0.3.92`. The planned macOS
-`0.3.93-author.1` version has not been tagged or released.
+The latest tagged Full-edition release is `v0.3.92`. The current macOS Author
+line is `0.3.93-author.1` with annotated tag
+`mac-v0.3.93-author.1`. Its GitHub release exists with five verified assets
+but remains a draft and is unpublished. Public downloads are unavailable
+until a maintainer publishes it. The package version on `main` remains
+`0.3.92`.
 
 ## Prerequisites
 
@@ -26,9 +30,11 @@ git clone https://github.com/Azure/ConfigForge.git
 cd ConfigForge
 ```
 
-> **Note:** `main` is the active Windows/Linux Full-edition line. Use a
-> packaged macOS Author build on an Apple Silicon Mac (M1 or later). Intel
-> Macs and universal binaries are not supported.
+> **Note:** `main` is the active Windows/Linux Full-edition line. On an Apple
+> Silicon Mac (M1 or later), maintainers with draft-release access can use the
+> verified package; other users can build the `mac-v0.3.93-author.1` tag from
+> source while the release remains unpublished. Intel Macs and universal
+> binaries are not supported.
 > Because macOS builds are not signed yet, clear quarantine after
 > copying the app into Applications:
 >

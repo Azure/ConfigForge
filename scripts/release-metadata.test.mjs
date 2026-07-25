@@ -38,6 +38,8 @@ describe('public release metadata', () => {
       /publish:\s*\n\s+provider:\s+github\s*\n\s+owner:\s+Azure\s*\n\s+repo:\s+ConfigForge/m,
     );
     expect(builder).not.toContain('owner: ABMFST');
+    expect(builder).toContain('arch: [arm64]');
+    expect(builder).not.toContain('Rosetta');
   });
 
   it('builds mac author artifacts from an explicit immutable tag', async () => {

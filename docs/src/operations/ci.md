@@ -28,7 +28,8 @@ Test counts change as features land. Use the current `npm test` summary as the
 authority. For reference, macOS parity PR #75 passed 1,584 Vitest tests in 117
 files; main PR #76 then passed its full suite plus 32 focused nested-navigation
 tests. Mac port PR #77 passed 79 focused tests and two isolated Playwright
-scenarios. Run the full suite again on the exact release candidate.
+scenarios. The final `0.3.93-author.1` preparation tree passed 1,598 Vitest
+tests in 117 files, and its tag-pinned packaging run completed successfully.
 
 Caching covers npm, Electron binaries, electron-builder, and Playwright browser downloads. Concurrency cancels stale PR runs on the same branch.
 
@@ -76,6 +77,10 @@ It uploads exactly these assets:
 5. `SHA256SUMS-macos-author.txt`
 
 The workflow refuses a published release and never publishes automatically.
+For `mac-v0.3.93-author.1`, workflow run
+[#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
+passed every gate and verified these five assets. The matching GitHub release
+exists but remains a draft and is unpublished.
 
 ## Linux runner notes
 
