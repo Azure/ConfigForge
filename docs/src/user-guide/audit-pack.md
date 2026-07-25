@@ -10,7 +10,7 @@
 >
 > Both the PDF and the Markdown emitter pass user-supplied and
 > AI-generated content through the
-> [`packages/core/src/markdown/escape.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/markdown/escape.ts)
+> [`packages/core/src/markdown/escape.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/markdown/escape.ts)
 > guard (CF-SEC-005 / CF-SEC-006), so HTML / Markdown injection
 > embedded in a manifest name, rationale entry, or AI suggestion is
 > rendered as literal text.
@@ -39,7 +39,7 @@ flow). PDFs come back as `application/pdf`; Markdown as
 ## What's in it (PDF)
 
 The PDF builder lives in
-[`packages/core/src/audit-pack/`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/audit-pack/index.ts).
+[`packages/core/src/audit-pack/`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/audit-pack/index.ts).
 The PDF is assembled in this fixed order:
 
 | # | Section | Source data | Behaviour without source |
@@ -114,6 +114,6 @@ this rather than parse the binary.
 ## See also
 
 - [API Reference → Audit-pack](../api-reference/audit-pack.md)
-- [User Guide > CIS Mapping](./cis-compliance.md)
+- [User Guide > Benchmark Mapping](./cis-compliance.md)
 - [User Guide → Rationale](./rationale.md)
 - [User Guide → AI provenance](./ai-provenance.md)

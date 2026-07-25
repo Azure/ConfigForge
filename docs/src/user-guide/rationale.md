@@ -122,10 +122,10 @@ the request / response shapes.
 
 ## Full log page
 
-Navigate to **Manifests → click a manifest → Rationale** (the
+Navigate to **My Baselines → click a baseline → Rationale** (the
 **View all →** link in the editor sidebar lands here too). The full
 log page lives at
-[`apps/desktop/src/pages/ManifestRationale.tsx`](https://github.com/ABMFST/ConfigForge/blob/main/apps/desktop/src/pages/ManifestRationale.tsx)
+[`apps/desktop/src/pages/ManifestRationale.tsx`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/src/pages/ManifestRationale.tsx)
 and shows every entry across all resources, with:
 
 - A search filter over resource / author / reason text.

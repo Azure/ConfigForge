@@ -101,7 +101,7 @@ type CisStatus = {
 };
 ```
 
-Library + ManifestEditor pages already gate off this signal.
+The `Library` (Microsoft Baselines) and `ManifestEditor` pages already gate off this signal.
 
 ## See also
 
@@ -111,7 +111,7 @@ Library + ManifestEditor pages already gate off this signal.
 
 ## `cfs.cis.recheck()` - channel `cfs:cis:recheck`
 
-> **Added in v0.3.2.** Force-refreshes all CIS data caches (status + global mappings) without an app restart. Pairs with the CIS Mapping page's "Re-check" button.
+> **Added in v0.3.2.** Force-refreshes all CIS data caches (status + global mappings) without an app restart. Pairs with the Benchmark Mapping page's **Re-check catalog** button.
 
 ## `cfs.cis.revealDataDir()` - channel `cfs:cis:reveal-data-dir`
 

@@ -15,8 +15,8 @@ YAML *or* a structured form, validates as you type, and persists to
 
 ## Open
 
-- New manifest: **Manifests → Register New** in the side nav.
-- Existing manifest: **Manifests → click any namespace** in the list,
+- New baseline: **My Baselines → Register New** in the side nav.
+- Existing baseline: **My Baselines → click any namespace** in the list,
   then **Edit**.
 
 ## What it does
@@ -25,11 +25,11 @@ YAML *or* a structured form, validates as you type, and persists to
   form side. Both sides update each other (the YAML view is the source
   of truth on save).
 - Resource-type pickers populated from
-  [`registered-types.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts).
+  [`registered-types.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts).
   Aspirational types (in baselines but not yet supported by the target
   CLI) show with a warning chip.
 - A CIS rule cross-reference drawer. When CIS data is available
-  locally (see [CIS Mapping](./cis-compliance.md) for how to enable),
+  locally (see [Benchmark Mapping](./cis-compliance.md) for how to enable),
   the drawer shows the matching rule's ID, severity, and GPO path
   next to the resource at the cursor. Matches are resolved from
   Azure Policy JSON or XCCDF+OVAL data (not only the legacy

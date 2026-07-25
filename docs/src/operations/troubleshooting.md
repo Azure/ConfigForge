@@ -50,7 +50,7 @@ mentioning `"Unsupported resource type: <type>"`.
 
 Cause: the type appears in the manifest but isn't in the registered
 whitelist for the targeted `oscfg` build. The whitelist lives at
-[`packages/core/src/oscfg/registered-types.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts)
+[`packages/core/src/oscfg/registered-types.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts)
 keyed by `OSCFG_CLI_VERSION`.
 
 Fix: this is intentional graceful degradation - the rest of the
@@ -88,7 +88,7 @@ other settings, try a dedicated provider (`Microsoft.Windows/Registry`,
 
 ## "Manifest registers but fast list misses it"
 
-Symptom: the Manifests list doesn't show the namespace immediately
+Symptom: the My Baselines list doesn't show the namespace immediately
 after registration.
 
 Cause: an in-flight list cache served stale data.
@@ -137,7 +137,7 @@ Symptom: the CIS cross-reference drawer or **Diff → CIS Diff** table shows no 
 
 Cause: CIS data files are not detected, or the current manifest does not overlap the supplied benchmark. The app resolves the CIS data directory at runtime and scans for Azure Policy JSON and XCCDF files.
 
-Fix: open the **CIS Mapping** page from the sidebar. It shows detected files and the resolved data directory path for the current install. Drop Azure Policy JSON or XCCDF files into that directory and click **Re-check**. Re-check clears the backend and renderer availability caches, so newly added data should appear without restarting.
+Fix: open **Benchmark Mapping** from the sidebar. It shows detected files and the resolved data directory path for the current install. Drop Azure Policy JSON or XCCDF files into that directory and click **Re-check catalog**. Re-check clears the backend and renderer availability caches, so newly added data should appear without restarting.
 
 ## "Deploy was interrupted - recovery banner"
 

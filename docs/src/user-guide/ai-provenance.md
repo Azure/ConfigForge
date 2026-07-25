@@ -62,7 +62,7 @@ low confidence / advisory only.
 
 | `kind` | Meaning | Typical URL |
 | --- | --- | --- |
-| `CIS` | A CIS Benchmark rule (looked up in user-supplied catalog data. See [CIS Mapping](./cis-compliance.md)). | CIS website permalink. |
+| `CIS` | A CIS Benchmark rule (looked up in user-supplied catalog data. See [Benchmark Mapping](./cis-compliance.md)). | CIS website permalink. |
 | `NIST` | A NIST 800-53 / 800-171 control. | NIST CSRC permalink. |
 | `MSDocs` | learn.microsoft.com article. | Direct link. |
 | `GPO` | Group Policy Object documentation. | learn.microsoft.com permalink. |
@@ -77,7 +77,7 @@ tracking links collapse to one.
 ## Circular-reference guard
 
 The guard lives in
-[`packages/core/src/ai/circular-guard.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/ai/circular-guard.ts).
+[`packages/core/src/ai/circular-guard.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/ai/circular-guard.ts).
 We tag every AI-generated comment block with:
 
 ```yaml

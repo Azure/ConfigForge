@@ -6,7 +6,7 @@
 > [`release-mac.yml`](../../.github/workflows/release-mac.yml), and
 > [`docs.yml`](../../.github/workflows/docs.yml).
 > This doc explains what they do, what triggers them, and how to cut a
-> release. Current for v0.3.48, including v0.2.1 supply-chain hardening. Release artifacts are unsigned by design (no code signing in CI).
+> release. Release artifacts are unsigned by design (no code signing in CI).
 
 ## Trigger scope
 
@@ -14,7 +14,7 @@
 |---|---|
 | `pr-check.yml` | PRs into `main`; pushes to `main`; manual dispatch. `mac-author-build` is `workflow_dispatch`-only — trigger manually with `gh workflow run "PR check" --ref mac-author-build`. |
 | `release.yml` | Clean tag push matching `v*.*.*` with no suffix; manual dispatch with version input. Builds Windows + Linux Full edition artifacts. |
-| `release-mac.yml` | Manual dispatch only from `mac-author-build`; attaches unsigned macOS Author `.dmg` artifacts to an existing draft release. |
+| `release-mac.yml` | Manual dispatch of the protected `main` workflow definition with an existing `mac-vX.Y.Z-author.N` tag; checks out that supplied tag and attaches five unsigned macOS Author assets to its existing draft release. |
 | `docs.yml` | Pushes touching `docs/**` on `main`; manual dispatch. Publishes the mdbook site to GitHub Pages. |
 
 The legacy `.github/workflows/ci.yml` (tested the now-deleted Next.js tree) was removed in the Phase 10 cutover commit.
@@ -53,7 +53,7 @@ The legacy `.github/workflows/ci.yml` (tested the now-deleted Next.js tree) was 
 
 Both jobs publish artifacts to a GitHub Release as a **draft** so a human reviews before publishing.
 
-### Hardened release pipeline (current through v0.3.48)
+### Hardened release pipeline
 
 The release workflow steps now include, in order:
 
@@ -72,24 +72,32 @@ The release workflow steps now include, in order:
 
 ## Cutting a release
 
-1. **Pick a version** following semver. Current line: 0.3.48.
+1. **Pick a version** following semver. Set and validate it once in the shell;
+   the empty default makes copying these commands fail safely:
+   ```bash
+   VERSION=''
+   [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || {
+     echo 'Set VERSION to X.Y.Z before continuing.'
+     exit 1
+   }
+   ```
 2. **Bump the version in the workspace package.jsons:**
    ```bash
-   npm version 0.3.48 --no-git-tag-version
-   npm version 0.3.48 --no-git-tag-version -w @configforge/desktop
-   npm version 0.3.48 --no-git-tag-version -w @configforge/core
+   npm version "$VERSION" --no-git-tag-version
+   npm version "$VERSION" --no-git-tag-version -w @configforge/desktop
+   npm version "$VERSION" --no-git-tag-version -w @configforge/core
    ```
    Verify: `grep -r '"version"' package.json apps/desktop/package.json packages/core/package.json`.
 3. **Commit and push:**
    ```bash
    git add -A
-   git commit -m "chore: bump version to 0.3.48"
+   git commit -m "chore: bump version to $VERSION"
    git push
    ```
 4. **Tag and push the tag:**
    ```bash
-   git tag v0.3.48
-   git push origin v0.3.48
+   git tag "v$VERSION"
+   git push origin "v$VERSION"
    ```
    Clean `v*.*.*` tags are the canonical Win/Linux release trigger.
 5. **Watch the workflow** in the Actions tab. Both Full-edition build jobs should complete within the 30 min budget.
@@ -131,7 +139,5 @@ Per release (includes audit gate + SBOM generation):
 ## Future work
 
 - **`format:check` CI gate** — Prettier is installed (v0.2.1) but not gated in CI. Adding `npm run format:check` to `pr-check.yml` is a one-line follow-up once the codebase is consistently formatted.
-- **electron-updater** — auto-update via GitHub Releases. The workflow already produces the `latest*.yml` files electron-updater needs; just need to wire the renderer. (Note: Windows auto-update requires signed installers, which this project does not produce.)
 - **Coverage reporting** — vitest can output lcov; would add a Codecov / Coveralls step after lint passes. Skipped to keep the PR check matrix minimal.
 - **Visual regression** — Playwright traces could feed a pixel-diff workflow. Visual parity is human-checked during PR review for now.
-

@@ -91,7 +91,7 @@ flowchart TD
 
 ## CIS lookup flow
 
-The CIS Mapping page and CIS Diff tab resolve manifest resources against user-supplied CIS data. XCCDF is preferred when available for full-standard coverage; Azure Policy JSON is a supported fallback/source.
+The Benchmark Mapping page and CIS Diff tab resolve baseline settings against user-supplied CIS data. XCCDF is preferred when available for full-standard coverage; Azure Policy JSON is a supported fallback/source.
 
 ```mermaid
 flowchart TD

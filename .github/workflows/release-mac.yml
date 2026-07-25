@@ -9,8 +9,9 @@ name: Release (macOS author)
 #   3. The tag pattern is `mac-v*` so it doesn't accidentally trigger
 #      release.yml (which builds Win/Linux from `v*.*.*` tags).
 #
-# Trigger: workflow_dispatch only. Run from the Actions tab → "Release (macOS author)" → Run workflow,
-# or via gh CLI: `gh workflow run "Release (macOS author)" --ref mac-author-build -f release_tag=mac-v0.2.1-author.1`
+# Trigger: workflow_dispatch only. Run the workflow definition from protected `main`;
+# the checkout step below switches to and verifies the supplied immutable mac tag.
+# CLI: `gh workflow run "Release (macOS author)" --ref main -f release_tag=mac-v0.3.93-author.1`
 #
 # Build cost estimate: ~15-20 min wall-clock on macos-latest → ~150-200 ubuntu-equivalent minutes
 # (macos-latest carries a 10x billing multiplier vs ubuntu-latest).
@@ -19,10 +20,9 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Existing release tag to attach the .dmg to (e.g. mac-v0.2.2-author.1). The release must already exist as a draft.'
+        description: 'Existing mac-vX.Y.Z-author.N tag to build. The matching release must already exist as a draft.'
         required: true
         type: string
-        default: 'mac-v0.2.8-author.1'
 
 permissions:
   contents: write
@@ -38,6 +38,23 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.release_tag }}
+          fetch-depth: 0
+
+      - name: Verify release tag checkout
+        shell: bash
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: |
+          set -euo pipefail
+          if [[ ! "$RELEASE_TAG" =~ ^mac-v[0-9]+\.[0-9]+\.[0-9]+-author\.[0-9]+$ ]]; then
+            echo "::error::release_tag must match mac-vX.Y.Z-author.N"
+            exit 1
+          fi
+          tag_commit="$(git rev-list -n 1 "$RELEASE_TAG")"
+          test -n "$tag_commit"
+          test "$(git rev-parse HEAD)" = "$tag_commit"
 
       - uses: actions/setup-node@v4
         with:
@@ -97,27 +114,35 @@ jobs:
         working-directory: apps/desktop/release
         run: |
           set -euo pipefail
-          find . -maxdepth 2 -type f \( \
-              -name '*.dmg' -o -name '*.dmg.blockmap' \
-              -o -name 'latest-mac.yml' \
-            \) ! -name 'SHA256SUMS*.txt' -print0 \
-            | sort -z \
-            | xargs -0 -I{} sh -c 'sha256sum "$1"' _ {} \
-            | sed 's|  \./|  |' > SHA256SUMS-macos-author.txt
+          while IFS= read -r file; do
+            printf '%s  %s\n' \
+              "$(shasum -a 256 "$file" | awk '{print $1}')" \
+              "$(basename "$file")"
+          done < <(
+            find . -maxdepth 2 -type f \( \
+                -name '*.dmg' -o -name '*.dmg.blockmap' \
+                -o -name 'latest-mac.yml' \
+              \) ! -name 'SHA256SUMS*.txt' -print \
+              | LC_ALL=C sort
+          ) > SHA256SUMS-macos-author.txt
           cat SHA256SUMS-macos-author.txt
 
-      # Attach to the existing draft release (e.g. mac-v0.2.1-author.1).
+      # Attach to the existing draft release (e.g. mac-v0.3.93-author.1).
       # `--clobber` overwrites if a re-run uploads the same filename.
       - name: Upload artifacts to draft release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          TAG: ${{ github.event.inputs.release_tag }}
+          TAG: ${{ inputs.release_tag }}
         run: |
           set -euo pipefail
-          # Verify the release exists. We won't auto-create — if the
-          # operator typed the wrong tag, surface that loudly.
-          if ! gh release view "$TAG" >/dev/null 2>&1; then
-            echo "::error::Release '$TAG' does not exist. Create it as a draft first (gh release create $TAG --draft --target mac-author-build)."
+          # Verify the release exists and is still a draft. We never
+          # create or publish a release from this workflow.
+          if ! draft="$(gh release view "$TAG" --json isDraft --jq .isDraft 2>/dev/null)"; then
+            echo "::error::Release '$TAG' does not exist. Create it as a draft first (gh release create $TAG --draft --verify-tag)."
+            exit 1
+          fi
+          if [[ "$draft" != "true" ]]; then
+            echo "::error::Release '$TAG' is published. Refusing to replace its assets."
             exit 1
           fi
           cd apps/desktop/release
@@ -130,11 +155,35 @@ jobs:
             -o -name 'SHA256SUMS-macos-author.txt' \
             -o -name 'sbom-macos-author.cdx.json' \
           \) -print0)
-          if [[ ${#assets[@]} -eq 0 ]]; then
-            echo "::error::No artifacts found to upload."
-            ls -la
+          if [[ ${#assets[@]} -ne 5 ]]; then
+            echo "::error::Expected exactly 5 macOS author assets; found ${#assets[@]}."
+            find . -maxdepth 2 -type f -print
             exit 1
           fi
+          version="${TAG#mac-v}"
+          expected=(
+            "ConfigForge-Author-${version}-mac-arm64.dmg"
+            "ConfigForge-Author-${version}-mac-arm64.dmg.blockmap"
+            "latest-mac.yml"
+            "sbom-macos-author.cdx.json"
+            "SHA256SUMS-macos-author.txt"
+          )
+          found=()
+          for asset in "${assets[@]}"; do found+=("$(basename "$asset")"); done
+          for name in "${expected[@]}"; do
+            present=false
+            for candidate in "${found[@]}"; do
+              if [[ "$candidate" == "$name" ]]; then
+                present=true
+                break
+              fi
+            done
+            if [[ "$present" != "true" ]]; then
+              echo "::error::Missing expected asset: $name"
+              printf 'Found: %s\n' "${found[@]}"
+              exit 1
+            fi
+          done
           echo "[release-mac] uploading ${#assets[@]} files to $TAG"
           printf '  %s\n' "${assets[@]}"
           gh release upload "$TAG" "${assets[@]}" --clobber

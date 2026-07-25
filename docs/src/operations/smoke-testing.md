@@ -23,14 +23,14 @@ There is no HTTP API - every step is driven through the Electron UI.
 | Step | Where | What to check |
 | --- | --- | --- |
 | **1. Health pill** | Footer | 🟢 **OSConfig CLI v1.3.9-preview11**. Click → opens Settings → System Health. Confirm admin status `true` and binary `source` is one of `installed` / `path` / `env` / `msix`. |
-| **2. Library** | Sidebar → Library | Catalog renders, **Use as Template** button works on at least one baseline (e.g. Windows Server 2025 Member). |
-| **3. ManifestNew** | Manifests → New | Paste the [first-manifest example](../quick-start/first-manifest.md). Register succeeds with `warnings: []`. The fast list (Manifests page) shows it without a CLI spawn - toggle Refresh repeatedly to exercise `listTokenRef`. |
-| **4. ManifestEditor** | Manifests → click your new namespace | YAML / JSON / Visual tabs all render the same content. Edit a property, save, history snapshot appears. |
+| **2. Microsoft Baselines** | Sidebar → Microsoft Baselines | Catalog renders, **Use as Template** button works on at least one baseline (e.g. Windows Server 2025 Member). |
+| **3. New Baseline** | My Baselines → Register New | Paste the [first-manifest example](../quick-start/first-manifest.md). Register succeeds with `warnings: []`. The fast My Baselines list shows it without a CLI spawn - toggle Refresh repeatedly to exercise `listTokenRef`. |
+| **4. Baseline editor** | My Baselines → click your new namespace | YAML / JSON / Visual tabs all render the same content. Edit a property, save, history snapshot appears. |
 | **5. Audit (read-only)** | ManifestEditor → Deploy → Audit | Returns 200 with `compliance` populated. On Windows still requires admin (preview-CLI log-file bug). |
 | **6. Enforce** | ManifestEditor → Deploy → Enforce | Returns 200 with `result: 'applied'`. Cross-check with `oscfg get resource -n smoke-registry` from a separate elevated shell. |
-| **7. Diff** | Sidebar → Diff | Pick two registered manifests (e.g. your new one + a Library baseline). Pairwise diff and the master matrix both render; column filters work. |
+| **7. Diff** | Sidebar → Diff | Pick two registered baselines (e.g. your new one + a Microsoft Baseline). Pairwise diff and the master matrix both render; column filters work. |
 
-Tear-down: open Manifests, multi-select your smoke namespaces, click
+Tear-down: open My Baselines, multi-select your smoke namespaces, click
 **Delete**.
 
 > **Tip:** Run the renderer with the Chromium DevTools (View →
@@ -63,7 +63,7 @@ Tear-down: open Manifests, multi-select your smoke namespaces, click
 The translated CLI errors cover the common ones; the raw CLI output
 is always preserved in the IPC response for debugging.
 
-## CIS Mapping and CIS Diff smoke
+## Benchmark Mapping and CIS Diff smoke
 
 CIS features are gated on user-supplied CIS data files. To exercise them:
 
@@ -71,9 +71,9 @@ CIS features are gated on user-supplied CIS data files. To exercise them:
    In dev mode the path is `public/_baselines/cis/_data/` (gitignored -
    they're not redistributable from this repo); in a packaged install
    it resolves to a path under the app's resources directory. The
-   **CIS Mapping** page in the app shows the resolved path. See
-   [CIS Mapping](../user-guide/cis-compliance.md) for the expected layout.
-2. Click **Re-check** on the CIS Mapping page. The renderer cache is
+   **Benchmark Mapping** page in the app shows the resolved path. See
+   [Benchmark Mapping](../user-guide/cis-compliance.md) for the expected layout.
+2. Click **Re-check catalog** on the Benchmark Mapping page. The renderer cache is
    invalidated, so a full app restart should not be required.
 3. Open **Diff → CIS Diff**, pick a registered manifest, and click
    **Compare**. The table should show mapped/unmapped rows and a

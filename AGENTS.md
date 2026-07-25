@@ -9,11 +9,60 @@ Instructions for AI coding agents (GitHub Copilot CLI, Claude Code, Cursor, etc.
 ConfigForge is an Electron 42 + React 18 + FluentUI v9 desktop app for authoring, validating, comparing, and (when the CLI is installed) deploying / auditing OSConfig security baseline manifests. **Two parallel flavors:**
 
 - **`main` branch** — Windows + Linux full build with deploy, elevation, health probe, audit-results store.
-- **`mac-author-build` branch** — macOS author-only flavor. Deploy / elevation / health / auditResults preload namespaces are intentionally omitted; renderer code paths that need them must use `safeCfs()` / `hasCfsNamespace()` guards (CF-SEC-015).
+- **`mac-author-build` branch** — macOS author-only flavor. It includes authoring, validation, Microsoft Baselines, Diff, Benchmark Mapping, history, rationale, and Audit Pack export. It excludes device operations and their preload namespaces.
 
 The renderer is built with Vite and routes through a typed IPC bridge (`window.cfs.*`) to a Node main process. The same pure handlers in `packages/core/src/handlers/` power Electron IPC; the Next.js host was retired in Phase 10. Any reference to `src/app/api/` or `Microsoft.OSConfig` PowerShell modules in older commits is **historical**.
 
-**v0.3.76-author.1 (current dev line):** Author flavor of v0.3.76 with author-only Recent Activity, predictable baseline-name search, and full localization. BYO-CLI + page split + hardened security still apply. New since v0.2.1: full CIS data integration (XCCDF + OVAL + Azure Policy JSON, all user-supplied per licensing — see `apps/desktop/src/pages/CisCatalog.tsx`), spreadsheet-style visual editing covering Test wrappers + Group resources for all WS2019/2022/2025 + Linux baselines, CSP-aware Azure Policy fuzzy matcher, Linux-aware fuzzy matcher with cross-format normalization, diff-page value canonicalization (Windows paths, booleans, empty arrays). Recent deltas: v0.3.46 tightened CIS fuzzy matching and added the Azure Policy fuzzy smoke script; v0.3.47 added History change summaries plus Compare auto-scroll; v0.3.48 updated CIS Mapping copy to point users to the Diff > CIS tab; **v0.3.50 added `linuxFuzzyMatch` (Linux SFF baseline coverage 7% → 83% resource hit, no Windows regression — verified against Server 2025 Member Server XCCDF at 75.10%)**; **v0.3.51 fixed the CIS Diff per-row "CIS Rule" display column to fall back to `benchmarkMatch` when legacy `lookupCisRule` returns null**; **v0.3.52 removed the Windows Secure Shell (SSH) baseline from the library**; **v0.3.54–v0.3.61 shipped full-UI localization** (English / Français / Deutsch / Español) via `react-i18next` with OS-locale auto-detect, machine-translated FR/DE/ES catalogs pending native-speaker review, and `Intl`-based date/number formatters in `apps/desktop/src/lib/format.ts` — see the Localization section below and `CHANGELOG.md`.
+### Current repository snapshot
+
+The following snapshot is current through 2026-07-25:
+
+| Line | Reference | State |
+|---|---|---|
+| `main` | `278dad6` (PR [#76](https://github.com/Azure/ConfigForge/pull/76)) | Full Windows/Linux line. Latest tag is `v0.3.92`; PR #76 adds complete nested multi-value keyboard navigation after that tag. |
+| `mac-author-build` | `aec0775` (PR [#77](https://github.com/Azure/ConfigForge/pull/77)) | Author-only macOS parity base. PR #75 restored shared authoring parity, PR #77 ports the complete PR #76 navigation series, and PR [#79](https://github.com/Azure/ConfigForge/pull/79) supplies the final documentation and tag-pinned release tooling used by `0.3.93-author.1`. |
+
+The current macOS package version is `0.3.93-author.1` in the root package,
+desktop package, and lockfile records. Its tag is
+`mac-v0.3.93-author.1`. The matching GitHub release is intentionally a draft
+and must remain unpublished unless a maintainer separately approves
+publication.
+
+### Current feature inventory
+
+- **Baseline creation:** blank Windows/Linux baseline, starter template,
+  in-place Microsoft Baseline selection, public URL, local
+  `.osc.yaml`/`.json`/`.csv`, and binary `.xlsx` import.
+- **Authoring:** YAML, JSON, and Visual modes; Test and Group preservation;
+  typed and lossless spreadsheet edits; exact QWord handling; per-baseline
+  Code/Visual preference; read-only guidance; Undo; history; and rationale.
+- **Workspace and comparison:** localized My Baselines catalog, local-calendar
+  Date Modified values, persistent tabs, unsaved-close/navigation guards, and
+  Pairwise/CIS/Matrix Diff. Exactly two selected baselines open Pairwise;
+  three through ten open Matrix.
+- **Benchmark and evidence:** user-supplied XCCDF, OVAL, OCIL, CPE dictionary,
+  and Azure Policy data; CIS cross-reference; and Audit Pack PDF/Markdown
+  export. Audit Pack generation is an authoring feature and is available in
+  the macOS flavor; device audit is not.
+- **PR #76/#77 nested editing:** Enter commits and moves down, final Enter
+  appends and focuses a value, Tab commits and moves right, empty arrays become
+  focusable, invalid drafts retain focus, and Shift+Enter remains a newline
+  for structured values. PR #76 landed on `main`; PR #77 ports the series to
+  `mac-author-build`.
+
+### Flavor capability boundary
+
+The author build uses compile-time flags in
+`apps/desktop/electron/flavor.ts`. Its preload removes these exact namespaces:
+
+- `HAS_DEPLOY=false`: `health`, `deploy`, `deployRecovery`, and `revert`
+- `HAS_DEVICE_AUDIT=false`: `auditResults`
+- `HAS_ELEVATION=false`: `system` (the elevation methods live under
+  `cfs.system`; there is no `cfs.elevation` namespace)
+
+Shared renderer code must use `safeCfs()` or `hasCfsNamespace()` for those
+namespaces. Authoring namespaces, including Diff and Audit Pack generation,
+remain available.
 
 Targeted upstream CLI version: **`oscfg 1.3.9-preview11`**.
 
@@ -21,10 +70,18 @@ Targeted upstream CLI version: **`oscfg 1.3.9-preview11`**.
 
 ## Branches / remote
 
-- **`main`** — active line for Win/Linux. All non-flavor-specific work lands here.
-- **`mac-author-build`** — parallel branch for the macOS author flavor. Cherry-pick from `main` to keep parity. Mac branch's CI is `workflow_dispatch` only — trigger with `gh workflow run "PR check" --ref mac-author-build` after a push.
-- **Remote:** `ABMFST/ConfigForge` (transfer to a Microsoft open-source GitHub organization is in progress).
-- Do not cross-merge `main` ↔ `mac-author-build`. Use cherry-pick.
+- **`main`** — active Windows/Linux full-build line. Shared behavior lands here first.
+- **`mac-author-build`** — parallel macOS author-only line. Port the specific
+  shared commits needed for parity.
+- **Remote:** `Azure/ConfigForge`.
+- Do not cross-merge `main` and `mac-author-build`. Cherry-pick or manually
+  port reviewed shared commits through a branch PR.
+- `main` PRs run `PR check` automatically. The macOS branch is
+  `workflow_dispatch` only; after pushing a candidate, run:
+
+  ```powershell
+  gh workflow run "PR check" --repo Azure/ConfigForge --ref mac-author-build
+  ```
 
 ### Parallel worktree pattern
 
@@ -40,18 +97,54 @@ git worktree add ../configforge-mac mac-author-build
 
 Cherry-picks from `main` to `mac-author-build` almost always conflict on `package.json` + `apps/desktop/package.json` (different version streams) and frequently on `CHANGELOG.md` / `docs/src/changelog.md`. Standard resolution:
 
-1. Take **theirs** (main) for changelog files and version metadata strings.
-2. Manually set both `package.json` versions to the next mac tag (e.g. `0.3.55-author.1`).
-3. **Don't blindly take theirs for renderer files** — `apps/desktop/src/pages/Home.tsx` and other main-only refactors may import hooks (`useCliPresence`, etc.) that don't exist on `mac-author-build`. If `--theirs` would pull in a broken import, restore mac's version with `git checkout <mac-HEAD-sha> -- <path>` and manually re-apply only the substantive change. Lesson from v0.3.54-author.1: blind `--theirs` on Home.tsx broke the mac vite build because `useCliPresence` is main-only.
+1. Keep the macOS branch's package versions unless the PR is the final
+   release-preparation change.
+2. Reconcile changelogs manually so both branch-specific and shared history
+   remain accurate.
+3. **Don't blindly take theirs for renderer files.** A main-only import can
+   break the author bundle. Restore the macOS file and port only the reviewed
+   behavior when the trees differ.
 
-### Release versioning convention
+### Release versioning conventions
 
-The git tag tracks the **root** `package.json` `version`. The installer artifact filename (`ConfigForge-Setup-${version}-${arch}.${ext}` from electron-builder's `artifactName`) reads from `apps/desktop/package.json`. **Bump BOTH in the same commit when cutting a release** — they were drifted between v0.2.1 and v0.3.50 (apps/desktop stuck at 0.3.36), causing every installer to embed the wrong version in its filename. Fixed in v0.3.50 / v0.3.51 by re-syncing.
+- Full Windows/Linux releases use package version `X.Y.Z` and tag `vX.Y.Z`.
+- macOS Author releases use package version `X.Y.Z-author.N` and tag
+  `mac-vX.Y.Z-author.N`.
+- The root and desktop `package.json` versions plus matching
+  `package-lock.json` records must agree in a release-preparation commit.
+  Do not change them in an earlier documentation or feature-port PR.
+- The macOS tag must resolve to the exact final validated commit on
+  `mac-author-build`. `scripts/ship-mac.ps1` accepts only the `mac-v` form and
+  defaults to `Azure/ConfigForge`.
+- The `0.3.93-author.1` draft release produces exactly these assets:
+
+  | Asset | Exact name |
+  |---|---|
+  | DMG | `ConfigForge-Author-0.3.93-author.1-mac-arm64.dmg` |
+  | Blockmap | `ConfigForge-Author-0.3.93-author.1-mac-arm64.dmg.blockmap` |
+  | Update metadata | `latest-mac.yml` |
+  | CycloneDX SBOM | `sbom-macos-author.cdx.json` |
+  | SHA-256 manifest | `SHA256SUMS-macos-author.txt` |
 
 ### CI dispatch
 
 - Tag push on `main` → auto-triggers **Release** + **docs** workflows.
-- Tag push on `mac-author-build` → does **NOT** auto-trigger. Manually dispatch: `gh workflow run "Release (macOS author)" --ref v0.3.XX-author.1`.
+- A macOS tag push does **not** auto-trigger a build. Create the matching
+  GitHub release as a draft, then dispatch the protected `main` workflow
+  definition with the immutable macOS tag as input:
+
+  ```powershell
+  gh workflow run "Release (macOS author)" `
+    --repo Azure/ConfigForge `
+    --ref main `
+    -f release_tag=mac-v0.3.93-author.1
+  ```
+
+- `--ref main` selects the reviewed workflow definition, not the source to
+  package. `release-mac.yml` must check out `release_tag` explicitly and
+  verify that `HEAD` resolves to that tag before installing or building.
+- Never publish automatically. The GitHub release remains a draft until a
+  maintainer explicitly approves publication after asset verification.
 - Audit scripts: `scripts/audit-linux-fuzzy.mjs` (Linux SFF coverage diagnostic) and `scripts/audit-windows-xccdf.mjs` (Windows XCCDF coverage diagnostic) — run these after touching anything in `xccdf-parser.ts`, `cis-bulk-lookup.ts`, or `cis-lookup.ts` to verify no regression in either platform's coverage numbers.
 
 ---
@@ -68,6 +161,10 @@ npm test                        # vitest full suite
 npm run lint                    # eslint, apps/desktop (0 errors expected; warnings OK)
 npm run format                  # prettier (added v0.2.1; no mass-format run shipped)
 npm run format:check            # prettier --check (not gated in CI; advisory)
+
+# mac-author-build only
+npm run build:author -w @configforge/desktop
+npm run dist:mac:author -w @configforge/desktop  # Apple Silicon host required
 ```
 
 **Electron launch prerequisite:** `build:renderer` runs Vite with an empty
@@ -78,7 +175,22 @@ preload bundles are restored after Vite.
 
 **Windows note:** the preview `oscfg` opens its log file in a protected directory on every invocation, including read-only audits, so Deploy / Audit require an elevated PowerShell session. The in-app footer pill and Settings panel surface this as "admin required."
 
-**npm install caveat:** the lockfile carries optional rollup binaries for both Windows and Linux. **DO NOT regenerate `package-lock.json` with `npm install` on a fresh Windows machine without `--include=optional`** — npm bug [#4828](https://github.com/npm/cli/issues/4828) silently drops the Linux binary, which breaks CI on `ubuntu-latest`. The safe path: use `npm ci` (read-only on lockfile) for routine work, or `npm install <pkg> --save-exact` (which preserves other entries).
+**npm and lockfile caveats:**
+
+- The committed `package-lock.json` is a public-registry lockfile. Every
+  package `resolved` URL must remain on `registry.npmjs.org`; never commit a
+  Microsoft-mirror or private-registry URL.
+- A Microsoft package mirror may lag the public registry on corporate
+  machines. A locally restored `node_modules` tree from that mirror is useful
+  for validation but is not authoritative for the public lockfile. GitHub CI
+  must run `npm ci` against the committed public lockfile.
+- The lockfile carries optional Rollup binaries for Windows and Linux. Do not
+  regenerate it on Windows without `--include=optional`; npm issue
+  [#4828](https://github.com/npm/cli/issues/4828) can remove the Linux binary
+  and break `ubuntu-latest`.
+- Use `npm ci` for routine work because it does not rewrite the lockfile. For a
+  dependency or version change, preserve optional cross-platform packages and
+  inspect every changed `resolved` URL before committing.
 
 ---
 
@@ -88,7 +200,7 @@ preload bundles are restored after Vite.
 | --- | --- | --- |
 | `apps/desktop/src/` | Electron renderer (React + FluentUI v9 + Vite) | UI lives here; route via `apps/desktop/src/App.tsx` |
 | `apps/desktop/src/pages/<Page>/` | Lighthouse pages split into directories (Phase A→E) | Each has `index.tsx` (composition), `state/` (hooks + tests), `components/` (memo'd sub-components), optional `helpers.tsx`. See ManifestEditor as the reference example |
-| `apps/desktop/src/lib/cfs.ts` | Renderer IPC bridge + `safeCfs()` / `hasCfsNamespace()` capability helpers | Use `safeCfs('deploy')` (returns `undefined` on mac flavor) instead of `cfs.deploy` (throws) for flavor-conditional code |
+| `apps/desktop/src/lib/cfs.ts` | Renderer IPC bridge + `safeCfs()` / `hasCfsNamespace()` capability helpers | Feature-detect the exact author-omitted namespaces: `health`, `deploy`, `deployRecovery`, `revert`, `auditResults`, and `system` |
 | `apps/desktop/electron/` | Electron main + preload bridge | Only the preload calls into IPC; main wires handlers |
 | `apps/desktop/electron/log.ts` | Typed main-process logger (v0.2.1) | Use `scoped('elevate').info(...)` not `console.info(...)`. Lazy-requires `electron-log`; falls back to console under vitest |
 | `apps/desktop/electron/ipc-handlers.ts` | IPC channel registrations | Every channel is a thin wrapper around a `packages/core/handlers/` export |
@@ -283,7 +395,7 @@ The full 15-finding audit landed in v0.2.0 → v0.2.1. Don't regress any of thes
 | CF-SEC-012 | CycloneDX SBOM generated per platform + uploaded to release artifacts |
 | CF-SEC-013 | Postinstall script audited |
 | CF-SEC-014 | `npm audit --omit=dev --audit-level=high` gate in release workflow; `electron` + `electron-builder` pinned with tilde (`~`) instead of caret (`^`) |
-| CF-SEC-015 | `safeCfs(key)` + `hasCfsNamespace(key)` helpers for flavor-conditional renderer code; mac flavor omits deploy/elevation/health/auditResults preload namespaces |
+| CF-SEC-015 | `safeCfs(key)` + `hasCfsNamespace(key)` helpers for flavor-conditional renderer code; the author preload omits `health`, `deploy`, `deployRecovery`, `revert`, `auditResults`, and `system` |
 
 If you add a new preload namespace that's flavor-conditional, document it on `cfs.ts` and update any renderer call sites to use `safeCfs()`.
 
@@ -299,13 +411,39 @@ OSConfig CLI bugs are not bugs in ConfigForge. File them in the Microsoft ADO `O
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the full test-gate protocol. Minimum bar before opening a PR:
 
-1. `npm test` — the full vitest suite passes on the active branch. The history-retention test has a known timing flake that passes on rerun; treat that specifically as re-runnable. Any other failure must be fixed.
-2. `npm run lint` — 0 errors (warnings on `max-lines` / `max-lines-per-function` / `complexity` are tracked-but-not-blocking by design).
-3. `npm run desktop:build` — clean. **This step catches renderer-bundling errors that vitest alone misses** (e.g. accidentally importing Node-only modules into core files that get pulled into the renderer bundle).
-4. `npm audit --audit-level=high --omit=dev` — zero high/critical CVEs in production deps. The release workflow enforces this as a gate.
-5. Banned-strings sweep against `apps/desktop/src` + `packages/core/src` for `Drop the oscfg binary` and `place the binary in resources/oscfg`. Must be zero in product code. Test fixtures (`*.test.ts(x)`) are allowed to reference these for negative assertions.
+1. Run the smallest focused Vitest selection that covers the change.
+2. `npm test` — the full Vitest suite passes on the active branch.
+3. `npm run lint` — 0 errors. Tracked `max-lines`,
+   `max-lines-per-function`, and `complexity` warnings are non-blocking.
+4. `npm run desktop:build` — clean. This catches renderer-bundling errors
+   that Vitest alone misses.
+5. `npm audit --omit=dev --audit-level=high` — zero high or critical
+   production findings.
+6. `node scripts/review-locales.mjs` after locale-bearing changes — zero
+   placeholder, glossary, and plural issues.
+7. Sweep product code for the banned legacy strings `Drop the oscfg binary`
+   and `place the binary in resources/oscfg`. Test fixtures may contain them
+   only as negative assertions.
 
 When touching IPC contracts or `packages/core/src/handlers/`, exercise the channel against the live `oscfg` binary in an elevated shell on Windows. CI's Linux side is currently unverified end-to-end (no Linux runner with `oscfg` installed); flag any change that's likely to behave differently on Linux.
+
+### Current validation evidence
+
+- PR #75 at `3086ef0` passed 1,584 Vitest tests in 117 files, lint with
+  0 errors, the desktop build, and locale review with 0 placeholder, glossary,
+  or plural issues.
+- PR #76 at `278dad6` passed 32 focused Visual Manifest Viewer tests, the full
+  Vitest suite, lint with 0 errors, the desktop build, and a production audit
+  with 0 vulnerabilities.
+- PR #77 at `aec0775` ported all five PR #76 commits and passed 79 focused
+  Manifest Editor tests, two isolated Playwright scenarios, lint with 0
+  errors, the desktop build, and a production audit with 0 vulnerabilities.
+- The final `0.3.93-author.1` preparation tree passed 1,598 Vitest tests in
+  117 files, the 79 focused Manifest Editor tests, both isolated Loop
+  Playwright scenarios, lint with 0 errors, full and author-flavor desktop
+  builds, locale review with 0 placeholder/glossary/plural issues, and a
+  production audit with 0 vulnerabilities. The tag-pinned macOS packaging
+  workflow remains the final artifact gate.
 
 ---
 
@@ -330,7 +468,7 @@ Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 
 ## Localization (i18n)
 
-The desktop app uses `react-i18next`. English is the source language; FR / DE / ES are machine-translated and pending Amir review. Do not duplicate the full locale docs here.
+The desktop app uses `react-i18next`. English is the source language; FR / DE / ES are machine-translated and pending human linguistic review. Do not duplicate the full locale docs here.
 
 Reference docs:
 
@@ -370,7 +508,7 @@ Hard carve-outs — do NOT translate:
 
 Kill-switch / revert policy: if a localization change breaks app boot, Settings, or tests, revert it with `git revert <commit>`. The localization Waves shipped as atomic v0.3.54-v0.3.61 commits for this reason. Stuck preference recovery: `localStorage.removeItem('configforge-locale')`.
 
-Pending Amir personal work — agents should not auto-do it:
+Maintainer-only follow-up — agents should not auto-complete it:
 
 - Review machine translations per [`apps/desktop/src/locales/REVIEW.md`](./apps/desktop/src/locales/REVIEW.md).
 - Run the per-locale visual QA pass, especially German; see [`apps/desktop/src/locales/VISUAL-QA.md`](./apps/desktop/src/locales/VISUAL-QA.md) for the 30 flagged length-overflow risks.
@@ -509,7 +647,9 @@ or signing secrets in this repo.
 - Touch or close the user's existing browser/Edge tabs during validation. Use only isolated Playwright/Electron contexts created by your work, and close only those contexts when done.
 - Regenerate `package-lock.json` on Windows without `--include=optional` — npm bug #4828 will drop the Linux rollup binary and break CI.
 - Import Node-only modules (`crypto`, `fs`, `path`) into `packages/core/src/` files that aren't gated behind a Node-only entry point — they break the renderer Vite bundle.
-- Bypass `safeCfs()` for flavor-conditional namespaces (`deploy`, `elevation`, `health`, `auditResults`) — direct `cfs.X.method()` calls crash on mac.
+- Bypass `safeCfs()` / `hasCfsNamespace()` for author-omitted namespaces
+  (`health`, `deploy`, `deployRecovery`, `revert`, `auditResults`, `system`) —
+  direct access crashes when that namespace is absent.
 - Translate technical artifacts: manifest YAML / source text, OSConfig CLI output, `packages/core` errors, CIS rule titles / IDs, baseline filenames, audit-pack PDF contents, schema validation stock messages, or Monaco editor chrome.
 - Hand-edit FR / DE / ES catalogs for routine string additions — update English, run `scripts/translate-locales.mjs`, then `node scripts/review-locales.mjs`.
 - Use `toLocaleString()` for user-visible renderer dates / numbers — use `apps/desktop/src/lib/format.ts` hooks.

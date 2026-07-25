@@ -1,14 +1,15 @@
 # Install & run
 
-ConfigForge v0.3.48 is an Electron 42 + React 18 + FluentUI v9 + Vite
-desktop app. The **Full** edition runs on Windows and Linux and includes
-authoring plus CLI-gated deploy/audit/revert. The **Author** edition runs
-on macOS for authoring only; it intentionally omits deploy, diff, and
-audit-pack surfaces. The native `oscfg` CLI is **not bundled** and is
-**not required** for first launch - the editor, library, validation,
-diff/compare, import/export, and audit-pack PDF features in the Full
-edition work without it. Install OSConfig only when you want to Deploy,
-Audit, or Revert against a real Windows or Linux machine.
+ConfigForge is an Electron 42 + React 18 + FluentUI v9 + Vite desktop app. The
+**Full** edition runs on Windows and Linux and includes authoring plus
+CLI-gated device deploy/audit/revert. The **Author** edition is an ARM64-only
+Apple Silicon macOS build. It includes authoring, Microsoft Baselines, Diff,
+Benchmark Mapping, history, rationale, and Audit Pack export while omitting
+device operations. The native `oscfg` CLI is **not bundled** and is **not
+required** for authoring in either edition.
+
+The latest tagged Full-edition release is `v0.3.92`. The planned macOS
+`0.3.93-author.1` version has not been tagged or released.
 
 ## Prerequisites
 
@@ -21,12 +22,13 @@ Audit, or Revert against a real Windows or Linux machine.
 ## Get the code
 
 ```bash
-git clone https://github.com/ABMFST/ConfigForge.git
+git clone https://github.com/Azure/ConfigForge.git
 cd ConfigForge
 ```
 
 > **Note:** `main` is the active Windows/Linux Full-edition line. Use a
-> packaged macOS Author build for macOS authoring-only workflows.
+> packaged macOS Author build on an Apple Silicon Mac (M1 or later). Intel
+> Macs and universal binaries are not supported.
 > Because macOS builds are not signed yet, clear quarantine after
 > copying the app into Applications:
 >
@@ -75,7 +77,7 @@ In the running app:
 2. Open **Settings → System Health** for the resolved CLI path,
    source (`env` / `installed` / `path` / `msix` / `bundled`), and
    admin status. Click **Recheck** if you just installed the CLI.
-3. Open **Manifests → Register New** and paste the
+3. Open **My Baselines → Register New** and paste the
    [first-manifest example](./first-manifest.md). It should register
    with zero errors.
 

@@ -2,7 +2,7 @@
 
 > **Note:** This page is a *summary* of the guide for human readers.
 > The authoritative file is
-> [`AGENTS.md`](https://github.com/ABMFST/ConfigForge/blob/main/AGENTS.md)
+> [`AGENTS.md`](https://github.com/Azure/ConfigForge/blob/main/AGENTS.md)
 > at the repo root. AI agents (Copilot, Claude, Cursor, etc.) load
 > that file directly - keep it primary; this page can drift slightly
 > behind.
@@ -54,7 +54,9 @@ contributors get this docs site; agents get the single-file
 - Flavor-conditional capability helpers - `safeCfs(key)` and
   `hasCfsNamespace(key)` from `apps/desktop/src/lib/cfs.ts`
   (CF-SEC-015) for namespaces the macOS author flavor omits
-  (`deploy`, `elevation`, `health`, `auditResults`).
+  (`health`, `deploy`, `deployRecovery`, `revert`, `auditResults`,
+  `system`). Elevation methods live under `system`; there is no
+  `elevation` namespace.
 - Filing upstream bugs (the *real* tracker in the Microsoft ADO
   `OS` project, not the public GitHub mirror with issues disabled).
 - Testing + validation expectations and the CI minute budget
@@ -83,8 +85,8 @@ The "things to never do" list deserves a second look:
   `--include=optional` - npm bug #4828 will silently drop the
   Linux rollup binary and break CI on `ubuntu-latest`.
 - Do **not** bypass `safeCfs()` for flavor-conditional namespaces
-  (`deploy`, `elevation`, `health`, `auditResults`) - bare
-  `cfs.deploy.X()` crashes on the macOS author build.
+  (`health`, `deploy`, `deployRecovery`, `revert`, `auditResults`,
+  `system`) - direct calls crash when the namespace is absent.
 - Do **not** import Node-only modules (`crypto`, `fs`, `path`) into
   `packages/core/src/` files that aren't gated behind a Node-only
   entry point - they break the renderer Vite bundle.
