@@ -793,6 +793,32 @@ resources:
     ]);
   });
 
+  it("uses current Registry type metadata when appending with a stale setting projection", () => {
+    const source = `resources:
+  - name: Registry values
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM:\\Software\\Example
+      valueName: Values
+      valueType: Dword
+      value:
+        - 1
+`;
+    const setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const changedType = updateVisualCellSource(source, setting, "valueType", "MultiString");
+    expect(changedType.ok).toBe(true);
+    if (!changedType.ok) return;
+
+    const appended = appendVisualArrayItemSource(changedType.source, setting, "value");
+    expect(appended.ok).toBe(true);
+    if (!appended.ok) return;
+
+    const document = parseVisualManifest(appended.source) as {
+      resources: Array<{ properties: { value: unknown[] } }>;
+    };
+    expect(document.resources[0].properties.value).toEqual([1, ""]);
+  });
+
   it("repairs malformed Registry MultiString items as strings", () => {
     const source = `resources:
   - name: Principals

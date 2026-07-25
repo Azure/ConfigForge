@@ -1552,6 +1552,36 @@ function readVisualCellValue(
     : { ok: false, error: "missingSetting" };
 }
 
+function settingMetadataForDocument(
+  document: unknown,
+  setting: VisualSetting,
+): VisualSetting | null {
+  const resource = resolveResourceAtPath(document, setting.location.resourcePath);
+  if (!resource) return null;
+  const resourceType = readString(resource, "type", "Type").trim();
+  if (!resourceType) return null;
+  const currentSetting: VisualSetting = {
+    ...setting,
+    resourceType,
+    properties: { ...readProperties(resource) },
+  };
+  let validationSchema: unknown | undefined;
+  for (let length = 1; length <= setting.location.resourcePath.length; length += 1) {
+    const ancestor = resolveResourceAtPath(
+      document,
+      setting.location.resourcePath.slice(0, length),
+    );
+    if (!ancestor || readString(ancestor, "type", "Type").trim() !== TEST_RESOURCE_TYPE) continue;
+    const ancestorProperties = readProperties(ancestor);
+    const schema = ancestorProperties[existingKey(ancestorProperties, "schema", "Schema")];
+    const schemaRecord = asRecord(schema);
+    if (schemaRecord && Object.keys(schemaRecord).length > 0) validationSchema = schema;
+  }
+  if (validationSchema === undefined) delete currentSetting.validationSchema;
+  else currentSetting.validationSchema = validationSchema;
+  return currentSetting;
+}
+
 function updateParsedVisualCellValue(
   document: unknown,
   setting: VisualSetting,
@@ -1701,7 +1731,9 @@ export function appendVisualArrayItemSource(
   } catch {
     return { ok: false, error: "invalidYaml" };
   }
-  const currentValue = readVisualCellValue(document, setting, column);
+  const currentSetting = settingMetadataForDocument(document, setting);
+  if (!currentSetting) return { ok: false, error: "missingSetting" };
+  const currentValue = readVisualCellValue(document, currentSetting, column);
   if (!currentValue.ok) return currentValue;
   const current = currentValue.value;
   if (!Array.isArray(current)) {
@@ -1709,9 +1741,9 @@ export function appendVisualArrayItemSource(
   }
   const placeholder =
     current.length > 0
-      ? placeholderForVisualArrayItem(current[current.length - 1], setting, column)
+      ? placeholderForVisualArrayItem(current[current.length - 1], currentSetting, column)
       : "";
-  return updateParsedVisualCellValue(document, setting, column, [...current, placeholder]);
+  return updateParsedVisualCellValue(document, currentSetting, column, [...current, placeholder]);
 }
 
 function pathKey(path: readonly VisualResourcePathSegment[]): string {
