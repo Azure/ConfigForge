@@ -114,16 +114,16 @@ jobs:
         working-directory: apps/desktop/release
         run: |
           set -euo pipefail
-          while IFS= read -r -d '' file; do
+          while IFS= read -r file; do
             printf '%s  %s\n' \
-              "$(sha256sum "$file" | awk '{print $1}')" \
+              "$(shasum -a 256 "$file" | awk '{print $1}')" \
               "$(basename "$file")"
           done < <(
             find . -maxdepth 2 -type f \( \
                 -name '*.dmg' -o -name '*.dmg.blockmap' \
                 -o -name 'latest-mac.yml' \
-              \) ! -name 'SHA256SUMS*.txt' -print0 \
-              | sort -z
+              \) ! -name 'SHA256SUMS*.txt' -print \
+              | LC_ALL=C sort
           ) > SHA256SUMS-macos-author.txt
           cat SHA256SUMS-macos-author.txt
 
