@@ -766,7 +766,7 @@ resources:
         - BUILTIN\\Administrators
         - CONTOSO\\Security Admins
 `;
-    let setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const setting = flattenVisualSettings(parseVisualManifest(source))[0];
     const edited = updateVisualArrayItemSource(
       source,
       setting,
@@ -777,7 +777,8 @@ resources:
     expect(edited.ok).toBe(true);
     if (!edited.ok) return;
 
-    setting = flattenVisualSettings(parseVisualManifest(edited.source))[0];
+    // Keep the original projection: append must read the current array through
+    // its stable location binding instead of requiring another flatten pass.
     const appended = appendVisualArrayItemSource(edited.source, setting, "value");
     expect(appended.ok).toBe(true);
     if (!appended.ok) return;
@@ -790,6 +791,32 @@ resources:
       "CONTOSO\\Tier 0 Admins",
       "",
     ]);
+  });
+
+  it("uses current Registry type metadata when appending with a stale setting projection", () => {
+    const source = `resources:
+  - name: Registry values
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM:\\Software\\Example
+      valueName: Values
+      valueType: Dword
+      value:
+        - 1
+`;
+    const setting = flattenVisualSettings(parseVisualManifest(source))[0];
+    const changedType = updateVisualCellSource(source, setting, "valueType", "MultiString");
+    expect(changedType.ok).toBe(true);
+    if (!changedType.ok) return;
+
+    const appended = appendVisualArrayItemSource(changedType.source, setting, "value");
+    expect(appended.ok).toBe(true);
+    if (!appended.ok) return;
+
+    const document = parseVisualManifest(appended.source) as {
+      resources: Array<{ properties: { value: unknown[] } }>;
+    };
+    expect(document.resources[0].properties.value).toEqual([1, ""]);
   });
 
   it("repairs malformed Registry MultiString items as strings", () => {

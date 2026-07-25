@@ -2,10 +2,12 @@
 // Licensed under the MIT License.
 
 import { describe, expect, it, vi } from "vitest";
+import { useCallback, useRef, useState } from "react";
 import { act, render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import type { ManifestEditorState } from "../state/useManifestEditorState";
+import { parseVisualManifest } from "../visual-viewer";
 import { ManifestContent } from "./ManifestContent";
 
 vi.mock("../../../components/manifest-editor", () => ({
@@ -59,6 +61,48 @@ function visualState(): ManifestEditorState {
     isReadOnly: true,
     currentDisplayContent: "instance of Hidden_Mof {}",
   } as unknown as ManifestEditorState;
+}
+
+function VisualUndoHarness({ initialSource }: { initialSource: string }) {
+  const [editedContent, setEditedContent] = useState(initialSource);
+  const [undoAvailable, setUndoAvailable] = useState(false);
+  const undoRef = useRef<(() => void) | null>(null);
+  const formatCache = useRef({ yaml: initialSource });
+  const handleUndoStateChange = useCallback((available: boolean, undo: (() => void) | null) => {
+    undoRef.current = available ? undo : null;
+    setUndoAvailable(available);
+  }, []);
+  const state = {
+    ...visualState(),
+    editing: true,
+    editedContent,
+    setEditedContent,
+    savedContent: initialSource,
+    editView: "visual",
+    activeFormat: "yaml",
+    formatCache,
+    isEditable: true,
+    isReadOnly: false,
+    currentDisplayContent: initialSource,
+  } as unknown as ManifestEditorState;
+
+  return (
+    <>
+      <ManifestContent
+        editorState={state}
+        editorPlatform={undefined}
+        cisAvailable={false}
+        manifestName="sample"
+        viewerMode="visual"
+        onViewerModeChange={vi.fn()}
+        onEditUndoStateChange={handleUndoStateChange}
+      />
+      <button type="button" disabled={!undoAvailable} onClick={() => undoRef.current?.()}>
+        Footer Undo
+      </button>
+      <output aria-label="edited-yaml">{editedContent}</output>
+    </>
+  );
 }
 
 describe("ManifestContent read-only Visual mode", () => {
@@ -139,6 +183,50 @@ describe("ManifestContent read-only Visual mode", () => {
     await waitFor(() => expect(setEditedContent).toHaveBeenLastCalledWith(source));
   });
 
+  it("undoes a focused Visual draft to the last committed edit through the footer callback", async () => {
+    const user = userEvent.setup();
+    const source = `resources:
+  - name: Example setting
+    type: Example/Type
+    properties:
+      details: A
+`;
+    render(
+      <FluentProvider theme={webLightTheme}>
+        <VisualUndoHarness initialSource={source} />
+      </FluentProvider>,
+    );
+
+    await user.click(screen.getByRole("button", { name: "Edit Details for Example setting" }));
+    let input = screen.getByRole("textbox", { name: "Edit Details for Example setting" });
+    await user.clear(input);
+    await user.type(input, "B");
+    await user.click(screen.getByRole("searchbox", { name: "Search baseline settings" }));
+
+    const undo = screen.getByRole("button", { name: "Footer Undo" });
+    await waitFor(() => expect(undo).toBeEnabled());
+    await waitFor(() => {
+      const document = parseVisualManifest(
+        screen.getByRole("status", { name: "edited-yaml" }).textContent ?? "",
+      ) as { resources: Array<{ properties: { details: string } }> };
+      expect(document.resources[0].properties.details).toBe("B");
+    });
+
+    await user.click(screen.getByRole("button", { name: "Edit Details for Example setting" }));
+    input = screen.getByRole("textbox", { name: "Edit Details for Example setting" });
+    await user.clear(input);
+    await user.type(input, "draft");
+    expect(input).toHaveFocus();
+    await user.click(undo);
+
+    await waitFor(() => {
+      const document = parseVisualManifest(
+        screen.getByRole("status", { name: "edited-yaml" }).textContent ?? "",
+      ) as { resources: Array<{ properties: { details: string } }> };
+      expect(document.resources[0].properties.details).toBe("B");
+    });
+  });
+
   it("undoes a coalesced Code editor change", async () => {
     const user = userEvent.setup();
     const source = "resources: []\n";
@@ -176,7 +264,7 @@ describe("ManifestContent read-only Visual mode", () => {
     await user.click(screen.getByRole("button", { name: "Change code" }));
     await waitFor(() => expect(undoEdit).not.toBeNull());
     act(() => undoEdit?.());
-    expect(setEditedContent).toHaveBeenLastCalledWith(source);
+    await waitFor(() => expect(setEditedContent).toHaveBeenLastCalledWith(source));
   });
 
   it("keeps a canonical undo checkpoint when JSON switches to Visual", async () => {
@@ -222,6 +310,6 @@ describe("ManifestContent read-only Visual mode", () => {
     await user.click(screen.getByRole("button", { name: "Visual" }));
     await waitFor(() => expect(undoEdit).not.toBeNull());
     act(() => undoEdit?.());
-    expect(setEditedContent).toHaveBeenLastCalledWith(originalYaml);
+    await waitFor(() => expect(setEditedContent).toHaveBeenLastCalledWith(originalYaml));
   });
 });
