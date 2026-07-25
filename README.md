@@ -6,15 +6,24 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The latest tagged Full-edition release is `v0.3.92`; the latest tagged macOS
-Author release is `mac-v0.3.92-author.1`. The next planned macOS Author
-version is `0.3.93-author.1`, but no corresponding tag or release exists yet.
+The latest tagged Full-edition release is `v0.3.92`. The current macOS Author
+line is `0.3.93-author.1` with tag `mac-v0.3.93-author.1`; its GitHub release
+exists with five verified assets but is intentionally a draft and is not
+published. The tag resolves to the current `mac-author-build` head at
+`099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. The Full-edition package version
+on `main` remains `0.3.92`.
 PR [#75](https://github.com/Azure/ConfigForge/pull/75) restored macOS
 authoring parity; PR [#76](https://github.com/Azure/ConfigForge/pull/76) is
 merged on `main`, and PR
 [#77](https://github.com/Azure/ConfigForge/pull/77) ports that navigation
-series to `mac-author-build`. Package metadata remains at `0.3.92-author.1`;
-the planned candidate still needs final release validation before tagging.
+series to `mac-author-build`. PR
+[#79](https://github.com/Azure/ConfigForge/pull/79) finalizes the current
+documentation and immutable-tag release tooling; PR
+[#80](https://github.com/Azure/ConfigForge/pull/80) merges the tagged release
+branch.
+Tag-pinned workflow run
+[#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
+completed successfully. The release remains unpublished.
 
 ## What it looks like
 
@@ -173,8 +182,8 @@ is not a universal binary.
 - **[`apps/desktop/PACKAGING.md`](./apps/desktop/PACKAGING.md)**: installer build workflow, cross-platform matrix, smoke checklists, troubleshooting. Builds are unsigned (optional local self-sign helper included).
 - **[`apps/desktop/CI.md`](./apps/desktop/CI.md)**: GitHub Actions workflows (PR check + release pipeline), supply-chain hardening (`npm audit` gate, CycloneDX SBOM, `npx --no-install` tooling pin), trigger scope, release-cutting walkthrough.
 - **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
-- **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes, including the
-  unreleased `0.3.93-author.1` readiness work.
+- **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current macOS
+  Author line is the draft, unpublished `0.3.93-author.1` release.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
   Quick Start, User Guide, Architecture, API Reference, and Operations. No
   Azure-hosted Pages URL is documented until its public destination is
@@ -199,7 +208,7 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **Unreleased — 0.3.93-author.1 candidate** | PR #75 restored macOS baseline creation, XLSX import, localized My Baselines dates, selection-aware Diff, close guards, and per-baseline views. PR #76 completed nested Enter/Tab editing on `main`, and PR #77 ported it to macOS. The package bump, exact-candidate validation, tag, and release remain TBD. |
+| **0.3.93-author.1** (macOS draft, unpublished) | Restores complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77; PR #79 finalizes documentation and immutable-tag release tooling, and PR #80 merges the tagged release branch. Workflow run #30176765724 verified all five assets. |
 | **0.3.92** (latest tagged Full edition) | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
 | **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
 | **0.3.90** | Prevents Baseline Detail footer collisions and keeps long multi-value Visual rows inside their table columns |
