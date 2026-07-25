@@ -16,8 +16,8 @@
 ##      public-assets/_baselines/ stays so the bundled Microsoft
 ##      baselines are still browsable + usable as templates.
 ##
-##   3. Mac-only target. arm64 only (Apple Silicon); Intel Macs
-##      can run via Rosetta 2.
+##   3. Mac-only target. ARM64 only for Apple Silicon Macs (M1 or later).
+##      No Intel x64 or universal artifact is produced.
 ##
 ##   4. Unsigned. `identity: null` skips code signing for the
 ##      v0.2.0-author preview — Gatekeeper will block first launch
@@ -68,7 +68,7 @@ asarUnpack:
 # CLI binary to bundle. Drops ~30-50 MB from the .dmg payload.
 #
 # public-assets/_baselines/ stays so the bundled Microsoft
-# baselines (defender, laps, secured-core, ssh, sff-linux,
+# baselines (defender, laps, secured-core, sff-linux,
 # ws2016-2025) are still readable for "Use as Template" + the
 # in-app reference-baseline compliance comparison.
 extraResources:
@@ -80,10 +80,8 @@ extraResources:
       - '_baselines/cis/_data/**/*'
 
 mac:
-  # arm64 only. Apple Silicon (M1+) is the modern Mac line; Intel
-  # Macs run an arm64 Electron build via Rosetta 2 with no code
-  # changes required. A `universal` target would double the .dmg
-  # size for negligible benefit on the v0.2.0-author preview.
+  # ARM64 only for Apple Silicon Macs (M1 or later).
+  # Intel Macs are not supported; no x64 or universal target is built.
   target:
     - target: dmg
       arch: [arm64]
@@ -116,12 +114,8 @@ mac:
   icon: build/icon.png
   artifactName: ConfigForge-Author-${version}-mac-${arch}.${ext}
 
-# Release notes shown on the GitHub Release page next to the .dmg
-# download, so anyone landing on the release knows about the
-# `xattr` workaround before they try to launch the app and get
-# the misleading "damaged" error. electron-builder reads the file
-# (relative to the project root, i.e. apps/desktop) and writes
-# it into the Release body when --publish always uploads.
+# Release notes embedded in `latest-mac.yml` for updater metadata.
+# electron-builder reads the file relative to `apps/desktop`.
 releaseInfo:
   releaseNotesFile: build/release-notes-author.md
 
