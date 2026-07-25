@@ -13,8 +13,8 @@ ConfigForge uses GitHub Actions from `.github/workflows/`. The product is an Ele
 
 The Win/Linux Release workflow intentionally ignores hyphen-suffix tags
 (`!v*-*`). macOS Author releases use separate tags such as
-`mac-v0.3.93-author.1` and must be dispatched manually from
-`mac-author-build`.
+`mac-v0.3.93-author.1`; dispatch the protected `main` workflow definition
+manually and let its checkout step select the immutable macOS tag.
 
 ## What `pr-check.yml` runs
 
