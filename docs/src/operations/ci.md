@@ -8,10 +8,13 @@ ConfigForge uses GitHub Actions from `.github/workflows/`. The product is an Ele
 | --- | --- | --- | --- |
 | **PR check** | `pr-check.yml` | Pull requests to `main`, pushes to `main`, or manual `workflow_dispatch` | Lint, Vitest, Linux desktop build verification, and Windows Playwright Electron smoke |
 | **Release** | `release.yml` | Clean tag push `vX.Y.Z` on `main`; manual dispatch for rebuilds | Windows + Linux installers, per-platform SHA256SUMS, SBOMs, draft GitHub Release upload |
-| **Release (macOS author)** | `release-mac.yml` | Manual `workflow_dispatch` from `mac-author-build` with an existing author release tag | Unsigned macOS Author `.dmg`, SHA256SUMS, SBOM, upload to the existing draft release |
+| **Release (macOS author)** | `release-mac.yml` | Manual `workflow_dispatch` of the protected `main` definition with an existing `mac-vX.Y.Z-author.N` tag | Checkout and verify the supplied tag; build and upload exactly five unsigned macOS Author assets to the existing draft release |
 | **Docs** | `docs.yml` | Docs changes on `main` / PRs touching docs | mdBook build, markdownlint, `gh-pages` deploy on push to `main` |
 
-The Win/Linux Release workflow intentionally ignores hyphen-suffix tags (`!v*-*`). macOS Author releases use separate author tags such as `v0.3.48-author.1` and must be dispatched manually from `mac-author-build`.
+The Win/Linux Release workflow intentionally ignores hyphen-suffix tags
+(`!v*-*`). macOS Author releases use separate tags such as
+`mac-v0.3.93-author.1` and must be dispatched manually from
+`mac-author-build`.
 
 ## What `pr-check.yml` runs
 
@@ -21,7 +24,11 @@ Three jobs run in parallel:
 2. **Vitest + build** (`ubuntu-latest`) - `npm ci`, `npm run core:build`, `npm test`, `npm run desktop:build`, then smoke-checks the built renderer/main files.
 3. **Playwright Electron smoke** (`windows-latest`) - installs, builds the desktop app, generates icons, then runs `npx playwright test --config apps/desktop/playwright.config.ts`.
 
-Current scale: roughly **1,178 Vitest tests on `main`** and **1,114 on `mac-author-build`**. Playwright smoke tests are separate from the Vitest count.
+Test counts change as features land. Use the current `npm test` summary as the
+authority. For reference, macOS parity PR #75 passed 1,584 Vitest tests in 117
+files; main PR #76 then passed its full suite plus 32 focused nested-navigation
+tests. Mac port PR #77 passed 79 focused tests and two isolated Playwright
+scenarios. Run the full suite again on the exact release candidate.
 
 Caching covers npm, Electron binaries, electron-builder, and Playwright browser downloads. Concurrency cancels stale PR runs on the same branch.
 
@@ -47,13 +54,28 @@ Release artifacts are **unsigned** by design — there is no code signing in CI.
 
 The macOS Author workflow is opt-in because macOS runners are expensive and the Author edition has a different product identity/build config.
 
-Run it from the Actions tab or CLI against `mac-author-build`:
+Run the protected workflow definition from `main`; the job itself checks out
+the immutable macOS tag:
 
 ```bash
-gh workflow run "Release (macOS author)" --ref mac-author-build -f release_tag=v0.3.48-author.1
+gh workflow run "Release (macOS author)" \
+  --repo Azure/ConfigForge \
+  --ref main \
+  -f release_tag=mac-v0.3.93-author.1
 ```
 
-The target draft release must already exist. The workflow builds with `electron-builder.author.yml`, generates `SHA256SUMS-macos-author.txt` and `sbom-macos-author.cdx.json`, then uploads the `.dmg` assets to that draft release.
+The target draft release and tag must already exist. The workflow loads its
+definition from `main`, checks out `release_tag`, verifies that
+`HEAD` resolves to the tag, then builds with `electron-builder.author.yml`.
+It uploads exactly these assets:
+
+1. `ConfigForge-Author-0.3.93-author.1-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.93-author.1-mac-arm64.dmg.blockmap`
+3. `latest-mac.yml`
+4. `sbom-macos-author.cdx.json`
+5. `SHA256SUMS-macos-author.txt`
+
+The workflow refuses a published release and never publishes automatically.
 
 ## Linux runner notes
 
@@ -77,7 +99,7 @@ PR checks run three parallel jobs. Batch related commits before pushing, especia
 
 ## See also
 
-- [`apps/desktop/CI.md`](https://github.com/ABMFST/ConfigForge/blob/main/apps/desktop/CI.md)
+- [`apps/desktop/CI.md`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/CI.md)
 - [Smoke testing on Windows](./smoke-testing.md)
 - [Filing upstream bugs](./upstream-bugs.md)
 - [Troubleshooting](./troubleshooting.md)

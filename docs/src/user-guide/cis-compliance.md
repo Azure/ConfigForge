@@ -1,4 +1,4 @@
-# CIS Mapping
+# Benchmark Mapping with CIS data
 
 > ⚠️ **Important:** ConfigForge **does not bundle CIS Benchmark
 > data**. The Center for Internet Security licenses CIS Benchmarks
@@ -8,11 +8,11 @@
 > hidden from the UI until you, the user, supply your own legally
 > licensed copy of the data files locally.
 >
-> **v0.3.48:** the CIS surfaces are local/offline features, no
+> The CIS surfaces are local/offline features; no
 > OSConfig CLI required. The `useCisAvailable()` hook (renderer)
 > checks `cfs.cis.status()` once per page lifetime and short-circuits
 > the render when CIS data isn't on disk. The sidebar tab for this
-> feature is labeled **CIS Mapping** in the navigation.
+> feature is labeled **Benchmark Mapping** in the navigation.
 
 ## What this feature does (when enabled)
 
@@ -27,15 +27,15 @@ Two related but distinct features sit on top of CIS Benchmark data:
 
 When CIS data is **not** present (the default for a fresh clone), the
 editor cross-reference drawer and the Diff page's CIS tab are hidden.
-The rest of the Full edition (editor, deploy, audit, history,
-rationale, audit-pack PDF, AI analyzer, pairwise diff, matrix diff)
-works exactly the same.
+The rest of the authoring experience (editor, history, rationale, Audit Pack,
+pairwise diff, and matrix diff) works exactly the same. Full-edition device
+operations are also unaffected.
 
 ## Ingestion paths
 
 ConfigForge supports three ways to supply CIS data. You only need
 **one** of these paths. The app resolves the correct location at
-runtime and shows the active path on the CIS Mapping page. In a dev
+runtime and shows the active path on the Benchmark Mapping page. In a dev
 checkout the folder is `public/_baselines/cis/_data`; in packaged builds
 it resolves under the app's public assets as `_baselines/cis/_data`.
 
@@ -47,8 +47,8 @@ This is the simplest and recommended path for most users.
 2. Navigate to **Azure Policy > Machine Configuration > CIS**.
 3. Download the CIS baseline JSON for your target OS.
 4. Drop the downloaded JSON file into `_baselines/cis/_data` (or the
-   exact folder shown on the CIS Mapping page in the app).
-5. Click **Re-check catalog** on the CIS Mapping page.
+   exact folder shown on the Benchmark Mapping page in the app).
+5. Click **Re-check catalog** on the Benchmark Mapping page.
 
 The app parses the Azure Policy structure automatically. No manual
 conversion is needed.
@@ -61,8 +61,8 @@ XCCDF and OVAL files directly.
 1. Download the XCCDF and OVAL XML files from
    [CIS Workbench](https://workbench.cisecurity.org/).
 2. Drop the files as-is into `_baselines/cis/_data` (or the exact
-   folder shown on the CIS Mapping page).
-3. Click **Re-check catalog** on the CIS Mapping page.
+   folder shown on the Benchmark Mapping page).
+3. Click **Re-check catalog** on the Benchmark Mapping page.
 
 The app reads XCCDF structure and OVAL definitions to build the
 mapping table at startup.
@@ -77,20 +77,20 @@ scripts. It remains supported for backward compatibility.
 1. Generate the mapping artifacts using the upstream OSConfig
    PowerShell scripts from a CIS XCCDF + OVAL pair you supply.
 2. Place the resulting JSON files in `_baselines/cis/_data` (or the
-   exact folder shown on the CIS Mapping page).
-3. Click **Re-check catalog** on the CIS Mapping page.
+   exact folder shown on the Benchmark Mapping page).
+3. Click **Re-check catalog** on the Benchmark Mapping page.
 
 The expected JSON shapes are documented in the
-[`packages/core/src/cis/data.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/cis/data.ts)
+[`packages/core/src/cis/data.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/cis/data.ts)
 type definitions (`CisGlobalMappings`, `CisRuleCatalog`, etc.).
 
-> **Tip:** You do not need to remember exact file paths. The CIS
-> Mapping page in the app displays the resolved data directory for
+> **Tip:** You do not need to remember exact file paths. The
+> Benchmark Mapping page in the app displays the resolved data directory for
 > your installation. Place files there and click **Re-check catalog**.
 
-## Cross-reference (CIS Mapping + editor drawer)
+## Cross-reference (Benchmark Mapping + editor drawer)
 
-The **CIS Mapping** sidebar page detects the files in `_baselines/cis/_data`,
+The **Benchmark Mapping** sidebar page detects the files in `_baselines/cis/_data`,
 shows their source format, and explains the resolved folder. When data is
 available, the manifest editor drawer cross-references each resource and shows:
 
@@ -152,7 +152,7 @@ The main score is computed strictly:
 
 ### When CIS data is not available
 
-If CIS data is missing, the CIS Diff tab is hidden and the CIS Mapping
+If CIS data is missing, the CIS Diff tab is hidden and the Benchmark Mapping
 page renders a friendly empty state explaining the license restriction
 and pointing at the data folder. No broken dropdown, no crash.
 
@@ -168,7 +168,7 @@ data. Open **Manifest > Audit Pack** and pick **Markdown**, or
 trigger it from the audit-pack IPC channel with `format: 'markdown'`
 and the `against` field set to whatever `id` you registered for your
 CIS-derived baseline in
-[`packages/core/src/data/baseline-catalog.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/data/baseline-catalog.ts)
+[`packages/core/src/data/baseline-catalog.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/data/baseline-catalog.ts)
 (the bundled `cis-benchmark` entries have been removed; you add
 your own pointing at your downloaded CIS data files).
 

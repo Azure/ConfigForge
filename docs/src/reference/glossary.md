@@ -26,7 +26,7 @@ rationale log / AI provenance. The auditor deliverable. See
 "Bring-your-own-CLI." The v0.2.0 shift: the `oscfg` binary is **no
 longer bundled** in ConfigForge installers. Users install
 OSConfig separately (see
-[`INSTALL.md`](https://github.com/ABMFST/ConfigForge/blob/main/INSTALL.md))
+[`INSTALL.md`](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md))
 and the resolver in `packages/core/src/oscfg/binary.ts` finds it via
 env override → dev drop → well-known install paths → `PATH` → MSIX.
 Editor / library / diff / audit-pack-PDF features all work without
@@ -41,21 +41,21 @@ Center for Internet Security - publishes the
 ConfigForge **does not redistribute** CIS Benchmark content
 (license restrictions). The cross-reference and compliance features
 work when a user drops their own legally licensed catalog files into
-`public/_baselines/cis/_data/`. The app resolves the CIS data directory path at runtime; the CIS Mapping page shows the resolved location for each install type. The UI gracefully hides every CIS
+`public/_baselines/cis/_data/`. The app resolves the CIS data directory path at runtime; the Benchmark Mapping page shows the resolved location for each install type. The UI gracefully hides every CIS
 surface when those files are absent. See
 [User Guide → CIS compliance](../user-guide/cis-compliance.md).
 
-## CIS Mapping
+## Benchmark Mapping
 
-The sidebar page (route `/cis`) for CIS data ingestion and status. Shows which expected CIS data files are present on disk, the resolved data directory path, and provides Re-check / Open folder actions. Replaces the earlier "CIS Catalog" name. Users drop Azure Policy JSON or XCCDF files into the data directory shown on this page. See [User Guide - CIS compliance](../user-guide/cis-compliance.md).
+The sidebar page (route `/cis`) for benchmark-data ingestion and status. It shows which expected CIS data files are present on disk, the resolved data directory path, and provides Re-check / Open folder actions. It replaces the earlier "CIS Mapping" and "CIS Catalog" names. Users drop Azure Policy JSON or XCCDF files into the data directory shown on this page. See [User Guide - CIS compliance](../user-guide/cis-compliance.md).
 
 ## CIS Diff
 
-A tab on the Diff page that annotates matrix-diff rows with CIS rule coverage. Powered by `cfs:cis:bulk-lookup` IPC. Shows which settings in the comparison matrix map to CIS benchmark rules and their severity. Requires CIS data to be present (see [CIS Mapping](#cis-mapping)).
+A tab on the Diff page that annotates matrix-diff rows with CIS rule coverage. Powered by `cfs:cis:bulk-lookup` IPC. Shows which settings in the comparison matrix map to CIS benchmark rules and their severity. Requires CIS data to be present (see [Benchmark Mapping](#benchmark-mapping)).
 
 ## Azure Policy CIS JSON
 
-The JSON format exported from the Azure portal containing CIS benchmark rule mappings for guest configuration policies. ConfigForge ingests these files on the CIS Mapping page alongside XCCDF files. Each JSON carries a `settingsReference[]` array that maps policy settings to CIS rule IDs.
+The JSON format exported from the Azure portal containing CIS benchmark rule mappings for guest configuration policies. ConfigForge ingests these files on the Benchmark Mapping page alongside XCCDF files. Each JSON carries a `settingsReference[]` array that maps policy settings to CIS rule IDs.
 
 ## Change summary
 
@@ -80,7 +80,7 @@ re-fed content is detectable. A detection helper
 (`assertNotAiGenerated`) exists but is **not currently wired** into the
 analyzer's ingestion path, so the marker is advisory (labeling, not
 enforcement) today. Implemented in
-[`packages/core/src/ai/circular-guard.ts`](https://github.com/ABMFST/ConfigForge/blob/main/packages/core/src/ai/circular-guard.ts).
+[`packages/core/src/ai/circular-guard.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/ai/circular-guard.ts).
 
 ## CLI_REQUIRED gate
 
@@ -122,10 +122,12 @@ feature set, controlled by a git branch. Two flavors today:
 - **`main`** - Windows + Linux full build. Includes
   Deploy / Audit / Revert / elevation / health / audit-results.
 - **`mac-author-build`** - macOS author-only. The preload omits the
-  `deploy`, `elevation`, `health`, and `auditResults` namespaces;
+  `health`, `deploy`, `deployRecovery`, `revert`, `auditResults`, and
+  `system` namespaces;
   any renderer code that may run on either flavor must use
   [`safeCfs` / `hasCfsNamespace`](#safecfs--hascfsnamespace) to
-  read them.
+  read them. Elevation methods live under `system`; there is no
+  `elevation` namespace. Diff and Audit Pack export remain available.
 
 Cross-merge is forbidden - sync the two via `git cherry-pick`.
 
@@ -203,7 +205,7 @@ and timer cleanup are locked in by hook-level regression tests.
 ## Preload bridge
 
 The single file
-([`apps/desktop/electron/preload.ts`](https://github.com/ABMFST/ConfigForge/blob/main/apps/desktop/electron/preload.ts))
+([`apps/desktop/electron/preload.ts`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/electron/preload.ts))
 that uses `contextBridge.exposeInMainWorld('cfs', { … })` to expose
 the `window.cfs.*` API to the sandboxed renderer. **The only**
 cross-layer surface - the renderer has no Node access, no direct
@@ -239,7 +241,7 @@ A single entry in the manifest's `resources:` array. Has a
 ## safeCfs / hasCfsNamespace
 
 CF-SEC-015 helpers in
-[`apps/desktop/src/lib/cfs.ts`](https://github.com/ABMFST/ConfigForge/blob/main/apps/desktop/src/lib/cfs.ts).
+[`apps/desktop/src/lib/cfs.ts`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/src/lib/cfs.ts).
 `hasCfsNamespace(key)` returns `true` when `window.cfs[key]` is
 present on the current [flavor](#flavor); `safeCfs(key)` returns
 either the namespace object or `undefined`. Required for any

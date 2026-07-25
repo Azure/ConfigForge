@@ -4,7 +4,10 @@ ConfigForge — the Electron 42 + React 18 + FluentUI v9 + Vite desktop app.
 
 Two parallel flavors:
 - **`main` branch**: Windows + Linux full build with deploy / elevation / health / audit-results wired through the preload bridge.
-- **`mac-author-build` branch**: macOS author-only flavor. Preload omits deploy / elevation / health / auditResults; renderer code uses `safeCfs()` / `hasCfsNamespace()` from `src/lib/cfs.ts` for flavor-conditional paths.
+- **`mac-author-build` branch**: macOS author-only flavor. Preload omits
+  `health`, `deploy`, `deployRecovery`, `revert`, `auditResults`, and `system`;
+  renderer code uses `safeCfs()` / `hasCfsNamespace()` from `src/lib/cfs.ts`
+  for flavor-conditional paths.
 
 This workspace replaced the legacy Next.js web app in the Phase 10 cutover (Sept 2025).
 
@@ -128,7 +131,10 @@ See [`../../AGENTS.md`](../../AGENTS.md) for the full page-split convention.
 If you're working on `mac-author-build`:
 
 - `npm run dev:author` / `npm run build:author` / `npm run dist:mac:author` are the entry points.
-- Renderer code that needs `deploy` / `elevation` / `health` / `auditResults` must use `safeCfs('deploy')?.run(...)` or gate on `hasCfsNamespace('deploy')`. Direct `cfs.deploy.run(...)` will crash because those preload namespaces are absent.
+- Renderer code that needs `health`, `deploy`, `deployRecovery`, `revert`,
+  `auditResults`, or `system` must use `safeCfs()` or gate on
+  `hasCfsNamespace()`. Direct access crashes when the namespace is absent.
+  Elevation methods are under `system`; there is no `elevation` namespace.
 - The `chmod-oscfg.js` postinstall script is still in place because the mac dev-drop path uses the bundled binary; do not remove it on this branch.
 - E2E specs that exercise deploy / elevation flows are excluded from the author build; the Playwright smoke spec gates on `HAS_DEPLOY`.
 - Preview macOS Author builds are unsigned; after copying to Applications, clear quarantine with `xattr -cr "/Applications/ConfigForge Author.app"` if Gatekeeper blocks launch.

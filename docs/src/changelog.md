@@ -3,6 +3,31 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## Unreleased - macOS Author 0.3.93-author.1-ready
+
+`0.3.93-author.1` is a planned version. It has no package bump, tag, or GitHub
+release yet. PR #77 has completed the PR #76 source port; the exact release
+candidate still requires final full-suite and packaging validation.
+
+- PR [#75](https://github.com/Azure/ConfigForge/pull/75) at `3086ef0`
+  restores macOS parity for the five-source New Baseline setup, binary XLSX
+  import, localized My Baselines dates, selection-aware Pairwise/Matrix Diff,
+  unsaved-close guards, per-baseline Code/Visual preferences, read-only Code
+  guidance, and current Benchmark Mapping headings.
+- PR [#76](https://github.com/Azure/ConfigForge/pull/76) at `278dad6`
+  completes nested Enter/Tab navigation on `main`: Enter moves down, final
+  Enter appends and focuses, Tab moves right, empty arrays become focusable,
+  and invalid drafts retain focus.
+- PR [#77](https://github.com/Azure/ConfigForge/pull/77) at `aec0775` ports
+  the complete five-commit PR #76 series to `mac-author-build` without a
+  package-version or public-baseline change.
+- The macOS flavor remains author-only. Diff and Audit Pack PDF/Markdown
+  export are included; device deploy, audit, enforce, revert, elevation,
+  health, and audit-results storage are not.
+- Thirty-one mirror-specific lockfile URLs are normalized to
+  `registry.npmjs.org` without package-version or integrity changes so public
+  restores do not depend on the optional Microsoft mirror.
+
 ## v0.3.92 — 2026-07-24
 
 - **Patched the desktop update, packaging, CSS, and archive toolchains.** The release closes the updater redirect, AppImage search-path, PostCSS source-map traversal, and `tar` recursion advisories.
@@ -265,7 +290,7 @@ Full user-interface localization via `react-i18next`: the app auto-detects the O
 
 ## v0.3.4 through v0.3.14
 
-Releases v0.3.4 through v0.3.14 continued hardening the CIS pipeline, added the CIS Diff tab to the Diff page (`cfs:cis:bulk-lookup` IPC), improved macOS author-build parity, and shipped incremental reliability and UX fixes. See [`CHANGELOG.md`](https://github.com/ABMFST/ConfigForge/blob/main/CHANGELOG.md) at the repo root for per-release detail.
+Releases v0.3.4 through v0.3.14 continued hardening the CIS pipeline, added the CIS Diff tab to the Diff page (`cfs:cis:bulk-lookup` IPC), improved macOS author-build parity, and shipped incremental reliability and UX fixes. See [`CHANGELOG.md`](https://github.com/Azure/ConfigForge/blob/main/CHANGELOG.md) at the repo root for per-release detail.
 
 ## v0.3.3 - Stable-width audit counter + CIS Mapping file checklist
 
@@ -305,13 +330,13 @@ Deploy risk-acknowledgment dialog, UX polish pass, and Microsoft legal alignment
 
 ## v0.2.5 through v0.2.8 - Diff cross-type matching + edge case hardening
 
-Diff gained two-pass cross-type matching so rules wrapped differently (bare CSP vs Test-wrapped CSP) compare correctly. Matrix-diff edge cases around cross-type merge, empty-value equivalence, and quiet-mode filtering hardened. See [`CHANGELOG.md`](https://github.com/ABMFST/ConfigForge/blob/main/CHANGELOG.md) at the repo root for per-release detail.
+Diff gained two-pass cross-type matching so rules wrapped differently (bare CSP vs Test-wrapped CSP) compare correctly. Matrix-diff edge cases around cross-type merge, empty-value equivalence, and quiet-mode filtering hardened. See [`CHANGELOG.md`](https://github.com/Azure/ConfigForge/blob/main/CHANGELOG.md) at the repo root for per-release detail.
 
 ## v0.2.4 - Diff name-normalization + schema-canonical identity
 
 - **Diff: same rule under different naming conventions now matches.** v0.2.3 covered Registry; v0.2.4 closes the remaining gaps: `AuditPolicy.subcategory`, `UserRightsAssignment.policy`, `AccountPolicy.policy` matched by their enum-constrained schema fields; display-name normalization fallback (lowercase + strip non-alphanumeric) so `AuditLogon` / `Audit Logon` / `Audit-Logon` / `audit_logon` all collapse to the same rule. Negative controls preserve genuine add/remove cases (`AuditLogon` vs `AuditLogonEvents`; same name, different type).
 
-See [`CHANGELOG.md`](https://github.com/ABMFST/ConfigForge/blob/main/CHANGELOG.md) at the repo root for the full v0.2.2 / 0.2.3 / 0.2.4 detail.
+See [`CHANGELOG.md`](https://github.com/Azure/ConfigForge/blob/main/CHANGELOG.md) at the repo root for the full v0.2.2 / 0.2.3 / 0.2.4 detail.
 
 ## v0.2.3 - Azure Policy structural rewrite + diff semantic identity
 
@@ -336,7 +361,7 @@ Largest maintainer-facing release since the Electron migration:
 - **Prettier** added (config + scripts; not gated in CI).
 - **Test count** 882 → 1,093 on `main` / → 1,028 on `mac-author-build`.
 
-See [`CHANGELOG.md`](https://github.com/ABMFST/ConfigForge/blob/main/CHANGELOG.md) at the repo root for the full v0.2.1 detail.
+See [`CHANGELOG.md`](https://github.com/Azure/ConfigForge/blob/main/CHANGELOG.md) at the repo root for the full v0.2.1 detail.
 
 ## v0.2.0 - Bring-your-own-CLI + OSS readiness
 
@@ -347,7 +372,7 @@ The biggest change since the Electron migration:
 - **Binary resolver** now probes well-known install locations on Windows (App Execution Alias, winget Links shim, Program Files) and Linux (`/usr/bin`, `/usr/local/bin`, `/opt/osconfig`, `~/.local/bin`), plus Windows MSIX fallback via `Get-AppxPackage`.
 - Legal/OSS scaffolding: `LICENSE`, `NOTICE`, `THIRDPARTYNOTICES.md`, `SECURITY.md`, `CONTRIBUTING.md`. Test count 832 → 882.
 
-See [`CHANGELOG.md`](https://github.com/ABMFST/ConfigForge/blob/main/CHANGELOG.md) at the repo root for the full v0.2.0 detail.
+See [`CHANGELOG.md`](https://github.com/Azure/ConfigForge/blob/main/CHANGELOG.md) at the repo root for the full v0.2.0 detail.
 
 ## Wire audit-pack rationale-log loader
 
@@ -396,7 +421,7 @@ matrix - works exactly the same.
 License-compliance cleanup. Removes every CIS-derived YAML/JSON
 artifact from `public/_baselines/cis/` and the `cis-benchmark`
 catalog entries from
-[`src/data/baseline-catalog.ts`](https://github.com/ABMFST/ConfigForge/blob/main/src/data/baseline-catalog.ts).
+[`src/data/baseline-catalog.ts`](https://github.com/Azure/ConfigForge/blob/main/src/data/baseline-catalog.ts).
 The CIS Benchmarks ship under terms incompatible with redistributing
 derived artifacts in a public repo; the user supplies their own
 legally licensed copies into `public/_baselines/cis/_data/`. Loaders
@@ -429,7 +454,7 @@ codebase. Highlights:
 ## Full rationale log page
 
 `/manifests/[id]/rationale` is now a real page (
-[`src/app/manifests/[id]/rationale/page.tsx`](https://github.com/ABMFST/ConfigForge/blob/main/src/app/manifests/%5Bid%5D/rationale/page.tsx))
+[`src/app/manifests/[id]/rationale/page.tsx`](https://github.com/Azure/ConfigForge/blob/main/src/app/manifests/%5Bid%5D/rationale/page.tsx))
 instead of a 404. Shows every rationale entry across all resources,
 with a search filter, a skipped-vs-captured toggle, per-row stats,
 and a CSV-injection-safe download button. The editor sidebar's
