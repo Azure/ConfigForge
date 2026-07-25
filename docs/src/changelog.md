@@ -453,9 +453,10 @@ codebase. Highlights:
 
 ## Full rationale log page
 
-`/manifests/[id]/rationale` is now a real page (
-[`src/app/manifests/[id]/rationale/page.tsx`](https://github.com/Azure/ConfigForge/blob/main/src/app/manifests/%5Bid%5D/rationale/page.tsx))
-instead of a 404. Shows every rationale entry across all resources,
+`/manifests/[id]/rationale` became a real page instead of a 404 in the retired
+web app. Its current Electron implementation is
+[`apps/desktop/src/pages/ManifestRationale.tsx`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/src/pages/ManifestRationale.tsx).
+It shows every rationale entry across all resources,
 with a search filter, a skipped-vs-captured toggle, per-row stats,
 and a CSV-injection-safe download button. The editor sidebar's
 "View all →" link finally goes somewhere.
