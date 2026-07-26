@@ -3,21 +3,30 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
-## Unreleased
+## macOS Author v0.3.93-author.2 — 2026-07-25
 
-- Fixed the three standalone WS2025 audit baselines
-  (`public/_baselines/ws2025-{member-server,domain-controller,workgroup-member}.osc.yaml`)
-  by replacing them with reviewed artifacts that convert the failing
-  `type: array` Policy CSP resources to dedicated providers. Standalone
-  Server 2025 audits no longer hit those read failures; ten supported
-  residual CSP settings remain per profile. Resource counts in
-  `apps/desktop/src/data/baseline-catalog.ts` change to 320, 321, and 296
-  respectively.
-- Removed the `githubUrl` ("Source" link) for these same three baselines,
-  since the local manifests now differ from the upstream
-  `microsoft/osconfig` files they pointed to. `manifestUrl` and
-  `scenarioName` for all three are unchanged, and no other catalog entry is
-  affected.
+The `mac-v0.3.93-author.2` GitHub release is a draft and has not been
+published. This draft contains PR
+[#83](https://github.com/Azure/ConfigForge/pull/83) by
+[@ABMFST](https://github.com/ABMFST).
+
+- **Fix standalone Windows Server 2025 baseline audits.** The Member Server,
+  Domain Controller, and Workgroup Member manifests now use supported
+  dedicated providers for settings that previously failed as `type: array`
+  Policy CSP resources. Ten supported residual CSP settings remain per
+  profile, and the corrected resource counts are 320, 321, and 296.
+- **Remove misleading Source links from the corrected WS2025 baselines.**
+  Their local manifests now differ materially from the upstream files; their
+  manifest locations and scenario identities remain unchanged, and no other
+  catalog Source link is affected.
+- **Improve CIS mappings for corrected non-registry settings.** Benchmark
+  Mapping now resolves Increase scheduling priority, Password must meet
+  complexity requirements, and Guest account status without bundling licensed
+  CIS data.
+- **Keep User Rights Assignment and Account Policy settings distinct in
+  analysis and Matrix Diff.** Schema-correct manifests now use each setting's
+  `properties.name` identity, with legacy `properties.policy` support, instead
+  of collapsing multiple settings into one type-only row.
 
 ## macOS Author v0.3.93-author.1 — 2026-07-25
 
