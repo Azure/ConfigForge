@@ -1,5 +1,24 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- **Fixed the three standalone WS2025 audit baselines.** `ws2025-member-server.osc.yaml`,
+  `ws2025-domain-controller.osc.yaml`, and `ws2025-workgroup-member.osc.yaml`
+  under `public/_baselines/` are replaced with reviewed artifacts that convert
+  the failing `type: array` Policy CSP resources to dedicated providers (e.g.
+  `Microsoft.Windows/Registry`, `Microsoft.Windows/AccountPolicy`). This
+  eliminates the standalone Server 2025 read failures while retaining ten
+  supported residual CSP settings per profile. Resource counts change to 320
+  (Member Server), 321 (Domain Controller), and 296 (Workgroup Member) in
+  `apps/desktop/src/data/baseline-catalog.ts`.
+- **Removed the three WS2025 upstream "Source" links.** The local manifests
+  now differ materially from the `microsoft/osconfig` files the removed
+  `githubUrl` values pointed to, so the Library's Source button no longer
+  renders for these three baselines until a matching upstream reference
+  exists. `manifestUrl` and `scenarioName` for all three are unchanged.
+
 ## [0.3.93-author.1] - 2026-07-25
 
 > The `mac-v0.3.93-author.1` GitHub release is intentionally a draft. This

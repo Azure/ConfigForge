@@ -275,11 +275,17 @@ function makeRowKey(r: FlatResource): string {
   }
 
   // UserRightsAssignment / AccountPolicy schema-canonical identity.
+  // `policy` was the originally-assumed field name; the real oscfg schema
+  // (osc-manifest-schema.json) uses `name` as the enum-constrained
+  // privilege / account-policy identifier for both types. Accept either
+  // so schema-correct manifests (`name`) and legacy fixtures (`policy`)
+  // both resolve to a stable per-privilege identity instead of collapsing
+  // to the bare `type` bucket.
   if (
     r.type === 'Microsoft.Windows/UserRightsAssignment' ||
     r.type === 'Microsoft.Windows/AccountPolicy'
   ) {
-    const policy = getString(r.properties, 'policy');
+    const policy = getString(r.properties, 'policy') ?? getString(r.properties, 'name');
     if (policy) return `${r.type}:${policy}`;
   }
 
