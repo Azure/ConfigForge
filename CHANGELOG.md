@@ -1,23 +1,32 @@
 # Changelog
 
-## [Unreleased]
+## [0.3.93-author.2] - 2026-07-25
+
+> The `mac-v0.3.93-author.2` GitHub release is a draft and has not been
+> published. Changes in this draft come from PR
+> [#83](https://github.com/Azure/ConfigForge/pull/83) by
+> [@ABMFST](https://github.com/ABMFST).
 
 ### Fixed
 
-- **Fixed the three standalone WS2025 audit baselines.** `ws2025-member-server.osc.yaml`,
-  `ws2025-domain-controller.osc.yaml`, and `ws2025-workgroup-member.osc.yaml`
-  under `public/_baselines/` are replaced with reviewed artifacts that convert
-  the failing `type: array` Policy CSP resources to dedicated providers (e.g.
-  `Microsoft.Windows/Registry`, `Microsoft.Windows/AccountPolicy`). This
-  eliminates the standalone Server 2025 read failures while retaining ten
-  supported residual CSP settings per profile. Resource counts change to 320
-  (Member Server), 321 (Domain Controller), and 296 (Workgroup Member) in
-  `apps/desktop/src/data/baseline-catalog.ts`.
-- **Removed the three WS2025 upstream "Source" links.** The local manifests
-  now differ materially from the `microsoft/osconfig` files the removed
-  `githubUrl` values pointed to, so the Library's Source button no longer
-  renders for these three baselines until a matching upstream reference
-  exists. `manifestUrl` and `scenarioName` for all three are unchanged.
+- **Fix standalone Windows Server 2025 baseline audits.** Replace the Member
+  Server, Domain Controller, and Workgroup Member manifests with reviewed
+  artifacts that move failing `type: array` Policy CSP settings to supported
+  dedicated providers while retaining ten supported residual CSP settings per
+  profile. The corrected catalog counts are 320, 321, and 296. (#83)
+- **Remove misleading Source links from the corrected WS2025 baselines.** The
+  local manifests now differ materially from the upstream
+  `microsoft/osconfig` files; their Library entries keep the same manifest
+  locations and scenario identities, and other Source links remain unchanged.
+  (#83)
+- **Improve CIS mappings for corrected non-registry settings.** Map
+  `SeIncreaseBasePriorityPrivilege`, `EnforcePasswordComplexity`, and
+  `EnableGuestAccount` to their corresponding benchmark rules without
+  bundling licensed CIS data. (#83)
+- **Keep User Rights Assignment and Account Policy settings distinct in
+  analysis and Matrix Diff.** Read the schema-correct `properties.name`
+  identity, with a legacy `properties.policy` fallback, so separate settings
+  no longer collapse into one type-only row. (#83)
 
 ## [0.3.93-author.1] - 2026-07-25
 
