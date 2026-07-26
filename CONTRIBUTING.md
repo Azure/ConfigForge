@@ -95,7 +95,17 @@ PRs that touch IPC contracts or `packages/core/handlers/` should add or extend t
 
 ## Pull request flow
 
-1. Open a feature branch from `main` (Win/Linux full build) or `mac-author-build` (macOS author flavor). For cross-flavor changes, push to `main` first and cherry-pick to `mac-author-build` (the two are kept in lock-step but never auto-merged).
+ConfigForge is community-maintained by
+[@ABMFST](https://github.com/ABMFST), the current repository maintainer.
+The maintainer approves merges, creates immutable release tags and draft
+releases, and publishes only after reviewing release assets, checksums, and
+the software bill of materials (SBOM).
+
+1. Open a feature branch from `main` (Win/Linux full build) or
+   `mac-author-build` (macOS author flavor). For cross-flavor changes, land on
+   `main` first, then cherry-pick or manually port the reviewed commit through
+   a `mac-author-build` PR. Do not merge the two active branches into each
+   other.
 2. Run the test gates above.
 3. Open a PR with a description that calls out:
    - What changed and why (link to issue if applicable)

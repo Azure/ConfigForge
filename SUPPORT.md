@@ -7,6 +7,10 @@ as-is for experimentation, learning, and community contribution. It is not an
 officially supported Microsoft product and has no response-time or resolution
 service-level agreement.
 
+The current repository maintainer is
+[@ABMFST](https://github.com/ABMFST). Repository ownership is also recorded in
+[`.github/CODEOWNERS`](./.github/CODEOWNERS).
+
 Maintainers review issues and pull requests on a best-effort basis. Response
 time depends on availability, reproducibility, project scope, and community
 participation.
