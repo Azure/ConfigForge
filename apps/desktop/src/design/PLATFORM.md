@@ -132,7 +132,10 @@ macOS.
 
 **Rule:** branch parity is maintained by cherry-pick. **Do not cross-merge** `main` ↔ `mac-author-build`. Mac-flavor-specific changes (anything that touches `electron-builder.author.yml`, the deploy/elevation/health drop list, or the unsigned-Gatekeeper UX) belong on `mac-author-build`. Everything else lands on `main` first and gets cherry-picked across.
 
-**Rule:** Mac branch CI is `workflow_dispatch` only — trigger with `gh workflow run "PR check" --ref mac-author-build` after a push. This is intentional: it keeps the auto-fire CI minute budget on `main`, the active Win/Linux line.
+**Rule:** Pull requests and pushes on `mac-author-build` run `PR check`
+automatically. Manual dispatch with
+`gh workflow run "PR check" --ref mac-author-build` remains available for an
+explicit re-run.
 
 Mac titlebar / Mica / Linux-frame guidance below applies to the Win + Linux build. The macOS author flavor uses Electron's default titlebar treatment on macOS (the traffic-light controls in the top-left); there is no custom `<TitleBar />` rendered.
 

@@ -102,7 +102,9 @@ PRs that touch IPC contracts or `packages/core/handlers/` should add or extend t
    - Whether IPC contracts or registered resource types changed
    - Test coverage added or updated
    - Any user-visible UX impact
-4. CI runs the same gates. **For `mac-author-build` PRs, CI is `workflow_dispatch` only** — trigger manually with `gh workflow run "PR check" --ref mac-author-build`. The PR is mergeable when CI is green and a maintainer has approved.
+4. CI runs the same gates automatically for pull requests and pushes on both
+   active branches. Manual `workflow_dispatch` remains available for explicit
+   re-runs. The PR is mergeable when CI is green and a maintainer has approved.
 
 ## Filing OSConfig CLI bugs
 
@@ -110,6 +112,7 @@ Bugs in the underlying `oscfg` CLI are not bugs in ConfigForge. File them upstre
 
 ## Getting help
 
+- Review [SUPPORT.md](./SUPPORT.md) for the best-effort support policy.
 - GitHub Discussions (when enabled), design questions, "should I" questions, architecture chat.
 - GitHub Issues, bugs and feature requests.
 - For security vulnerabilities, see [SECURITY.md](./SECURITY.md), not Issues.

@@ -2,6 +2,7 @@
   "name": "configforge",
   "version": "0.3.93",
   "private": true,
+  "license": "MIT",
   "description": "ConfigForge \u2014 Cross-platform Electron desktop app for OSConfig security baseline authoring",
   "engines": {
     "node": ">=22.0.0 <23.0.0",

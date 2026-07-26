@@ -14,7 +14,8 @@
 #   - public/_baselines/ stays inside the asar — those are JSON/YAML
 #     files that read fine from inside the packed asar.
 #
-# Phase 8 will layer in Authenticode signing (Windows) + auto-updater.
+# Release artifacts are unsigned by design. The publish block only configures
+# the GitHub Releases endpoint used by supported packaged auto-update flows.
 
 appId: community.configforge
 productName: ConfigForge
@@ -60,6 +61,8 @@ asarUnpack:
 # process.resourcesPath. The Electron runtime path strategy reads
 # from <process.resourcesPath>/public-assets/ in production; in dev
 # the strategy falls back to <repo>/public/.
+# User-supplied CIS benchmark data under `_baselines/cis/` is intentionally
+# excluded. `scripts/verify-public-package-assets.mjs` enforces this policy.
 #
 # NOTE: The bundled OSConfig CLI binary is intentionally NOT shipped
 # from this app (v0.2.0+). Users install `oscfg` separately — see
@@ -71,7 +74,6 @@ extraResources:
     filter:
       - '_baselines/**/*.osc.yaml'
       - '_baselines/**/*.csv'
-      - '_baselines/cis/_data/**/*'
 
 # `fpm` is per-target, not under linux:. It's a valid prop on
 # the rpm/deb option blocks. Override electron-builder's default

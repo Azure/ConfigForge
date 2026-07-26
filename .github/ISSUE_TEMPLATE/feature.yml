@@ -1,0 +1,61 @@
+name: Feature request
+description: Propose an improvement to ConfigForge.
+title: '[Feature]: '
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Describe the user problem before proposing an implementation.
+        Use the support contact link for usage questions.
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: User problem
+      description: What workflow or outcome is difficult today?
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed outcome
+      description: Describe the desired behavior without requiring a specific implementation.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+      description: Describe current workarounds or other approaches.
+
+  - type: dropdown
+    id: flavor
+    attributes:
+      label: Applicable edition
+      options:
+        - Shared Full and Author behavior
+        - Full edition only
+        - macOS Author edition only
+        - Not sure
+    validations:
+      required: true
+
+  - type: textarea
+    id: security
+    attributes:
+      label: Security, privacy, or packaging considerations
+      description: Note any new network access, data handling, privileges, dependencies, or packaged assets.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues and documentation first.
+          required: true
+        - label: This request does not include secrets, personal data, or licensed CIS content.
+          required: true

@@ -3,7 +3,8 @@
 > **v0.3.48:** Intelligent Diff Insights is a local renderer/core
 > feature. No OSConfig CLI required and no network required. It works
 > identically in Editor mode (amber footer pill) and CLI-installed mode.
-> AI rationale-assist is the only optional online feature.
+> ConfigForge does not call an external artificial intelligence (AI) or
+> large language model (LLM) service for this feature.
 
 The Intelligent Diff Insights panel explains a pairwise diff with a
 locally-computed summary, risk badge, and source/provenance panel. The
