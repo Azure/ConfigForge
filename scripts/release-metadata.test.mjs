@@ -80,7 +80,10 @@ describe('public release metadata', () => {
     ]);
 
     expect(packageJson.overrides['brace-expansion@5']).toBe('5.0.8');
-    expect(lockfile.packages['node_modules/brace-expansion']).toEqual({
+    // Partial matcher: pins the security-relevant fields without failing if
+    // npm adds extra metadata keys to this record in a future lockfile
+    // regeneration.
+    expect(lockfile.packages['node_modules/brace-expansion']).toMatchObject({
       version: '5.0.8',
       resolved: 'https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.8.tgz',
       integrity:
