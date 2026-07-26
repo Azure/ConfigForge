@@ -6,7 +6,7 @@ on:
     paths:
       - scripts/capture-screenshots.mjs
       - scripts/screenshot-fixtures.mjs
-      - scripts/screenshot-fixtures.test.mjs
+      - scripts/screenshot-fixtures.node-test.mjs
       - .github/workflows/screenshots.yml
   workflow_dispatch:
 
@@ -37,7 +37,7 @@ jobs:
         run: npm ci
 
       - name: Test fixture generation
-        run: node --test scripts/screenshot-fixtures.test.mjs
+        run: node --test scripts/screenshot-fixtures.node-test.mjs
 
       - name: Build desktop app
         run: npm run desktop:build
