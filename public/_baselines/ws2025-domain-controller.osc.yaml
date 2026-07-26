@@ -18,14 +18,13 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_AllowAnonymousSIDOrNameTranslation
-          type: integer
-          value: 0
+          name: EnableAnonymousNameTranslation
+          value: false
       schema:
         oneOf:
-          - const: 0
+          - const: false
           - type: 'null'
   - name: AllowCustomSSPAPIntoLSASS
     type: Microsoft.OSConfig/Test
@@ -45,10 +44,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Devices_AllowedToFormatAndEjectRemovableMedia
-          type: string
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
+          valueName: AllocateDASD
+          valueType: String
           value: '0'
       schema: {}
   - name: AllowICMPRedirectsToOverrideOSPFGeneratedRoutes
@@ -69,21 +69,22 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_AllowLocalSystemNULLSessionFallback
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
+          valueName: AllowNullSessionFallback
+          valueType: Dword
           value: 0
       schema: {}
   - name: AllowLocalSystemToUseComputerIdentityForNTLM
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_AllowLocalSystemToUseComputerIdentityForNTLM
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          valueName: UseMachineId
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -107,11 +108,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Shutdown_AllowSystemToBeShutDownWithoutHavingToLogOn
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: ShutdownWithoutLogon
+          valueType: Dword
           value: 0
       schema: {}
   - name: AllowTheComputerToIgnoreNetBIOSNameReleaseRequestsExceptFromWINSServers
@@ -132,11 +133,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_AllowUIAccessApplicationsToPromptForElevation
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: EnableUIADesktopToggle
+          valueType: Dword
           value: 0
       schema:
         oneOf:
@@ -146,11 +147,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkServer_AmountOfIdleTimeRequiredBeforeSuspendingSession
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          valueName: AutoDisconnect
+          valueType: Dword
           value: 15
       schema:
         minimum: 1
@@ -173,20 +174,22 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/ApplicationManagement/MSIAllowUserControlOverInstall
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Installer
+          valueName: EnableUserControl
+          valueType: Dword
           value: 0
       schema: {}
   - name: ApplicationManagementMSIAlwaysInstallWithElevatedPrivileges
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/ApplicationManagement/MSIAlwaysInstallWithElevatedPrivileges
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Installer
+          valueName: AlwaysInstallElevated
+          valueType: Dword
           value: 0
       schema: {}
   - name: AppRuntimeAllowMicrosoftAccountsToBeOptional
@@ -207,10 +210,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditAccountLockout
-          type: integer
+          subcategory: '{0CCE9217-69AE-11D9-BED3-505054503030}'
           value: 2
       schema:
         enum:
@@ -220,10 +222,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditAuthenticationPolicyChange
-          type: integer
+          subcategory: '{0CCE9230-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -233,10 +234,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditAuthorizationPolicyChange
-          type: integer
+          subcategory: '{0CCE9231-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -287,10 +287,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditComputerAccountManagement
-          type: integer
+          subcategory: '{0CCE9236-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -300,10 +299,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogon_AuditCredentialValidation
-          type: integer
+          subcategory: '{0CCE923F-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -313,10 +311,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditDetailedFileShare
-          type: integer
+          subcategory: '{0CCE9244-69AE-11D9-BED3-505054503030}'
           value: 2
       schema:
         enum:
@@ -326,10 +323,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceAccess
-          type: integer
+          subcategory: '{0CCE923B-69AE-11D9-BED3-505054503030}'
           value: 2
       schema:
         enum:
@@ -339,10 +335,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceChanges
-          type: integer
+          subcategory: '{0CCE923C-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -352,10 +347,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceReplication
-          type: integer
+          subcategory: '{0CCE923D-69AE-11D9-BED3-505054503030}'
           value: 0
       schema:
         minimum: 0
@@ -363,10 +357,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditDistributionGroupManagement
-          type: integer
+          subcategory: '{0CCE9238-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -376,10 +369,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditFileShare
-          type: integer
+          subcategory: '{0CCE9224-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -389,10 +381,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditGroupMembership
-          type: integer
+          subcategory: '{0CCE9249-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -416,10 +407,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditIPsecDriver
-          type: integer
+          subcategory: '{0CCE9213-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -429,10 +419,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogon_AuditKerberosAuthenticationService
-          type: integer
+          subcategory: '{0CCE9242-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -442,10 +431,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogon_AuditKerberosServiceTicketOperations
-          type: integer
+          subcategory: '{0CCE9240-69AE-11D9-BED3-505054503030}'
           value: 2
       schema:
         oneOf:
@@ -455,10 +443,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditLogoff
-          type: integer
+          subcategory: '{0CCE9216-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -468,10 +455,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditLogon
-          type: integer
+          subcategory: '{0CCE9215-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -481,10 +467,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditMPSSVCRuleLevelPolicyChange
-          type: integer
+          subcategory: '{0CCE9232-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -494,10 +479,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditOtherAccountManagementEvents
-          type: integer
+          subcategory: '{0CCE923A-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -507,10 +491,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditOtherLogonLogoffEvents
-          type: integer
+          subcategory: '{0CCE921C-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -520,10 +503,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditOtherObjectAccessEvents
-          type: integer
+          subcategory: '{0CCE9227-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -533,10 +515,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditOtherPolicyChangeEvents
-          type: integer
+          subcategory: '{0CCE9234-69AE-11D9-BED3-505054503030}'
           value: 2
       schema:
         enum:
@@ -546,10 +527,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditOtherSystemEvents
-          type: integer
+          subcategory: '{0CCE9214-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -559,10 +539,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/DetailedTracking_AuditPNPActivity
-          type: integer
+          subcategory: '{0CCE9248-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         oneOf:
@@ -572,10 +551,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditPolicyChange
-          type: integer
+          subcategory: '{0CCE922F-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         oneOf:
@@ -585,10 +563,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/DetailedTracking_AuditProcessCreation
-          type: integer
+          subcategory: '{0CCE922B-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         oneOf:
@@ -598,10 +575,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditRemovableStorage
-          type: integer
+          subcategory: '{0CCE9245-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -611,10 +587,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditSecurityGroupManagement
-          type: integer
+          subcategory: '{0CCE9237-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -624,10 +599,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditSecurityStateChange
-          type: integer
+          subcategory: '{0CCE9210-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -637,10 +611,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditSecuritySystemExtension
-          type: integer
+          subcategory: '{0CCE9211-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -650,10 +623,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PrivilegeUse_AuditSensitivePrivilegeUse
-          type: integer
+          subcategory: '{0CCE9228-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -705,10 +677,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditSpecialLogon
-          type: integer
+          subcategory: '{0CCE921B-69AE-11D9-BED3-505054503030}'
           value: 1
       schema:
         enum:
@@ -718,10 +689,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditSystemIntegrity
-          type: integer
+          subcategory: '{0CCE9212-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -731,10 +701,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditUserAccountManagement
-          type: integer
+          subcategory: '{0CCE9235-69AE-11D9-BED3-505054503030}'
           value: 3
       schema:
         oneOf:
@@ -786,11 +755,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_BehaviorOfTheElevationPromptForAdministrators
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: ConsentPromptBehaviorAdmin
+          valueType: Dword
           value: 2
       schema:
         minimum: 1
@@ -799,11 +768,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_BehaviorOfTheElevationPromptForStandardUsers
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: ConsentPromptBehaviorUser
+          valueType: Dword
           value: 0
       schema:
         oneOf:
@@ -858,17 +827,18 @@ resources:
         properties:
           keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation
           valueName: BlockNTLMServerExceptionList
-          valueType: Dword
+          valueType: MultiString
           value: []
       schema: {}
   - name: ClearVirtualMemoryPageFile
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Shutdown_ClearVirtualMemoryPageFile
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Memory Management
+          valueName: ClearPageFileAtShutdown
+          valueType: Dword
       schema:
         const: 0
   - name: ConfigureDNSClientNETBIOS
@@ -1038,7 +1008,7 @@ resources:
         properties:
           keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Cryptography\Configuration\SSL\00010002
           valueName: EccCurves
-          valueType: Dword
+          valueType: MultiString
           value:
             - NistP256
             - NistP384
@@ -1047,10 +1017,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Cryptography/ConfigureSystemCryptographyForceStrongKeyProtection
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Cryptography
+          valueName: ForceKeyProtection
+          valueType: Dword
           value: 2
       schema:
         oneOf:
@@ -1064,28 +1035,19 @@ resources:
         properties:
           keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Cryptography\Configuration\SSL\00010002
           valueName: Functions
-          valueType: Dword
-          value:
-            - TLS_AES_128_GCM_SHA256
-            - TLS_AES_256_GCM_SHA384
-            - TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256
-            - TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384
-            - TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-            - TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-            - TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256
-            - TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384
-            - TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256
-            - TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
+          valueType: String
+          value: >-
+            TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
       schema: {}
   - name: DetectApplicationInstallationsAndPromptForElevation
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_DetectApplicationInstallationsAndPromptForElevation
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: EnableInstallerDetection
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1150,33 +1112,48 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/AccountLockoutPolicy
-          type: string
-          value: AccountLockoutDuration:15, AccountLockoutThreshold:3, ResetAccountLockoutCounterAfter:15
+          name: LockoutDuration
+          value: 15
+      schema: {}
+  - name: DeviceLockAccountLockoutPolicy_LockoutThreshold
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: LockoutThreshold
+          value: 3
+      schema: {}
+  - name: DeviceLockAccountLockoutPolicy_LockoutReset
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: LockoutReset
+          value: 15
       schema: {}
   - name: DeviceLockClearTextPassword
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/ClearTextPassword
-          type: integer
-          value: 0
+          name: EnablePasswordReversibleEncryption
+          value: false
       schema:
         oneOf:
-          - const: 0
+          - const: false
           - type: 'null'
   - name: DeviceLockMaximumPasswordAge
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/MaximumPasswordAge
-          type: integer
+          name: MaximumPasswordAge
           value: 42
       schema:
         minimum: 1
@@ -1185,10 +1162,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/MinimumPasswordAge
-          type: integer
+          name: MinimumPasswordAge
           value: 1
       schema:
         minimum: 1
@@ -1196,23 +1172,21 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/PasswordComplexity
-          type: integer
-          value: 1
+          name: EnforcePasswordComplexity
+          value: true
       schema:
         oneOf:
-          - const: 1
+          - const: true
           - type: 'null'
   - name: DeviceLockPasswordHistorySize
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/PasswordHistorySize
-          type: integer
+          name: PasswordHistoryLength
           value: 24
       schema:
         oneOf:
@@ -1250,11 +1224,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_DigitallyEncryptOrSignSecureChannelDataAlways
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          valueName: RequireSignOrSeal
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1264,11 +1238,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_DigitallyEncryptSecureChannelDataWhenPossible
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          valueName: SealSecureChannel
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1278,11 +1252,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkClient_DigitallySignCommunicationsAlways
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+          valueName: RequireSecuritySignature
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1292,11 +1266,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkServer_DigitallySignCommunicationsAlways
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          valueName: RequireSecuritySignature
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1306,11 +1280,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkServer_DigitallySignCommunicationsIfClientAgrees
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          valueName: EnableSecuritySignature
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1320,11 +1294,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkClient_DigitallySignCommunicationsIfServerAgrees
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+          valueName: EnableSecuritySignature
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1334,11 +1308,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_DigitallySignSecureChannelDataWhenPossible
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          valueName: SignSecureChannel
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1348,10 +1322,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_DisableMachineAccountPasswordChanges
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          valueName: DisablePasswordChange
+          valueType: Dword
           value: 0
       schema:
         oneOf:
@@ -1365,7 +1340,7 @@ resources:
         properties:
           keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation
           valueName: DependOnService
-          valueType: Dword
+          valueType: MultiString
           value:
             - Bowser
             - MRxSmb20
@@ -1375,11 +1350,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkServer_DisconnectClientsWhenLogonHoursExpire
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          valueName: EnableForcedLogoff
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1433,22 +1408,22 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_DoNotAllowAnonymousEnumerationOfSAMAccounts
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          valueName: RestrictAnonymousSAM
+          valueType: Dword
           value: 1
       schema: {}
   - name: DoNotAllowAnonymousEnumerationOfSamAccountsAndShares
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_DoNotAllowAnonymousEnumerationOfSamAccountsAndShares
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          valueName: RestrictAnonymous
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1458,10 +1433,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/InteractiveLogon_DoNotDisplayLastSignedIn
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: DontDisplayLastUserName
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -1471,10 +1447,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/InteractiveLogon_DoNotRequireCTRLALTDEL
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: DisableCAD
+          valueType: Dword
           value: 0
       schema: {}
   - name: EnableAuthRateLimiter
@@ -1516,14 +1493,13 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_EnableGuestAccountStatus
-          type: integer
-          value: 0
+          name: EnableGuestAccount
+          value: false
       schema:
         oneOf:
-          - const: 0
+          - const: false
           - type: 'null'
   - name: EnableMailslotsLanmanServer
     type: Microsoft.OSConfig/Test
@@ -1690,20 +1666,22 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Experience/AllowWindowsConsumerFeatures
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+          valueName: DisableWindowsConsumerFeatures
+          valueType: Dword
           value: 1
       schema: {}
   - name: ExperienceDisableConsumerAccountStateContent
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Experience/DisableConsumerAccountStateContent
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+          valueName: DisableConsumerAccountStateContent
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -2185,11 +2163,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Audit_ForceAuditPolicySubcategorySettingsToOverrideAuditPolicyCategorySettings
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          valueName: SCENoApplyLegacyAuditPolicy
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -2269,10 +2247,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ImpersonateClient
-          type: array
+          name: SeImpersonatePrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-6'
@@ -2451,10 +2428,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_LANManagerAuthenticationLevel
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          valueName: LmCompatibilityLevel
+          valueType: Dword
           value: 5
       schema:
         oneOf:
@@ -2464,10 +2442,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LanmanWorkstation/EnableInsecureGuestLogons
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\LanmanWorkstation
+          valueName: AllowInsecureGuestAuth
+          valueType: Dword
           value: 0
       schema:
         oneOf:
@@ -2477,10 +2456,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_LDAPClientSigningRequirements
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LDAP
+          valueName: LDAPClientIntegrity
+          valueType: Dword
           value: 1
       schema:
         minimum: 1
@@ -2517,22 +2497,22 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_LetEveryonePermissionsApplyToAnonymousUsers
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          valueName: EveryoneIncludesAnonymous
+          valueType: Dword
           value: 0
       schema: {}
   - name: LimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_LimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          valueName: LimitBlankPasswordUse
+          valueType: Dword
           value: 1
       schema: {}
   - name: LogonBlockUserFromShowingAccountDetailsOnSignin
@@ -2580,10 +2560,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/InteractiveLogon_MachineInactivityLimit
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: InactivityTimeoutSecs
+          valueType: Dword
           value: 900
       schema:
         minimum: 1
@@ -2592,10 +2573,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_MaximumMachineAccountPasswordAge
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Netlogon\Parameters
+          valueName: MaximumPasswordAge
+          valueType: Dword
           value: 30
       schema:
         oneOf:
@@ -2631,11 +2613,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_MinimumSessionSecurityForNTLMSSPBasedClients
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
+          valueName: NTLMMinClientSec
+          valueType: Dword
           value: 537395200
       schema:
         oneOf:
@@ -2645,11 +2627,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkSecurity_MinimumSessionSecurityForNTLMSSPBasedServers
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
+          valueName: NTLMMinServerSec
+          valueType: Dword
           value: 537395200
       schema:
         oneOf:
@@ -2735,10 +2717,8 @@ resources:
         properties:
           keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths
           valueName: \\*\NETLOGON
-          valueType: Dword
-          value:
-            - RequireMutualAuthentication=1
-            - RequireIntegrity=1
+          valueType: String
+          value: RequireMutualAuthentication=1, RequireIntegrity=1
       schema: {}
   - name: NetworkProviderHardenedPathsSYSVOL
     type: Microsoft.OSConfig/Test
@@ -2748,10 +2728,8 @@ resources:
         properties:
           keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths
           valueName: \\*\SYSVOL
-          valueType: Dword
-          value:
-            - RequireMutualAuthentication=1
-            - RequireIntegrity=1
+          valueType: String
+          value: RequireMutualAuthentication=1, RequireIntegrity=1
       schema: {}
   - name: NetworkSecurityForceLogoffWhenLogonHoursExpire
     type: Microsoft.OSConfig/Test
@@ -2770,11 +2748,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_OnlyElevateUIAccessApplicationsThatAreInstalledInSecureLocations
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: EnableSecureUIAPaths
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -2844,11 +2822,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Devices_PreventUsersFromInstallingPrinterDriversWhenConnectingToSharedPrinters
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers
+          valueName: AddPrinterDrivers
+          valueType: Dword
           value: 1
       schema: {}
   - name: PrintersRestrictDriverInstallationToAdministrators
@@ -2869,10 +2847,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Privacy/AllowInputPersonalization
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\InputPersonalization
+          valueName: AllowInputPersonalization
+          valueType: Dword
           value: 0
       schema:
         oneOf:
@@ -2882,11 +2861,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/InteractiveLogon_PromptUserToChangePasswordBeforeExpiration
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon
+          valueName: PasswordExpiryWarning
+          valueType: Dword
           value: 14
       schema:
         minimum: 5
@@ -3031,10 +3010,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_RemotelyAccessibleRegistryPaths
-          type: array
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedExactPaths
+          valueName: Machine
+          valueType: MultiString
           value:
             - System\CurrentControlSet\Control\ProductOptions
             - System\CurrentControlSet\Control\Server Applications
@@ -3044,11 +3024,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_RemotelyAccessibleRegistryPathsAndSubpaths
-          type: array
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedPaths
+          valueName: Machine
+          valueType: MultiString
           value:
             - System\CurrentControlSet\Control\Print\Printers
             - System\CurrentControlSet\Services\Eventlog
@@ -3186,29 +3166,27 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_RenameAdministratorAccount
-          type: string
+          name: AdministratorAccountName
       schema: {}
   - name: RenameGuestAccount
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_RenameGuestAccount
-          type: string
+          name: GuestAccountName
       schema: {}
   - name: RequireCaseInsensitivityForNonWindowsSubsystems
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/SystemObjects_RequireCaseInsensitivityForNonWindowsSubsystems
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Kernel
+          valueName: ObCaseInsensitive
+          valueType: Dword
           value: 1
       schema: {}
   - name: RequireEncryption
@@ -3228,10 +3206,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/DomainMember_RequireStrongSessionKey
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          valueName: RequireStrongKey
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -3241,11 +3220,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_RestrictAnonymousAccessToNamedPipesAndShares
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          valueName: RestrictNullSessAccess
+          valueType: Dword
           value: 1
       schema: {}
   - name: RSSDisableEnclosureDownload
@@ -3266,11 +3245,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_RunAllAdministratorsInAdminApprovalMode
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: EnableLUA
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -3319,22 +3298,22 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkClient_SendUnencryptedPasswordToThirdPartySMBServers
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+          valueName: EnablePlainTextPassword
+          valueType: Dword
           value: 0
       schema: {}
   - name: ServerSPNTargetNameValidationLevel
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/MicrosoftNetworkServer_ServerSPNTargetNameValidationLevel
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\LanManServer\Parameters
+          valueName: SMBServerNameHardeningLevel
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -3344,21 +3323,22 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_SharesThatCanBeAccessedAnonymously
-          type: array
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          valueName: NullSessionShares
+          valueType: MultiString
           value: []
       schema: {}
   - name: SharingAndSecurityModelForLocalAccounts
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_SharingAndSecurityModelForLocalAccounts
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          valueName: ForceGuest
+          valueType: Dword
           value: 0
       schema: {}
   - name: ShellDataExecutionPrevention
@@ -3376,11 +3356,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Audit_ShutdownSystemImmediatelyIfUnableToLogSecurityAudits
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          valueName: CrashOnAuditFail
+          valueType: Dword
           value: 0
       schema: {}
   - name: SmartCardRemovalBehavior
@@ -3393,7 +3373,7 @@ resources:
           type: string
           value: '1'
       schema:
-        const: 1
+        const: '1'
   - name: SmartScreenEnableSmartScreenInShell
     type: Microsoft.OSConfig/Test
     properties:
@@ -3426,11 +3406,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/SystemObjects_StrengthenDefaultPermissionsOfInternalSystemObjects
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager
+          valueName: ProtectionMode
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -3440,11 +3420,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_SwitchToTheSecureDesktopWhenPromptingForElevation
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: PromptOnSecureDesktop
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -3587,10 +3567,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_UseAdminApprovalMode
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: FilterAdministratorToken
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -3600,20 +3581,18 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/AccessCredentialManagerAsTrustedCaller
-          type: array
+          name: SeTrustedCredManAccessPrivilege
           value: []
       schema: {}
   - name: UserRightsAccessFromNetwork
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/AccessFromNetwork
-          type: array
+          name: SeNetworkLogonRight
           value:
             - '*S-1-5-11'
             - '*S-1-5-32-544'
@@ -3623,20 +3602,18 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ActAsPartOfTheOperatingSystem
-          type: array
+          name: SeTcbPrivilege
           value: []
       schema: {}
   - name: UserRightsAdjustMemoryQuotasForProcess
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/AdjustMemoryQuotasForProcess
-          type: array
+          name: SeIncreaseQuotaPrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-19'
@@ -3646,10 +3623,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/AllowLocalLogOn
-          type: array
+          name: SeInteractiveLogonRight
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-9'
@@ -3658,10 +3634,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/AllowLogOnThroughRemoteDesktop
-          type: array
+          name: SeRemoteInteractiveLogonRight
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3669,10 +3644,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/BackupFilesAndDirectories
-          type: array
+          name: SeBackupPrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3680,10 +3654,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ChangeSystemTime
-          type: array
+          name: SeSystemtimePrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-32-549'
@@ -3693,10 +3666,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ChangeTimeZone
-          type: array
+          name: SeTimeZonePrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-19'
@@ -3705,10 +3677,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/CreateGlobalObjects
-          type: array
+          name: SeCreateGlobalPrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-6'
@@ -3719,10 +3690,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/CreatePageFile
-          type: array
+          name: SeCreatePagefilePrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3730,20 +3700,18 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/CreatePermanentSharedObjects
-          type: array
+          name: SeCreatePermanentPrivilege
           value: []
       schema: {}
   - name: UserRightsCreateSymbolicLinks
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/CreateSymbolicLinks
-          type: array
+          name: SeCreateSymbolicLinkPrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-83-0'
@@ -3752,20 +3720,18 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/CreateToken
-          type: array
+          name: SeCreateTokenPrivilege
           value: []
       schema: {}
   - name: UserRightsDebugPrograms
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/DebugPrograms
-          type: array
+          name: SeDebugPrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3773,10 +3739,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyAccessFromNetwork
-          type: array
+          name: SeDenyNetworkLogonRight
           value:
             - '*S-1-5-32-546'
       schema: {}
@@ -3784,10 +3749,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyLocalLogOn
-          type: array
+          name: SeDenyInteractiveLogonRight
           value:
             - '*S-1-5-32-546'
       schema: {}
@@ -3795,10 +3759,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyLogOnAsBatchJob
-          type: array
+          name: SeDenyBatchLogonRight
           value:
             - '*S-1-5-32-546'
       schema: {}
@@ -3806,10 +3769,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyLogOnAsService
-          type: array
+          name: SeDenyServiceLogonRight
           value:
             - '*S-1-5-32-546'
       schema: {}
@@ -3817,10 +3779,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyRemoteDesktopServicesLogOn
-          type: array
+          name: SeDenyRemoteInteractiveLogonRight
           value:
             - '*S-1-5-32-546'
       schema: {}
@@ -3828,10 +3789,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/EnableDelegation
-          type: array
+          name: SeEnableDelegationPrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3839,10 +3799,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/GenerateSecurityAudits
-          type: array
+          name: SeAuditPrivilege
           value:
             - '*S-1-5-19'
             - '*S-1-5-20'
@@ -3852,10 +3811,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/IncreaseSchedulingPriority
-          type: array
+          name: SeIncreaseBasePriorityPrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3863,10 +3821,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/LoadUnloadDeviceDrivers
-          type: array
+          name: SeLoadDriverPrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-32-550'
@@ -3875,20 +3832,18 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/LockMemory
-          type: array
+          name: SeLockMemoryPrivilege
           value: []
       schema: {}
   - name: UserRightsManageAuditingAndSecurityLog
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ManageAuditingAndSecurityLog
-          type: array
+          name: SeSecurityPrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3896,10 +3851,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ManageVolume
-          type: array
+          name: SeManageVolumePrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3907,10 +3861,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ModifyFirmwareEnvironment
-          type: array
+          name: SeSystemEnvironmentPrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3918,20 +3871,18 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ModifyObjectLabel
-          type: array
+          name: SeRelabelPrivilege
           value: []
       schema: {}
   - name: UserRightsProfileSingleProcess
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ProfileSingleProcess
-          type: array
+          name: SeProfileSingleProcessPrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3939,10 +3890,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ProfileSystemPerformance
-          type: array
+          name: SeSystemProfilePrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420'
@@ -3951,10 +3901,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/RemoteShutdown
-          type: array
+          name: SeRemoteShutdownPrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3962,10 +3911,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ReplaceProcessLevelToken
-          type: array
+          name: SeAssignPrimaryTokenPrivilege
           value:
             - '*S-1-5-19'
             - '*S-1-5-20'
@@ -3974,10 +3922,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/RestoreFilesAndDirectories
-          type: array
+          name: SeRestorePrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3985,10 +3932,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ShutDownTheSystem
-          type: array
+          name: SeShutdownPrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -3996,10 +3942,9 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/TakeOwnership
-          type: array
+          name: SeTakeOwnershipPrivilege
           value:
             - '*S-1-5-32-544'
       schema: {}
@@ -4007,11 +3952,11 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/Registry
         properties:
-          path: >-
-            ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/UserAccountControl_VirtualizeFileAndRegistryWriteFailuresToPerUserLocations
-          type: integer
+          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: EnableVirtualization
+          valueType: Dword
           value: 1
       schema:
         oneOf:
@@ -4123,7 +4068,7 @@ resources:
           valueType: String
           value: '1'
       schema:
-        const: 1
+        const: '1'
   - name: WinVerityTrustSignatureValidationVulnerabilityMitigation2
     type: Microsoft.OSConfig/Test
     properties:
@@ -4135,4 +4080,4 @@ resources:
           valueType: String
           value: '1'
       schema:
-        const: 1
+        const: '1'
