@@ -1,0 +1,86 @@
+name: Bug report
+description: Report a reproducible ConfigForge defect.
+title: '[Bug]: '
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Do not include secrets, personal data, or licensed CIS content.
+        Report security vulnerabilities through the security contact link instead of a public issue.
+
+  - type: input
+    id: version
+    attributes:
+      label: ConfigForge version
+      description: Include the tag, package version, or commit SHA.
+      placeholder: v0.3.93
+    validations:
+      required: true
+
+  - type: dropdown
+    id: flavor
+    attributes:
+      label: Edition
+      options:
+        - Full edition - Windows
+        - Full edition - Linux
+        - Author edition - macOS
+        - Source build or unknown
+    validations:
+      required: true
+
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Operating system version and relevant oscfg version, if installed.
+      placeholder: Windows 11 24H2; oscfg 1.3.9-preview11
+    validations:
+      required: true
+
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: Describe what happened and its user impact.
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: Reproduction steps
+      description: Provide the smallest reliable sequence that reproduces the problem.
+      placeholder: |
+        1. Open ...
+        2. Select ...
+        3. Observe ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+    validations:
+      required: true
+
+  - type: textarea
+    id: diagnostics
+    attributes:
+      label: Sanitized diagnostics
+      description: Add relevant logs or screenshots after removing secrets, personal data, and licensed benchmark content.
+
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Submission checks
+      options:
+        - label: I searched existing issues for a duplicate.
+          required: true
+        - label: This is not a security vulnerability.
+          required: true
+        - label: I removed secrets, personal data, and licensed CIS content.
+          required: true

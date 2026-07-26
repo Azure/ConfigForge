@@ -5,10 +5,12 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 ## macOS Author v0.3.93-author.2 — 2026-07-25
 
-The `mac-v0.3.93-author.2` GitHub release is a draft and has not been
-published. This draft contains PR
-[#83](https://github.com/Azure/ConfigForge/pull/83) by
-[@ABMFST](https://github.com/ABMFST).
+Annotated tag `mac-v0.3.93-author.2` resolves to
+`c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The matching GitHub release
+contains five verified assets but remains a draft and is unpublished.
+Workflow run
+[#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
+completed successfully.
 
 - **Fix standalone Windows Server 2025 baseline audits.** The Member Server,
   Domain Controller, and Workgroup Member manifests now use supported
@@ -30,8 +32,12 @@ published. This draft contains PR
 
 ## macOS Author v0.3.93-author.1 — 2026-07-25
 
-The `mac-v0.3.93-author.1` GitHub release is intentionally a draft and has not
-been published.
+Annotated tag `mac-v0.3.93-author.1` resolved to
+`099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. The matching GitHub release
+contains five verified assets but remains a draft and is unpublished.
+Workflow run
+[#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
+completed successfully.
 
 - PR [#75](https://github.com/Azure/ConfigForge/pull/75) at `3086ef0`
   restores macOS parity for the five-source New Baseline setup, binary XLSX

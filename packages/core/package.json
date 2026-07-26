@@ -2,6 +2,7 @@
   "name": "@configforge/core",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "description": "Platform-neutral core for ConfigForge. Holds manifest, history, audit-pack, oscfg wrapper, etc. Can be consumed by Electron main process, Next.js routes, vitest, or future CLI hosts.",
   "main": "./dist/index.js",
   "types": "./src/index.ts",

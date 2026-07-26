@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a security vulnerability
+    url: https://msrc.microsoft.com/report/vulnerability/new
+    about: Do not disclose security vulnerabilities in public GitHub issues.
+  - name: Support and usage guidance
+    url: https://github.com/Azure/ConfigForge/blob/main/SUPPORT.md
+    about: Review the project's best-effort support policy and troubleshooting resources.

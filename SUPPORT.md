@@ -1,13 +1,34 @@
 # Support
 
-## How to file issues and get help
+## Best-effort community support
 
-This project uses [GitHub Issues](https://github.com/Azure/ConfigForge/issues) to track bugs and feature requests. Please search the existing issues before filing new issues to avoid duplicates. For new issues, file your bug or feature request as a new issue.
+ConfigForge is an experimental, community-maintained project. It is provided
+as-is for experimentation, learning, and community contribution. It is not an
+officially supported Microsoft product and has no response-time or resolution
+service-level agreement.
 
-For help and questions about using this project, please file a GitHub Issue, or contact the maintainer:
+Maintainers review issues and pull requests on a best-effort basis. Response
+time depends on availability, reproducibility, project scope, and community
+participation.
 
-- **Maintainer:** Amir Bredy — [Amirbredy@microsoft.com](mailto:Amirbredy@microsoft.com)
+## Request help or report a defect
 
-## Microsoft Support Policy
+1. Review [`README.md`](./README.md), [`INSTALL.md`](./INSTALL.md), and the
+   documentation under [`docs/src`](./docs/src).
+2. Search existing [GitHub Issues](https://github.com/Azure/ConfigForge/issues).
+3. Use the bug or feature issue form. Include the ConfigForge version, edition,
+   operating system, reproduction steps, and sanitized diagnostics.
 
-ConfigForge is an experimental, community-maintained project. It is **not an officially supported Microsoft product**, and support is limited to the resources listed above. It is provided as-is for experimentation, learning, and community contribution.
+Do not include credentials, personal data, private configuration, or licensed
+CIS benchmark content. Redact logs and screenshots before attaching them.
+
+## Security and upstream components
+
+- Report security vulnerabilities privately as described in
+  [`SECURITY.md`](./SECURITY.md).
+- ConfigForge does not bundle `oscfg`. Problems that reproduce in the
+  separately installed CLI should follow the
+  [Microsoft OSConfig repository](https://github.com/microsoft/osconfig)
+  guidance.
+- Questions about GitHub, Electron, operating systems, or third-party
+  dependencies may need to be handled by those upstream projects.

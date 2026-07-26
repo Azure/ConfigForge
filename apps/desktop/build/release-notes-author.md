@@ -1,19 +1,37 @@
-# ConfigForge Author 0.3.93-author.1 - macOS
+# ConfigForge Author 0.3.93-author.2 - macOS
 
-> **Release state: draft and unpublished.** The
-> `mac-v0.3.93-author.1` GitHub release must remain a draft. PR
-> [#75](https://github.com/Azure/ConfigForge/pull/75) is on
-> `mac-author-build` at `3086ef0`; PR
-> [#76](https://github.com/Azure/ConfigForge/pull/76) is on `main` at
-> `278dad6`; PR [#77](https://github.com/Azure/ConfigForge/pull/77) ports that
-> complete series to `mac-author-build` at `aec0775`; and PR
-> [#79](https://github.com/Azure/ConfigForge/pull/79) supplies the final
-> documentation and tag-pinned release tooling.
+> **Release state: draft and unpublished.** Annotated tag
+> `mac-v0.3.93-author.2` and the current `mac-author-build` head resolve to
+> `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The matching GitHub release
+> exists and contains five verified assets. Workflow run
+> [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
+> completed successfully. The release must remain a draft unless a maintainer
+> separately approves publication. PR
+> [#83](https://github.com/Azure/ConfigForge/pull/83) ports the reviewed
+> Windows Server 2025 baseline repairs to `mac-author-build`, and PR
+> [#84](https://github.com/Azure/ConfigForge/pull/84) prepares the immutable
+> author.2 tag and package metadata.
 
-This release restores the macOS author flavor to the shared authoring
-experience and completes nested multi-value keyboard editing. It remains
-author-only: device deployment, audit, enforcement, revert, elevation,
-OSConfig CLI health, and device audit-results storage are not included.
+This release carries forward the authoring parity and nested multi-value
+keyboard editing from author.1. It also repairs the standalone Windows Server
+2025 baselines and the matching analysis identities. It remains author-only:
+device deployment, audit, enforcement, revert, elevation, OSConfig CLI health,
+and device audit-results storage are not included.
+
+## Windows Server 2025 baseline repairs
+
+- Replace failing array-valued Policy CSP settings with supported Registry,
+  AccountPolicy, AuditPolicy, and UserRightsAssignment providers.
+- Keep ten supported residual CSP settings in each standalone profile.
+- Correct the Domain Controller, Member Server, and Workgroup Member resource
+  counts to 321, 320, and 296.
+- Remove Source links from the three corrected baselines because the local
+  manifests now differ materially from their upstream files.
+- Resolve Increase scheduling priority, password complexity, and guest account
+  status in Benchmark Mapping without bundling licensed CIS data.
+- Use `properties.name`, with legacy `properties.policy` fallback, to keep
+  User Rights Assignment and Account Policy settings distinct in analysis and
+  Matrix Diff.
 
 ## Authoring parity
 
@@ -45,11 +63,14 @@ macOS author line:
 - Invalid drafts retain focus and do not mutate the manifest.
 - Shift+Enter remains a newline for structured nested values.
 
-The final preparation tree passes 1,598 Vitest tests in 117 files, 79 focused
-Manifest Editor tests, both isolated Loop Playwright scenarios, lint with zero
-errors, full and author-flavor desktop builds, locale review with zero
-placeholder/glossary/plural issues, and a clean production audit. The
-tag-pinned macOS workflow is the final artifact gate.
+The author.1 preparation tree passed 1,598 Vitest tests in 117 files, 79
+focused Manifest Editor tests, both isolated Loop Playwright scenarios, lint
+with zero errors, full and author-flavor desktop builds, locale review with
+zero placeholder/glossary/plural issues, and a clean production audit. The
+author.2 preparation passed PR check run
+[#30186333208](https://github.com/Azure/ConfigForge/actions/runs/30186333208).
+The tag-pinned macOS workflow also passed the install, production audit, build,
+SBOM, checksum, and upload gates and verified all five release assets.
 
 ## Included authoring capabilities
 
@@ -95,13 +116,12 @@ If that command reports a permission error, use:
 sudo xattr -rd com.apple.quarantine "/Applications/ConfigForge Author.app"
 ```
 
-## Expected release assets
+## Verified draft release assets
 
-The draft release must contain exactly these five assets after the packaging
-workflow succeeds:
+The draft release contains exactly these five assets:
 
-1. `ConfigForge-Author-0.3.93-author.1-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.93-author.1-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`
@@ -110,8 +130,9 @@ Verify the DMG, blockmap, and update metadata against the SHA-256 manifest.
 
 ## Contributors
 
-Historical implementation attribution for PRs #75 through #77 and release
-documentation/tooling in PR #79: @ABMFST and Copilot.
+Historical implementation attribution for PRs #75 through #77, release
+documentation/tooling in PRs #79 and #80, and author.2 repairs in PRs #83 and
+#84: @ABMFST and Copilot.
 
 ## Reporting issues
 

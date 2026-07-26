@@ -8,9 +8,10 @@ ConfigForge has two editions:
   and Audit Pack export are available. Device Deploy, Audit, and Revert are
   intentionally omitted.
 
-The latest tagged Full-edition release is `v0.3.92`. The current macOS Author
-line is `0.3.93-author.1` with tag `mac-v0.3.93-author.1`; its GitHub release
-is intentionally a draft and is not published.
+The latest tagged Full-edition release is `v0.3.93`. The current macOS Author
+line is `0.3.93-author.2` with tag `mac-v0.3.93-author.2`; its GitHub release
+exists with five verified assets but is intentionally a draft and is not
+published. The Full-edition package version on `main` is `0.3.93`.
 
 ConfigForge does **not** bundle the OSConfig CLI. To use the Full edition's Deploy, Audit, or Revert features against a real Windows or Linux machine, install `oscfg` separately from its upstream source.
 
@@ -126,12 +127,14 @@ later). The release contains an ARM64-only binary. It is not an x64 or
 universal build and does not support Intel Macs. Rosetta does not provide
 ARM64-on-Intel compatibility.
 
-Download an existing macOS Author asset from the
-[Azure/ConfigForge releases](https://github.com/Azure/ConfigForge/releases).
-The source and build instructions are in the
-[Azure/ConfigForge repository](https://github.com/Azure/ConfigForge). The
-`0.3.93-author.1` assets are attached to the unpublished draft release for
-`mac-v0.3.93-author.1`.
+The `mac-v0.3.93-author.2` tag and matching GitHub release exist. The five
+verified assets are attached to that release, but it remains a draft and is
+not available from the public
+[Azure/ConfigForge releases](https://github.com/Azure/ConfigForge/releases)
+page until a maintainer publishes it. Maintainers with draft access can test
+the assets now. Other users can build the tagged source by following the
+instructions in the
+[Azure/ConfigForge repository](https://github.com/Azure/ConfigForge).
 
 The app is unsigned and not notarized. Copy **ConfigForge Author.app** to
 `/Applications`, then clear the browser-added quarantine attribute once:

@@ -6,21 +6,23 @@ ConfigForge uses GitHub Actions from `.github/workflows/`. The product is an Ele
 
 | Workflow | File | Trigger | Output |
 | --- | --- | --- | --- |
-| **PR check** | `pr-check.yml` | Pull requests to `main`, pushes to `main`, or manual `workflow_dispatch` | Lint, Vitest, Linux desktop build verification, and Windows Playwright Electron smoke |
+| **PR check** | `pr-check.yml` | Pull requests to and pushes on `main` or `mac-author-build`; manual `workflow_dispatch` | Public-asset guard and tests, lint, Vitest, Linux desktop build verification, and Windows Playwright Electron smoke |
 | **Release** | `release.yml` | Clean tag push `vX.Y.Z` on `main`; manual dispatch for rebuilds | Windows + Linux installers, per-platform SHA256SUMS, SBOMs, draft GitHub Release upload |
 | **Release (macOS author)** | `release-mac.yml` | Manual `workflow_dispatch` of the protected `main` definition with an existing `mac-vX.Y.Z-author.N` tag | Checkout and verify the supplied tag; build and upload exactly five unsigned macOS Author assets to the existing draft release |
 | **Docs** | `docs.yml` | Docs changes on `main` / PRs touching docs | mdBook build, markdownlint, `gh-pages` deploy on push to `main` |
 
 The Win/Linux Release workflow intentionally ignores hyphen-suffix tags
 (`!v*-*`). macOS Author releases use separate tags such as
-`mac-v0.3.93-author.1`; dispatch the protected `main` workflow definition
+`mac-v0.3.93-author.2`; dispatch the protected `main` workflow definition
 manually and let its checkout step select the immutable macOS tag.
 
 ## What `pr-check.yml` runs
 
 Three jobs run in parallel:
 
-1. **Lint** (`ubuntu-latest`) - `npm ci`, then `npm run lint`.
+1. **Lint** (`ubuntu-latest`) - run the dependency-free public-asset and
+   package-lock registry guard with its Node tests, then `npm ci` and
+   `npm run lint`.
 2. **Vitest + build** (`ubuntu-latest`) - `npm ci`, `npm run core:build`, `npm test`, `npm run desktop:build`, then smoke-checks the built renderer/main files.
 3. **Playwright Electron smoke** (`windows-latest`) - installs, builds the desktop app, generates icons, then runs `npx playwright test --config apps/desktop/playwright.config.ts`.
 
@@ -28,7 +30,11 @@ Test counts change as features land. Use the current `npm test` summary as the
 authority. For reference, macOS parity PR #75 passed 1,584 Vitest tests in 117
 files; main PR #76 then passed its full suite plus 32 focused nested-navigation
 tests. Mac port PR #77 passed 79 focused tests and two isolated Playwright
-scenarios. Run the full suite again on the exact release candidate.
+scenarios. The final `0.3.93-author.1` preparation tree passed 1,598 Vitest
+tests in 117 files, and its tag-pinned packaging run completed successfully.
+The current `0.3.93-author.2` preparation passed PR check run
+[#30186333208](https://github.com/Azure/ConfigForge/actions/runs/30186333208),
+and its tag-pinned packaging run also completed successfully.
 
 Caching covers npm, Electron binaries, electron-builder, and Playwright browser downloads. Concurrency cancels stale PR runs on the same branch.
 
@@ -38,15 +44,16 @@ The Release workflow builds **Full edition** artifacts from `main` on Windows an
 
 Each platform job:
 
-1. Installs with `npm ci`.
-2. Runs `npm audit --omit=dev --audit-level=high`.
-3. Generates icons.
-4. Builds `@configforge/core` and the desktop renderer/main bundles.
-5. Builds platform installers with locked `electron-builder` (`npx --no-install`).
-6. Generates a CycloneDX SBOM.
-7. Generates `SHA256SUMS-windows.txt` or `SHA256SUMS-linux.txt`.
-8. Uploads installers, checksums, and SBOMs to a draft GitHub Release.
-9. Stashes the same artifacts on the workflow run for short-term recovery.
+1. Runs `node scripts/verify-public-package-assets.mjs`.
+2. Installs with `npm ci`.
+3. Runs `npm audit --omit=dev --audit-level=high`.
+4. Generates icons.
+5. Builds `@configforge/core` and the desktop renderer/main bundles.
+6. Builds platform installers with locked `electron-builder` (`npx --no-install`).
+7. Generates a CycloneDX SBOM.
+8. Generates `SHA256SUMS-windows.txt` or `SHA256SUMS-linux.txt`.
+9. Uploads installers, checksums, and SBOMs to a draft GitHub Release.
+10. Stashes the same artifacts on the workflow run for short-term recovery.
 
 Release artifacts are **unsigned** by design — there is no code signing in CI. On Windows, SmartScreen warns until a binary builds reputation; on macOS, Gatekeeper requires `xattr -cr`. The trust path is building from source; optional local self-signing is described in `apps/desktop/scripts/generate-dev-cert.ps1`.
 
@@ -61,21 +68,27 @@ the immutable macOS tag:
 gh workflow run "Release (macOS author)" \
   --repo Azure/ConfigForge \
   --ref main \
-  -f release_tag=mac-v0.3.93-author.1
+  -f release_tag=mac-v0.3.93-author.2
 ```
 
 The target draft release and tag must already exist. The workflow loads its
 definition from `main`, checks out `release_tag`, verifies that
-`HEAD` resolves to the tag, then builds with `electron-builder.author.yml`.
+`HEAD` resolves to the tag, checks that tagged tree with the dependency-free
+public-asset guard from protected `main`, then builds with
+`electron-builder.author.yml`.
 It uploads exactly these assets:
 
-1. `ConfigForge-Author-0.3.93-author.1-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.93-author.1-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`
 
 The workflow refuses a published release and never publishes automatically.
+For `mac-v0.3.93-author.2`, workflow run
+[#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
+passed every gate and verified these five assets. The matching GitHub release
+exists but remains a draft and is unpublished.
 
 ## Linux runner notes
 

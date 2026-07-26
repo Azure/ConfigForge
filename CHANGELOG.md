@@ -2,10 +2,12 @@
 
 ## [0.3.93-author.2] - 2026-07-25
 
-> The `mac-v0.3.93-author.2` GitHub release is a draft and has not been
-> published. Changes in this draft come from PR
-> [#83](https://github.com/Azure/ConfigForge/pull/83) by
-> [@ABMFST](https://github.com/ABMFST).
+> Annotated tag `mac-v0.3.93-author.2` resolves to
+> `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The matching GitHub release
+> contains five verified assets but remains a draft and is unpublished.
+> Workflow run
+> [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
+> completed successfully. This entry does not indicate publication.
 
 ### Fixed
 
@@ -30,8 +32,12 @@
 
 ## [0.3.93-author.1] - 2026-07-25
 
-> The `mac-v0.3.93-author.1` GitHub release is intentionally a draft. This
-> entry does not indicate publication.
+> Annotated tag `mac-v0.3.93-author.1` resolved to
+> `099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. The matching GitHub release
+> contains five verified assets but remains a draft and is unpublished.
+> Workflow run
+> [#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
+> completed successfully. This entry does not indicate publication.
 
 ### Added
 

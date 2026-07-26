@@ -29,13 +29,22 @@ public/_baselines/cis/
 ```
 
 The expected JSON shapes are documented in
-[`src/lib/cis/data.ts`](../../src/lib/cis/data.ts) (search for the
+[`packages/core/src/cis/data.ts`](../../../packages/core/src/cis/data.ts)
+(search for the
 `CisGlobalMappings`, `CisRuleCatalog`, etc. type definitions).
 
 The OSConfig project's
 [`mc/CIS`](https://github.com/microsoft/osconfig/tree/main/mc/CIS)
 PowerShell scripts can generate these artifacts from a CIS XCCDF +
 OVAL pair you supply yourself.
+
+## Packaging safety
+
+Licensed CIS files in this directory are for local development only. Move them
+out of the repository before building an installer. Local `dist*` commands and
+release workflows run `scripts/verify-public-package-assets.mjs`, which fails
+if CIS XCCDF, OVAL, catalog, or derived baseline content could enter packaged
+public assets.
 
 ## What still works without these files
 
@@ -48,7 +57,7 @@ OVAL pair you supply yourself.
 
 - The CIS cross-reference sidebar in the manifest editor returns
   "no match" for every resource.
-- `/api/cis/lookup` returns `{ name, match: null }`.
-- The compliance % report (`/api/compliance/report`) returns an error
-  if you point it at a `cis-ws<year>-*` baseline that isn't on disk.
+- The `cfs.cis.lookup` IPC operation returns no benchmark match.
+- Benchmark compliance reports cannot score a baseline against a catalog that
+  is not present on disk.
 - The audit-pack PDF skips the "CIS coverage" section.
