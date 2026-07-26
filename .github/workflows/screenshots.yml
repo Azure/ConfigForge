@@ -1,0 +1,74 @@
+name: README screenshots
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - scripts/capture-screenshots.mjs
+      - scripts/screenshot-fixtures.mjs
+      - scripts/screenshot-fixtures.test.mjs
+      - .github/workflows/screenshots.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: screenshots-${{ github.workflow }}-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  capture:
+    name: Capture README screenshots
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Test fixture generation
+        run: node --test scripts/screenshot-fixtures.test.mjs
+
+      - name: Build desktop app
+        run: npm run desktop:build
+
+      - name: Install Playwright Chromium and Linux dependencies
+        run: npx playwright install --with-deps chromium
+
+      - name: Capture screenshots
+        env:
+          CONFIGFORGE_SCREENSHOT_FIXTURES: '1'
+        run: >-
+          xvfb-run --auto-servernum --server-args="-screen 0 1440x900x24"
+          node scripts/capture-screenshots.mjs
+
+      - name: Verify screenshot set
+        shell: bash
+        run: |
+          set -euo pipefail
+          expected=(
+            library home new-manifest manifest-detail visual-builder
+            audit-pack diff cis-diff cis-mapping
+          )
+          for slug in "${expected[@]}"; do
+            test -s "docs/images/screenshots/${slug}.png"
+          done
+          test "$(find docs/images/screenshots -maxdepth 1 -type f -name '*.png' | wc -l)" -eq 9
+
+      - name: Upload README screenshots
+        uses: actions/upload-artifact@v4
+        with:
+          name: readme-screenshots
+          path: docs/images/screenshots/*.png
+          if-no-files-found: error
+          retention-days: 14

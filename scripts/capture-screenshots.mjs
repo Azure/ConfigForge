@@ -10,6 +10,11 @@
 //   - At least one registered manifest in ~/.configforge/manifests/
 //   - For CIS shots: CIS data files in <repo>/public/_baselines/cis/_data/
 //
+// CI-safe fixture mode:
+//   CONFIGFORGE_SCREENSHOT_FIXTURES=1 node scripts/capture-screenshots.mjs
+// Creates isolated temporary public/user-data roots, generates an unlicensed
+// synthetic Industry Benchmark catalog, and removes all fixture data on exit.
+//
 // Run from the repo root:
 //   node scripts/capture-screenshots.mjs
 
@@ -18,12 +23,28 @@ import path from 'node:path';
 import fs from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
+import {
+  cleanupScreenshotFixtures,
+  createScreenshotFixtures,
+} from './screenshot-fixtures.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const REPO_ROOT = path.resolve(__dirname, '..');
 const ELECTRON_ENTRY = path.join(REPO_ROOT, 'apps', 'desktop', 'dist', 'electron', 'main.js');
 const OUT_DIR = path.join(REPO_ROOT, 'docs', 'images', 'screenshots');
 const VIEWPORT = { width: 1440, height: 900 };
+const FIXTURE_MODE = process.env.CONFIGFORGE_SCREENSHOT_FIXTURES === '1';
+const SCREENSHOT_SLUGS = [
+  'library',
+  'home',
+  'new-manifest',
+  'manifest-detail',
+  'visual-builder',
+  'audit-pack',
+  'diff',
+  'cis-diff',
+  'cis-mapping',
+];
 
 // The Electron binary lives under apps/desktop/node_modules — resolve from
 // that workspace so playwright._electron can launch it.
@@ -31,46 +52,6 @@ const requireFromDesktop = createRequire(path.join(REPO_ROOT, 'apps', 'desktop',
 const electronExe = requireFromDesktop('electron');
 
 await fs.mkdir(OUT_DIR, { recursive: true });
-
-console.log('[capture] launching electron:', ELECTRON_ENTRY);
-const app = await electron.launch({
-  executablePath: electronExe,
-  args: [ELECTRON_ENTRY],
-  env: {
-    ...process.env,
-    NODE_ENV: 'production',
-    ELECTRON_DISABLE_SECURITY_WARNINGS: '1',
-  },
-});
-
-const win = await app.firstWindow();
-await win.setViewportSize(VIEWPORT);
-// Initial settle for boot
-await win.waitForLoadState('domcontentloaded');
-await win.waitForTimeout(2500);
-
-async function navigate(hashRoute) {
-  // HashRouter — we navigate via window.location.hash so we don't go through HTTP.
-  await win.evaluate((r) => {
-    window.location.hash = r;
-  }, hashRoute);
-  await win.waitForTimeout(900);
-}
-
-async function shoot(slug, hashRoute, opts = {}) {
-  console.log(`[shoot] ${slug} <- #${hashRoute}`);
-  await navigate(hashRoute);
-  if (opts.waitFor) {
-    await win.waitForSelector(opts.waitFor, { timeout: 8000 }).catch(() => {});
-  }
-  if (opts.beforeShoot) {
-    await opts.beforeShoot(win);
-  }
-  await win.waitForTimeout(opts.settle ?? 700);
-  const file = path.join(OUT_DIR, `${slug}.png`);
-  await win.screenshot({ path: file, fullPage: opts.fullPage ?? false });
-  console.log(`         -> ${file}`);
-}
 
 /**
  * Read the <option>s of the Nth <select> on the page and return the first
@@ -90,12 +71,136 @@ async function pickManifestValue(p, selectIndex, patterns, exclude) {
   return opts.find((o) => o !== exclude) ?? null;
 }
 
+async function requireBodyText(p, text, label) {
+  const bodyText = await p.locator('body').innerText();
+  if (!bodyText.includes(text)) {
+    throw new Error(`Expected ${label} text was not visible: ${text}`);
+  }
+}
+
+async function clearFixtureOutputs() {
+  await Promise.all(
+    SCREENSHOT_SLUGS.map((slug) =>
+      fs.rm(path.join(OUT_DIR, `${slug}.png`), { force: true }),
+    ),
+  );
+}
+
+async function verifyFixtureOutputs() {
+  const files = await Promise.all(
+    SCREENSHOT_SLUGS.map(async (slug) => {
+      const file = path.join(OUT_DIR, `${slug}.png`);
+      const stat = await fs.stat(file);
+      if (!stat.isFile() || stat.size === 0) {
+        throw new Error(`Screenshot output is missing or empty: ${file}`);
+      }
+      return file;
+    }),
+  );
+  console.log(`[capture] verified ${files.length} screenshot outputs`);
+}
+
+let fixtures = null;
+let app = null;
+
 try {
+  const launchEnv = {
+    ...process.env,
+    NODE_ENV: 'production',
+    ELECTRON_DISABLE_SECURITY_WARNINGS: '1',
+  };
+  const launchArgs = [ELECTRON_ENTRY];
+
+  if (FIXTURE_MODE) {
+    const pkg = JSON.parse(await fs.readFile(path.join(REPO_ROOT, 'package.json'), 'utf-8'));
+    fixtures = await createScreenshotFixtures({
+      repoRoot: REPO_ROOT,
+      appVersion: pkg.version,
+    });
+    await clearFixtureOutputs();
+
+    Object.assign(launchEnv, {
+      CONFIGFORGE_TEST_MODE: '1',
+      CONFIGFORGE_PUBLIC_ROOT: fixtures.publicRoot,
+      CONFIGFORGE_HOME: fixtures.configForgeHome,
+      HOME: fixtures.fixtureHome,
+      USERPROFILE: fixtures.fixtureHome,
+      XDG_CONFIG_HOME: fixtures.xdgConfigHome,
+      APPDATA: fixtures.appDataDir,
+      LOCALAPPDATA: fixtures.localAppDataDir,
+      TMPDIR: fixtures.runtimeTempDir,
+      TMP: fixtures.runtimeTempDir,
+      TEMP: fixtures.runtimeTempDir,
+    });
+    launchArgs.push(`--user-data-dir=${fixtures.electronUserDataDir}`, '--disable-gpu');
+    console.log('[fixture] public root:', fixtures.publicRoot);
+    console.log('[fixture] manifest home:', fixtures.configForgeHome);
+    console.log('[fixture] benchmark:', fixtures.benchmarkName);
+  }
+
+  console.log('[capture] launching electron:', ELECTRON_ENTRY);
+  app = await electron.launch({
+    executablePath: electronExe,
+    args: launchArgs,
+    env: launchEnv,
+  });
+
+  const win = await app.firstWindow();
+  await win.setViewportSize(VIEWPORT);
+  await win.waitForLoadState('domcontentloaded');
+
+  if (FIXTURE_MODE) {
+    await win.emulateMedia({ colorScheme: 'light', reducedMotion: 'reduce' });
+    await win.addInitScript(() => {
+      window.localStorage.setItem('cfs.welcome.dismissedAt', 'fixture');
+      window.localStorage.setItem('configforge-theme', 'light');
+      window.localStorage.setItem('configforge-locale', 'en');
+    });
+    await win.reload({ waitUntil: 'domcontentloaded' });
+  }
+
+  // Initial settle for boot
+  await win.waitForTimeout(2500);
+
+  async function navigate(hashRoute) {
+    // HashRouter — we navigate via window.location.hash so we don't go through HTTP.
+    await win.evaluate((r) => {
+      window.location.hash = r;
+    }, hashRoute);
+    await win.waitForTimeout(900);
+  }
+
+  async function shoot(slug, hashRoute, opts = {}) {
+    console.log(`[shoot] ${slug} <- #${hashRoute}`);
+    await navigate(hashRoute);
+    if (opts.waitFor) {
+      await win.waitForSelector(opts.waitFor, { timeout: 8000 }).catch(() => {});
+    }
+    if (opts.beforeShoot) {
+      await opts.beforeShoot(win);
+    }
+    await win.waitForTimeout(opts.settle ?? 700);
+    const file = path.join(OUT_DIR, `${slug}.png`);
+    await win.screenshot({ path: file, fullPage: opts.fullPage ?? false });
+    console.log(`         -> ${file}`);
+  }
+
   // 1) Library — the "shopping" experience
   await shoot('library', '/library', { waitFor: 'main' });
 
   // 2) Home / dashboard
-  await shoot('home', '/', { waitFor: 'main' });
+  await shoot('home', '/', {
+    waitFor: 'main',
+    beforeShoot: FIXTURE_MODE
+      ? async (p) => {
+          await requireBodyText(
+            p,
+            `ConfigForge v${fixtures.appVersion}`,
+            'current ConfigForge version',
+          );
+        }
+      : undefined,
+  });
 
   // 3) New manifest — register / paste / build entry point
   await shoot('new-manifest', '/manifests/new', { waitFor: 'main' });
@@ -174,8 +279,9 @@ try {
     settle: 1500,
   });
 
-  // 8) CIS Diff tab — score the WS2025 manifest against the CIS Azure Compute WS2022 XCCDF
-  //    (Microsoft-audited benchmark — produces the strongest "this is the real number" shot)
+  // 8) CIS Diff tab — fixture mode uses the runtime-generated, unlicensed
+  //    Industry Benchmark catalog; normal local mode keeps the existing
+  //    preference for a user-supplied CIS Azure Compute WS2022 XCCDF.
   await shoot('cis-diff', '/diff', {
     waitFor: 'main',
     beforeShoot: async (p) => {
@@ -209,12 +315,19 @@ try {
         await p.locator('select').nth(0).selectOption({ index: 1 }).catch(() => {});
       }
       await p.waitForTimeout(900);
-      // Benchmark (selects[1]) — prefer CIS Azure Compute WS2022 XCCDF
-      const benchValue = await pickManifestValue(p, 1, [
-        /CIS_Azure_Compute.*2022.*xccdf/i,
-        /Azure.*Compute.*2022/i,
-        /xccdf.*2022/i,
-      ]);
+      // Benchmark (selects[1]) — fixture mode must select the synthetic
+      // Industry Benchmark; normal mode keeps the user-data preference.
+      const benchmarkPatterns = FIXTURE_MODE
+        ? [
+            /industry-benchmark-windows-server-2025/i,
+            /industry.*benchmark.*2025/i,
+          ]
+        : [
+            /CIS_Azure_Compute.*2022.*xccdf/i,
+            /Azure.*Compute.*2022/i,
+            /xccdf.*2022/i,
+          ];
+      const benchValue = await pickManifestValue(p, 1, benchmarkPatterns);
       console.log('         [cis-diff] picked benchmark:', benchValue);
       if (benchValue) {
         await p.locator('select').nth(1).selectOption(benchValue).catch((e) => {
@@ -227,12 +340,41 @@ try {
         await compareBtn.click({ timeout: 10000 }).catch(() => {});
         await p.waitForTimeout(15000);
       }
+      if (FIXTURE_MODE) {
+        await p.waitForFunction(
+          ({ benchmarkName }) => {
+            const text = document.body.innerText;
+            return text.includes(benchmarkName) && text.includes('Synthetic check');
+          },
+          { benchmarkName: fixtures.benchmarkName },
+          { timeout: 30000 },
+        );
+        await requireBodyText(p, fixtures.benchmarkName, 'synthetic benchmark');
+        await requireBodyText(p, 'Synthetic check', 'synthetic benchmark rule');
+        const bodyText = await p.locator('body').innerText();
+        if (/CIS Azure Compute/i.test(bodyText)) {
+          throw new Error('Old CIS Azure Compute benchmark text is visible in fixture mode');
+        }
+      }
     },
     settle: 2000,
   });
 
   // 9) CIS Mapping page (data files + status) — also doubles as a probe for paths
-  await shoot('cis-mapping', '/cis', { waitFor: 'main', settle: 1500 });
+  await shoot('cis-mapping', '/cis', {
+    waitFor: 'main',
+    beforeShoot: FIXTURE_MODE
+      ? async (p) => {
+          await p.waitForFunction(
+            ({ benchmarkName }) => document.body.innerText.includes(benchmarkName),
+            { benchmarkName: fixtures.benchmarkName },
+            { timeout: 10000 },
+          );
+          await requireBodyText(p, fixtures.benchmarkName, 'synthetic benchmark catalog');
+        }
+      : undefined,
+    settle: 1500,
+  });
   // Diagnostic: print what dataDir the app resolved to
   const diag = await win.evaluate(async () => {
     if (typeof window.cfs?.cis?.status === 'function') {
@@ -243,7 +385,18 @@ try {
   });
   console.log('         [diag] cis.status =>', JSON.stringify(diag));
 
+  if (FIXTURE_MODE) {
+    await verifyFixtureOutputs();
+  }
   console.log('\n[capture] All screenshots written to', OUT_DIR);
 } finally {
-  await app.close();
+  if (app) {
+    await app.close().catch((error) => {
+      console.warn('[capture] failed to close Electron cleanly:', error.message);
+    });
+  }
+  if (fixtures) {
+    await cleanupScreenshotFixtures(fixtures);
+    console.log('[fixture] cleaned temporary fixture and user data');
+  }
 }
