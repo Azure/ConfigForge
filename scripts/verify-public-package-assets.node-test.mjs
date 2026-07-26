@@ -107,7 +107,32 @@ test('rejects CIS data patterns outside the conventional CIS directory', () => {
   assert.equal(isForbiddenPublicAsset('_baselines/cis'), true);
   assert.equal(isForbiddenPublicAsset('_baselines/imported/CIS_Benchmark-xccdf.xml'), true);
   assert.equal(isForbiddenPublicAsset('_baselines/imported/cis-rule-catalog.json'), true);
+  assert.equal(isForbiddenPublicAsset('_baselines/imported/cis-ws2025-ms.osc.yaml'), true);
+  assert.equal(isForbiddenPublicAsset('_baselines/imported/cis-ws2025-ms.csv'), true);
   assert.equal(isForbiddenPublicAsset('_baselines/imported/baseline.osc.yaml'), false);
+});
+
+test('rejects CIS-derived packaged baselines outside the conventional CIS directory', async () => {
+  const root = await createFixture();
+  try {
+    const importedRoot = path.join(root, 'public', '_baselines', 'imported');
+    await mkdir(importedRoot, { recursive: true });
+    const filenames = ['cis-ws2025-ms.osc.yaml', 'cis-ws2025-ms.csv'];
+    for (const filename of filenames) {
+      await writeFile(path.join(importedRoot, filename), 'fixture\n', 'utf8');
+    }
+
+    const issues = await inspectPublicPackaging({ repoRoot: root });
+    assert.deepEqual(
+      issues
+        .filter((issue) => issue.type === 'asset')
+        .map((issue) => path.basename(issue.path))
+        .sort(),
+      filenames.sort(),
+    );
+  } finally {
+    await rm(root, { recursive: true, force: true });
+  }
 });
 
 test('rejects active electron-builder filters for the CIS data directory', () => {
@@ -171,6 +196,7 @@ test('rejects a non-public lockfile host without printing it', async () => {
     const issues = await inspectPublicPackaging({ repoRoot: root });
     const lockfileIssues = issues.filter((issue) => issue.type === 'lockfile');
     assert.equal(lockfileIssues.length, 1);
+    assert.match(lockfileIssues[0].detail, /node_modules\/example-package/);
     assert.doesNotMatch(JSON.stringify(lockfileIssues), new RegExp(syntheticHost, 'i'));
 
     const result = spawnSync(process.execPath, [guardScript, '--root', root], {
@@ -178,6 +204,7 @@ test('rejects a non-public lockfile host without printing it', async () => {
     });
     assert.equal(result.status, 1);
     assert.match(result.stderr, /package-lock\.json/i);
+    assert.match(result.stderr, /node_modules\/example-package/);
     assert.doesNotMatch(result.stderr, new RegExp(syntheticHost, 'i'));
   } finally {
     await rm(root, { recursive: true, force: true });

@@ -43,6 +43,9 @@ export function isForbiddenPublicAsset(relativePath) {
       );
     return isCisData || hasToken(filename, 'xccdf') || hasToken(filename, 'oval');
   }
+  if (['.yaml', '.yml', '.csv'].includes(extension)) {
+    return hasToken(filename, 'cis');
+  }
   return false;
 }
 
@@ -135,19 +138,21 @@ async function inspectPackageLock(repoRoot) {
     ];
   }
 
-  const violationCount = Object.values(lockfile.packages).filter(
-    (metadata) =>
+  const violations = Object.entries(lockfile.packages).filter(
+    ([, metadata]) =>
       metadata !== null &&
       typeof metadata === 'object' &&
       !isAllowedLockfileResolution(metadata.resolved),
-  ).length;
+  );
 
-  if (violationCount === 0) return [];
+  if (violations.length === 0) return [];
   return [
     {
       type: 'lockfile',
       path: 'package-lock.json',
-      detail: `${violationCount} resolved package URL(s) do not use the required public npm registry.`,
+      detail: `${violations.length} resolved package URL(s) do not use the required public npm registry: ${violations
+        .map(([packagePath]) => packagePath)
+        .join(', ')}.`,
     },
   ];
 }
