@@ -862,6 +862,14 @@ export function lookupNonRegistryInXccdf(
     bypasstraversechecking: 'changenotify',         // SE_CHANGE_NOTIFY_NAME
     increaseprocessworkingset: 'incworkingset',     // SE_INC_WORKING_SET_NAME
     increaseschedulingpriority: 'incbasepriority',  // SE_INC_BASE_PRIORITY_NAME
+    // "SeIncreaseBasePriorityPrivilege" (OSConfig manifest property name for
+    // the "Increase scheduling priority" CIS rule) normalizes via
+    // `normalizeUserRight` to "increasebasepriority" (leading "se" stripped,
+    // trailing "privilege" stripped), which doesn't match the OVAL side's
+    // "incbasepriority" (from SE_INC_BASE_PRIORITY_NAME). Kept distinct from
+    // the `increaseschedulingpriority` entry above (a different OSConfig
+    // spelling) for backward compatibility — both alias to the same rule.
+    increasebasepriority: 'incbasepriority',        // SE_INC_BASE_PRIORITY_NAME
     loadunloaddevicedrivers: 'loaddriver',          // SE_LOAD_DRIVER_NAME
     accessfromnetwork: 'networklogon',              // SE_NETWORK_LOGON_NAME
     denyaccessfromnetwork: 'denynetworklogon',      // SE_DENY_NETWORK_LOGON_NAME
@@ -873,6 +881,24 @@ export function lookupNonRegistryInXccdf(
     profilesingleprocess: 'profsingleprocess',      // SE_PROF_SINGLE_PROCESS_NAME
     profilesystemperformance: 'systemprofile',      // SE_SYSTEM_PROFILE_NAME
     replaceprocessleveltoken: 'assignprimarytoken', // SE_ASSIGNPRIMARYTOKEN_NAME
+  };
+
+  // Alias for OSConfig AccountPolicy names that don't normalize to the same
+  // key as the OVAL-derived password-policy setting name.
+  const OSCONFIG_ACCOUNT_POLICY_ALIASES: Record<string, string> = {
+    // OSConfig "EnforcePasswordComplexity" → normalizePasswordPolicy gives
+    // "enforcepasswordcomplexity", but the OVAL passwordpolicy_object
+    // comment for this rule is "Password Complexity" → "passwordcomplexity".
+    enforcepasswordcomplexity: 'passwordcomplexity',
+  };
+
+  // Some account settings are represented by non-password-policy OVAL
+  // objects, so they never enter passwordPolicyIndex. Use a narrow,
+  // high-confidence title alias only after exact/indexed lookup misses.
+  // "GuestAccountStatus" produces the three salient words
+  // guest/account/status and must match all three (threshold 1.0).
+  const OSCONFIG_ACCOUNT_POLICY_TITLE_ALIASES: Record<string, string> = {
+    enableguestaccount: 'GuestAccountStatus',
   };
 
   // Helper: try exact + alias + substring lookup against userRightIndex.
@@ -937,8 +963,14 @@ export function lookupNonRegistryInXccdf(
     if (indices && indices.length > 0) return catalog.rules[indices[0]];
   } else if (t.endsWith('accountpolicy') || t.endsWith('passwordpolicy')) {
     const key = normalizePasswordPolicy(propertyName || resourceName);
-    const indices = catalog.passwordPolicyIndex.get(key);
+    let indices = catalog.passwordPolicyIndex.get(key);
+    if (!indices || indices.length === 0) {
+      const aliasKey = OSCONFIG_ACCOUNT_POLICY_ALIASES[key];
+      if (aliasKey) indices = catalog.passwordPolicyIndex.get(aliasKey);
+    }
     if (indices && indices.length > 0) return catalog.rules[indices[0]];
+    const titleAlias = OSCONFIG_ACCOUNT_POLICY_TITLE_ALIASES[key];
+    if (titleAlias) return fuzzyMatchXccdfTitle(catalog, titleAlias, 1.0);
   }
   return null;
 }
