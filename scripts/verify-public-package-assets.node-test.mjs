@@ -114,15 +114,21 @@ test('rejects active electron-builder filters for the CIS data directory', () =>
   const matches = findUnsafeBuilderConfigLines(
     [
       '# _baselines/cis/_data is described here but not included',
+      "      - '!_baselines/cis'",
       "      - '!_baselines/cis/**/*'",
+      "      - '_baselines/cis'",
       "      - '_baselines/cis/_data/**/*'",
       '',
     ].join('\n'),
   );
   assert.deepEqual(matches, [
     {
+      line: "      - '_baselines/cis'",
+      lineNumber: 4,
+    },
+    {
       line: "      - '_baselines/cis/_data/**/*'",
-      lineNumber: 3,
+      lineNumber: 5,
     },
   ]);
 });

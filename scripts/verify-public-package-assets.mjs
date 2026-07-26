@@ -53,9 +53,13 @@ export function findUnsafeBuilderConfigLines(contents) {
     .filter(({ line }) => {
       const trimmed = line.trim();
       if (!trimmed || trimmed.startsWith('#')) return false;
-      const normalized = trimmed.replaceAll('\\', '/').toLowerCase();
-      if (!normalized.includes('_baselines/cis/')) return false;
-      return !/^-+\s*['"]?!_baselines\/cis\//.test(normalized);
+      const normalized = trimmed
+        .replaceAll('\\', '/')
+        .toLowerCase()
+        .replace(/^-\s*/, '')
+        .replace(/^(['"])(.*)\1$/, '$2');
+      const match = /^(!?)_baselines\/cis(?:\/|$)/.exec(normalized);
+      return match !== null && match[1] !== '!';
     });
 }
 
