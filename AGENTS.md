@@ -19,7 +19,7 @@ The following release references were verified on 2026-07-25:
 
 | Line | Reference | State |
 |---|---|---|
-| `main` | `3778319` (PR [#79](https://github.com/Azure/ConfigForge/pull/79)) | Full Windows/Linux line. Latest tag and package version are `v0.3.92` and `0.3.92`. PR #79 adds the reviewed, tag-pinned macOS release tooling after that tag. |
+| `main` | `v0.3.93` | Full Windows/Linux line. Latest tag and package version are `v0.3.93` and `0.3.93`; PR [#76](https://github.com/Azure/ConfigForge/pull/76) adds nested value keyboard editing and PR [#82](https://github.com/Azure/ConfigForge/pull/82) repairs the standalone Windows Server 2025 audits. |
 | `mac-author-build` | `099be06` (PR [#80](https://github.com/Azure/ConfigForge/pull/80)) | Current author-only macOS head and target of annotated tag `mac-v0.3.93-author.1`. The matching GitHub release exists with five verified assets, but it is a draft and is unpublished. |
 
 On `mac-author-build`, the root package, desktop package, and lockfile records
@@ -30,7 +30,7 @@ remain unpublished unless a maintainer separately approves publication.
 Workflow run
 [#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
 completed successfully and verified all five assets. The package versions on
-`main` remain `0.3.92`; do not copy macOS package metadata to `main`.
+`main` are `0.3.93`; do not copy macOS package metadata to `main`.
 
 ### Current feature inventory
 
