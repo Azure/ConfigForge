@@ -39,9 +39,7 @@ export const BASELINE_CATALOG: BaselineEntry[] = [
     version: '2510',
     source: 'local',
     manifestUrl: '/_baselines/ws2025-member-server.osc.yaml',
-    githubUrl:
-      'https://github.com/microsoft/osconfig/blob/main/security/ws2025/member_server.osc.yaml',
-    resourceCount: 318,
+    resourceCount: 320,
     resourceTypes: ['Microsoft.OSConfig/Test'],
     scenarioName: 'SecurityBaseline/WS2025/MemberServer',
   },
@@ -55,9 +53,7 @@ export const BASELINE_CATALOG: BaselineEntry[] = [
     version: '2510',
     source: 'local',
     manifestUrl: '/_baselines/ws2025-domain-controller.osc.yaml',
-    githubUrl:
-      'https://github.com/microsoft/osconfig/blob/main/security/ws2025/domain_controller.osc.yaml',
-    resourceCount: 319,
+    resourceCount: 321,
     resourceTypes: ['Microsoft.OSConfig/Test'],
     scenarioName: 'SecurityBaseline/WS2025/DomainController',
   },
@@ -71,9 +67,7 @@ export const BASELINE_CATALOG: BaselineEntry[] = [
     version: '2510',
     source: 'local',
     manifestUrl: '/_baselines/ws2025-workgroup-member.osc.yaml',
-    githubUrl:
-      'https://github.com/microsoft/osconfig/blob/main/security/ws2025/workgroup_member.osc.yaml',
-    resourceCount: 294,
+    resourceCount: 296,
     resourceTypes: ['Microsoft.OSConfig/Test'],
     scenarioName: 'SecurityBaseline/WS2025/WorkgroupMember',
   },
