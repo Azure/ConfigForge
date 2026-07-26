@@ -38,17 +38,10 @@
  *     Linux; deb/rpm/tar.gz users update via package manager or
  *     manual download)
  *   - process.platform === 'darwin' (out of scope for v0.1)
- *   - process.platform === 'win32' AND the installer is unsigned
- *     (Windows blocks unsigned auto-update with no useful error;
- *     we silently skip rather than confuse the user)
  *
- * Signed-update caveat for Windows: the installer must be signed
- * with a cert whose public key chain matches the cert used to
- * sign the currently-running binary. Release builds are unsigned by
- * design, so Windows auto-update is effectively disabled (it silently
- * skips, per the gate above); a locally self-signed build
- * (apps/desktop/scripts/generate-dev-cert.ps1) auto-updates fine within
- * a single dev's machine but fails across users.
+ * Release artifacts are unsigned by design. This updater does not add
+ * signing or notarization; downloaded updates have the same operating-system
+ * trust warnings as other ConfigForge release artifacts.
  */
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { autoUpdater, type UpdateInfo, type ProgressInfo } from 'electron-updater';

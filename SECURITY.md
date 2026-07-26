@@ -1,14 +1,50 @@
-<!-- BEGIN MICROSOFT SECURITY.MD V1.0.0 BLOCK -->
+# Security Policy
 
-## Security
+## Supported versions
 
-Microsoft takes the security of our software products and services seriously, which
-includes all source code repositories in our GitHub organizations.
+Security fixes are evaluated for the current tagged release lines.
 
-**Please do not report security vulnerabilities through public GitHub issues.**
+| Edition | Current version | Security updates |
+| --- | --- | --- |
+| Full edition for Windows and Linux | `v0.3.93` | Supported |
+| macOS Author edition | `mac-v0.3.93-author.2` | Supported tagged source; release remains a draft |
+| Older versions | Earlier tags | Not supported |
 
-For security reporting information, locations, contact information, and policies,
-please review the latest guidance for Microsoft repositories at
-[https://aka.ms/SECURITY.md](https://aka.ms/SECURITY.md).
+## Security scope
 
-<!-- END MICROSOFT SECURITY.MD BLOCK -->
+Report vulnerabilities in:
+
+- ConfigForge source code and Electron security boundaries.
+- Installer, update, release, and GitHub Actions behavior maintained in this
+  repository.
+- ConfigForge handling of local baselines, imports, exports, logs, or
+  user-supplied content.
+- A dependency vulnerability that is exploitable through ConfigForge.
+
+Do not attach secrets, personal data, or licensed CIS benchmark content to a
+report.
+
+## Report a vulnerability
+
+**Do not report security vulnerabilities through public GitHub issues.**
+
+Submit reports through the
+[Microsoft Security Response Center (MSRC) vulnerability portal](https://msrc.microsoft.com/report/vulnerability/new).
+Identify the affected project as `Azure/ConfigForge` and include the version,
+edition, operating system, impact, and minimum reproduction details.
+
+Microsoft's current repository-wide security reporting guidance is available
+at [aka.ms/SECURITY.md](https://aka.ms/SECURITY.md).
+
+## Separately installed oscfg
+
+ConfigForge does not bundle the `oscfg` command-line interface. If a problem
+reproduces when `oscfg` is invoked directly and does not depend on ConfigForge,
+route it to the upstream
+[Microsoft OSConfig project](https://github.com/microsoft/osconfig).
+
+- Report an `oscfg` security vulnerability through MSRC and identify OSConfig
+  as the affected product.
+- Follow the OSConfig repository's current guidance for non-security defects.
+- Use a ConfigForge issue only when the vulnerability is caused by this
+  repository's integration, validation, user interface, or packaging.

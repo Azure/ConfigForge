@@ -9,7 +9,7 @@ ConfigForge has two editions:
   intentionally omitted.
 
 The latest tagged Full-edition release is `v0.3.93`. The current macOS Author
-line is `0.3.93-author.1` with tag `mac-v0.3.93-author.1`; its GitHub release
+line is `0.3.93-author.2` with tag `mac-v0.3.93-author.2`; its GitHub release
 exists with five verified assets but is intentionally a draft and is not
 published. The Full-edition package version on `main` is `0.3.93`.
 
@@ -127,7 +127,7 @@ later). The release contains an ARM64-only binary. It is not an x64 or
 universal build and does not support Intel Macs. Rosetta does not provide
 ARM64-on-Intel compatibility.
 
-The `mac-v0.3.93-author.1` tag and matching GitHub release exist. The five
+The `mac-v0.3.93-author.2` tag and matching GitHub release exist. The five
 verified assets are attached to that release, but it remains a draft and is
 not available from the public
 [Azure/ConfigForge releases](https://github.com/Azure/ConfigForge/releases)

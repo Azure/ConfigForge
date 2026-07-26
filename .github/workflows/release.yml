@@ -25,6 +25,10 @@ name: Release
 # we generate `SHA256SUMS.txt` over every installer artifact, then upload
 # artifacts + the checksum file to the draft release via `gh release upload`,
 # so downloaders can verify integrity.
+#
+# Before install or electron-builder, the dependency-free public packaging
+# guard rejects CIS benchmark content, unsafe CIS extraResources filters, and
+# non-public package-lock registry hosts.
 
 on:
   # Tag-driven release. ONLY clean vX.Y.Z tags trigger this Win/Linux
@@ -85,6 +89,9 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
+
+      - name: Verify public packaging policy
+        run: node scripts/verify-public-package-assets.mjs
 
       # Linux installers need rpmbuild for .rpm and dpkg-deb (already
       # present on ubuntu-latest) for .deb. AppImage's mksquashfs is

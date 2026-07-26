@@ -20,15 +20,15 @@ The following release references were verified on 2026-07-25:
 | Line | Reference | State |
 |---|---|---|
 | `main` | `v0.3.93` | Full Windows/Linux line. Latest tag and package version are `v0.3.93` and `0.3.93`; PR [#76](https://github.com/Azure/ConfigForge/pull/76) adds nested value keyboard editing and PR [#82](https://github.com/Azure/ConfigForge/pull/82) repairs the standalone Windows Server 2025 audits. |
-| `mac-author-build` | `099be06` (PR [#80](https://github.com/Azure/ConfigForge/pull/80)) | Current author-only macOS head and target of annotated tag `mac-v0.3.93-author.1`. The matching GitHub release exists with five verified assets, but it is a draft and is unpublished. |
+| `mac-author-build` | `c4ce196` (PR [#84](https://github.com/Azure/ConfigForge/pull/84)) | Current author-only macOS head and target of annotated tag `mac-v0.3.93-author.2`. The matching GitHub release exists with five verified assets, but it is a draft and is unpublished. |
 
 On `mac-author-build`, the root package, desktop package, and lockfile records
-use `0.3.93-author.1`. The annotated `mac-v0.3.93-author.1` tag resolves to
-`099be065e895a2bb3fb62b2ab345cb6a46ba43a9`, which is also the current macOS
+use `0.3.93-author.2`. The annotated `mac-v0.3.93-author.2` tag resolves to
+`c4ce196574f1d3fdf878d4c5856f64539f6dec7a`, which is also the current macOS
 branch head. The matching GitHub release is intentionally a draft and must
 remain unpublished unless a maintainer separately approves publication.
 Workflow run
-[#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
+[#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
 completed successfully and verified all five assets. The package versions on
 `main` are `0.3.93`; do not copy macOS package metadata to `main`.
 
@@ -80,8 +80,8 @@ Targeted upstream CLI version: **`oscfg 1.3.9-preview11`**.
 - **Remote:** `Azure/ConfigForge`.
 - Do not cross-merge `main` and `mac-author-build`. Cherry-pick or manually
   port reviewed shared commits through a branch PR.
-- `main` PRs run `PR check` automatically. The macOS branch is
-  `workflow_dispatch` only; after pushing a candidate, run:
+- Pull requests and pushes to both active branches run `PR check`
+  automatically. Manual dispatch remains available for explicit re-runs:
 
   ```powershell
   gh workflow run "PR check" --repo Azure/ConfigForge --ref mac-author-build
@@ -120,13 +120,13 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
 - The macOS tag must resolve to the exact final validated commit on
   `mac-author-build`. `scripts/ship-mac.ps1` accepts only the `mac-v` form and
   defaults to `Azure/ConfigForge`.
-- The existing `0.3.93-author.1` draft release contains exactly these verified
+- The existing `0.3.93-author.2` draft release contains exactly these verified
   assets:
 
   | Asset | Exact name |
   |---|---|
-  | DMG | `ConfigForge-Author-0.3.93-author.1-mac-arm64.dmg` |
-  | Blockmap | `ConfigForge-Author-0.3.93-author.1-mac-arm64.dmg.blockmap` |
+  | DMG | `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg` |
+  | Blockmap | `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg.blockmap` |
   | Update metadata | `latest-mac.yml` |
   | CycloneDX SBOM | `sbom-macos-author.cdx.json` |
   | SHA-256 manifest | `SHA256SUMS-macos-author.txt` |
@@ -142,7 +142,7 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
   gh workflow run "Release (macOS author)" `
     --repo Azure/ConfigForge `
     --ref main `
-    -f release_tag=mac-v0.3.93-author.1
+    -f release_tag=mac-v0.3.93-author.2
   ```
 
 - `--ref main` selects the reviewed workflow definition, not the source to
@@ -234,10 +234,11 @@ preload bundles are restored after Vite.
 | `packages/core/src/handlers/cis-status.ts` | CIS data discovery + diagnostics | 100x perf fix: 8KB head-read for XCCDF discovery + mtime fingerprint cache |
 | `packages/core/src/diff/matrix.ts` | **RENDERER-loaded**: cross-baseline matrix + value canonicalization | DUPLICATE helpers from `cis/xccdf-parser.ts`, never import. Owns `normalizeKeyPath` (HKLM ↔ HKEY_LOCAL_MACHINE), `extractNameWords` (strips 17 category prefixes), `mergeRowsByWordSetOverlap` (Jaccard ≥0.75 or intersection ≥4 + Jaccard ≥0.55), and `canonicalize()` (booleans, empty arrays, numerics, **Windows paths via `normalizePathLike`**) |
 | `resources/oscfg/<platform>-x64/` | **Dev-only convenience drop** for contributors who bring their own binary | **Never shipped to users.** No `extraResources` entry in `electron-builder.yml` |
-| `public/_baselines/` | Microsoft-authored OSConfig baselines (Defender, LAPS, Secured Core, WS2016-25 variants, Linux SFF) + CIS data (gitignored) | Shipped via `extraResources`. **Note:** the Windows SSH baseline (`ssh.osc.yaml` / `ssh.csv`) was removed in v0.3.52 |
-| `public/_baselines/cis/_data/` | **User-supplied** CIS data (XCCDF + OVAL + Azure Policy JSON) | NEVER commit (CIS license). `.gitignore` excludes `CIS_*.xml` |
+| `public/_baselines/` | Microsoft-authored OSConfig baselines (Defender, LAPS, Secured Core, WS2016-25 variants, Linux SFF); user-supplied CIS data is kept in an excluded subdirectory | Microsoft-authored `.osc.yaml` and `.csv` files ship via `extraResources`. **Note:** the Windows SSH baseline (`ssh.osc.yaml` / `ssh.csv`) was removed in v0.3.52 |
+| `public/_baselines/cis/_data/` | **User-supplied** CIS data (XCCDF + OVAL + Azure Policy JSON) | NEVER commit or package (CIS license). `.gitignore` excludes the directory, and the public-package guard blocks CIS assets |
 | `~/.configforge/` | User-scoped runtime state (manifests, history, rationale, audit-results) | Never write from tests |
 | `scripts/verify-no-cli-binary.sh` | Belt-and-suspenders release check | Fails the release if any `oscfg*` shows up under `apps/desktop/release/` |
+| `scripts/verify-public-package-assets.mjs` | Dependency-free public packaging guard | Fails local packaging and CI if CIS benchmark files could enter public assets, CIS `extraResources` filters are unsafe, or package-lock URLs use a non-public registry host |
 | `scripts/capture-screenshots.mjs` | Playwright-electron README screenshot capture | Requires `npm run desktop:build` first. Uses `playwright._electron.launch()` with the Node `require` resolved electron binary |
 | `scripts/ship-mac.ps1` | One-command mac release helper | Creates draft GitHub release + dispatches `release-mac.yml` |
 
@@ -416,17 +417,19 @@ OSConfig CLI bugs are not bugs in ConfigForge. File them in the Microsoft ADO `O
 
 See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the full test-gate protocol. Minimum bar before opening a PR:
 
-1. Run the smallest focused Vitest selection that covers the change.
-2. `npm test` — the full Vitest suite passes on the active branch.
-3. `npm run lint` — 0 errors. Tracked `max-lines`,
+1. `node scripts/verify-public-package-assets.mjs` and
+   `node --test scripts/verify-public-package-assets.node-test.mjs` pass.
+2. Run the smallest focused Vitest selection that covers the change.
+3. `npm test` — the full Vitest suite passes on the active branch.
+4. `npm run lint` — 0 errors. Tracked `max-lines`,
    `max-lines-per-function`, and `complexity` warnings are non-blocking.
-4. `npm run desktop:build` — clean. This catches renderer-bundling errors
+5. `npm run desktop:build` — clean. This catches renderer-bundling errors
    that Vitest alone misses.
-5. `npm audit --omit=dev --audit-level=high` — zero high or critical
+6. `npm audit --omit=dev --audit-level=high` — zero high or critical
    production findings.
-6. `node scripts/review-locales.mjs` after locale-bearing changes — zero
+7. `node scripts/review-locales.mjs` after locale-bearing changes — zero
    placeholder, glossary, and plural issues.
-7. Sweep product code for the banned legacy strings `Drop the oscfg binary`
+8. Sweep product code for the banned legacy strings `Drop the oscfg binary`
    and `place the binary in resources/oscfg`. Test fixtures may contain them
    only as negative assertions.
 
@@ -448,12 +451,18 @@ When touching IPC contracts or `packages/core/src/handlers/`, exercise the chann
   Playwright scenarios, lint with 0 errors, full and author-flavor desktop
   builds, locale review with 0 placeholder/glossary/plural issues, and a
   production audit with 0 vulnerabilities.
-- Annotated tag `mac-v0.3.93-author.1` and `mac-author-build` both resolve to
-  merge `099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. Tag-pinned workflow run
+- At the time of the prior draft, annotated tag `mac-v0.3.93-author.1`
+  resolved to merge `099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. Tag-pinned workflow run
   [#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
   passed the install, production audit, build, SBOM, checksum, and upload
-  gates and verified the five expected assets. The GitHub release remains a
-  draft and is unpublished.
+  gates and verified the five expected assets.
+- Current annotated tag `mac-v0.3.93-author.2` and `mac-author-build` both
+  resolve to merge `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. PR check run
+  [#30186333208](https://github.com/Azure/ConfigForge/actions/runs/30186333208)
+  passed, and tag-pinned workflow run
+  [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
+  passed the install, production audit, build, SBOM, checksum, and upload
+  gates. Both macOS releases remain drafts and are unpublished.
 
 ---
 
@@ -531,7 +540,9 @@ The repo runs on private-repo Actions minutes. **Each PR check costs ~17 min** (
 
 - **Batch commits per phase per push** — one CI run per phase, not per individual file change.
 - **Run lint + vitest + build locally before pushing** — these reproduce ~95% of what CI checks. Only Playwright E2E is CI-only.
-- For mac branch ports, dispatch via `gh workflow run "PR check" --ref mac-author-build` (workflow_dispatch — mac CI doesn't auto-trigger on push).
+- Mac branch ports run `PR check` automatically on pull requests and pushes.
+  Use `gh workflow run "PR check" --ref mac-author-build` only for an explicit
+  manual re-run.
 - The release workflow (`release.yml`) only runs on tag push or workflow_dispatch — supply-chain changes (SBOM, audit gate) don't burn PR-check minutes.
 
 When budget is tight (<200 min remaining for the month), favor doc-only commits or local-only refactor work over feature pushes.
@@ -669,4 +680,7 @@ or signing secrets in this repo.
 
 ## Maintainer
 
-Currently community-maintained. Issues + discussion: GitHub Issues on the repository. Security vulnerabilities: see [SECURITY.md](./SECURITY.md).
+Community-maintained by [@ABMFST](https://github.com/ABMFST). See
+[`GOVERNANCE.md`](./GOVERNANCE.md) for maintainer and release authority.
+Issues and discussion use GitHub Issues. Security vulnerabilities follow
+[`SECURITY.md`](./SECURITY.md).

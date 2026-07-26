@@ -30,9 +30,30 @@ foundational work by theme.
   baselines because the bundled manifests no longer match those files.
   ([#82](https://github.com/Azure/ConfigForge/pull/82))
 
+## macOS Author mac-v0.3.93-author.2 — 2026-07-25 (draft, unpublished)
+
+Annotated tag `mac-v0.3.93-author.2` and the current `mac-author-build` head
+resolve to `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The matching GitHub
+release contains five verified assets but remains a draft and is unpublished.
+Workflow run
+[#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
+completed successfully.
+
+- Fix the standalone Windows Server 2025 Member Server, Domain Controller, and
+  Workgroup Member audits by porting the reviewed provider corrections in PR
+  [#83](https://github.com/Azure/ConfigForge/pull/83). Resource counts are
+  320, 321, and 296.
+- Remove Source links from the corrected WS2025 baselines because the local
+  manifests now differ materially from their upstream files.
+- Resolve Increase scheduling priority, password complexity, and guest account
+  status in Benchmark Mapping without bundling licensed CIS data.
+- Keep User Rights Assignment and Account Policy settings distinct in analysis
+  and Matrix Diff by using `properties.name`, with legacy
+  `properties.policy` support.
+
 ## macOS Author mac-v0.3.93-author.1 — 2026-07-25 (draft, unpublished)
 
-Annotated tag `mac-v0.3.93-author.1` resolves to the current
+Annotated tag `mac-v0.3.93-author.1` resolved to the then-current
 `mac-author-build` head,
 `099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. The matching GitHub release
 exists with five verified assets but remains a draft and has not been

@@ -1,8 +1,9 @@
 name: PR check
 
-# Fast PR feedback. Runs lint + the full vitest suite + Playwright
-# Electron smoke on every PR and every push to main. Wall-clock
-# budget: <12 minutes for the slowest job (e2e on windows-latest).
+# Fast PR feedback. Runs the public packaging policy guard, lint, the full
+# vitest suite, and Playwright Electron smoke on every PR and every push to
+# main or mac-author-build. Wall-clock budget: <12 minutes for the slowest job
+# (e2e on windows-latest).
 #
 # Splits into three parallel jobs so a single failure surfaces
 # the actionable info without waiting for the others. All jobs
@@ -11,15 +12,13 @@ name: PR check
 # binaries because those alone are ~250 MB and would otherwise
 # burn 60-90 seconds of network on every run.
 #
-# The parallel `mac-author-build` branch's CI is `workflow_dispatch`
-# only (trigger with `gh workflow run "PR check" --ref mac-author-build`).
-# This keeps the auto-fire spend on main where most code lands.
+# Manual workflow dispatch remains available for explicit re-runs.
 
 on:
   pull_request:
-    branches: [main]
+    branches: [main, mac-author-build]
   push:
-    branches: [main]
+    branches: [main, mac-author-build]
   workflow_dispatch:
 
 # Cancel previous in-progress runs on the same PR / branch so a
@@ -52,6 +51,10 @@ jobs:
         with:
           node-version: ${{ env.NODE_VERSION }}
           cache: npm
+      - name: Verify public packaging policy
+        run: node scripts/verify-public-package-assets.mjs
+      - name: Test public packaging policy guard
+        run: node --test scripts/verify-public-package-assets.node-test.mjs
       - name: Install
         run: npm ci
       - name: Lint

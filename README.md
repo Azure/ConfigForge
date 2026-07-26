@@ -7,10 +7,10 @@
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
 The latest tagged Full-edition release is `v0.3.93`. The current macOS Author
-line is `0.3.93-author.1` with tag `mac-v0.3.93-author.1`; its GitHub release
+line is `0.3.93-author.2` with tag `mac-v0.3.93-author.2`; its GitHub release
 exists with five verified assets but is intentionally a draft and is not
 published. The tag resolves to the current `mac-author-build` head at
-`099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. The Full-edition package version
+`c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The Full-edition package version
 on `main` is `0.3.93`.
 PR [#75](https://github.com/Azure/ConfigForge/pull/75) restored macOS
 authoring parity; PR [#76](https://github.com/Azure/ConfigForge/pull/76) is
@@ -20,9 +20,12 @@ series to `mac-author-build`. PR
 [#79](https://github.com/Azure/ConfigForge/pull/79) finalizes the current
 documentation and immutable-tag release tooling; PR
 [#80](https://github.com/Azure/ConfigForge/pull/80) merges the tagged release
-branch.
+branch. PR [#83](https://github.com/Azure/ConfigForge/pull/83) ports the
+standalone Windows Server 2025 audit repairs to the macOS line, and PR
+[#84](https://github.com/Azure/ConfigForge/pull/84) prepares the current
+author.2 release.
 Tag-pinned workflow run
-[#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
+[#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
 completed successfully. The release remains unpublished.
 
 ## What it looks like
@@ -181,9 +184,11 @@ is not a universal binary.
 - **[`apps/desktop/DESIGN.md`](./apps/desktop/DESIGN.md)**: the Fluent v2 design system contract (principles, signature experiences, tokens, reviewer checklist).
 - **[`apps/desktop/PACKAGING.md`](./apps/desktop/PACKAGING.md)**: installer build workflow, cross-platform matrix, smoke checklists, troubleshooting. Builds are unsigned (optional local self-sign helper included).
 - **[`apps/desktop/CI.md`](./apps/desktop/CI.md)**: GitHub Actions workflows (PR check + release pipeline), supply-chain hardening (`npm audit` gate, CycloneDX SBOM, `npx --no-install` tooling pin), trigger scope, release-cutting walkthrough.
+- **[`GOVERNANCE.md`](./GOVERNANCE.md)**: maintainer authority, contribution decisions, and Full/macOS branch and release flow.
+- **[`SUPPORT.md`](./SUPPORT.md)** and **[`SECURITY.md`](./SECURITY.md)**: best-effort support boundaries and private vulnerability reporting.
 - **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
 - **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current macOS
-  Author line is the draft, unpublished `0.3.93-author.1` release.
+  Author line is the draft, unpublished `0.3.93-author.2` release.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
   Quick Start, User Guide, Architecture, API Reference, and Operations. No
   Azure-hosted Pages URL is documented until its public destination is
@@ -200,15 +205,16 @@ is not a universal binary.
   npm run desktop:build  # core + renderer + electron main; must succeed cleanly
   ```
   Smoke-test on Windows from elevated PowerShell if you touched `apps/desktop/electron/**` or `packages/core/src/oscfg/**`.
-- To regenerate the screenshots above: build the desktop app once (`npm run desktop:build`), then run `node scripts/capture-screenshots.mjs`. The script launches the bundled Electron app via `playwright._electron`, navigates each page, and writes PNGs to `docs/images/screenshots/`. Requires Playwright (`npm install --save-dev playwright` + `npx playwright install chromium` once).
-- Active branches: **`main`** (Win + Linux full build) and **`mac-author-build`** (macOS author flavor). Non-flavor-specific work lands on `main` first and is ported to `mac-author-build` via `git cherry-pick`. Per-branch CI: `main` runs PR check on push; `mac-author-build` is `workflow_dispatch`-only (manual `gh workflow run "PR check" --ref mac-author-build`).
+- To regenerate the screenshots above: run `npm ci`, build the desktop app once (`npm run desktop:build`), then run `node scripts/capture-screenshots.mjs`. The repository's existing Playwright dependency launches the bundled Electron app, navigates each page, and writes PNGs to `docs/images/screenshots/`.
+- Active branches: **`main`** (Win + Linux full build) and **`mac-author-build`** (macOS author flavor). Non-flavor-specific work lands on `main` first and is ported to `mac-author-build` via `git cherry-pick`. Pull requests and pushes to both branches run `PR check`; manual dispatch remains available for explicit re-runs.
 - Optional: `npm run format` (Prettier) and `npm run format:check`. Prettier was added in v0.2.1 with no mass-format run. Adopt incrementally on files you touch.
 
 ## Release history (high-level)
 
 | Version | Highlights |
 |---|---|
-| **0.3.93-author.1** (macOS draft, unpublished) | Restores complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77; PR #79 finalizes documentation and immutable-tag release tooling, and PR #80 merges the tagged release branch. Workflow run #30176765724 verified all five assets. |
+| **0.3.93-author.2** (current macOS draft, unpublished) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83; PR #84 prepares the immutable tag. Workflow run #30186678580 verified all five assets. |
+| **0.3.93-author.1** (prior macOS draft, unpublished) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77; PR #79 finalized documentation and immutable-tag release tooling, and PR #80 merged the tagged release branch. Workflow run #30176765724 verified all five assets. |
 | **0.3.93** (latest tagged Full edition) | Adds nested Enter/Tab editing and repairs standalone Windows Server 2025 audits, CIS mapping, and Matrix Diff policy identity handling |
 | **0.3.92** | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
 | **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
@@ -238,7 +244,10 @@ is not a universal binary.
 
 ## Maintainer
 
-Community-maintained. Use [GitHub Issues](https://github.com/Azure/ConfigForge/issues) for bug reports and feature discussion.
+Community-maintained. See [`GOVERNANCE.md`](./GOVERNANCE.md) for current
+maintainer and release authority. Use
+[GitHub Issues](https://github.com/Azure/ConfigForge/issues) for bug reports
+and feature discussion.
 
 ## Code of Conduct
 
@@ -250,7 +259,7 @@ To report a security vulnerability, please follow the instructions in [SECURITY.
 
 ## License
 
-Licensed under the [MIT License](./LICENSE.TXT). Third-party components are described in [NOTICE](./NOTICE) and [THIRDPARTYNOTICES.md](./THIRDPARTYNOTICES.md).
+Licensed under the [MIT License](./LICENSE). Third-party components are described in [NOTICE](./NOTICE) and [THIRDPARTYNOTICES.md](./THIRDPARTYNOTICES.md).
 
 ## Trademarks
 

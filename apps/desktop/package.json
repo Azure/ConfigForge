@@ -19,9 +19,10 @@
     "build:electron": "node scripts/build-electron.mjs",
     "icons": "node scripts/generate-icons.mjs",
     "lint": "eslint . --ext .ts,.tsx",
-    "dist": "npm run icons && npm run build && electron-builder",
-    "dist:win": "npm run icons && npm run build && electron-builder --win",
-    "dist:linux": "npm run icons && npm run build && electron-builder --linux"
+    "verify:public-assets": "node ../../scripts/verify-public-package-assets.mjs",
+    "dist": "npm run icons && npm run build && npm run verify:public-assets && electron-builder",
+    "dist:win": "npm run icons && npm run build && npm run verify:public-assets && electron-builder --win",
+    "dist:linux": "npm run icons && npm run build && npm run verify:public-assets && electron-builder --linux"
   },
   "dependencies": {
     "@fluentui/react-components": "^9.73.8",
