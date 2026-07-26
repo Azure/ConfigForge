@@ -25,6 +25,7 @@ describe('public release metadata', () => {
     );
     expect(builder).not.toContain('owner: ABMFST');
     expect(builder).not.toContain('_baselines/cis/_data');
+    expect(builder).toContain('!_baselines/cis/**');
 
     const desktopPackage = JSON.parse(await read('apps/desktop/package.json'));
     expect(desktopPackage.homepage).toBe('https://github.com/Azure/ConfigForge');
