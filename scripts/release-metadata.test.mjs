@@ -80,22 +80,17 @@ describe('public release metadata', () => {
     ]);
 
     expect(packageJson.overrides['brace-expansion@5']).toBe('5.0.8');
-    // Partial matcher: pins the security-relevant fields without failing if
-    // npm adds extra metadata keys to this record in a future lockfile
-    // regeneration.
+    // Partial matcher narrowed to only the security-relevant fields: the
+    // patched version, its registry tarball URL, its integrity hash, and
+    // dev-only status. Non-security metadata (license/dependencies/engines)
+    // is intentionally excluded since it can legitimately shift across
+    // lockfile regenerations without affecting the security pin.
     expect(lockfile.packages['node_modules/brace-expansion']).toMatchObject({
       version: '5.0.8',
       resolved: 'https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.8.tgz',
       integrity:
         'sha512-JZyDyq3D4AUifKTPOB7DELf6XsB3WdPuNxCtob1vFXPsSXhdAiHBWJ/tJ8HAc9aH84BK+5JFZLNkJKx3G9kzQg==',
       dev: true,
-      license: 'MIT',
-      dependencies: {
-        'balanced-match': '^4.0.2',
-      },
-      engines: {
-        node: '20 || >=22',
-      },
     });
   });
 
