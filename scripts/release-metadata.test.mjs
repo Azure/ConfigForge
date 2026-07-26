@@ -73,6 +73,27 @@ describe('public release metadata', () => {
     expect(nonPublic).toEqual([]);
   });
 
+  it('pins patched brace-expansion 5.x metadata', async () => {
+    const [packageJson, lockfile] = await Promise.all([
+      read('package.json').then(JSON.parse),
+      read('package-lock.json').then(JSON.parse),
+    ]);
+
+    expect(packageJson.overrides['brace-expansion@5']).toBe('5.0.8');
+    // Partial matcher narrowed to only the security-relevant fields: the
+    // patched version, its registry tarball URL, its integrity hash, and
+    // dev-only status. Non-security metadata (license/dependencies/engines)
+    // is intentionally excluded since it can legitimately shift across
+    // lockfile regenerations without affecting the security pin.
+    expect(lockfile.packages['node_modules/brace-expansion']).toMatchObject({
+      version: '5.0.8',
+      resolved: 'https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.8.tgz',
+      integrity:
+        'sha512-JZyDyq3D4AUifKTPOB7DELf6XsB3WdPuNxCtob1vFXPsSXhdAiHBWJ/tJ8HAc9aH84BK+5JFZLNkJKx3G9kzQg==',
+      dev: true,
+    });
+  });
+
   it('keeps NOTICE aligned with the legal MIT release filename', async () => {
     const notice = await read('NOTICE');
     expect(notice).toContain('Copyright (c) Microsoft Corporation.');
