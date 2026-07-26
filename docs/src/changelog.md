@@ -4,21 +4,26 @@ A concise release history for ConfigForge. Newer entries use their release
 tags and state publication status explicitly; older entries summarize the
 foundational work by theme.
 
-## Unreleased
+## v0.3.93 — 2026-07-25
 
-- Fixed the three standalone WS2025 audit baselines
-  (`public/_baselines/ws2025-{member-server,domain-controller,workgroup-member}.osc.yaml`)
-  by replacing them with reviewed artifacts that convert the failing
-  `type: array` Policy CSP resources to dedicated providers. Standalone
-  Server 2025 audits no longer hit those read failures; ten supported
-  residual CSP settings remain per profile. Resource counts in
-  `apps/desktop/src/data/baseline-catalog.ts` change to 320, 321, and 296
-  respectively.
-- Removed the `githubUrl` ("Source" link) for these same three baselines,
-  since the local manifests now differ from the upstream
-  `microsoft/osconfig` files they pointed to. `manifestUrl` and
-  `scenarioName` for all three are unchanged, and no other catalog entry is
-  affected.
+- Add nested multi-value keyboard navigation: Enter saves and moves down,
+  final Enter appends and focuses a value, Tab saves and moves right, empty
+  arrays become focusable, invalid drafts retain focus, and Shift+Enter keeps
+  its newline behavior. ([#76](https://github.com/Azure/ConfigForge/pull/76))
+- Preserve nested edits and Undo state through focus changes and item
+  appends, while keeping terminal Tab focus inside the editor.
+  ([#76](https://github.com/Azure/ConfigForge/pull/76))
+- Fix the three standalone Windows Server 2025 audit baselines by replacing
+  failing array-valued Policy CSP resources with dedicated providers; the
+  catalog now reports 320, 321, and 296 resources.
+  ([#82](https://github.com/Azure/ConfigForge/pull/82))
+- Fix CIS mapping for Increase scheduling priority, password complexity, and
+  guest account status, and keep schema-valid UserRightsAssignment and
+  AccountPolicy settings distinct in Matrix Diff and conflict detection.
+  ([#82](https://github.com/Azure/ConfigForge/pull/82))
+- Remove upstream Source links from the corrected Windows Server 2025
+  baselines because the bundled manifests no longer match those files.
+  ([#82](https://github.com/Azure/ConfigForge/pull/82))
 
 ## macOS Author mac-v0.3.93-author.1 — 2026-07-25 (draft, unpublished)
 
@@ -26,7 +31,8 @@ Annotated tag `mac-v0.3.93-author.1` resolves to the current
 `mac-author-build` head,
 `099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. The matching GitHub release
 exists with five verified assets but remains a draft and has not been
-published. Package metadata on `main` remains at `0.3.92`.
+published. At the time of that draft, package metadata on `main` remained at
+`0.3.92`.
 
 - PR [#75](https://github.com/Azure/ConfigForge/pull/75) at `3086ef0`
   restores macOS parity for the five-source New Baseline setup, binary XLSX

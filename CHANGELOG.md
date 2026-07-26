@@ -1,23 +1,37 @@
 # Changelog
 
-## [Unreleased]
+## [0.3.93] - 2026-07-25
+
+### Added
+
+- Add spreadsheet-style keyboard navigation for nested multi-value cells:
+  Enter saves and moves down, final Enter appends and focuses a value, Tab
+  saves and moves right, empty arrays become focusable, invalid drafts retain
+  focus, and Shift+Enter keeps its newline behavior.
+  ([#76](https://github.com/Azure/ConfigForge/pull/76))
 
 ### Fixed
 
-- **Fixed the three standalone WS2025 audit baselines.** `ws2025-member-server.osc.yaml`,
-  `ws2025-domain-controller.osc.yaml`, and `ws2025-workgroup-member.osc.yaml`
-  under `public/_baselines/` are replaced with reviewed artifacts that convert
-  the failing `type: array` Policy CSP resources to dedicated providers (e.g.
-  `Microsoft.Windows/Registry`, `Microsoft.Windows/AccountPolicy`). This
-  eliminates the standalone Server 2025 read failures while retaining ten
-  supported residual CSP settings per profile. Resource counts change to 320
-  (Member Server), 321 (Domain Controller), and 296 (Workgroup Member) in
-  `apps/desktop/src/data/baseline-catalog.ts`.
-- **Removed the three WS2025 upstream "Source" links.** The local manifests
-  now differ materially from the `microsoft/osconfig` files the removed
-  `githubUrl` values pointed to, so the Library's Source button no longer
-  renders for these three baselines until a matching upstream reference
-  exists. `manifestUrl` and `scenarioName` for all three are unchanged.
+- Preserve nested-value edits and edit-session Undo state when focus changes
+  or another item is added, and keep terminal Tab focus inside the editor.
+  ([#76](https://github.com/Azure/ConfigForge/pull/76))
+- Fix the three standalone Windows Server 2025 audit baselines by replacing
+  failing array-valued Policy CSP resources with dedicated Registry,
+  AccountPolicy, AuditPolicy, and UserRightsAssignment providers; catalog
+  counts are now 320, 321, and 296.
+  ([#82](https://github.com/Azure/ConfigForge/pull/82))
+- Fix CIS mapping for the corrected Increase scheduling priority, password
+  complexity, and guest account status settings.
+  ([#82](https://github.com/Azure/ConfigForge/pull/82))
+- Keep schema-valid UserRightsAssignment and AccountPolicy settings distinct
+  in Matrix Diff and conflict detection by using `properties.name` as their
+  policy identity. ([#82](https://github.com/Azure/ConfigForge/pull/82))
+
+### Removed
+
+- Remove upstream Source links from the corrected Windows Server 2025
+  baselines because the bundled manifests no longer match those files.
+  ([#82](https://github.com/Azure/ConfigForge/pull/82))
 
 ## [0.3.93-author.1] - 2026-07-25 (draft, unpublished)
 
@@ -27,8 +41,8 @@
 > exists with five verified assets but remains a draft and is unpublished.
 > Workflow run
 > [#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
-> completed successfully. This entry does not indicate publication. Package
-> metadata on `main` remains at `0.3.92`.
+> completed successfully. This entry does not indicate publication. At the
+> time of that draft, package metadata on `main` remained at `0.3.92`.
 
 ### Added
 
