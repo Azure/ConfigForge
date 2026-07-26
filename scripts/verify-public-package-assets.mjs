@@ -66,12 +66,21 @@ export function findUnsafeBuilderConfigLines(contents) {
     });
 }
 
-export function isAllowedLockfileResolution(resolved) {
-  if (typeof resolved !== 'string' || !/^https?:/i.test(resolved)) return true;
+export function isAllowedLockfileResolution(resolved, metadata = {}) {
+  if (typeof resolved !== 'string') return true;
+  if (/^(?:file|link|workspace):/i.test(resolved)) return true;
+  if (
+    metadata.link === true &&
+    !/^[a-z][a-z0-9+.-]*:/i.test(resolved) &&
+    !path.isAbsolute(resolved)
+  ) {
+    return true;
+  }
 
   try {
     const url = new URL(resolved);
     return (
+      url.protocol === 'https:' &&
       url.origin.toLowerCase() === publicNpmRegistryOrigin &&
       url.username === '' &&
       url.password === ''
@@ -142,7 +151,7 @@ async function inspectPackageLock(repoRoot) {
     ([, metadata]) =>
       metadata !== null &&
       typeof metadata === 'object' &&
-      !isAllowedLockfileResolution(metadata.resolved),
+      !isAllowedLockfileResolution(metadata.resolved, metadata),
   );
 
   if (violations.length === 0) return [];

@@ -166,8 +166,14 @@ test('allows only the public npm registry for remote lockfile resolutions', () =
     true,
   );
   assert.equal(isAllowedLockfileResolution('file:../example-package'), true);
+  assert.equal(isAllowedLockfileResolution('link:../example-package'), true);
+  assert.equal(isAllowedLockfileResolution('workspace:*'), true);
+  assert.equal(isAllowedLockfileResolution('packages/example-package', { link: true }), true);
+  assert.equal(isAllowedLockfileResolution('packages/example-package'), false);
   assert.equal(isAllowedLockfileResolution('https://packages.example.invalid/package.tgz'), false);
   assert.equal(isAllowedLockfileResolution('http://registry.npmjs.org/package.tgz'), false);
+  assert.equal(isAllowedLockfileResolution('git+https://example.invalid/package.git'), false);
+  assert.equal(isAllowedLockfileResolution('git+ssh://git@example.invalid/package.git'), false);
 });
 
 test('rejects a non-public lockfile host without printing it', async () => {
