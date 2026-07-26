@@ -6,12 +6,12 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The latest tagged Full-edition release is `v0.3.92`. The current macOS Author
+The latest tagged Full-edition release is `v0.3.93`. The current macOS Author
 line is `0.3.93-author.1` with tag `mac-v0.3.93-author.1`; its GitHub release
 exists with five verified assets but is intentionally a draft and is not
 published. The tag resolves to the current `mac-author-build` head at
 `099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. The Full-edition package version
-on `main` remains `0.3.92`.
+on `main` is `0.3.93`.
 PR [#75](https://github.com/Azure/ConfigForge/pull/75) restored macOS
 authoring parity; PR [#76](https://github.com/Azure/ConfigForge/pull/76) is
 merged on `main`, and PR
@@ -209,7 +209,8 @@ is not a universal binary.
 | Version | Highlights |
 |---|---|
 | **0.3.93-author.1** (macOS draft, unpublished) | Restores complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77; PR #79 finalizes documentation and immutable-tag release tooling, and PR #80 merges the tagged release branch. Workflow run #30176765724 verified all five assets. |
-| **0.3.92** (latest tagged Full edition) | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
+| **0.3.93** (latest tagged Full edition) | Adds nested Enter/Tab editing and repairs standalone Windows Server 2025 audits, CIS mapping, and Matrix Diff policy identity handling |
+| **0.3.92** | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
 | **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
 | **0.3.90** | Prevents Baseline Detail footer collisions and keeps long multi-value Visual rows inside their table columns |
 | **0.3.89** | Completes Baseline Detail spreadsheet authoring, typed multi-value editing, accessible Add settings, deterministic history, and all current Dependabot fixes |

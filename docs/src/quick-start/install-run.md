@@ -8,12 +8,11 @@ Benchmark Mapping, history, rationale, and Audit Pack export while omitting
 device operations. The native `oscfg` CLI is **not bundled** and is **not
 required** for authoring in either edition.
 
-The latest tagged Full-edition release is `v0.3.92`. The current macOS Author
+The latest tagged Full-edition release is `v0.3.93`. The current macOS Author
 line is `0.3.93-author.1` with annotated tag
 `mac-v0.3.93-author.1`. Its GitHub release exists with five verified assets
 but remains a draft and is unpublished. Public downloads are unavailable
-until a maintainer publishes it. The package version on `main` remains
-`0.3.92`.
+until a maintainer publishes it. The package version on `main` is `0.3.93`.
 
 ## Prerequisites
 
