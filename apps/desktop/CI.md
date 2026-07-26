@@ -12,9 +12,9 @@
 
 | Workflow | Triggers ON |
 |---|---|
-| `pr-check.yml` | PRs into `main`; pushes to `main`; manual dispatch. `mac-author-build` is `workflow_dispatch`-only — trigger manually with `gh workflow run "PR check" --ref mac-author-build`. |
+| `pr-check.yml` | PRs into and pushes to `main` or `mac-author-build`; manual dispatch remains available for explicit re-runs. |
 | `release.yml` | Clean tag push matching `v*.*.*` with no suffix; manual dispatch with version input. Builds Windows + Linux Full edition artifacts. |
-| `release-mac.yml` | Manual dispatch of the protected `main` workflow definition with an existing `mac-vX.Y.Z-author.N` tag; checks out that supplied tag and attaches five unsigned macOS Author assets to its existing draft release. |
+| `release-mac.yml` | Manual dispatch of the protected `main` workflow definition with an existing `mac-vX.Y.Z-author.N` tag; checks the tagged tree with the protected public-asset guard, then attaches five unsigned macOS Author assets to its existing draft release. |
 | `docs.yml` | Pushes touching `docs/**` on `main`; manual dispatch. Publishes the mdbook site to GitHub Pages. |
 
 The legacy `.github/workflows/ci.yml` (tested the now-deleted Next.js tree) was removed in the Phase 10 cutover commit.
@@ -25,7 +25,7 @@ The legacy `.github/workflows/ci.yml` (tested the now-deleted Next.js tree) was 
 
 | Job | Runner | Time budget | What it runs |
 |---|---|---|---|
-| `lint` | ubuntu-latest | <8 min | `npm run lint` (ESLint over `apps/desktop`; 0 errors expected, `warn`-level `max-lines` is tracked-but-not-blocking) |
+| `lint` | ubuntu-latest | <8 min | Dependency-free public-asset guard + guard tests, then `npm run lint` (ESLint over `apps/desktop`; 0 errors expected, `warn`-level `max-lines` is tracked-but-not-blocking) |
 | `test` | ubuntu-latest | <12 min | `npm test` + `desktop:build` verification (catches Node-only imports leaking into the renderer bundle) |
 | `e2e` | windows-latest | <20 min | Playwright Electron smoke spec |
 
@@ -57,14 +57,15 @@ Both jobs publish artifacts to a GitHub Release as a **draft** so a human review
 
 The release workflow steps now include, in order:
 
-1. **`npm ci`** — strict-from-lockfile install.
-2. **`npm audit --omit=dev --audit-level=high`** *(CF-SEC-014 gate)* — fails the release if any production dependency has a HIGH or CRITICAL advisory. Moderate/low advisories pass through so legitimate releases aren't blocked by transient downstream noise. (Also runs on every PR via `pr-check.yml`.)
-3. Generate icons + build core + build renderer + build main.
-4. **`npx --no-install electron-builder --<platform> --publish never`** *(CF-SEC-011 pin)* — refuses to silently install a different version of electron-builder if the lockfile is stale or the locally-installed binary is missing. Combined with `npm ci` above, this constrains the release toolchain to exactly the versions in `package-lock.json`. Artifacts are produced **unsigned**.
-5. **Generate CycloneDX SBOM** *(CF-SEC-012)* — runs `npx --no-install @cyclonedx/cyclonedx-npm --omit dev --output-format JSON --output-file apps/desktop/release/sbom-<os>.cdx.json`. Smoke check: bails if the output doesn't contain a `"components"` array.
-6. **Generate per-platform SHA256SUMS** — `SHA256SUMS-windows.txt` or `SHA256SUMS-linux.txt`.
-7. **Publish to GitHub Release** — uploads installers + `SHA256SUMS-*.txt` + `sbom-*.cdx.json` as a draft release via `gh release upload --clobber`.
-8. **Stash artifacts as workflow outputs** — belt-and-suspenders for retries (14-day retention).
+1. **`node scripts/verify-public-package-assets.mjs`** — rejects CIS benchmark files, unsafe CIS `extraResources` filters, and non-public package-lock registry hosts before installation or packaging.
+2. **`npm ci`** — strict-from-lockfile install.
+3. **`npm audit --omit=dev --audit-level=high`** *(CF-SEC-014 gate)* — fails the release if any production dependency has a HIGH or CRITICAL advisory. Moderate/low advisories pass through so legitimate releases aren't blocked by transient downstream noise. (Also runs on every PR via `pr-check.yml`.)
+4. Generate icons + build core + build renderer + build main.
+5. **`npx --no-install electron-builder --<platform> --publish never`** *(CF-SEC-011 pin)* — refuses to silently install a different version of electron-builder if the lockfile is stale or the locally-installed binary is missing. Combined with `npm ci` above, this constrains the release toolchain to exactly the versions in `package-lock.json`. Artifacts are produced **unsigned**.
+6. **Generate CycloneDX SBOM** *(CF-SEC-012)* — runs `npx --no-install @cyclonedx/cyclonedx-npm --omit dev --output-format JSON --output-file apps/desktop/release/sbom-<os>.cdx.json`. Smoke check: bails if the output doesn't contain a `"components"` array.
+7. **Generate per-platform SHA256SUMS** — `SHA256SUMS-windows.txt` or `SHA256SUMS-linux.txt`.
+8. **Publish to GitHub Release** — uploads installers + `SHA256SUMS-*.txt` + `sbom-*.cdx.json` as a draft release via `gh release upload --clobber`.
+9. **Stash artifacts as workflow outputs** — belt-and-suspenders for retries (14-day retention).
 
 **Code signing: none.** Release artifacts are **unsigned** by design — this project holds no code-signing credentials in CI. On Windows, SmartScreen will warn until a binary builds reputation; on macOS, Gatekeeper requires `xattr -cr` (see `PACKAGING.md`). The trust path is building from source; an optional local self-sign helper for your own build is `apps/desktop/scripts/generate-dev-cert.ps1`.
 

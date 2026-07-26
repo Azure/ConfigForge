@@ -70,14 +70,15 @@ asarUnpack:
 # public-assets/_baselines/ stays so the bundled Microsoft
 # baselines (defender, laps, secured-core, sff-linux,
 # ws2016-2025) are still readable for "Use as Template" + the
-# in-app reference-baseline compliance comparison.
+# in-app reference-baseline compliance comparison. User-supplied
+# CIS benchmark data is explicitly excluded.
 extraResources:
   - from: ../../public
     to: public-assets
     filter:
       - '_baselines/**/*.osc.yaml'
       - '_baselines/**/*.csv'
-      - '_baselines/cis/_data/**/*'
+      - '!_baselines/cis/**'
 
 mac:
   # ARM64 only for Apple Silicon Macs (M1 or later).
