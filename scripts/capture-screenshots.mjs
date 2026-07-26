@@ -225,16 +225,26 @@ try {
     waitFor: 'main',
     beforeShoot: async (p) => {
       await p.waitForSelector('button:has-text("YAML")', { timeout: 9000 }).catch(() => {});
-      const visualBtn = await p.$('button:text-is("Visual")');
-      if (visualBtn) {
-        await visualBtn.click();
-        await p.waitForTimeout(1200);
-      }
-      const editBtn = await p.$('button:text-is("Edit")');
-      if (editBtn) {
-        await editBtn.click();
-        await p.waitForTimeout(1200);
-      }
+      const visualBtn = p.getByRole('button', { name: 'Visual', exact: true });
+      await visualBtn.waitFor({ state: 'visible', timeout: 15000 });
+      await visualBtn.click();
+
+      // The integrated 320-setting baseline can take longer than the old
+      // screenshot fixture to project into the visual table. Wait for the
+      // footer action instead of silently skipping Edit when it is not yet
+      // mounted, then assert the state transition so CI cannot upload a
+      // read-only "Visual Builder" screenshot.
+      const editBtn = p.getByRole('button', { name: 'Edit', exact: true }).last();
+      await editBtn.waitFor({ state: 'visible', timeout: 15000 });
+      await editBtn.click();
+      await p.getByRole('button', { name: 'Save', exact: true }).waitFor({
+        state: 'visible',
+        timeout: 15000,
+      });
+      await p.getByText('Editing', { exact: true }).waitFor({
+        state: 'visible',
+        timeout: 15000,
+      });
     },
     settle: 1500,
   });
@@ -365,12 +375,10 @@ try {
     waitFor: 'main',
     beforeShoot: FIXTURE_MODE
       ? async (p) => {
-          await p.waitForFunction(
-            ({ benchmarkName }) => document.body.innerText.includes(benchmarkName),
-            { benchmarkName: fixtures.benchmarkName },
-            { timeout: 10000 },
-          );
-          await requireBodyText(p, fixtures.benchmarkName, 'synthetic benchmark catalog');
+          const benchmarkLabel = p.getByText(fixtures.benchmarkName, { exact: true });
+          await benchmarkLabel.waitFor({ state: 'attached', timeout: 10000 });
+          await benchmarkLabel.scrollIntoViewIfNeeded();
+          await benchmarkLabel.waitFor({ state: 'visible', timeout: 10000 });
         }
       : undefined,
     settle: 1500,
