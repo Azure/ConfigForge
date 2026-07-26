@@ -680,7 +680,7 @@ or signing secrets in this repo.
 
 ## Maintainer
 
-Community-maintained by [@ABMFST](https://github.com/ABMFST). See
-[`GOVERNANCE.md`](./GOVERNANCE.md) for maintainer and release authority.
-Issues and discussion use GitHub Issues. Security vulnerabilities follow
-[`SECURITY.md`](./SECURITY.md).
+Community-maintained by [@ABMFST](https://github.com/ABMFST), the current
+repository maintainer and release authority. Maintainer changes must be
+reflected in `.github/CODEOWNERS` and this section. Issues and discussion use
+GitHub Issues. Security vulnerabilities follow [`SECURITY.md`](./SECURITY.md).
