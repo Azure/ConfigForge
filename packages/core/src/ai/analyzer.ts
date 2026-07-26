@@ -210,8 +210,11 @@ function parseManifest(content: string, label: string): ParsedResource[] {
  *      "Audit Logon" vs "AuditLogon" must match.
  *
  *   4. UserRightsAssignment / AccountPolicy — `${type}:${policy}`.
- *      `policy` is the canonical SID-privilege or account-policy name
- *      (e.g. SeAssignPrimaryTokenPrivilege, MinimumPasswordLength).
+ *      The canonical SID-privilege or account-policy name (e.g.
+ *      SeAssignPrimaryTokenPrivilege, MinimumPasswordLength) may be
+ *      carried in either `properties.policy` (legacy fixtures) or
+ *      `properties.name` (the real oscfg schema field) — both are
+ *      checked.
  *
  *   5. CSP / FileLine / Sshd / other path-shaped types — `${type}:${path}`.
  *
@@ -270,7 +273,18 @@ function resourceKey(r: ParsedResource): string {
     type === "Microsoft.Windows/UserRightsAssignment" ||
     type === "Microsoft.Windows/AccountPolicy"
   ) {
-    const policy = typeof props.policy === "string" ? props.policy : undefined;
+    // `policy` was the originally-assumed field name; the real oscfg
+    // schema (osc-manifest-schema.json) uses `name` as the enum-constrained
+    // privilege / account-policy identifier for both types. Accept either
+    // so schema-correct manifests (`name`) and legacy fixtures (`policy`)
+    // both resolve to a stable per-privilege identity instead of collapsing
+    // to the bare `type` bucket.
+    const policy =
+      typeof props.policy === "string"
+        ? props.policy
+        : typeof props.name === "string"
+          ? props.name
+          : undefined;
     if (policy) return `${type}:${policy}`;
   }
 
