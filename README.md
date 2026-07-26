@@ -184,7 +184,6 @@ is not a universal binary.
 - **[`apps/desktop/DESIGN.md`](./apps/desktop/DESIGN.md)**: the Fluent v2 design system contract (principles, signature experiences, tokens, reviewer checklist).
 - **[`apps/desktop/PACKAGING.md`](./apps/desktop/PACKAGING.md)**: installer build workflow, cross-platform matrix, smoke checklists, troubleshooting. Builds are unsigned (optional local self-sign helper included).
 - **[`apps/desktop/CI.md`](./apps/desktop/CI.md)**: GitHub Actions workflows (PR check + release pipeline), supply-chain hardening (`npm audit` gate, CycloneDX SBOM, `npx --no-install` tooling pin), trigger scope, release-cutting walkthrough.
-- **[`GOVERNANCE.md`](./GOVERNANCE.md)**: maintainer authority, contribution decisions, and Full/macOS branch and release flow.
 - **[`SUPPORT.md`](./SUPPORT.md)** and **[`SECURITY.md`](./SECURITY.md)**: best-effort support boundaries and private vulnerability reporting.
 - **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
 - **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current macOS
@@ -206,7 +205,8 @@ is not a universal binary.
   ```
   Smoke-test on Windows from elevated PowerShell if you touched `apps/desktop/electron/**` or `packages/core/src/oscfg/**`.
 - To regenerate the screenshots above: run `npm ci`, build the desktop app once (`npm run desktop:build`), then run `node scripts/capture-screenshots.mjs`. The repository's existing Playwright dependency launches the bundled Electron app, navigates each page, and writes PNGs to `docs/images/screenshots/`.
-- Active branches: **`main`** (Win + Linux full build) and **`mac-author-build`** (macOS author flavor). Non-flavor-specific work lands on `main` first and is ported to `mac-author-build` via `git cherry-pick`. Pull requests and pushes to both branches run `PR check`; manual dispatch remains available for explicit re-runs.
+- See [`CONTRIBUTING.md`](./CONTRIBUTING.md) and [`AGENTS.md`](./AGENTS.md)
+  for ownership, active-branch, review, release, and cherry-pick guidance.
 - Optional: `npm run format` (Prettier) and `npm run format:check`. Prettier was added in v0.2.1 with no mass-format run. Adopt incrementally on files you touch.
 
 ## Release history (high-level)
@@ -241,13 +241,6 @@ is not a universal binary.
 | **0.2.1** | Phase A-E renderer-page split; 15/15 security audit findings closed; typed main-process logger with secret redaction; Prettier config; CSV-import schema fix |
 | **0.2.0** | Bring-your-own-CLI: removed bundled `oscfg` binary, added Welcome dialog + CliRequiredModal, well-known-paths binary resolver, MSIX fallback. Legal scaffolding (LICENSE / NOTICE / SECURITY / THIRDPARTYNOTICES) for OSS readiness |
 | **0.1.x** | Initial Electron migration in 10 phases (Next.js to Electron + React Router + FluentUI v9 + Vite). See git log on `main` for per-phase commits |
-
-## Maintainer
-
-Community-maintained. See [`GOVERNANCE.md`](./GOVERNANCE.md) for current
-maintainer and release authority. Use
-[GitHub Issues](https://github.com/Azure/ConfigForge/issues) for bug reports
-and feature discussion.
 
 ## Code of Conduct
 

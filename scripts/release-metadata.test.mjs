@@ -163,10 +163,12 @@ describe('public release metadata', () => {
     expect(workflow).toContain('workflow_dispatch:');
   });
 
-  it('publishes ownership, governance, support, and contribution metadata', async () => {
+  it('publishes ownership, support, and contribution metadata', async () => {
     const [
       codeowners,
-      governance,
+      agents,
+      contributing,
+      readme,
       security,
       support,
       bugForm,
@@ -175,7 +177,9 @@ describe('public release metadata', () => {
       prTemplate,
     ] = await Promise.all([
       read('.github/CODEOWNERS'),
-      read('GOVERNANCE.md'),
+      read('AGENTS.md'),
+      read('CONTRIBUTING.md'),
+      read('README.md'),
       read('SECURITY.md'),
       read('SUPPORT.md'),
       read('.github/ISSUE_TEMPLATE/bug.yml'),
@@ -185,8 +189,13 @@ describe('public release metadata', () => {
     ]);
 
     expect(codeowners).toContain('* @ABMFST');
-    expect(governance).toContain('current repository maintainer is [@ABMFST]');
-    expect(governance).toContain('Do not cross-merge `main` and `mac-author-build`');
+    expect(agents).toContain('Community-maintained by [@ABMFST]');
+    expect(agents).toContain('Do not cross-merge `main` and `mac-author-build`');
+    expect(contributing).toContain('the current repository maintainer');
+    expect(contributing).toMatch(/Do not merge the two active branches into each\s+other/);
+    expect(contributing).toContain('creates immutable release tags and draft');
+    expect(support).toContain('The current repository maintainer is');
+    expect(readme).toContain('for ownership, active-branch, review, release, and cherry-pick guidance');
     expect(security).toContain('v0.3.93');
     expect(security).toContain('mac-v0.3.93-author.2');
     expect(security).toContain('Microsoft Security Response Center');
