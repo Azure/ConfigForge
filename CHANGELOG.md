@@ -1,5 +1,12 @@
 # Changelog
 
+## [Unreleased]
+
+### Security
+
+- **Updated dev-only `brace-expansion` 5.x to 5.0.8.** This addresses
+  GHSA-mh99-v99m-4gvg / CVE-2026-14257 and resolves Dependabot alert #53.
+
 ## [0.3.93] - 2026-07-25
 
 ### Added
