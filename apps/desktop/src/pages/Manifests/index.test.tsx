@@ -330,10 +330,7 @@ describe('ManifestsPage administrative table', () => {
 
     const linuxRow = screen.getByRole('row', { name: /linux-beta/ });
     const issuesStatus = within(linuxRow).getByText('2 issues');
-    expect(issuesStatus).toHaveAttribute(
-      'aria-label',
-      'Missing expected value\nUnsupported setting',
-    );
+    expect(issuesStatus).toHaveAttribute('aria-label', '2 issues');
     await expectTooltipOnHover(
       user,
       issuesStatus,

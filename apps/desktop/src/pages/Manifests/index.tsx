@@ -839,7 +839,7 @@ export function ManifestsPage() {
                             withArrow
                           >
                             <span
-                              aria-label={issuesTitle ?? issuesLabel}
+                              aria-label={issuesLabel}
                               className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                                 issues === 0
                                   ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
