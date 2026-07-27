@@ -6,31 +6,26 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The latest tagged Full-edition release is `v0.3.93`. The current macOS Author
-line is `0.3.93-author.2` with tag `mac-v0.3.93-author.2`; its GitHub release
-exists with five verified assets but is intentionally a draft and is not
-published. The tag resolves to the current `mac-author-build` head at
-`c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The Full-edition package version
-on `main` is `0.3.93`.
-PR [#75](https://github.com/Azure/ConfigForge/pull/75) restored macOS
-authoring parity; PR [#76](https://github.com/Azure/ConfigForge/pull/76) is
-merged on `main`, and PR
-[#77](https://github.com/Azure/ConfigForge/pull/77) ports that navigation
-series to `mac-author-build`. PR
-[#79](https://github.com/Azure/ConfigForge/pull/79) finalizes the current
-documentation and immutable-tag release tooling; PR
-[#80](https://github.com/Azure/ConfigForge/pull/80) merges the tagged release
-branch. PR [#83](https://github.com/Azure/ConfigForge/pull/83) ports the
-standalone Windows Server 2025 audit repairs to the macOS line, and PR
-[#84](https://github.com/Azure/ConfigForge/pull/84) prepares the current
-author.2 release.
-Tag-pinned workflow run
-[#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
-completed successfully. The release remains unpublished.
+The current Windows/Linux Full-edition tagged source is `v0.3.94`. The current
+macOS Author tagged source is `mac-v0.3.94-author.1`. Both matching GitHub
+releases remain unpublished drafts. The Full-edition package version on
+`main` is `0.3.94`; the macOS Author package version is `0.3.94-author.1`.
+
+The macOS Author release carries the public-readiness ports from PRs
+[#90](https://github.com/Azure/ConfigForge/pull/90),
+[#92](https://github.com/Azure/ConfigForge/pull/92), and
+[#93](https://github.com/Azure/ConfigForge/pull/93), the nine synthetic
+screenshot updates from PR [#94](https://github.com/Azure/ConfigForge/pull/94),
+and the dev-only `brace-expansion` security fix reviewed in PR
+[#86](https://github.com/Azure/ConfigForge/pull/86).
 
 ## What it looks like
 
 Left rail order is **Dashboard, My Baselines, Microsoft Baselines, Export Readiness, Diff, Benchmark Mapping, Settings**.
+
+The screenshots below are shared documentation captures that use synthetic
+Industry Benchmark content. They commit no CIS data and do not add
+device-operation capabilities to the macOS Author edition.
 
 ### Microsoft Baselines: start from a curated catalog
 
@@ -187,7 +182,8 @@ is not a universal binary.
 - **[`SUPPORT.md`](./SUPPORT.md)** and **[`SECURITY.md`](./SECURITY.md)**: best-effort support boundaries and private vulnerability reporting.
 - **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
 - **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current macOS
-  Author line is the draft, unpublished `0.3.93-author.2` release.
+  Author line is tagged as `mac-v0.3.94-author.1`; its release is an
+  unpublished draft.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
   Quick Start, User Guide, Architecture, API Reference, and Operations. No
   Azure-hosted Pages URL is documented until its public destination is
@@ -213,9 +209,11 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **0.3.93-author.2** (current macOS draft, unpublished) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83; PR #84 prepares the immutable tag. Workflow run #30186678580 verified all five assets. |
+| **0.3.94-author.1** (current macOS tagged source; draft unpublished) | Aligns public-source licensing, privacy, support, contribution, packaging, and ownership guidance through PRs #90, #92, and #93; ports nine synthetic documentation screenshots in PR #94; and updates dev-only `brace-expansion` 5.x to 5.0.8 from PR #86. The author-only boundary is unchanged. |
+| **0.3.94** (current Windows/Linux tagged source; draft unpublished) | Updates dev-only `brace-expansion` 5.x to 5.0.8, aligns the repository for public review, and refreshes shared documentation screenshots with synthetic benchmark content. |
+| **0.3.93-author.2** (prior macOS draft, unpublished) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83; PR #84 prepares the immutable tag. Workflow run #30186678580 verified all five assets. |
 | **0.3.93-author.1** (prior macOS draft, unpublished) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77; PR #79 finalized documentation and immutable-tag release tooling, and PR #80 merged the tagged release branch. Workflow run #30176765724 verified all five assets. |
-| **0.3.93** (latest tagged Full edition) | Adds nested Enter/Tab editing and repairs standalone Windows Server 2025 audits, CIS mapping, and Matrix Diff policy identity handling |
+| **0.3.93** (prior tagged Full edition) | Adds nested Enter/Tab editing and repairs standalone Windows Server 2025 audits, CIS mapping, and Matrix Diff policy identity handling |
 | **0.3.92** | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
 | **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
 | **0.3.90** | Prevents Baseline Detail footer collisions and keeps long multi-value Visual rows inside their table columns |

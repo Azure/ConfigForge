@@ -13,7 +13,7 @@ ConfigForge uses GitHub Actions from `.github/workflows/`. The product is an Ele
 
 The Win/Linux Release workflow intentionally ignores hyphen-suffix tags
 (`!v*-*`). macOS Author releases use separate tags such as
-`mac-v0.3.93-author.2`; dispatch the protected `main` workflow definition
+`mac-v0.3.94-author.1`; dispatch the protected `main` workflow definition
 manually and let its checkout step select the immutable macOS tag.
 
 ## What `pr-check.yml` runs
@@ -32,9 +32,11 @@ files; main PR #76 then passed its full suite plus 32 focused nested-navigation
 tests. Mac port PR #77 passed 79 focused tests and two isolated Playwright
 scenarios. The final `0.3.93-author.1` preparation tree passed 1,598 Vitest
 tests in 117 files, and its tag-pinned packaging run completed successfully.
-The current `0.3.93-author.2` preparation passed PR check run
+The prior `0.3.93-author.2` preparation passed PR check run
 [#30186333208](https://github.com/Azure/ConfigForge/actions/runs/30186333208),
-and its tag-pinned packaging run also completed successfully.
+and its tag-pinned packaging run also completed successfully. The current
+`v0.3.94` and `mac-v0.3.94-author.1` tagged source lines rely on GitHub CI for
+npm-backed validation. Their matching releases remain unpublished drafts.
 
 Caching covers npm, Electron binaries, electron-builder, and Playwright browser downloads. Concurrency cancels stale PR runs on the same branch.
 
@@ -68,7 +70,7 @@ the immutable macOS tag:
 gh workflow run "Release (macOS author)" \
   --repo Azure/ConfigForge \
   --ref main \
-  -f release_tag=mac-v0.3.93-author.2
+  -f release_tag=mac-v0.3.94-author.1
 ```
 
 The target draft release and tag must already exist. The workflow loads its
@@ -76,16 +78,16 @@ definition from `main`, checks out `release_tag`, verifies that
 `HEAD` resolves to the tag, checks that tagged tree with the dependency-free
 public-asset guard from protected `main`, then builds with
 `electron-builder.author.yml`.
-It uploads exactly these assets:
+For `mac-v0.3.94-author.1`, it uses exactly these expected asset names:
 
-1. `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`
 
 The workflow refuses a published release and never publishes automatically.
-For `mac-v0.3.93-author.2`, workflow run
+For the prior `mac-v0.3.93-author.2` release, workflow run
 [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
 passed every gate and verified these five assets. The matching GitHub release
 exists but remains a draft and is unpublished.

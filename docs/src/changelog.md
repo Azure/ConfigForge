@@ -3,6 +3,27 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## macOS Author v0.3.94-author.1 — 2026-07-26
+
+`mac-v0.3.94-author.1` is the current macOS Author tagged source. Its matching
+GitHub release remains an unpublished draft. This entry does not indicate
+publication or assert asset availability. The macOS flavor remains
+author-only and does not include device operations.
+
+- **Prepare the repository for public review.** Align public licensing,
+  privacy, security, support, contribution, packaging, and ownership guidance
+  while keeping release governance in existing documentation.
+  ([#90](https://github.com/Azure/ConfigForge/pull/90),
+  [#92](https://github.com/Azure/ConfigForge/pull/92),
+  [#93](https://github.com/Azure/ConfigForge/pull/93))
+- **Refresh nine shared documentation screenshots.** The new captures use
+  runtime-only synthetic Industry Benchmark content and commit no CIS data or
+  screenshot tooling. ([#94](https://github.com/Azure/ConfigForge/pull/94))
+- **Security:** Update dev-only `brace-expansion` 5.x to 5.0.8 for
+  GHSA-mh99-v99m-4gvg / CVE-2026-14257 using the exact public npm registry
+  integrity metadata. The package is not bundled in the application.
+  ([#86](https://github.com/Azure/ConfigForge/pull/86))
+
 ## macOS Author v0.3.93-author.2 — 2026-07-25
 
 Annotated tag `mac-v0.3.93-author.2` resolves to

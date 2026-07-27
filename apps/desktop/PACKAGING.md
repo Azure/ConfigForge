@@ -9,8 +9,8 @@
 > flavor lives on the `mac-author-build` branch and uses its own
 > `electron-builder.author.yml`.
 >
-> **Current through v0.3.93-author.2:** the release pipeline generates a
-> CycloneDX SBOM per platform, enforces
+> **Current through v0.3.94-author.1:** the release pipeline
+> generates a CycloneDX SBOM per platform, enforces
 > `npm audit --omit=dev --audit-level=high` as a release gate,
 > pins `electron-builder` invocation via `npx --no-install`, and
 > tilde-pins `electron` + `electron-builder` in `package.json`
