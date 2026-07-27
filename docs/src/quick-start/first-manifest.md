@@ -50,7 +50,7 @@ In the UI:
    edit settings directly in the Visual spreadsheet.
 3. Pick the target platform (Windows or Linux). The editor's
    validation adjusts accordingly.
-4. Click **Register Manifest**.
+4. Click **Register Baseline**.
 
 You should see a success banner and the manifest in the list. If
 you're authoring a Windows manifest on Linux (or vice versa), you'll

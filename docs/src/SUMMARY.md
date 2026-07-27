@@ -29,10 +29,13 @@
 
 # API Reference
 
-- [`/api/manifests`](./api-reference/manifests.md)
-- [`/api/deploy` and `/api/health`](./api-reference/deploy-health.md)
-- [`/api/diff/matrix`](./api-reference/diff.md)
-- [`/api/compliance/report`](./api-reference/compliance.md)
+- [Baselines](./api-reference/manifests.md)
+- [Deploy & health](./api-reference/deploy-health.md)
+- [Diff](./api-reference/diff.md)
+- [Compliance](./api-reference/compliance.md)
+- [History, import & export](./api-reference/history-import-export.md)
+- [Audit pack](./api-reference/audit-pack.md)
+- [Rationale](./api-reference/rationale.md)
 
 # Operations
 

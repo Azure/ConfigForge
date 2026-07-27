@@ -10,6 +10,10 @@
 > `cfs:import:fromContent` (renderer-supplied content). Contract shapes
 > preserved.
 
+`cfs.revert.*` is a Full-edition device-operation namespace. The macOS Author
+edition omits it from the exposed preload; history, import, and export remain
+available.
+
 ## `cfs.history.list({ name, id? })` — channel `cfs:history:list`
 
 List snapshot summaries (no payload) when `id` is omitted; fetch one
@@ -113,10 +117,12 @@ Like `runDeploy`, the revert handler maps CLI-missing failures to
 Open the native OS file picker, read the file, parse. Returns the same
 shape as `fromContent` (or an `IpcErrorEnvelope` on user-cancel).
 
-## `cfs.importChannel.fromContent({ filename, content })` — channel `cfs:import:fromContent`
+## `cfs.importChannel.fromContent({ filename, content? | bytes? })` — channel `cfs:import:fromContent`
 
-Parse content the renderer already has (drag-and-drop). 10 MB cap
-(`MAX_IMPORT_BYTES`); larger → 413. Empty content → 400.
+Parse renderer-supplied text or binary content. Exactly one of
+`content: string` or `bytes: Uint8Array` is required; the 10 MB cap
+(`MAX_IMPORT_BYTES`) applies to either. Larger payloads return 413;
+empty text content returns 400.
 
 ```ts
 type ImportResult = {

@@ -1,8 +1,8 @@
 # Filing upstream bugs
 
-`oscfg` is in active preview. ConfigForge v0.3.48 targets
-`oscfg 1.3.9-preview11` and can hit CLI bugs from time to time; this
-page tells you where to file them.
+`oscfg` is in active preview. ConfigForge currently targets
+`oscfg 1.3.9-preview11` and can hit CLI bugs from time to time; this page
+tells you where to file them.
 
 > **Warning:** Do **not** open issues on
 > [`microsoft/osconfig`](https://github.com/microsoft/osconfig) on

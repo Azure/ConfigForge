@@ -6,7 +6,7 @@ The current targeted upstream CLI version in code is `oscfg 1.3.9-preview11` (`p
 
 ## Bring-your-own CLI
 
-ConfigForge installers do **not** bundle `oscfg`. Users install OSConfig separately. Editor, library, validation, diff, CIS mapping, and audit-pack generation can run without the CLI; deploy/audit/revert flows are CLI-gated.
+ConfigForge installers do **not** bundle `oscfg`. Users install OSConfig separately. Editor, library, validation, diff, CIS mapping, and audit-pack generation can run without the CLI; Full-edition deploy/audit/revert flows are CLI-gated. The macOS Author edition omits those device-operation namespaces.
 
 When a CLI-gated handler can determine that the CLI is missing, it throws `cliRequiredError()` from `packages/core/src/handlers/errors.ts` with status `412` and code `CLI_REQUIRED`. The preload bridge preserves those fields on the thrown renderer `Error` so UI code can open `CliRequiredModal`.
 
@@ -23,14 +23,14 @@ When a CLI-gated handler can determine that the CLI is missing, it throws `cliRe
 5. `PATH` via `where` or `which`.
 6. Windows MSIX fallback via `Get-AppxPackage Microsoft.OSConfig`.
 
-`cfs.health.check()` reports the resolved binary path and source (`env`, `bundled`, `installed`, `path`, or `msix`). In current releases, `bundled` means a developer/test resource drop was found, not that the installer carried the CLI.
+In the Full edition, `cfs.health.check()` reports the resolved binary path and source (`env`, `bundled`, `installed`, `path`, or `msix`). In current releases, `bundled` means a developer/test resource drop was found, not that the installer carried the CLI. The macOS Author preload omits `cfs.health`.
 
 ## Operational invariants
 
 | Invariant | What it means |
 | --- | --- |
 | **Exit-code-driven** | `0` = success, non-zero = failure. We never parse free-form prose to decide if a CLI call worked. |
-| **Verbatim capture** | `stdout` and `stderr` are returned uninterpreted to the caller. The wrapper neither colours, nor reformats, nor filters lines. |
+| **Captured CLI output** | `stdout` and `stderr` are captured from the CLI. `runner.ts` strips the preview telemetry/privacy preamble from stdout before parsing or returning it, and known failure modes are translated to actionable messages while preserving enough CLI detail for troubleshooting. |
 | **Preamble scrubbing** | The preview CLI prints a multi-line telemetry banner before real payload. `runner.ts` strips it before returning, so downstream sees only the body. |
 | **Single operational spawn path** | CLI verbs go through `runOscfg()` in `runner.ts`. Handlers and renderer code do not spawn `oscfg` directly. |
 | **Bounded concurrency** | `MAX_CONCURRENT_SPAWNS = 4`. Beyond that, callers queue. Avoids the Windows Defender real-time scan + `oscfg_event.dll` load-contention cliff that produced 60s timeouts during bulk audits. |

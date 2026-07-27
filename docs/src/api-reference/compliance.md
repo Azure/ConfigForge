@@ -83,6 +83,8 @@ type CisStatus = {
   unexpectedFiles?: Array<{ name: string; didYouMean: string | null }>;
   schemaError?: string | null;
   source?: 'json' | 'xccdf' | 'both';
+  legacyMappingsLoaded?: boolean;
+  legacyRuleCatalogCount?: number;
   xccdfFiles?: Array<{
     filename: string;
     platform: 'windows' | 'linux' | 'unknown';

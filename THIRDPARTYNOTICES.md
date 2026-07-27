@@ -19,32 +19,25 @@ For Microsoft trademarks and the OSConfig CLI integration, see NOTICE.
 
 | # | Package | License | Purpose | Upstream |
 |---|---|---|---|---|
-| 1 | **electron** | MIT | Cross-platform desktop runtime (Chromium + Node.js) | https://github.com/electron/electron |
-| 2 | **electron-builder** | MIT | Installer packaging (NSIS, AppImage, deb, rpm, tar.gz) | https://github.com/electron-userland/electron-builder |
-| 3 | **electron-updater** | MIT | In-app auto-update channel | https://github.com/electron-userland/electron-builder |
-| 4 | **electron-log** | MIT | Main + renderer logging | https://github.com/megahertz/electron-log |
-| 5 | **react** | MIT | UI library | https://github.com/facebook/react |
-| 6 | **react-dom** | MIT | React renderer for the web/Electron | https://github.com/facebook/react |
-| 7 | **react-router-dom** | MIT | Hash-based client routing | https://github.com/remix-run/react-router |
-| 8 | **vite** | MIT | Renderer build tool | https://github.com/vitejs/vite |
-| 9 | **@vitejs/plugin-react** | MIT | React fast-refresh for Vite | https://github.com/vitejs/vite-plugin-react |
-| 10 | **typescript** | Apache-2.0 | Type system + compiler | https://github.com/microsoft/TypeScript |
-| 11 | **esbuild** | MIT | Electron main + preload bundler | https://github.com/evanw/esbuild |
-| 12 | **@fluentui/react-components** | MIT | FluentUI v9 primitives (Dialog, Button, MessageBar, Spinner, etc.) | https://github.com/microsoft/fluentui |
-| 13 | **@fluentui/react-icons** | MIT | Fluent icon set | https://github.com/microsoft/fluentui-system-icons |
-| 14 | **@monaco-editor/react** | MIT | Code editor (YAML/JSON/MOF manifest authoring) | https://github.com/suren-atoyan/monaco-react |
-| 15 | **monaco-editor** | MIT | Underlying Monaco editor library | https://github.com/microsoft/monaco-editor |
-| 16 | **tailwindcss** | MIT | Utility-first styling for layout | https://github.com/tailwindlabs/tailwindcss |
-| 17 | **js-yaml** | MIT | YAML parsing / serialization for manifests | https://github.com/nodeca/js-yaml |
-| 18 | **pdfkit** | MIT | Audit-pack PDF generation | https://github.com/foliojs/pdfkit |
-| 19 | **dompurify** | (Apache-2.0 OR MPL-2.0) | XSS sanitization for any rendered HTML | https://github.com/cure53/DOMPurify |
-| 20 | **fast-xml-parser** | MIT | CIS XCCDF and OVAL XML parsing | https://github.com/NaturalIntelligence/fast-xml-parser |
-| 21 | **i18next** | MIT | Localization runtime | https://github.com/i18next/i18next |
-| 22 | **i18next-browser-languagedetector** | MIT | OS/browser locale detection | https://github.com/i18next/i18next-browser-languageDetector |
-| 23 | **react-i18next** | MIT | React bindings for localized UI strings | https://github.com/i18next/react-i18next |
-| 24 | **zustand** | MIT | Lightweight state-store support | https://github.com/pmndrs/zustand |
+| 1 | **@fluentui/react-components** | MIT | FluentUI v9 primitives (Dialog, Button, MessageBar, Spinner, etc.) | https://github.com/microsoft/fluentui |
+| 2 | **@fluentui/react-icons** | MIT | Fluent icon set | https://github.com/microsoft/fluentui-system-icons |
+| 3 | **@monaco-editor/react** | MIT | Code editor (YAML/JSON/MOF manifest authoring) | https://github.com/suren-atoyan/monaco-react |
+| 4 | **dompurify** | (Apache-2.0 OR MPL-2.0) | XSS sanitization for rendered HTML; pinned via a root `overrides` entry and reached through the bundled Monaco editor | https://github.com/cure53/DOMPurify |
+| 5 | **electron-log** | MIT | Main-process logging | https://github.com/megahertz/electron-log |
+| 6 | **electron-updater** | MIT | In-app auto-update channel | https://github.com/electron-userland/electron-builder |
+| 7 | **fast-xml-parser** | MIT | CIS XCCDF and OVAL XML parsing | https://github.com/NaturalIntelligence/fast-xml-parser |
+| 8 | **i18next** | MIT | Localization runtime | https://github.com/i18next/i18next |
+| 9 | **i18next-browser-languagedetector** | MIT | OS/browser locale detection | https://github.com/i18next/i18next-browser-languageDetector |
+| 10 | **js-yaml** | MIT | YAML parsing / serialization for manifests | https://github.com/nodeca/js-yaml |
+| 11 | **monaco-editor** | MIT | Underlying Monaco editor library | https://github.com/microsoft/monaco-editor |
+| 12 | **pdfkit** | MIT | Audit-pack PDF generation | https://github.com/foliojs/pdfkit |
+| 13 | **react** | MIT | UI library | https://github.com/facebook/react |
+| 14 | **react-dom** | MIT | React DOM renderer; the renderer entry point mounts through `react-dom/client` | https://github.com/facebook/react |
+| 15 | **react-i18next** | MIT | React bindings for localized UI strings | https://github.com/i18next/react-i18next |
+| 16 | **react-router-dom** | MIT | Hash-based client routing in the renderer | https://github.com/remix-run/react-router |
+| 17 | **zustand** | MIT | Lightweight state-store support | https://github.com/pmndrs/zustand |
 
-## Development-only dependencies (not shipped to users)
+## Other direct development and build dependencies
 
 | Package | License | Purpose |
 |---|---|---|
@@ -55,6 +48,12 @@ For Microsoft trademarks and the OSConfig CLI integration, see NOTICE.
 | Playwright | Apache-2.0 | Smoke / e2e tests |
 | sharp | Apache-2.0 | Icon resizing in build pipeline |
 | autoprefixer / postcss | MIT | CSS post-processing |
+| electron | MIT | Desktop runtime packaged by the build pipeline |
+| electron-builder | MIT | Installer packaging (NSIS, AppImage, deb, rpm, tar.gz) |
+| vite / @vitejs/plugin-react | MIT | Renderer build tooling |
+| typescript | Apache-2.0 | Type checking and compilation |
+| esbuild | MIT | Electron main and preload bundling |
+| tailwindcss | MIT | Utility-first styling generation |
 
 ## License compatibility notes
 
@@ -64,8 +63,8 @@ For Microsoft trademarks and the OSConfig CLI integration, see NOTICE.
 - No GPL / LGPL / AGPL dependencies are present in the runtime path. If a
   transitive dependency surfaces a copyleft license, it must be replaced
   or hoisted out of the runtime tree before the next release.
-- Transitive devDependency licenses are not enumerated here. They do not
-  affect the redistribution of the user-installed application.
+- Transitive devDependency licenses are not enumerated here. Review the
+  release SBOM for the authoritative transitive inventory of each build.
 
 ## How to regenerate this file
 

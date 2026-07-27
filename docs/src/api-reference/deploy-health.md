@@ -5,11 +5,12 @@
 > IPC channels below. Contract shape preserved; only the transport
 > changed.
 
-Deploy is the only handler that touches the live OS. Health is the
-read-only probe. Both are flavor-conditional in the renderer (omitted
-on the macOS author build per CF-SEC-015 - use `safeCfs('deploy')` /
-`safeCfs('health')` instead of bare `cfs.deploy` / `cfs.health` for
-cross-flavor code).
+Deploy is the primary live-OS handler in this file. Revert also mutates
+live OSConfig state via `cfs.revert.apply`; health is the read-only probe.
+Deploy, deploy recovery, revert, health, device-audit results, and system
+elevation are flavor-conditional in the renderer and are omitted on the macOS
+author build per CF-SEC-015. Use `safeCfs(...)` instead of bare namespace
+access for cross-flavor code.
 
 ## `cfs.deploy.run(req, onProgress?)` - channel `cfs:deploy:run`
 
@@ -168,7 +169,8 @@ type HealthStatus = {
 > **Added in v0.3.1.** A userData-side settings store (`<userData>/settings.json`) with atomic write and 1-second read cache.
 
 ```ts
-type SettingsSchema = {
+type UserSettings = {
+  schemaVersion: 1;
   historyRetention: number;              // 5-1000, default 20
   preDeploySnapshotRetention: number;    // 1-50, default 5
   auditPackPiiWarningDismissed: boolean;

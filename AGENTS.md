@@ -58,8 +58,8 @@ but that release remains a draft and unpublished.
 
 ### Flavor capability boundary
 
-The author build uses compile-time flags in
-`apps/desktop/electron/flavor.ts`. Its preload removes these exact namespaces:
+The author build uses compile-time renderer flags in
+`apps/desktop/src/lib/flavor.ts`. Its preload removes these exact namespaces:
 
 - `HAS_DEPLOY=false`: `health`, `deploy`, `deployRecovery`, and `revert`
 - `HAS_DEVICE_AUDIT=false`: `auditResults`
@@ -238,8 +238,8 @@ preload bundles are restored after Vite.
 | `public/_baselines/` | Microsoft-authored OSConfig baselines (Defender, LAPS, Secured Core, WS2016-25 variants, Linux SFF); user-supplied CIS data is kept in an excluded subdirectory | Microsoft-authored `.osc.yaml` and `.csv` files ship via `extraResources`. **Note:** the Windows SSH baseline (`ssh.osc.yaml` / `ssh.csv`) was removed in v0.3.52 |
 | `public/_baselines/cis/_data/` | **User-supplied** CIS data (XCCDF + OVAL + Azure Policy JSON) | NEVER commit or package (CIS license). `.gitignore` excludes the directory, and the public-package guard blocks CIS assets |
 | `~/.configforge/` | User-scoped runtime state (manifests, history, rationale, audit-results) | Never write from tests |
-| `scripts/verify-no-cli-binary.sh` | Belt-and-suspenders release check | Fails the release if any `oscfg*` shows up under `apps/desktop/release/` |
-| `scripts/verify-public-package-assets.mjs` | Dependency-free public packaging guard | Fails local packaging and CI if CIS benchmark files could enter public assets, CIS `extraResources` filters are unsafe, or package-lock URLs use a non-public registry host |
+| `scripts/verify-no-cli-binary.sh` | Manual belt-and-suspenders release check | Available for manual verification that no `oscfg*` file appears under `apps/desktop/release/`; not currently invoked by CI |
+| `scripts/verify-public-package-assets.mjs` | Dependency-free public packaging guard | Wired into PR checks, release workflows, and desktop `dist*` scripts; fails if CIS benchmark files could enter public assets, CIS `extraResources` filters are unsafe, or package-lock URLs use a non-public registry host |
 | `scripts/capture-screenshots.mjs` | Playwright-electron README screenshot capture | Requires `npm run desktop:build` first. Uses `playwright._electron.launch()` with the Node `require` resolved electron binary |
 | `scripts/ship-mac.ps1` | One-command mac release helper | Creates draft GitHub release + dispatches `release-mac.yml` |
 
@@ -275,7 +275,7 @@ Reference implementations (most → least mature):
 
 | Page | Hooks (tests) | Sub-components |
 | --- | --- | --- |
-| `ManifestEditor/` | `useManifestEditorState` (13), `useDeployFlow` (11), `useDocsModal` (7) | `DocsModal`, `ManifestContent`, `VisualManifestViewer`, `DeployResultPanel`, `ComplianceTable`, `ManifestHeader` |
+| `ManifestEditor/` | `useManifestEditorState` (13), `useDeployFlow` (11) | `AddSettingsPane`, `ComplianceTable`, `DeployResultPanel`, `ManifestContent`, `ManifestDetailFooter`, `ManifestHeader`, `VisualManifestViewer` |
 | `Diff/` | `useDiffMatrix` (9, includes race-guard regression) | `CisDiffTab` (CIS Diff tab inside /diff), plus inline `ResourceChangesPanel` and `ResourceChangesSection` (module-scope hoist for stable identity across expand/collapse) |
 | `Manifests/` | `useManifestList` (6), `useFlashMessage` (5), `useBulkSelection` (6) | (visual extraction queued) |
 | `ManifestNew/` | `useNewManifestForm` (14) | (visual extraction queued) |
@@ -447,27 +447,15 @@ When touching IPC contracts or `packages/core/src/handlers/`, exercise the chann
 - PR #77 at `aec0775` ported all five PR #76 commits and passed 79 focused
   Manifest Editor tests, two isolated Playwright scenarios, lint with 0
   errors, the desktop build, and a production audit with 0 vulnerabilities.
-- The final `0.3.93-author.1` preparation tree passed 1,598 Vitest tests in
-  117 files, the 79 focused Manifest Editor tests, both isolated Loop
-  Playwright scenarios, lint with 0 errors, full and author-flavor desktop
-  builds, locale review with 0 placeholder/glossary/plural issues, and a
-  production audit with 0 vulnerabilities.
-- At the time of the prior draft, annotated tag `mac-v0.3.93-author.1`
-  resolved to merge `099be065e895a2bb3fb62b2ab345cb6a46ba43a9`. Tag-pinned workflow run
-  [#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
-  passed the install, production audit, build, SBOM, checksum, and upload
-  gates and verified the five expected assets.
-- The prior annotated tag `mac-v0.3.93-author.2` resolved to merge
-  `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. PR check run
-  [#30186333208](https://github.com/Azure/ConfigForge/actions/runs/30186333208)
-  passed, and tag-pinned workflow run
-  [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
-  passed the install, production audit, build, SBOM, checksum, and upload
-  gates. The author.1 and author.2 releases remain drafts and unpublished.
-- The current `0.3.94-author.1` tagged source requires successful GitHub CI
-  and tag-pinned macOS packaging validation before publication. Its matching
-  GitHub release must remain a draft until a maintainer verifies the five
-  expected assets.
+- The prior annotated tag `mac-v0.3.93-author.2` still resolves to
+  `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. Its five assets were verified by
+  workflow run
+  [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580),
+  but that release remains a draft and unpublished.
+- The current macOS Author tagged source is `mac-v0.3.94-author.1`, with an
+  unpublished draft release. Use current GitHub checks and release metadata
+  as the authority for build and asset status rather than recording a merge
+  SHA or workflow run here.
 
 ---
 

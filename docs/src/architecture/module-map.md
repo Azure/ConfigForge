@@ -23,7 +23,6 @@ A conservative map of the current `apps/desktop/` and `packages/core/` split. It
 | `cfs.ts` | Renderer-side typed proxy for `window.cfs`, plus `safeCfs()` / `hasCfsNamespace()` capability checks. |
 | `platform.ts` | Renderer platform/theme hooks through the preload bridge. |
 | `use-navigation-guard.ts` | Unsaved-changes navigation guard for the HashRouter app. |
-| `cn.ts` | Class-name helper. |
 | `electron-restore-client.ts` | Renderer client for interrupted deploy recovery UI. |
 | `monaco-setup.ts` | Monaco setup shared by editor surfaces. |
 
@@ -41,7 +40,7 @@ The five Phase A-E lighthouse pages are directory-based:
 
 | Page directory | State/hooks | Components |
 | --- | --- | --- |
-| `ManifestEditor/` | `useManifestEditorState`, `useDeployFlow`, `useDocsModal` (+ tests) | `ComplianceTable`, `DeployResultPanel`, `DocsModal`, `ManifestContent`, `ManifestHeader`, `VisualManifestViewer` |
+| `ManifestEditor/` | `useManifestEditorState`, `useDeployFlow` (+ tests) | `AddSettingsPane`, `ComplianceTable`, `DeployResultPanel`, `ManifestContent`, `ManifestDetailFooter`, `ManifestHeader`, `VisualManifestViewer` |
 | `Manifests/` | `useManifestList`, `useFlashMessage`, `useBulkSelection` (+ tests) | none extracted yet |
 | `ManifestNew/` | `useNewManifestForm` (+ tests) | none extracted yet |
 | `Library/` | `useLibraryFilters` (+ tests) | none extracted yet |
@@ -80,12 +79,11 @@ Single source of truth for business logic. Each handler is a pure function calle
 | `index.ts` | Re-exports. |
 | `manifests.ts` | List / register / delete manifests. Platform-agnostic register (schema-only); deploy is the platform gate. |
 | `deploy.ts` | `runDeploy` (audit + enforce modes). Preflight checks `resolveOscfgBinary()`; throws `cliRequiredError()` if missing. |
-| `revert.ts` | `revertManifest`: restore pre-deploy snapshot. Same preflight gate. |
+| `revert.ts` | `revertManifest`: restore pre-deploy snapshot or delete the namespace when no usable snapshot exists. It revalidates snapshot YAML before apply and translates CLI-missing apply/delete failures to `CLI_REQUIRED`. |
 | `health.ts` | `getHealthStatus` + `recheckHealth` (cache-busting reprobe). |
 | `import.ts` | File → manifest converter. CSV/TSV/XLSX and JSON security-definition imports both emit Registry resources with all schema-required props (`keyPath` + `valueName` + `valueType`) via `inferRegistryValueType()`. Imports capped at `MAX_IMPORT_BYTES = 10 MB`. |
 | `export.ts` | Manifest → YAML/JSON round-trip. |
 | `library.ts` | Catalog of bundled baselines. |
-| `compliance.ts` | CIS compliance score + per-rule breakdown. |
 | `history.ts` | Snapshot store wrappers. |
 | `audit-pack.ts` | PDF + markdown audit-pack builder. Uses `escapeMarkdown()` for any user-supplied or AI-generated text (CF-SEC-005/006). |
 | `docs.ts`, `docs-write.ts` | Manifest documentation generation/save surfaces. |
@@ -184,8 +182,8 @@ Single source of truth for business logic. Each handler is a pure function calle
 | `data.ts` | Loads user-supplied JSON catalogs from the CIS data directory. Returns `null` on `ENOENT`. |
 | `crossref.ts` | Strict-name match + property-mapping fallback. |
 | `compliance.ts` | `{matched, mismatched, missing, score}`. |
-| `xccdf-parser.ts` | XCCDF + OVAL XML parser. Uses `fast-xml-parser` to extract benchmark metadata, check definitions, and rule-to-control mappings from user-supplied XML files. Second tier of the three-tier CIS lookup chain. |
-| `azure-policy-cis.ts` | Azure Policy CIS JSON parser. Matches CIS rule IDs to Azure Policy display names for compliance alignment. Third tier of the lookup chain. |
+| `xccdf-parser.ts` | XCCDF + OVAL XML parser. Supports registry exact lookup, non-registry indices, CSP-aware fuzzy title matching, and Linux fuzzy helpers used by bulk CIS Diff. |
+| `azure-policy-cis.ts` | Azure Policy CIS JSON parser. Supplies the Azure Policy fallback catalogs; Windows uses PascalCase/CSP word-overlap, while Linux bulk matching uses `linuxFuzzyMatch`. |
 
 ## `packages/core/src/system/` -- OS dispatch
 

@@ -185,9 +185,10 @@ is not a universal binary.
   Author line is tagged as `mac-v0.3.94-author.1`; its release is an
   unpublished draft.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
-  Quick Start, User Guide, Architecture, API Reference, and Operations. No
-  Azure-hosted Pages URL is documented until its public destination is
-  confirmed.
+  Quick Start, User Guide, Architecture, API Reference, and Operations. The
+  `docs` workflow builds this into an mdBook site and deploys it to the
+  `gh-pages` branch. While the repository is private, that site is served only
+  to repository collaborators rather than at a public URL.
 
 ## Contributing
 
@@ -209,11 +210,11 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **0.3.94-author.1** (current macOS tagged source; draft unpublished) | Aligns public-source licensing, privacy, support, contribution, packaging, and ownership guidance through PRs #90, #92, and #93; ports nine synthetic documentation screenshots in PR #94; and updates dev-only `brace-expansion` 5.x to 5.0.8 from PR #86. The author-only boundary is unchanged. |
-| **0.3.94** (current Windows/Linux tagged source; draft unpublished) | Updates dev-only `brace-expansion` 5.x to 5.0.8, aligns the repository for public review, and refreshes shared documentation screenshots with synthetic benchmark content. |
+| **0.3.94-author.1** (current macOS tagged source; draft unpublished) | Carries the public-source packaging, policy, privacy, security, and nine synthetic screenshot updates into the author-only Apple Silicon edition without adding device operations. |
+| **0.3.94** (current Windows/Linux tagged source; draft unpublished) | Excludes CIS benchmark source data from public installers, publishes the public licensing/privacy/support/security policy surface, patches dev-only `brace-expansion` 5.x, and refreshes nine README screenshots with synthetic benchmark content in PR #89. |
 | **0.3.93-author.2** (prior macOS draft, unpublished) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83; PR #84 prepares the immutable tag. Workflow run #30186678580 verified all five assets. |
 | **0.3.93-author.1** (prior macOS draft, unpublished) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77; PR #79 finalized documentation and immutable-tag release tooling, and PR #80 merged the tagged release branch. Workflow run #30176765724 verified all five assets. |
-| **0.3.93** (prior tagged Full edition) | Adds nested Enter/Tab editing and repairs standalone Windows Server 2025 audits, CIS mapping, and Matrix Diff policy identity handling |
+| **0.3.93** (prior Full edition) | Adds nested Enter/Tab editing and repairs standalone Windows Server 2025 audits, CIS mapping, and Matrix Diff policy identity handling |
 | **0.3.92** | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
 | **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
 | **0.3.90** | Prevents Baseline Detail footer collisions and keeps long multi-value Visual rows inside their table columns |
