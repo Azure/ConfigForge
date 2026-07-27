@@ -750,6 +750,10 @@ export function ManifestsPage() {
                       ) : (
                         issuesTitle ?? issuesLabel
                       );
+                    const issuesDescriptionId = `validation-issues-${manifest.Name.replace(
+                      /[^a-zA-Z0-9_-]/g,
+                      "-",
+                    )}`;
                     const complianceTitle = compliance.audited
                       ? compliance.unknown > 0
                         ? t("administration.status.complianceIncompleteTitle", {
@@ -835,6 +839,9 @@ export function ManifestsPage() {
                             withArrow
                           >
                             <span
+                              aria-describedby={
+                                issues > 0 && issuesTitle ? issuesDescriptionId : undefined
+                              }
                               aria-label={issuesLabel}
                               className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                                 issues === 0
@@ -845,6 +852,11 @@ export function ManifestsPage() {
                               {issuesLabel}
                             </span>
                           </Tooltip>
+                          {issues > 0 && issuesTitle && (
+                            <span id={issuesDescriptionId} className="sr-only">
+                              {issuesTitle}
+                            </span>
+                          )}
                         </td>
                         <td className="px-3 py-2">
                           <Tooltip content={complianceTitle} relationship="description" withArrow>
