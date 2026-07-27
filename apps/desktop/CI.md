@@ -15,7 +15,7 @@
 | `pr-check.yml` | PRs into and pushes to `main` or `mac-author-build`; manual dispatch remains available for explicit re-runs. |
 | `release.yml` | Clean tag push matching `v*.*.*` with no suffix; manual dispatch with version input. Builds Windows + Linux Full edition artifacts. |
 | `release-mac.yml` | Manual dispatch of the protected `main` workflow definition with an existing `mac-vX.Y.Z-author.N` tag; checks the tagged tree with the protected public-asset guard, then attaches five unsigned macOS Author assets to its existing draft release. |
-| `docs.yml` | Pushes touching `docs/**` on `main`; manual dispatch. Publishes the mdbook site to GitHub Pages. |
+| `docs.yml` | Pushes to `main` touching `docs/**`, `.github/workflows/docs.yml`, or `README.md`; PRs touching `docs/**` or `.github/workflows/docs.yml`; manual dispatch. Deploys the mdBook site to `gh-pages` only on push to `main`. |
 
 The legacy `.github/workflows/ci.yml` (tested the now-deleted Next.js tree) was removed in the Phase 10 cutover commit.
 
@@ -26,7 +26,7 @@ The legacy `.github/workflows/ci.yml` (tested the now-deleted Next.js tree) was 
 | Job | Runner | Time budget | What it runs |
 |---|---|---|---|
 | `lint` | ubuntu-latest | <8 min | Dependency-free public-asset guard + guard tests, then `npm run lint` (ESLint over `apps/desktop`; 0 errors expected, `warn`-level `max-lines` is tracked-but-not-blocking) |
-| `test` | ubuntu-latest | <12 min | `npm test` + `desktop:build` verification (catches Node-only imports leaking into the renderer bundle) |
+| `test` | ubuntu-latest | <12 min | `npm ci`, `npm audit --omit=dev --audit-level=high`, `npm run core:build`, `npm test`, `npm run desktop:build`, and smoke-checks the built renderer/main/preload files. |
 | `e2e` | windows-latest | <20 min | Playwright Electron smoke spec |
 
 **Caching:**
@@ -36,7 +36,7 @@ The legacy `.github/workflows/ci.yml` (tested the now-deleted Next.js tree) was 
 
 **Concurrency:** new pushes to the same PR cancel in-progress runs.
 
-**On failure:** the `e2e` job uploads `test-results/` and `playwright-report/` as workflow artifacts (14 day retention).
+**On failure:** the `e2e` job uploads `test-results/` and `playwright-report/` as workflow artifacts with 7-day retention.
 
 ## `release.yml` — tagged release pipeline
 
@@ -65,7 +65,7 @@ The release workflow steps now include, in order:
 6. **Generate CycloneDX SBOM** *(CF-SEC-012)* — runs `npx --no-install @cyclonedx/cyclonedx-npm --omit dev --output-format JSON --output-file apps/desktop/release/sbom-<os>.cdx.json`. Smoke check: bails if the output doesn't contain a `"components"` array.
 7. **Generate per-platform SHA256SUMS** — `SHA256SUMS-windows.txt` or `SHA256SUMS-linux.txt`.
 8. **Publish to GitHub Release** — uploads installers + `SHA256SUMS-*.txt` + `sbom-*.cdx.json` as a draft release via `gh release upload --clobber`.
-9. **Stash artifacts as workflow outputs** — belt-and-suspenders for retries (14-day retention).
+9. **Stash artifacts as workflow outputs** — belt-and-suspenders for retries (7-day retention).
 
 **Code signing: none.** Release artifacts are **unsigned** by design — this project holds no code-signing credentials in CI. On Windows, SmartScreen will warn until a binary builds reputation; on macOS, Gatekeeper requires `xattr -cr` (see `PACKAGING.md`). The trust path is building from source; an optional local self-sign helper for your own build is `apps/desktop/scripts/generate-dev-cert.ps1`.
 

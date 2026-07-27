@@ -96,11 +96,13 @@ The log is append-only. Concurrent writers are safe via a per-file
 lock; a streaming reader handles logs over 10MB without loading the
 whole thing into memory.
 
-## Sidebar surfaces
+## Rationale surfaces
 
-The editor sidebar shows the **last 3 rationale entries** for the
-currently-selected resource, with author and timestamps. The timestamp
-uses distinct styling from the author name for easier scanning.
+Rationale entries are captured by the Save-time **Why?** prompt and
+can be displayed by the standalone Rationale Log route
+(`/manifests/<baseline>/rationale`). The current Manifest Editor
+footer exposes Audit Pack and History links, but it does not show a
+recent-rationale sidebar or a **View all** rationale link.
 
 ## IPC surface
 
@@ -108,7 +110,7 @@ The renderer talks to the rationale store through the typed preload
 bridge:
 
 - `cfs.rationale.list(id)` → `{ entries: [...] }`. Full per-manifest
-  log, oldest-first. The editor sidebar and the full-log page reverse
+  log, oldest-first. The standalone full-log page reverses entries
   for display.
 - `cfs.rationale.append(req)`. Append a rationale entry. Validates
   payload size and rejects `reason` over 500 chars. Empty reason is
@@ -122,9 +124,8 @@ the request / response shapes.
 
 ## Full log page
 
-Navigate to **My Baselines → click a baseline → Rationale** (the
-**View all →** link in the editor sidebar lands here too). The full
-log page lives at
+Open `/manifests/<baseline>/rationale` to view the standalone log
+page. The full log page lives at
 [`apps/desktop/src/pages/ManifestRationale.tsx`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/src/pages/ManifestRationale.tsx)
 and shows every entry across all resources, with:
 

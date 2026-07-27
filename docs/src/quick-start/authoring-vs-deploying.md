@@ -17,7 +17,7 @@ manifests on a Windows laptop - even with no CLI at all.
 | **Author / register** | `cfs:manifests:register` | Schema validation, source-YAML persisted, summary computed. **Never** spawns `oscfg`. | None | No | Soft warning only |
 | **Deploy** | `cfs:deploy:run` (`mode=enforce`) | `oscfg apply` against the live system. | Admin/root | Yes | **Hard gate** - `'mixed'` rejected |
 | **Audit** | `cfs:deploy:run` (`mode=audit`) | `oscfg get resource` - read-only check. | None on Linux; admin on Windows (preview-CLI bug) | Yes | Hard gate |
-| **Revert** | `cfs:revert:run` | Re-applies a prior snapshot, or deletes the namespace. | Admin/root | Yes | Hard gate |
+| **Revert** | `cfs.revert.apply` / `cfs:revert:apply` | Re-applies a prior snapshot, or deletes the namespace. | Admin/root | Yes | Hard gate |
 
 ## CLI presence is surfaced everywhere
 

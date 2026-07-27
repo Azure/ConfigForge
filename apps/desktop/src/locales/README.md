@@ -2,7 +2,7 @@
 
 ## Status & roadmap
 
-Phase 0 localization plumbing shipped in v0.3.54; see the [v0.3.54 changelog entry](../../../../CHANGELOG.md#0354---2026-05-28) for what landed. Waves 1-5 (v0.3.55-v0.3.59) have completed English string extraction page-by-page. Machine translation plus review now targets v0.3.60, and QA polish targets v0.3.61.
+Phase 0 localization plumbing shipped in v0.3.54; see the [v0.3.54 changelog entry](../../../../CHANGELOG.md#0354---2026-05-28) for what landed. Waves 1-5 (v0.3.55-v0.3.59) completed English string extraction page-by-page. Machine translation plus review tooling shipped in v0.3.60, and QA polish (visual, date/number formatting) shipped in v0.3.61. The remaining work is maintainer-owned human linguistic review of the machine-translated FR/DE/ES catalogs — see [`REVIEW.md`](./REVIEW.md) and [`VISUAL-QA.md`](./VISUAL-QA.md).
 
 ## Supported locales
 
@@ -180,5 +180,5 @@ beforeEach(async () => {
 | v0.3.57 | Wave 3: high-traffic pages | ✅ shipped |
 | v0.3.58 | Wave 4: manifest editor | ✅ shipped |
 | v0.3.59 | Wave 5: long tail | ✅ shipped |
-| v0.3.60 | Machine translation + review | planned |
-| v0.3.61 | QA polish (visual, date/number formatting) | planned |
+| v0.3.60 | Machine translation + review | ✅ shipped |
+| v0.3.61 | QA polish (visual, date/number formatting) | ✅ shipped |

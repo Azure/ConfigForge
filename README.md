@@ -174,9 +174,8 @@ is not a universal binary.
   Author tagged source is `mac-v0.3.94-author.1`; its matching release is a
   draft and unpublished.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
-  Quick Start, User Guide, Architecture, API Reference, and Operations. No
-  Azure-hosted Pages URL is documented until its public destination is
-  confirmed.
+  Quick Start, User Guide, Architecture, API Reference, and Operations. The
+  published documentation homepage is <https://azure.github.io/ConfigForge/>.
 
 ## Contributing
 
@@ -200,8 +199,8 @@ is not a universal binary.
 |---|---|
 | **0.3.94** (current Windows/Linux tagged source; draft unpublished) | Excludes CIS benchmark source data from public installers, publishes the public licensing/privacy/support/security policy surface, patches dev-only `brace-expansion` 5.x, and refreshes nine README screenshots with synthetic benchmark content in PR #89 |
 | **0.3.94-author.1** (current macOS tagged source; draft unpublished) | Carries the public-source packaging, policy, privacy, security, and nine synthetic screenshot updates into the author-only Apple Silicon edition without adding device operations |
-| **0.3.93-author.2** (prior macOS draft, unpublished) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83; PR #84 prepares the immutable tag. Workflow run #30186678580 verified all five assets. |
-| **0.3.93-author.1** (prior macOS draft, unpublished) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77; PR #79 finalized documentation and immutable-tag release tooling, and PR #80 merged the tagged release branch. Workflow run #30176765724 verified all five assets. |
+| **0.3.93-author.2** (historical macOS source milestone; no current tag or release) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83/#84. Historical workflow evidence is superseded by the current `mac-v0.3.94-author.1` draft release metadata. |
+| **0.3.93-author.1** (historical macOS source milestone; no current tag or release) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77. Historical workflow evidence is superseded by the current `mac-v0.3.94-author.1` draft release metadata. |
 | **0.3.93** (prior Full edition) | Adds nested Enter/Tab editing and repairs standalone Windows Server 2025 audits, CIS mapping, and Matrix Diff policy identity handling |
 | **0.3.92** | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
 | **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |

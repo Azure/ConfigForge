@@ -10,8 +10,8 @@
 > the current CLI install state at all times.
 
 The manifest editor is the primary authoring surface. It accepts raw
-YAML *or* a structured form, validates as you type, and persists to
-`~/.configforge/manifests/<ns>.source.yaml` on save.
+YAML or editable Visual spreadsheet changes, validates as you type,
+and persists to `~/.configforge/manifests/<ns>.source.yaml` on save.
 
 ## Open
 
@@ -21,9 +21,9 @@ YAML *or* a structured form, validates as you type, and persists to
 
 ## What it does
 
-- Live syntax checking on the YAML side; structural validation on the
-  form side. Both sides update each other (the YAML view is the source
-  of truth on save).
+- Live syntax checking in Code mode and structural validation in
+  Visual mode. Code and Visual edits round-trip through canonical YAML
+  when the source can be parsed.
 - Resource-type pickers populated from
   [`registered-types.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts).
   Aspirational types (in baselines but not yet supported by the target
@@ -51,16 +51,14 @@ YAML *or* a structured form, validates as you type, and persists to
   validation pass that the `cfs:manifests:register` IPC handler runs
   on the main process side.
 
-## Form view
+## Code and Visual modes
 
-The form view is a generated set of inputs per registered resource
-type. For example, `Microsoft.Windows/Registry` has fields for
-`keyPath`, `valueName`, `valueType`, `value`. Since v0.3.45, Visual
-Builder can edit existing resources inline and expands
-`Microsoft.OSConfig/Group` resources so nested resources get their own
-Edit / Remove buttons. The form rejects
-`REG_DWORD`-style legacy names (the
-upstream CLI wants `Dword`/`String`/...).
+The editor provides **Code** and **Visual** modes. Code mode can view
+YAML, JSON, or MOF; MOF is read-only. Visual mode is an editable
+spreadsheet for supported baseline settings, with inline cell editing,
+Add settings, row selection, delete, and keyboard navigation. Tab
+saves and moves right. Enter saves and moves down. Shift+Enter remains
+a newline for structured values.
 
 > **v0.2.1 import fix:** CSV / TSV / XLSX / JSON security-definition
 > imports now emit `Microsoft.Windows/Registry` resources with all
@@ -100,72 +98,67 @@ edit → validate → persist source.yaml + .json → optional snapshot →
 
 ## Export formats
 
-The editor's **Export** menu writes the current manifest out in any of
-these formats:
+The current renderer **Export** menu writes the manifest in these
+formats:
 
 | Format | Extension | Use |
 | --- | --- | --- |
-| YAML | `.osc.yaml` | Native OSConfig manifest — the canonical source. |
+| YAML | `.osc.yaml` | Native OSConfig manifest - the canonical source. |
 | JSON | `.json` | The manifest as JSON. |
-| Azure Policy | `.json` | A ready-to-import Azure Policy / Machine Configuration definition. |
 | MOF | `.mof` | DSC Managed Object Format for the Azure Machine Configuration toolchain (see below). Read-only in the editor. |
 | CSV | `.csv` | Flat per-resource rows for spreadsheets / bulk review. |
-| Documentation | `.md` | Human-readable Markdown summary of the manifest. |
 
-### Two routes into Azure Policy
+Use the separate **Docs** button to download generated Markdown
+documentation. Azure Policy export exists in the core handler but is
+not exposed by the current Manifest Editor UI.
 
-The same baseline can reach Azure Policy / Machine Configuration two ways:
+### Machine Configuration package route
 
-1. **Direct — Export → Azure Policy (`.json`).** ConfigForge writes the
-   Machine Configuration policy definition for you; import it into Azure
-   Policy as-is.
+To reach Azure Policy / Machine Configuration through a package, export
+**MOF (`.mof`)**, then hand the `.mof` to the
+[`GuestConfiguration`](https://learn.microsoft.com/azure/governance/machine-configuration/how-to-create-package)
+PowerShell module (Azure Machine Configuration) to turn it into a
+package and a policy definition.
 
-2. **Via MOF + the Machine Configuration cmdlets.** Export → **MOF
-   (`.mof`)**, then hand the `.mof` to the
-   [`GuestConfiguration`](https://learn.microsoft.com/azure/governance/machine-configuration/how-to-create-package)
-   PowerShell module (Azure Machine Configuration) to turn it into a
-   package and a policy definition.
+**Prerequisites (one-time, on the packaging machine - PowerShell 7,
+run as Administrator):** the exported MOF declares the OSConfig DSC
+resource, so `New-GuestConfigurationPackage` needs both modules
+installed to bundle it into the package:
 
-   **Prerequisites (one-time, on the packaging machine — PowerShell 7,
-   run as Administrator):** the exported MOF declares the OSConfig DSC
-   resource, so `New-GuestConfigurationPackage` needs both modules
-   installed to bundle it into the package:
+```powershell
+Install-Module GuestConfiguration -Scope AllUsers -Force
+# OSConfig resource module (any 1.2.0 or later - the MOF is not
+# pinned to a specific version, so it binds to whatever is installed)
+Install-Module Microsoft.OSConfig -Scope AllUsers -Repository PSGallery -Force
+```
 
-   ```powershell
-   Install-Module GuestConfiguration -Scope AllUsers -Force
-   # OSConfig resource module (any 1.2.0 or later — the MOF is not
-   # pinned to a specific version, so it binds to whatever is installed)
-   Install-Module Microsoft.OSConfig -Scope AllUsers -Repository PSGallery -Force
-   ```
+Then build and publish:
 
-   Then build and publish:
+```powershell
+# MOF to Machine Configuration package (.zip)
+New-GuestConfigurationPackage `
+  -Name MySecurityBaseline `
+  -Configuration .\MySecurityBaseline.mof `
+  -Type AuditAndSet
 
-   ```powershell
-   # MOF → Machine Configuration package (.zip)
-   New-GuestConfigurationPackage `
-     -Name MySecurityBaseline `
-     -Configuration .\MySecurityBaseline.mof `
-     -Type AuditAndSet
+# Publish the package, then generate the Azure Policy definition
+Publish-GuestConfigurationPackage -Path .\MySecurityBaseline\MySecurityBaseline.zip
+New-GuestConfigurationPolicy `
+  -PolicyId <new-guid> `
+  -ContentUri <published-package-uri> `
+  -DisplayName 'My Security Baseline' `
+  -Path .\policy
+```
 
-   # Publish the package, then generate the Azure Policy definition
-   Publish-GuestConfigurationPackage -Path .\MySecurityBaseline\MySecurityBaseline.zip
-   New-GuestConfigurationPolicy `
-     -PolicyId <new-guid> `
-     -ContentUri <published-package-uri> `
-     -DisplayName 'My Security Baseline' `
-     -Path .\policy
-   ```
+Then assign the generated definition in Azure Policy. Use this route
+when you want to own the packaging and publishing step - custom
+storage, your own GUIDs/versioning, or package signing.
 
-   Then assign the generated definition in Azure Policy. Use route 2 when
-   you want to own the packaging and publishing step — custom storage,
-   your own GUIDs/versioning, or package signing — instead of importing
-   the ready-made definition from route 1.
-
-   > The exported MOF references the `Microsoft.OSConfig` module by name
-   > only (no version pin), so packaging succeeds against any installed
-   > `Microsoft.OSConfig` 1.2.0+. If the module isn't installed,
-   > `New-GuestConfigurationPackage` fails with *"Failed to find a module
-   > with the name 'Microsoft.OSConfig'."*
+> The exported MOF references the `Microsoft.OSConfig` module by name
+> only (no version pin), so packaging succeeds against any installed
+> `Microsoft.OSConfig` 1.2.0+. If the module isn't installed,
+> `New-GuestConfigurationPackage` fails with *"Failed to find a module
+> with the name 'Microsoft.OSConfig'."*
 
 ## What changes don't trigger a save
 

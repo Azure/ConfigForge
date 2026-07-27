@@ -155,9 +155,8 @@ health, or OSConfig CLI features. Use the Full edition on Windows or Linux for
 device operations.
 
 Repository documentation is maintained under
-[`docs/src`](https://github.com/Azure/ConfigForge/tree/main/docs/src). No
-replacement public Azure Pages URL is documented until its destination is
-confirmed.
+[`docs/src`](https://github.com/Azure/ConfigForge/tree/main/docs/src) and
+published at <https://azure.github.io/ConfigForge/>.
 
 ---
 

@@ -210,8 +210,10 @@ that uses `contextBridge.exposeInMainWorld('cfs', { … })` to expose
 the `window.cfs.*` API to the sandboxed renderer. **The only**
 cross-layer surface - the renderer has no Node access, no direct
 IPC, no `fetch` to main. The preload is also **flavor-specific** -
-the mac branch's preload omits deploy/elevation/health/auditResults
-namespaces.
+the macOS author preload omits the `health`, `deploy`,
+`deployRecovery`, `revert`, `auditResults`, and `system` namespaces.
+Elevation methods live under `cfs.system`; there is no `cfs.elevation`
+namespace.
 
 ## Provenance
 
@@ -244,10 +246,10 @@ CF-SEC-015 helpers in
 [`apps/desktop/src/lib/cfs.ts`](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/src/lib/cfs.ts).
 `hasCfsNamespace(key)` returns `true` when `window.cfs[key]` is
 present on the current [flavor](#flavor); `safeCfs(key)` returns
-either the namespace object or `undefined`. Required for any
-renderer code that touches `deploy` / `elevation` / `health` /
-`auditResults` - the mac preload omits those, so a bare
-`cfs.deploy.run(...)` crashes there. The plain `cfs` proxy still
+either the namespace object or `undefined`. Required for any renderer code that touches `health`, `deploy`,
+`deployRecovery`, `revert`, `auditResults`, or `system`. The macOS
+author preload omits those namespaces, so a bare `cfs.deploy.run(...)`
+crashes there. The plain `cfs` proxy still
 throws when `window.cfs` itself is undefined (legacy semantics);
 new flavor-conditional code should prefer `safeCfs`.
 
