@@ -787,11 +787,7 @@ export function ManifestsPage() {
                             content={baselineTooltip}
                             relationship="description"
                           >
-                            <span
-                              aria-label={baselineTooltip}
-                              className="inline-flex max-w-full"
-                              tabIndex={actionsBusy ? 0 : undefined}
-                            >
+                            <span className="inline-flex max-w-full">
                               <button
                                 type="button"
                                 onClick={() => handleOpenRow(manifest.Name)}
