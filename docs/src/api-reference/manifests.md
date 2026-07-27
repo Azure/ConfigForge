@@ -204,7 +204,7 @@ runs in the background (failures logged, not surfaced).
 ```ts
 type RegisterManifestRequest = {
   name: string;                              // display name - sanitized to namespace
-  content?: string;                          // YAML or JSON; content or uri is required. If both are present, content wins.
+  content?: string;                          // YAML or JSON; content or uri is required. Non-empty content wins over uri; an empty content string falls back to uri.
   uri?: string;                              // http/https URL (10 MB cap, 30 s timeout)
   // path is a rejected legacy field; use importChannel or content instead.
   source?: 'user' | 'library' | 'import';    // default 'user'
