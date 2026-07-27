@@ -98,11 +98,14 @@ whole thing into memory.
 
 ## Rationale surfaces
 
-Rationale entries are captured by the Save-time **Why?** prompt and
-can be displayed by the standalone Rationale Log route
-(`/manifests/<baseline>/rationale`). The current Manifest Editor
-footer exposes Audit Pack and History links, but it does not show a
-recent-rationale sidebar or a **View all** rationale link.
+Rationale entries are captured by the Save-time **Why?** prompt and are
+surfaced in two places:
+
+- **Baseline Detail bottom drawer.** When a baseline is open, the editor's
+  bottom drawer includes a **Recent rationale** tab showing the three most
+  recent entries, followed by a link through to the full log.
+- **Standalone Rationale Log route** (`/manifests/<baseline>/rationale`),
+  which lists the complete per-baseline history.
 
 ## IPC surface
 
