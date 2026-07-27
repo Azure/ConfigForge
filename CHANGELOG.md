@@ -1,5 +1,30 @@
 # Changelog
 
+## [0.3.95-author.1] - 2026-07-27
+
+> `mac-v0.3.95-author.1` is the current macOS Author tagged source. Its
+> matching GitHub release remains an unpublished draft. This entry does not
+> indicate publication or assert asset availability. The author-only
+> capability boundary is unchanged: device deploy, audit, enforce, revert,
+> elevation, health, and audit-results storage remain excluded.
+
+### Fixed
+
+- **Fix unreliable My Baselines status tooltips.** Replace native HTML hover
+  titles with FluentUI `Tooltip` on the baseline name, platform, validation,
+  compliance/Not Audited, and modified-date cells. Multiline validation
+  details are preserved, and the tooltip triggers stay keyboard accessible
+  through stable ARIA without adding extra table tab stops. The macOS
+  compliance pill remains intentionally non-clickable; only its tooltip
+  wiring changed. ([#101](https://github.com/Azure/ConfigForge/pull/101))
+
+### Documentation
+
+- **Correct documentation accuracy for the macOS Author line.** Port the
+  applicable documentation-accuracy corrections from `main` PR #97, keeping
+  the author-only capability boundary intact.
+  ([#99](https://github.com/Azure/ConfigForge/pull/99))
+
 ## [0.3.94-author.1] - 2026-07-26
 
 > `mac-v0.3.94-author.1` is the current macOS Author tagged source. Its
