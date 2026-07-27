@@ -750,10 +750,7 @@ export function ManifestsPage() {
                       ) : (
                         issuesTitle ?? issuesLabel
                       );
-                    const issuesDescriptionId = `validation-issues-${manifest.Name.replace(
-                      /[^a-zA-Z0-9_-]/g,
-                      "-",
-                    )}`;
+                    const issuesDescriptionId = `validation-issues-${manifest.Name}`;
                     const complianceTitle = compliance.audited
                       ? compliance.unknown > 0
                         ? t("administration.status.complianceIncompleteTitle", {
