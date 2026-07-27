@@ -27,7 +27,7 @@ foundational work by theme.
   dependency is not bundled with the desktop app.
   ([#86](https://github.com/Azure/ConfigForge/pull/86))
 
-## [0.3.94-author.1] - 2026-07-26 (draft, unpublished)
+## macOS Author mac-v0.3.94-author.1 — 2026-07-26 (draft, unpublished)
 
 > `mac-v0.3.94-author.1` is the current macOS Author tagged source. Its
 > matching GitHub release remains an unpublished draft. The author-only
