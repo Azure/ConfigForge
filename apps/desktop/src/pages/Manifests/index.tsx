@@ -4,7 +4,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
-import { Button, Input, MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components";
+import {
+  Button,
+  Input,
+  MessageBar,
+  MessageBarBody,
+  Spinner,
+  Tooltip,
+} from "@fluentui/react-components";
 import {
   AddRegular,
   ArrowCounterclockwiseRegular,
@@ -714,6 +721,17 @@ export function ManifestsPage() {
                       issues === 0
                         ? t("administration.status.noValidationIssues")
                         : manifest.Validation?.issues.join("\n");
+                    const issuesLabel =
+                      issues === 0
+                        ? t("administration.status.noIssues")
+                        : t("administration.status.issueCount", { count: issues });
+                    const issuesTooltipContent =
+                      issues > 0 && issuesTitle ? (
+                        <span className="block whitespace-pre-line">{issuesTitle}</span>
+                      ) : (
+                        issuesTitle ?? issuesLabel
+                      );
+                    const issuesDescriptionId = `validation-issues-${manifest.Name}`;
                     const complianceTitle = compliance.audited
                       ? compliance.unknown > 0
                         ? t("administration.status.complianceIncompleteTitle", {
@@ -726,6 +744,7 @@ export function ManifestsPage() {
                             total: compliance.total,
                           })
                       : t("administration.status.notAuditedTitle");
+                    const baselineTooltip = `${displayName} — ${manifest.Name}. ${modifiedTitle}`;
 
                     return (
                       <tr
@@ -746,80 +765,101 @@ export function ManifestsPage() {
                           />
                         </td>
                         <td className="min-w-0 px-3 py-2">
-                          <button
-                            type="button"
-                            onClick={() => handleOpenRow(manifest.Name)}
-                            disabled={actionsBusy}
-                            aria-label={t("administration.table.openBaseline", {
-                              name: manifest.Name,
-                            })}
-                            className="group flex max-w-full items-center gap-2 text-left"
-                            title={`${displayName} — ${manifest.Name}. ${modifiedTitle}`}
-                          >
-                            <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                              <BaselinePlatformMark platform={platform} />
-                            </span>
-                            <span className="min-w-0">
-                              <span className="block max-w-[34rem] truncate font-medium text-blue-700 group-hover:underline dark:text-blue-300">
-                                {displayName}
-                              </span>
-                              {shouldShowNamespace(displayName, manifest.Name) && (
-                                <span
-                                  className="block max-w-[34rem] truncate text-xs text-slate-500 dark:text-slate-400"
-                                  title={manifest.Name}
-                                >
-                                  {manifest.Name}
+                          <Tooltip content={baselineTooltip} relationship="description">
+                            <span className="inline-flex max-w-full">
+                              <button
+                                type="button"
+                                onClick={() => handleOpenRow(manifest.Name)}
+                                disabled={actionsBusy}
+                                aria-label={t("administration.table.openBaseline", {
+                                  name: manifest.Name,
+                                })}
+                                className="group flex max-w-full items-center gap-2 text-left"
+                              >
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                  <BaselinePlatformMark platform={platform} />
                                 </span>
-                              )}
+                                <span className="min-w-0">
+                                  <span className="block max-w-[34rem] truncate font-medium text-blue-700 group-hover:underline dark:text-blue-300">
+                                    {displayName}
+                                  </span>
+                                  {shouldShowNamespace(displayName, manifest.Name) && (
+                                    <span className="block max-w-[34rem] truncate text-xs text-slate-500 dark:text-slate-400">
+                                      {manifest.Name}
+                                    </span>
+                                  )}
+                                </span>
+                              </button>
                             </span>
-                          </button>
+                          </Tooltip>
                         </td>
-                        <td className="px-3 py-2" title={platformLabel}>
-                          <span className="inline-flex items-center gap-2">
-                            <BaselinePlatformMark platform={platform} />
-                            <span className="truncate">{platformLabel}</span>
-                          </span>
+                        <td className="px-3 py-2">
+                          <Tooltip content={platformLabel} relationship="description" withArrow>
+                            <span
+                              aria-label={platformLabel}
+                              className="inline-flex items-center gap-2"
+                            >
+                              <BaselinePlatformMark platform={platform} />
+                              <span className="truncate">{platformLabel}</span>
+                            </span>
+                          </Tooltip>
                         </td>
                         <td className="px-3 py-2 text-left tabular-nums">
                           {settingCount(manifest)}
                         </td>
-                        <td className="px-3 py-2" title={issuesTitle}>
-                          <span
-                            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                              issues === 0
-                                ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                                : "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
-                            }`}
+                        <td className="px-3 py-2">
+                          <Tooltip
+                            content={issuesTooltipContent}
+                            relationship="description"
+                            withArrow
                           >
-                            {issues === 0
-                              ? t("administration.status.noIssues")
-                              : t("administration.status.issueCount", { count: issues })}
-                          </span>
+                            <span
+                              aria-describedby={
+                                issues > 0 && issuesTitle ? issuesDescriptionId : undefined
+                              }
+                              aria-label={issuesLabel}
+                              className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                                issues === 0
+                                  ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                                  : "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+                              }`}
+                            >
+                              {issuesLabel}
+                            </span>
+                          </Tooltip>
+                          {issues > 0 && issuesTitle && (
+                            <span id={issuesDescriptionId} className="sr-only">
+                              {issuesTitle}
+                            </span>
+                          )}
                         </td>
-                        <td className="px-3 py-2" title={complianceTitle}>
-                          <span
-                            className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
-                              compliance.category === "all-compliant"
-                                ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
+                        <td className="px-3 py-2">
+                          <Tooltip content={complianceTitle} relationship="description" withArrow>
+                            <span
+                              className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
+                                compliance.category === "all-compliant"
+                                  ? "bg-emerald-50 text-emerald-700 dark:bg-emerald-950/60 dark:text-emerald-300"
+                                  : compliance.category === "partially-compliant"
+                                    ? "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300"
+                                    : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+                              }`}
+                            >
+                              {compliance.category === "all-compliant"
+                                ? t("administration.status.allCompliant")
                                 : compliance.category === "partially-compliant"
-                                  ? "bg-red-50 text-red-700 dark:bg-red-950/60 dark:text-red-300"
-                                  : "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
-                            }`}
-                          >
-                            {compliance.category === "all-compliant"
-                              ? t("administration.status.allCompliant")
-                              : compliance.category === "partially-compliant"
-                                ? t("administration.status.percentCompliant", {
-                                    percent: percentFormatter.format(compliance.ratio ?? 0),
-                                  })
-                                : t("administration.status.notAudited")}
-                          </span>
+                                  ? t("administration.status.percentCompliant", {
+                                      percent: percentFormatter.format(compliance.ratio ?? 0),
+                                    })
+                                  : t("administration.status.notAudited")}
+                            </span>
+                          </Tooltip>
                         </td>
-                        <td
-                          className="whitespace-nowrap px-3 py-2 tabular-nums text-slate-600 dark:text-slate-300"
-                          title={modifiedTitle}
-                        >
-                          {modifiedDateLabel}
+                        <td className="whitespace-nowrap px-3 py-2 tabular-nums text-slate-600 dark:text-slate-300">
+                          <Tooltip content={modifiedTitle} relationship="description" withArrow>
+                            <span aria-label={modifiedTitle} className="inline-block">
+                              {modifiedDateLabel}
+                            </span>
+                          </Tooltip>
                         </td>
                       </tr>
                     );

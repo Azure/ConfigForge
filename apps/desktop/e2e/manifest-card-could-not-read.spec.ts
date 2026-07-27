@@ -136,9 +136,11 @@ test('baseline table excludes indeterminate reads from compliance percentage', a
 
   // Determinate results are 2 compliant + 1 non-compliant. The 3
   // indeterminate/error reads must not lower the percentage to 33%.
-  await expect(row.getByText('67% compliant', { exact: true })).toBeVisible();
-  await expect(
-    row.getByTitle('2 of 3 evaluated settings are compliant; 3 settings could not be evaluated'),
-  ).toBeVisible();
+  const complianceStatus = row.getByText('67% compliant', { exact: true });
+  await expect(complianceStatus).toBeVisible();
+  await complianceStatus.hover();
+  await expect(win.getByRole('tooltip')).toHaveText(
+    '2 of 3 evaluated settings are compliant; 3 settings could not be evaluated',
+  );
   await expect(row.getByText('1 issue', { exact: true })).toBeVisible();
 });
