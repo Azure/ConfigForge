@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.3.95] - 2026-07-27
+
+> `v0.3.95` is the current Windows/Linux tagged source. Its matching GitHub
+> release remains a draft and is unpublished.
+
+### Fixed
+
+- Replace unreliable native HTML hover titles with FluentUI tooltips on the
+  My Baselines name, platform, validation, compliance/Not Audited, and
+  modified-date cells, preserving multiline validation details. The tooltip
+  triggers are keyboard accessible and expose non-interactive details through
+  stable ARIA without adding excessive tab stops.
+  ([#100](https://github.com/Azure/ConfigForge/pull/100))
+
+### Documentation
+
+- Correct architecture, CI, and release-state drift across the GitHub-facing
+  documentation set. ([#97](https://github.com/Azure/ConfigForge/pull/97))
+
 ## [0.3.94] - 2026-07-26
 
 > `v0.3.94` is the current Windows/Linux tagged source. Its matching GitHub
