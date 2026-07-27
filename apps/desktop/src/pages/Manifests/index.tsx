@@ -812,8 +812,8 @@ export function ManifestsPage() {
                           </Tooltip>
                         </td>
                         <td className="px-3 py-2">
-                          <Tooltip content={platformLabel} relationship="label" withArrow>
-                            <span className="inline-flex items-center gap-2">
+                          <Tooltip content={platformLabel} relationship="description" withArrow>
+                            <span className="inline-flex items-center gap-2" tabIndex={0}>
                               <BaselinePlatformMark platform={platform} />
                               <span className="truncate">{platformLabel}</span>
                             </span>
@@ -834,6 +834,7 @@ export function ManifestsPage() {
                                   ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                                   : "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                               }`}
+                              tabIndex={0}
                             >
                               {issuesLabel}
                             </span>
@@ -867,7 +868,9 @@ export function ManifestsPage() {
                         </td>
                         <td className="whitespace-nowrap px-3 py-2 tabular-nums text-slate-600 dark:text-slate-300">
                           <Tooltip content={modifiedTitle} relationship="description" withArrow>
-                            <span className="inline-block">{modifiedDateLabel}</span>
+                            <span className="inline-block" tabIndex={0}>
+                              {modifiedDateLabel}
+                            </span>
                           </Tooltip>
                         </td>
                       </tr>
