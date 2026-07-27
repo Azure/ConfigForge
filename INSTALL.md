@@ -8,10 +8,11 @@ ConfigForge has two editions:
   and Audit Pack export are available. Device Deploy, Audit, and Revert are
   intentionally omitted.
 
-The latest tagged Full-edition release is `v0.3.93`. The current macOS Author
-line is `0.3.93-author.2` with tag `mac-v0.3.93-author.2`; its GitHub release
-exists with five verified assets but is intentionally a draft and is not
-published. The Full-edition package version on `main` is `0.3.93`.
+The current Windows/Linux tagged source is `v0.3.94`, and its matching GitHub
+release is a draft and unpublished. The current macOS Author tagged source is
+`mac-v0.3.94-author.1`, and its matching GitHub release is also a draft and
+unpublished. The package versions are `0.3.94` for the Full edition and
+`0.3.94-author.1` for the macOS Author edition.
 
 ConfigForge does **not** bundle the OSConfig CLI. To use the Full edition's Deploy, Audit, or Revert features against a real Windows or Linux machine, install `oscfg` separately from its upstream source.
 
@@ -127,13 +128,11 @@ later). The release contains an ARM64-only binary. It is not an x64 or
 universal build and does not support Intel Macs. Rosetta does not provide
 ARM64-on-Intel compatibility.
 
-The `mac-v0.3.93-author.2` tag and matching GitHub release exist. The five
-verified assets are attached to that release, but it remains a draft and is
-not available from the public
+The current macOS Author tagged source is `mac-v0.3.94-author.1`. Its matching
+GitHub release is a draft and is not available from the public
 [Azure/ConfigForge releases](https://github.com/Azure/ConfigForge/releases)
-page until a maintainer publishes it. Maintainers with draft access can test
-the assets now. Other users can build the tagged source by following the
-instructions in the
+page until a maintainer publishes it. Users can build the tagged source by
+following the instructions in the
 [Azure/ConfigForge repository](https://github.com/Azure/ConfigForge).
 
 The app is unsigned and not notarized. Copy **ConfigForge Author.app** to

@@ -1,11 +1,31 @@
 # Changelog
 
-## [Unreleased]
+## [0.3.94] - 2026-07-26
+
+### Changed
+
+- Exclude CIS benchmark source data from public installers; Benchmark Mapping
+  and CIS Diff continue to use user-supplied benchmark files.
+  ([#88](https://github.com/Azure/ConfigForge/pull/88))
+- Clarify that ConfigForge sends no product telemetry, update checks contact
+  GitHub Releases, and the separately installed `oscfg` CLI may send required
+  diagnostics under its own policy.
+  ([#88](https://github.com/Azure/ConfigForge/pull/88))
+- Publish canonical MIT licensing plus clear community ownership,
+  contribution, best-effort support, and private vulnerability-reporting
+  guidance, with structured issue and pull-request templates.
+  ([#88](https://github.com/Azure/ConfigForge/pull/88),
+  [#91](https://github.com/Azure/ConfigForge/pull/91))
+- Refresh nine README screenshots with reviewed synthetic Industry Benchmark
+  content; no licensed CIS benchmark data or screenshot tooling is added.
+  ([#89](https://github.com/Azure/ConfigForge/pull/89))
 
 ### Security
 
-- **Updated dev-only `brace-expansion` 5.x to 5.0.8.** This addresses
-  GHSA-mh99-v99m-4gvg / CVE-2026-14257 and resolves Dependabot alert #53.
+- Update dev-only `brace-expansion` 5.x to 5.0.8 to address
+  GHSA-mh99-v99m-4gvg / CVE-2026-14257 and resolve Dependabot alert #53; this
+  dependency is not bundled with the desktop app.
+  ([#86](https://github.com/Azure/ConfigForge/pull/86))
 
 ## [0.3.93] - 2026-07-25
 
@@ -42,8 +62,8 @@
 
 ## [0.3.93-author.2] - 2026-07-25 (draft, unpublished)
 
-> Annotated tag `mac-v0.3.93-author.2` and the current
-> `mac-author-build` head resolve to
+> Annotated tag `mac-v0.3.93-author.2` resolved to the then-current
+> `mac-author-build` head at
 > `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The matching GitHub release
 > contains five verified assets but remains a draft and is unpublished.
 > Workflow run

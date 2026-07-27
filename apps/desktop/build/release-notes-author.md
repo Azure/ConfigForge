@@ -1,37 +1,51 @@
-# ConfigForge Author 0.3.93-author.2 - macOS
+# ConfigForge Author 0.3.94-author.1 - macOS
 
-> **Release state: draft and unpublished.** Annotated tag
-> `mac-v0.3.93-author.2` and the current `mac-author-build` head resolve to
-> `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The matching GitHub release
-> exists and contains five verified assets. Workflow run
-> [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
-> completed successfully. The release must remain a draft unless a maintainer
-> separately approves publication. PR
-> [#83](https://github.com/Azure/ConfigForge/pull/83) ports the reviewed
-> Windows Server 2025 baseline repairs to `mac-author-build`, and PR
-> [#84](https://github.com/Azure/ConfigForge/pull/84) prepares the immutable
-> author.2 tag and package metadata.
+> **Release state: draft and unpublished.**
+> `mac-v0.3.94-author.1` is the current macOS Author tagged source. The
+> matching GitHub release remains a draft until a maintainer approves
+> publication. Current GitHub checks and release metadata are the authority
+> for build and asset status.
 
-This release carries forward the authoring parity and nested multi-value
-keyboard editing from author.1. It also repairs the standalone Windows Server
-2025 baselines and the matching analysis identities. It remains author-only:
-device deployment, audit, enforcement, revert, elevation, OSConfig CLI health,
-and device audit-results storage are not included.
+This release improves public-source readiness, refreshes shared documentation
+screenshots with synthetic benchmark content, and updates one dev-only
+dependency. It remains author-only: device deployment, device audit,
+enforcement, revert, elevation, OSConfig CLI health, and audit-results storage
+are not included.
 
-## Windows Server 2025 baseline repairs
+## Security update
 
-- Replace failing array-valued Policy CSP settings with supported Registry,
-  AccountPolicy, AuditPolicy, and UserRightsAssignment providers.
-- Keep ten supported residual CSP settings in each standalone profile.
-- Correct the Domain Controller, Member Server, and Workgroup Member resource
-  counts to 321, 320, and 296.
-- Remove Source links from the three corrected baselines because the local
-  manifests now differ materially from their upstream files.
-- Resolve Increase scheduling priority, password complexity, and guest account
-  status in Benchmark Mapping without bundling licensed CIS data.
-- Use `properties.name`, with legacy `properties.policy` fallback, to keep
-  User Rights Assignment and Account Policy settings distinct in analysis and
-  Matrix Diff.
+- Update dev-only `brace-expansion` 5.x from 5.0.7 to 5.0.8 for
+  [GHSA-mh99-v99m-4gvg](https://github.com/advisories/GHSA-mh99-v99m-4gvg)
+  and CVE-2026-14257.
+- Preserve the exact public npm registry URL and integrity metadata reviewed
+  in PR [#86](https://github.com/Azure/ConfigForge/pull/86).
+- Keep every other macOS dependency and version stream unchanged. The updated
+  package is used by build and test tooling and is not bundled in the app.
+
+## Public-source readiness
+
+- Align licensing, privacy, security reporting, best-effort support,
+  contribution templates, repository ownership, and release guidance through
+  PRs [#90](https://github.com/Azure/ConfigForge/pull/90),
+  [#92](https://github.com/Azure/ConfigForge/pull/92), and
+  [#93](https://github.com/Azure/ConfigForge/pull/93).
+- Run a dependency-free public-package guard before packaging. The guard
+  rejects licensed CIS assets, unsafe CIS builder filters, and non-public npm
+  registry URLs.
+- Keep maintainer, branch, and release guidance in existing documentation.
+  This release does not add a standalone governance file.
+
+## Synthetic documentation screenshots
+
+- Port the exact nine reviewed screenshot PNGs from PR
+  [#94](https://github.com/Azure/ConfigForge/pull/94).
+- Use synthetic **Industry Benchmark** content in Benchmark Mapping and CIS
+  Diff examples.
+- Commit no CIS benchmark data, generated benchmark catalog, or screenshot
+  tooling.
+
+The screenshots are shared documentation assets. They do not change the
+macOS Author capability set.
 
 ## Authoring parity
 
@@ -63,14 +77,11 @@ macOS author line:
 - Invalid drafts retain focus and do not mutate the manifest.
 - Shift+Enter remains a newline for structured nested values.
 
-The author.1 preparation tree passed 1,598 Vitest tests in 117 files, 79
-focused Manifest Editor tests, both isolated Loop Playwright scenarios, lint
-with zero errors, full and author-flavor desktop builds, locale review with
-zero placeholder/glossary/plural issues, and a clean production audit. The
-author.2 preparation passed PR check run
-[#30186333208](https://github.com/Azure/ConfigForge/actions/runs/30186333208).
-The tag-pinned macOS workflow also passed the install, production audit, build,
-SBOM, checksum, and upload gates and verified all five release assets.
+Dependency-free local validation covers package and lockfile JSON, the
+public-package guard and its Node.js tests, documentation references,
+forbidden files, public registry URLs, and Git whitespace checks. GitHub CI is
+the authority for npm-backed lint, Vitest, build, audit, Playwright, and
+release-asset status.
 
 ## Included authoring capabilities
 
@@ -116,23 +127,23 @@ If that command reports a permission error, use:
 sudo xattr -rd com.apple.quarantine "/Applications/ConfigForge Author.app"
 ```
 
-## Verified draft release assets
+## Draft release asset contract
 
-The draft release contains exactly these five assets:
+The release workflow is configured to upload exactly:
 
-1. `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`
 
-Verify the DMG, blockmap, and update metadata against the SHA-256 manifest.
+Use the draft GitHub release and current workflow checks to confirm actual
+upload and verification status.
 
 ## Contributors
 
-Historical implementation attribution for PRs #75 through #77, release
-documentation/tooling in PRs #79 and #80, and author.2 repairs in PRs #83 and
-#84: @ABMFST and Copilot.
+PRs #86, #90, #92, #93, and #94 were contributed by
+[@ABMFST](https://github.com/ABMFST) with Copilot collaboration.
 
 ## Reporting issues
 
