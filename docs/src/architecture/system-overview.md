@@ -1,6 +1,6 @@
 # System overview
 
-ConfigForge **0.3.48** is an Electron desktop app for authoring, validating, comparing, and deploying/auditing OSConfig manifests (`.osc.yaml`). The renderer uses Electron 42, React 18, Fluent UI v9, and Vite; shared business logic lives in the platform-neutral `@configforge/core` package.
+ConfigForge **0.3.94** is an Electron desktop app for authoring, validating, comparing, and deploying/auditing OSConfig manifests (`.osc.yaml`). The renderer uses Electron 42, React 18, Fluent UI v9, and Vite; shared business logic lives in the platform-neutral `@configforge/core` package.
 
 There is no HTTP server, database, queue, or microservice layer in the current app. Renderer code calls the Electron preload bridge (`window.cfs.*`), the main process validates IPC payloads, and pure handlers in `packages/core` own filesystem and CLI operations.
 
@@ -97,7 +97,7 @@ CIS lookup uses user-supplied data from the resolved CIS data directory:
 - Dev: `<repo>/public/_baselines/cis/_data/`
 - Packaged app: `<process.resourcesPath>/public-assets/_baselines/cis/_data/`
 
-Lookup uses legacy JSON catalogs, XCCDF + OVAL XML, and Azure Policy CIS JSON. The bulk CIS Diff handler (`handlers/cis-bulk-lookup.ts`) uses CSP-aware token handling for CSP resources and requires exact word-set overlap with a `0.8` threshold for Azure Policy matches.
+Lookup uses legacy JSON catalogs, XCCDF + OVAL XML, and Azure Policy CIS JSON. The bulk CIS Diff handler (`handlers/cis-bulk-lookup.ts`) prefers XCCDF when available. For Azure Policy fallback, Linux benchmarks use `linuxFuzzyMatch(buildLinuxResourceTokens(resource))`; Windows CSP resources use CSP-prefix stripping plus exact word-overlap at a `0.8` threshold.
 
 ## Settings and deploy recovery
 

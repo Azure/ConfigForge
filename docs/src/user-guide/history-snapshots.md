@@ -1,12 +1,12 @@
 # History, snapshots, retention
 
-> **v0.3.48:** snapshotting and restoring source YAML do **not**
+> **v0.3.48:** snapshotting and History Restore do **not**
 > require the OSConfig CLI. They read and write the local manifest
-> store only. The Restore *re-apply* step (the optional second half
-> of a restore on an already-deployed manifest) does run
-> `oscfg apply`. That part falls back to the
-> `CliRequiredModal` if OSConfig is missing, exactly like a normal
-> Deploy.
+> store only. History Restore re-registers the selected snapshot into
+> the local baseline store and creates an auto-snapshot of the
+> previous source first. It does not call `oscfg apply`; device
+> rollback is handled by the separate **Revert** action, which is
+> CLI-gated.
 
 Every save in ConfigForge writes a **snapshot**, a
 content-addressable copy of the source YAML plus an optional JSON
@@ -108,15 +108,14 @@ Restore *replays* a prior snapshot:
 1. **Pre-restore snapshot** - the current YAML is snapshotted before
    the restore runs. You can
    always undo a restore by restoring the pre-restore entry.
-2. The chosen snapshot becomes the new
-   `~/.configforge/manifests/<ns>.source.yaml`.
-3. If the manifest was deployed, `oscfg apply` re-applies the
-   restored YAML. **This step requires the OSConfig CLI**. If it's
-   missing the restore stops after step 2 and surfaces the
-   `CliRequiredModal` so you can install OSConfig and retry.
+2. The chosen snapshot is re-registered as the baseline source in
+   the local manifest store.
+3. No device apply is performed. To roll back a deployed device, use
+   the separate **Revert** action, which is CLI-gated.
 
-The pre-restore snapshot's `message` is `pre-restore: <id>` so it's
-easy to spot in the history list.
+The pre-restore snapshot's `message` is
+`Auto-snapshot before restore of <id>` so it's easy to spot in the history
+list.
 
 ## Snapshot ID format
 
@@ -153,9 +152,9 @@ bridge:
 - `cfs.history.save({ name, content, message? })` - manual
   snapshot.
 - `cfs.history.delete({ name, id })` - delete a snapshot.
-- Revert is a separate handler (`cfs:deploy:run` with the revert
-  action), which restores the **pre-deploy snapshot** (NOT an
-  arbitrary history entry; see the API page).
+- Device Revert is separate from History Restore. It uses
+  `cfs.revert.apply` / `cfs:revert:apply` to re-apply a
+  pre-deploy snapshot or remove the namespace.
 
 See [API Reference → History / import / export](../api-reference/history-import-export.md).
 

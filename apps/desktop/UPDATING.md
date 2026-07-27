@@ -33,7 +33,7 @@ available. Documented separately because it has subtle host
         ▼
    GitHub Releases (or your publish target)
         │
-        │ {version: 0.3.48, files: [...]}
+        │ {version: X.Y.Z, files: [...]}
         ▼
    ┌─────────────────────────────────────┐
    │ State events forwarded to renderer  │
@@ -109,18 +109,20 @@ examples.
 
 ## Signing caveats
 
-### Windows: auto-update is not supported (builds are unsigned)
+### Windows: packaged updater is wired, but builds are unsigned
 
-ConfigForge release builds are **unsigned** by design. Windows refuses
-to silently install an unsigned binary, so the **first install** of the
-NSIS installer triggers the standard "Unknown publisher" / SmartScreen
-warning, and the **auto-update** path is blocked entirely (Windows
-requires the downloaded installer's cert chain to match the
-currently-running binary's). The auto-updater therefore no-ops on
-unsigned Windows installs; update by downloading and reinstalling the
-newer release manually. If you build and self-sign your own installer
-locally (`scripts/generate-dev-cert.ps1`), auto-update works on that
-single machine where the cert is trusted, but not across users.
+ConfigForge release builds are **unsigned** by design. Windows refuses to
+silently install an unsigned binary, so the **first install** of the NSIS
+installer triggers the standard "Unknown publisher" / SmartScreen warning.
+For updater installs, Windows expects the downloaded installer to satisfy OS
+trust and silent-install requirements, including certificate compatibility
+with the currently running binary. The auto-updater code still runs on
+packaged Windows builds; it does not skip Windows based on signing state.
+Expect unsigned public installers to fail those requirements. Update by
+downloading and reinstalling the newer release manually. If you build and
+self-sign your own installer locally (`scripts/generate-dev-cert.ps1`),
+auto-update works on that single machine where the cert is trusted, but not
+across users.
 
 ### Linux AppImage: no signing required
 
@@ -194,7 +196,8 @@ End-to-end testing is harder than testing individual states
 because it requires:
 
 1. An installer at version N (Linux AppImage, or a locally self-signed
-   Windows build — unsigned Windows auto-update is blocked)
+   Windows build — unsigned public Windows installers are expected to fail OS
+   trust or silent-install requirements)
 2. An installer at version N+1 hosted somewhere
    electron-updater can fetch
 3. The currently-running app at version N pointing at the
@@ -207,8 +210,11 @@ document the manual end-to-end test:
 1. Build and install version N on a test machine.
 2. Bump the app version to N+1.
 3. Build locally: `npm run desktop:dist:win` (Windows auto-update only works with a locally trusted self-signed cert — see `scripts/generate-dev-cert.ps1`; otherwise test the Linux AppImage path).
-4. Publish a draft GitHub Release with the N+1 artifacts and updater metadata.
-5. Launch version N — within 10–15 seconds the UpdateBanner should appear with the N+1 version.
+4. Create the N+1 GitHub Release and assets, verify them while the release is
+   a draft, then publish the release. For private testing, use a test feed
+   that the running app can access.
+5. Launch version N — within 10–15 seconds the UpdateBanner should appear with
+   the N+1 version.
 6. Click Download → progress bar → "Restart to install" → app quits, installer runs silently, N+1 boots.
 
 If the banner never appears, check:

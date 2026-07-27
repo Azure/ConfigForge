@@ -1,7 +1,8 @@
 # Introduction
 
-> ⚠️ **Microsoft open-source community project.** Source is hosted in
-> [`Azure/ConfigForge`](https://github.com/Azure/ConfigForge). ConfigForge is
+> ⚠️ **Microsoft community-maintained project.** Source is hosted in the
+> private [`Azure/ConfigForge`](https://github.com/Azure/ConfigForge)
+> repository. ConfigForge is
 > **not** an officially supported Microsoft product and is **not intended for
 > production use**. Use it for experimentation, learning, and community
 > contributions at your own risk.

@@ -4,15 +4,14 @@
 > data**. The Center for Internet Security licenses CIS Benchmarks
 > under terms incompatible with redistributing derived YAML / JSON /
 > XCCDF artifacts in a public open-source repository. This page
-> describes a feature that is **disabled by default** and gracefully
-> hidden from the UI until you, the user, supply your own legally
-> licensed copy of the data files locally.
+> describes local/offline features that are **disabled by default**
+> for data-dependent surfaces until you, the user, supply your own
+> legally licensed copy of the data files locally.
 >
-> The CIS surfaces are local/offline features; no
-> OSConfig CLI required. The `useCisAvailable()` hook (renderer)
-> checks `cfs.cis.status()` once per page lifetime and short-circuits
-> the render when CIS data isn't on disk. The sidebar tab for this
-> feature is labeled **Benchmark Mapping** in the navigation.
+> The editor cross-reference drawer and Diff page **CIS Diff** tab are
+> hidden until supported CIS data is present. The **Benchmark Mapping**
+> sidebar page remains visible so users can see the resolved data
+> folder and setup guidance. No OSConfig CLI is required.
 
 ## What this feature does (when enabled)
 
@@ -159,23 +158,21 @@ and pointing at the data folder. No broken dropdown, no crash.
 ## Per-rule breakdown
 
 Below the summary, the CIS Diff tab lists mapped resources with source
-badges and can switch to a Missing-from-CIS view that lists missing`nbenchmark rules. The status column is sortable.
+badges and can switch to a Missing-from-CIS view that lists missing benchmark rules. The status column is sortable.
 
-## Markdown audit-pack export
+## Audit-pack export
 
-A simple Markdown audit-pack export ships from the same compliance
-data. Open **Manifest > Audit Pack** and pick **Markdown**, or
-trigger it from the audit-pack IPC channel with `format: 'markdown'`
-and the `against` field set to whatever `id` you registered for your
-CIS-derived baseline in
-[`packages/core/src/data/baseline-catalog.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/data/baseline-catalog.ts)
-(the bundled `cis-benchmark` entries have been removed; you add
-your own pointing at your downloaded CIS data files).
+Audit Pack export supports both PDF and Markdown. Both formats include
+manifest metadata and can include compliance, device-audit, history,
+rationale, and citations when those inputs are available. Open
+**Manifest > Audit Pack** and choose **Download PDF** or **Download
+Markdown**, or trigger the audit-pack IPC channel with `format: 'pdf'`
+or `format: 'markdown'`.
 
-The Markdown form is the simplest export; the PDF form layers on
-device-audit, version history, rationale, and AI provenance. See
-[Audit-pack](./audit-pack.md). Both formats omit the CIS section
-gracefully when CIS data isn't available.
+Today AI provenance is not persisted per manifest, so the
+citations/provenance section is omitted in normal UI-generated audit
+packs. Both formats omit the CIS section gracefully when CIS data isn't
+available. See [Audit-pack](./audit-pack.md).
 
 ## Performance (when data is present)
 

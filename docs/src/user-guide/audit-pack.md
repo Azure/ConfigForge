@@ -76,11 +76,12 @@ The PDF is assembled in this fixed order:
 
 ## What's in it (Markdown)
 
-The Markdown form is leaner. It includes the compliance section and
-a flat list of resources/status when those inputs are available. It exists
-primarily so a CI job can produce a diff-able artifact and so air-gapped reviewers
-without a PDF viewer can still skim the report. The same escape
-guard runs on Markdown output (CF-SEC-005 / 006).
+The Markdown form includes manifest metadata and can include
+device-audit, compliance, version-history, rationale, and citations
+when those inputs are available. It exists primarily so a CI job can
+produce a diff-able artifact and so air-gapped reviewers without a PDF
+viewer can still skim the report. The same escape guard runs on
+Markdown output (CF-SEC-005 / 006).
 
 ## Implementation notes
 
@@ -93,8 +94,9 @@ guard runs on Markdown output (CF-SEC-005 / 006).
 
 The audit-pack is intentionally opinionated. Two practical knobs:
 
-- **Format** - picks the PDF vs Markdown renderer (UI radio button or
-  the `format` field on the `cfs:audit-pack:get` request).
+- **Format** - use **Download PDF** or **Download Markdown** in the
+  UI, or pass `format: 'pdf' | 'markdown'` to the audit-pack IPC
+  request.
 - **Pipe Markdown elsewhere** - consumers wanting a custom layout
   typically pipe the Markdown through a downstream converter (pandoc,
   etc.).

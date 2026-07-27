@@ -12,16 +12,18 @@ separately in `packages/core/src/oscfg/registered-types.ts`.
 
 ```yaml
 resources:                       # REQUIRED - top-level ARRAY
-  - name: <string>               # REQUIRED for top-level resources
+  - name: <string>               # required by core registration for top-level resources; optional in the editor JSON Schema
     type: <string>               # REQUIRED, fully-qualified, slash-notation
-    properties: { ... }          # optional at core shape level; per-type schemas may require it
+    properties: { ... }          # required by the editor JSON Schema for modeled resource items; optional at core shape-validation level
 ```
 
 > **Note:** `resources:` must be an array of objects. A bare
 > object, a string, or a non-existent key all produce a status-400
-> hard block at register time. `properties`, when present, must be an
-> object. The editor JSON Schema requires `properties` for the known
-> Windows resource definitions it models.
+> hard block at register time. Core registration requires each
+> top-level resource to have `name` and `type`; nested Group resources
+> can inherit identity from the parent. `properties`, when present,
+> must be an object. The editor JSON Schema requires `type` and
+> `properties` for the resource items it models.
 
 ## Reserved property keys
 
