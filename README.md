@@ -175,7 +175,9 @@ is not a universal binary.
   draft and unpublished.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
   Quick Start, User Guide, Architecture, API Reference, and Operations. The
-  published documentation homepage is <https://azure.github.io/ConfigForge/>.
+  `docs` workflow builds this into an mdBook site and deploys it to the
+  `gh-pages` branch. While the repository is private, that site is served only
+  to repository collaborators rather than at a public URL.
 
 ## Contributing
 

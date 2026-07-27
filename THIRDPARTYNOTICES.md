@@ -22,17 +22,20 @@ For Microsoft trademarks and the OSConfig CLI integration, see NOTICE.
 | 1 | **@fluentui/react-components** | MIT | FluentUI v9 primitives (Dialog, Button, MessageBar, Spinner, etc.) | https://github.com/microsoft/fluentui |
 | 2 | **@fluentui/react-icons** | MIT | Fluent icon set | https://github.com/microsoft/fluentui-system-icons |
 | 3 | **@monaco-editor/react** | MIT | Code editor (YAML/JSON/MOF manifest authoring) | https://github.com/suren-atoyan/monaco-react |
-| 4 | **electron-log** | MIT | Main-process logging | https://github.com/megahertz/electron-log |
-| 5 | **electron-updater** | MIT | In-app auto-update channel | https://github.com/electron-userland/electron-builder |
-| 6 | **fast-xml-parser** | MIT | CIS XCCDF and OVAL XML parsing | https://github.com/NaturalIntelligence/fast-xml-parser |
-| 7 | **i18next** | MIT | Localization runtime | https://github.com/i18next/i18next |
-| 8 | **i18next-browser-languagedetector** | MIT | OS/browser locale detection | https://github.com/i18next/i18next-browser-languageDetector |
-| 9 | **js-yaml** | MIT | YAML parsing / serialization for manifests | https://github.com/nodeca/js-yaml |
-| 10 | **monaco-editor** | MIT | Underlying Monaco editor library | https://github.com/microsoft/monaco-editor |
-| 11 | **pdfkit** | MIT | Audit-pack PDF generation | https://github.com/foliojs/pdfkit |
-| 12 | **react** | MIT | UI library | https://github.com/facebook/react |
-| 13 | **react-i18next** | MIT | React bindings for localized UI strings | https://github.com/i18next/react-i18next |
-| 14 | **zustand** | MIT | Lightweight state-store support | https://github.com/pmndrs/zustand |
+| 4 | **dompurify** | (Apache-2.0 OR MPL-2.0) | XSS sanitization for rendered HTML; pinned via a root `overrides` entry and reached through the bundled Monaco editor | https://github.com/cure53/DOMPurify |
+| 5 | **electron-log** | MIT | Main-process logging | https://github.com/megahertz/electron-log |
+| 6 | **electron-updater** | MIT | In-app auto-update channel | https://github.com/electron-userland/electron-builder |
+| 7 | **fast-xml-parser** | MIT | CIS XCCDF and OVAL XML parsing | https://github.com/NaturalIntelligence/fast-xml-parser |
+| 8 | **i18next** | MIT | Localization runtime | https://github.com/i18next/i18next |
+| 9 | **i18next-browser-languagedetector** | MIT | OS/browser locale detection | https://github.com/i18next/i18next-browser-languageDetector |
+| 10 | **js-yaml** | MIT | YAML parsing / serialization for manifests | https://github.com/nodeca/js-yaml |
+| 11 | **monaco-editor** | MIT | Underlying Monaco editor library | https://github.com/microsoft/monaco-editor |
+| 12 | **pdfkit** | MIT | Audit-pack PDF generation | https://github.com/foliojs/pdfkit |
+| 13 | **react** | MIT | UI library | https://github.com/facebook/react |
+| 14 | **react-dom** | MIT | React DOM renderer; the renderer entry point mounts through `react-dom/client` | https://github.com/facebook/react |
+| 15 | **react-i18next** | MIT | React bindings for localized UI strings | https://github.com/i18next/react-i18next |
+| 16 | **react-router-dom** | MIT | Hash-based client routing in the renderer | https://github.com/remix-run/react-router |
+| 17 | **zustand** | MIT | Lightweight state-store support | https://github.com/pmndrs/zustand |
 
 ## Other direct development and build dependencies
 
@@ -50,7 +53,6 @@ For Microsoft trademarks and the OSConfig CLI integration, see NOTICE.
 | vite / @vitejs/plugin-react | MIT | Renderer build tooling |
 | typescript | Apache-2.0 | Type checking and compilation |
 | esbuild | MIT | Electron main and preload bundling |
-| react-dom / react-router-dom | MIT | Renderer development and routing support |
 | tailwindcss | MIT | Utility-first styling generation |
 
 ## License compatibility notes

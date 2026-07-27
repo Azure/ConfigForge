@@ -113,8 +113,9 @@ Restore *replays* a prior snapshot:
 3. No device apply is performed. To roll back a deployed device, use
    the separate **Revert** action, which is CLI-gated.
 
-The pre-restore snapshot's `message` is `pre-restore: <id>` so it's
-easy to spot in the history list.
+The pre-restore snapshot's `message` is
+`Auto-snapshot before restore of <id>` so it's easy to spot in the history
+list.
 
 ## Snapshot ID format
 
