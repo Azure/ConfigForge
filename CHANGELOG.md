@@ -1,5 +1,36 @@
 # Changelog
 
+## [0.3.94-author.1] - 2026-07-26
+
+> `mac-v0.3.94-author.1` is the current macOS Author tagged source. Its
+> matching GitHub release remains an unpublished draft. This entry does not
+> indicate publication or assert asset availability. The author-only
+> capability boundary is unchanged: device deploy, audit, enforce, revert,
+> elevation, health, and audit-results storage remain excluded.
+
+### Changed
+
+- **Prepare the macOS Author repository for public review.** Align licensing,
+  privacy, security, support, contribution templates, ownership guidance,
+  public-package checks, and macOS packaging exclusions while keeping
+  maintainer and release guidance in existing documentation instead of a
+  standalone governance file. ([#90](https://github.com/Azure/ConfigForge/pull/90),
+  [#92](https://github.com/Azure/ConfigForge/pull/92),
+  [#93](https://github.com/Azure/ConfigForge/pull/93))
+- **Refresh shared documentation screenshots with synthetic benchmark
+  content.** Replace nine authoring, Diff, Benchmark Mapping, and Audit Pack
+  images with reviewed captures that contain no licensed CIS data. No
+  screenshot tooling is added or changed.
+  ([#94](https://github.com/Azure/ConfigForge/pull/94))
+
+### Security
+
+- **Update dev-only `brace-expansion` 5.x to 5.0.8.** Port the reviewed fix
+  for GHSA-mh99-v99m-4gvg / CVE-2026-14257 with the exact public npm registry
+  URL and integrity metadata. This dependency is used by build and test
+  tooling and is not bundled in the macOS Author application.
+  ([#86](https://github.com/Azure/ConfigForge/pull/86))
+
 ## [0.3.93-author.2] - 2026-07-25
 
 > Annotated tag `mac-v0.3.93-author.2` resolves to

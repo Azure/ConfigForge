@@ -1,89 +1,64 @@
-# ConfigForge Author 0.3.93-author.2 - macOS
+# ConfigForge Author 0.3.94-author.1 - macOS
 
-> **Release state: draft and unpublished.** Annotated tag
-> `mac-v0.3.93-author.2` and the current `mac-author-build` head resolve to
-> `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The matching GitHub release
-> exists and contains five verified assets. Workflow run
-> [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
-> completed successfully. The release must remain a draft unless a maintainer
-> separately approves publication. PR
-> [#83](https://github.com/Azure/ConfigForge/pull/83) ports the reviewed
-> Windows Server 2025 baseline repairs to `mac-author-build`, and PR
-> [#84](https://github.com/Azure/ConfigForge/pull/84) prepares the immutable
-> author.2 tag and package metadata.
+> **Release state: draft and unpublished.** `mac-v0.3.94-author.1` is the
+> current macOS Author tagged source. Its matching GitHub release must remain
+> a draft until a maintainer completes validation and approves publication.
+> The expected asset names are listed below; this document does not assert
+> that the assets have already been uploaded.
 
-This release carries forward the authoring parity and nested multi-value
-keyboard editing from author.1. It also repairs the standalone Windows Server
-2025 baselines and the matching analysis identities. It remains author-only:
-device deployment, audit, enforcement, revert, elevation, OSConfig CLI health,
-and device audit-results storage are not included.
+This release improves public-source readiness, refreshes shared
+documentation screenshots with synthetic benchmark content, and updates one
+dev-only dependency. It remains an author-only Apple Silicon build. It does
+not add device deployment, device audit, enforcement, revert, elevation,
+OSConfig CLI health, or audit-results storage.
 
-## Windows Server 2025 baseline repairs
+## Security update
 
-- Replace failing array-valued Policy CSP settings with supported Registry,
-  AccountPolicy, AuditPolicy, and UserRightsAssignment providers.
-- Keep ten supported residual CSP settings in each standalone profile.
-- Correct the Domain Controller, Member Server, and Workgroup Member resource
-  counts to 321, 320, and 296.
-- Remove Source links from the three corrected baselines because the local
-  manifests now differ materially from their upstream files.
-- Resolve Increase scheduling priority, password complexity, and guest account
-  status in Benchmark Mapping without bundling licensed CIS data.
-- Use `properties.name`, with legacy `properties.policy` fallback, to keep
-  User Rights Assignment and Account Policy settings distinct in analysis and
-  Matrix Diff.
+- Update dev-only `brace-expansion` 5.x from 5.0.7 to 5.0.8 for
+  [GHSA-mh99-v99m-4gvg](https://github.com/advisories/GHSA-mh99-v99m-4gvg)
+  and CVE-2026-14257.
+- Use the exact public npm registry URL, SHA-512 integrity value, and Node.js
+  engine metadata reviewed in PR
+  [#86](https://github.com/Azure/ConfigForge/pull/86).
+- Keep every other macOS dependency and version stream unchanged. The updated
+  package is used by build and test tooling and is not bundled in the app.
 
-## Authoring parity
+## Public-source readiness
 
-- **Complete New Baseline setup:** create a blank Windows or Linux baseline,
-  use a starter template, choose a Microsoft Baseline in place, load from a
-  public URL, or import a local `.osc.yaml`, `.json`, `.csv`, or binary
-  `.xlsx` file.
-- **Localized My Baselines catalog:** search and filter localized catalog
-  content, see Date Modified in the local calendar, and keep multiple
-  baselines open in persistent tabs.
-- **Selection-aware Diff:** exactly two selected baselines open preselected in
-  Pairwise; three through ten open preselected in Matrix.
-- **Safer workspaces:** unsaved changes prompt before a tab closes or
-  navigation leaves the editor.
-- **Persistent views:** each baseline remembers Code or Visual view, and
-  read-only Code view explains how to enter editing.
-- **Current Benchmark Mapping setup:** shared headings and localized guidance
-  replace the legacy setup copy.
+- Align licensing, privacy, security reporting, best-effort support,
+  contribution templates, repository ownership, and release guidance through
+  PRs [#90](https://github.com/Azure/ConfigForge/pull/90),
+  [#92](https://github.com/Azure/ConfigForge/pull/92), and
+  [#93](https://github.com/Azure/ConfigForge/pull/93).
+- Run a dependency-free public-package guard before packaging. The guard
+  rejects licensed CIS assets, unsafe CIS builder filters, and non-public npm
+  registry URLs.
+- Keep maintainer, branch, and release guidance in existing documentation.
+  This release does not add a standalone governance file.
 
-## Nested multi-value navigation
+## Synthetic documentation screenshots
 
-PR #76 adds these behaviors on `main`, and PR #77 carries them to the current
-macOS author line:
+- Port the exact nine reviewed screenshot PNGs from PR
+  [#94](https://github.com/Azure/ConfigForge/pull/94).
+- Use runtime-only synthetic **Industry Benchmark** content in Benchmark
+  Mapping and CIS Diff examples.
+- Commit no CIS benchmark data, generated benchmark catalog, or screenshot
+  tooling.
 
-- Enter commits the current nested value and moves down.
-- Enter on the final nested value appends and focuses a new value.
-- Tab commits and moves to the cell on the right.
-- Empty arrays create a focusable value when navigation reaches them.
-- Invalid drafts retain focus and do not mutate the manifest.
-- Shift+Enter remains a newline for structured nested values.
-
-The author.1 preparation tree passed 1,598 Vitest tests in 117 files, 79
-focused Manifest Editor tests, both isolated Loop Playwright scenarios, lint
-with zero errors, full and author-flavor desktop builds, locale review with
-zero placeholder/glossary/plural issues, and a clean production audit. The
-author.2 preparation passed PR check run
-[#30186333208](https://github.com/Azure/ConfigForge/actions/runs/30186333208).
-The tag-pinned macOS workflow also passed the install, production audit, build,
-SBOM, checksum, and upload gates and verified all five release assets.
+The screenshots are shared documentation assets. They do not change the
+macOS Author capability set.
 
 ## Included authoring capabilities
 
-- YAML, JSON, and Visual editing with live validation
-- Typed, lossless Test and Group editing with exact QWord values
-- Microsoft Baselines and local/URL/spreadsheet import
+- YAML, JSON, and Visual editing with validation
+- Microsoft Baselines and local, URL, CSV, JSON, YAML, and XLSX import
 - Pairwise, CIS, and Matrix Diff
 - User-supplied Benchmark Mapping data
 - History and rationale capture
 - Audit Pack PDF and Markdown export
 
-Audit Pack generation is an authoring/export feature. It does not run a device
-audit.
+Audit Pack generation is an authoring and export feature. It does not perform
+a device audit.
 
 ## Author-only boundary
 
@@ -95,44 +70,40 @@ The macOS preload intentionally omits:
 
 No `oscfg` binary or device-operation surface is included.
 
-## Architecture: Apple Silicon ARM64 only
+## Architecture
 
-This DMG contains an ARM64 Electron and Node.js binary for Apple Silicon Macs
-(M1 or later). It is not an x64 or universal build and does not support Intel
-Macs.
+The release targets Apple Silicon ARM64 Macs (M1 or later). It is not an x64
+or universal build and does not support Intel Macs. Builds are unsigned and
+not notarized.
 
-## First launch for unsigned builds
+## Validation policy
 
-The app is unsigned and not notarized. After copying **ConfigForge Author.app**
-to `/Applications`, clear the browser-added quarantine attribute once:
+Release preparation uses these dependency-free local checks:
 
-```bash
-xattr -cr "/Applications/ConfigForge Author.app"
-```
+- Parse and compare package and lockfile JSON.
+- Verify the public-package guard and its Node.js tests.
+- Check documentation references, forbidden files, public registry URLs, and
+  exact screenshot scope.
+- Run Git whitespace and diff-scope checks.
 
-If that command reports a permission error, use:
+GitHub CI is authoritative for npm-backed lint, Vitest, build, audit, and
+Playwright validation. Publication requires successful CI and verification of
+the five expected assets.
 
-```bash
-sudo xattr -rd com.apple.quarantine "/Applications/ConfigForge Author.app"
-```
+## Expected draft release assets
 
-## Verified draft release assets
+The macOS release workflow uses exactly these expected asset names:
 
-The draft release contains exactly these five assets:
-
-1. `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`
 
-Verify the DMG, blockmap, and update metadata against the SHA-256 manifest.
-
 ## Contributors
 
-Historical implementation attribution for PRs #75 through #77, release
-documentation/tooling in PRs #79 and #80, and author.2 repairs in PRs #83 and
-#84: @ABMFST and Copilot.
+PRs #86, #90, #92, #93, and #94 were contributed by
+[@ABMFST](https://github.com/ABMFST) with Copilot collaboration.
 
 ## Reporting issues
 
