@@ -59,7 +59,7 @@ The repository uses TypeScript strict mode, ESLint, Prettier (added v0.2.1), and
   - **`electron`, `electron-builder`**: tilde (`~x.y.z`) - minor-version updates should be intentional (CF-SEC-014).
   - **Security tooling** (`@cyclonedx/cyclonedx-npm`, `prettier`, `eslint-config-prettier`): exact (`x.y.z` via `--save-exact`).
   - **Other runtime + dev deps**: caret (`^x.y.z`) is the default.
-- Production deps must pass `npm audit --omit=dev --audit-level=high` (enforced as a release-pipeline gate).
+- Production deps must pass `npm audit --omit=dev --audit-level=high`; this is enforced in PR check and release workflows.
 
 ## Renderer-safe primitives in `@configforge/core`
 
@@ -78,6 +78,27 @@ Trailers (only when an AI agent is the author):
 ```text
 Co-authored-by: Copilot <223556219+Copilot@users.noreply.github.com>
 ```
+
+## Localization (i18n)
+
+The desktop app uses `react-i18next`. English is the source language;
+FR, DE, and ES are machine-translated and pending human linguistic
+review. When adding user-visible strings:
+
+- Use an approved namespace such as `common`, `sidebar`, `settings`,
+  `home`, `manifests`, `manifest-editor`, `diff`, `history`,
+  `compliance`, `cis-catalog`, `audit-pack`, `welcome`, or `dialogs`.
+- Add the key and English value to
+  `apps/desktop/src/locales/en/<namespace>.json`. Prefer nested
+  objects and lowercase-with-hyphens for multi-word keys.
+- Consume strings through `useTranslation(...)` and `t(...)`. Use
+  i18next interpolation and `_one` / `_other` plural forms rather than
+  string concatenation.
+- Format dates and numbers through `apps/desktop/src/lib/format.ts`
+  hooks instead of `toLocaleString()`.
+- Do not hand-edit FR, DE, or ES catalogs for routine string additions.
+  Run the translation workflow and then `node scripts/review-locales.mjs`
+  to verify placeholders, glossary terms, and plurals.
 
 ## Copy guidelines
 

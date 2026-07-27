@@ -11,6 +11,77 @@ Authoring goes here. Deployment is separate
 never spawns the CLI - see
 [Architecture → Registration semantics](../architecture/registration-semantics.md).
 
+## Complete IPC surface
+
+This table is the full preload source surface from
+`apps/desktop/electron/preload.ts`. The macOS author build prunes exactly
+`health`, `deploy`, `deployRecovery`, `revert`, `auditResults`, and `system`
+from the exposed `window.cfs` object, as controlled by
+`apps/desktop/src/lib/flavor.ts`. Legacy scenario and drift methods still
+exist only as compatibility stubs and always return a not-supported `501`
+envelope.
+
+| Namespace | Method or event | IPC channel | Purpose |
+| --- | --- | --- | --- |
+| `cfs.activity` | `recent()` | `cfs:activity:recent` | Read the recent activity feed. |
+| `cfs.auditPack` | `get(req)` | `cfs:audit-pack:get` | Build an audit-pack artifact in memory. |
+| `cfs.auditPack` | `save(req)` | `cfs:audit-pack:save` | Save an audit-pack artifact through a native dialog. |
+| `cfs.auditResults` | `get(id)` | `cfs:audit-results:get` | Read the last cached device-audit result. |
+| `cfs.baselineCsv` | `fetch(req)` | `cfs:baseline-csv:fetch` | Fetch and parse a baseline CSV source. |
+| `cfs.cis` | `status()` | `cfs:cis:status` | Report CIS catalog availability and diagnostics. |
+| `cfs.cis` | `lookup(req)` | `cfs:cis:lookup` | Look up one resource against CIS data. |
+| `cfs.cis` | `revealDataDir()` | `cfs:cis:reveal-data-dir` | Open the runtime CIS data directory. |
+| `cfs.cis` | `recheck()` | `cfs:cis:recheck` | Clear CIS caches and re-read data. |
+| `cfs.cis` | `warmup()` | `cfs:cis:warmup` | Pre-parse discovered CIS catalogs. |
+| `cfs.cis` | `bulkLookup(namespace, benchmarkFilename?)` | `cfs:cis:bulk-lookup` | Score one manifest against a CIS benchmark. |
+| `cfs.compliance` | `report(req)` | `cfs:compliance:report` | Build a CIS compliance report. |
+| `cfs.deploy` | `run(req, onProgress?)` | `cfs:deploy:run` and `cfs:deploy:progress` | Run deploy or audit with progress events. |
+| `cfs.deploy` | `cancel(jobId)` | `cfs:deploy:cancel` | Request cancellation for a running deploy job. |
+| `cfs.deployRecovery` | `listInterrupted()` | `cfs:deploy:list-interrupted` | List orphaned deploy sentinels. |
+| `cfs.deployRecovery` | `dismiss(namespace)` | `cfs:deploy:dismiss-interrupted` | Dismiss an interrupted-deploy sentinel. |
+| `cfs.diff` | `matrix(names)` | `cfs:diff:matrix` | Build the N-way manifest matrix. |
+| `cfs.diff` | `matrixXlsxSave(names)` | `cfs:diff:matrix-xlsx:save` | Save the matrix as an XLSX workbook. |
+| `cfs.docs` | `get(name)` | `cfs:docs:get` | Read generated docs for a manifest. |
+| `cfs.docs` | `generate(req)` | `cfs:docs:generate` | Generate docs from manifest content. |
+| `cfs.drift` | `list()` | `cfs:drift:list` | Retired compatibility stub; always returns 501 not supported. |
+| `cfs.exportChannel` | `get(req)` | `cfs:export:get` | Return an export artifact. |
+| `cfs.exportChannel` | `save(req)` | `cfs:export:save` | Save an export artifact through a native dialog. |
+| `cfs.health` | `check()` | `cfs:health:check` | Probe OSConfig CLI health from cache. |
+| `cfs.health` | `recheck()` | `cfs:health:recheck` | Clear health cache and reprobe. |
+| `cfs.history` | `list(req)` | `cfs:history:list` | List snapshots or read one snapshot. |
+| `cfs.history` | `save(req)` | `cfs:history:save` | Save a manual history snapshot. |
+| `cfs.history` | `delete(req)` | `cfs:history:delete` | Delete a history snapshot. |
+| `cfs.importChannel` | `openAndParse()` | `cfs:import:openAndParse` | Open a file picker, read the file, and parse it. |
+| `cfs.importChannel` | `fromContent(req)` | `cfs:import:fromContent` | Parse renderer-supplied text or bytes. |
+| `cfs.library` | `list()` | `cfs:library:list` | List bundled baseline library entries. |
+| `cfs.library` | `get(req)` | `cfs:library:get` | Read one library entry. |
+| `cfs.manifests` | `list(opts?)` | `cfs:manifests:list` | List registered and optionally live manifests. |
+| `cfs.manifests` | `get(name, opts?)` | `cfs:manifests:get` | Read one manifest summary. |
+| `cfs.manifests` | `getSource(name)` | `cfs:manifests:source` | Read registered source YAML. |
+| `cfs.manifests` | `fetchUri(uri)` | `cfs:manifests:fetch-uri` | Fetch remote manifest text without registration. |
+| `cfs.manifests` | `register(req)` | `cfs:manifests:register` | Register source YAML and metadata. |
+| `cfs.manifests` | `restore(req)` | `cfs:manifests:restore` | Restore a just-deleted registration from recovery data. |
+| `cfs.manifests` | `delete(name, options?)` | `cfs:manifests:delete` | Delete a registration and return recovery metadata. |
+| `cfs.manifests` | `status(name)` | `cfs:manifests:status` | Probe deployed state for one manifest. |
+| `cfs.platform` | `info()` | `cfs:platform:info` | Read host platform and theme snapshot. |
+| `cfs.platform` | `onThemeChanged(cb)` | `cfs:platform:theme-changed` | Subscribe to OS theme changes. |
+| `cfs.rationale` | `list(id)` | `cfs:rationale:list` | Read rationale entries for a manifest. |
+| `cfs.rationale` | `append(req)` | `cfs:rationale:append` | Append a rationale entry. |
+| `cfs.revert` | `apply(req)` | `cfs:revert:apply` | Revert a deployed namespace. |
+| `cfs.scenarios` | `list()` | `cfs:scenarios:list` | Retired compatibility stub; always returns 501 not supported. |
+| `cfs.settings` | `get()` | `cfs:settings:get` | Read user settings. |
+| `cfs.settings` | `set(patch)` | `cfs:settings:set` | Merge and persist user settings. |
+| `cfs.shell` | `openExternal(url)` | `cfs:shell:open-external` | Open an HTTP or HTTPS URL in the default browser. |
+| `cfs.system` | `isElevated()` | `cfs:system:is-elevated` | Check current process elevation. |
+| `cfs.system` | `elevate()` | `cfs:system:elevate` | Relaunch with OS elevation when supported. |
+| `cfs.systemConfig` | `summary()` | `cfs:system-config:summary` | Summarize host system configuration. |
+| `cfs.systemConfig` | `forManifest(name)` | `cfs:system-config:get` | Read host configuration for one manifest. |
+| `cfs.update` | `getStatus()` | `cfs:update:get-status` | Read the current auto-update status. |
+| `cfs.update` | `onStatus(cb)` | `cfs:update:status` | Subscribe to auto-update status events. |
+| `cfs.update` | `check()` | `cfs:update:check` | Manually check for updates. |
+| `cfs.update` | `download()` | `cfs:update:download` | Start update download. |
+| `cfs.update` | `quitAndInstall()` | `cfs:update:quit-and-install` | Quit and install a downloaded update. |
+
 ## `cfs.manifests.list(opts?)` - channel `cfs:manifests:list`
 
 List all manifests. Disk-only on the hot path: enriches each registered
@@ -26,15 +97,19 @@ type ListManifestsOptions = {
   live?: boolean;
   includeResources?: boolean; // default true
   lite?: boolean;             // explicit opt-in to drop Resources[]
+  force?: boolean;            // bypass list caches for explicit refresh
 };
 
 type ManifestSummary = {
   Name: string;
   DisplayName: string;
   Source: 'oscfg' | 'library';
+  RegistrationSource: 'user' | 'library' | 'import' | null;
+  RegistrationSourceId: string | null;
   Deployed: boolean;
   LastAppliedAt: string | null;
   LastAuditedAt: string | null;
+  Revision: string | null;
   Platform: string | null;
   ResourceCount: number;
   Validation: {
@@ -43,6 +118,16 @@ type ManifestSummary = {
     hasComplianceCriteria: boolean;
     issues: string[];
   } | null;
+  Compliance: {
+    auditedAt: string;
+    total: number;
+    compliant: number;
+    nonCompliant: number;
+    indeterminate: number;
+    errors: number;
+  } | null;
+  RegisteredAt: string | null;
+  LastModifiedAt: string | null;
   Resources?: { name: string; type: string }[]; // omitted when lite=true
 };
 
@@ -84,6 +169,34 @@ Fetch remote YAML for preview/edit without registering it. The same URL
 validation and 10 MB / 30 s fetch limits used by `register({ uri })`
 apply; the response is `{ content: string }`.
 
+## `cfs.manifests.restore(req)` - channel `cfs:manifests:restore`
+
+Restore a just-deleted registration from captured recovery data without
+overwriting an existing namespace. The restore path validates the YAML
+content and writes only the registration metadata and source YAML; it does
+not reconstruct deployment pointers, history, rationale, or audit records.
+
+```ts
+type RestoreManifestRequest = {
+  namespace: string;
+  displayName: string;
+  content: string;
+  source: 'user' | 'library' | 'import';
+  sourceId?: string;
+};
+
+type RestoreManifestResult = {
+  message: string;
+  data: {
+    namespace: string;
+    platform: 'windows' | 'linux' | 'mixed' | 'cross-platform' | 'unknown';
+  };
+};
+```
+
+Errors: `400` for invalid request, content, or schema; `409` when the
+namespace is already registered.
+
 ## `cfs.manifests.register(req)` - channel `cfs:manifests:register`
 
 Register a new manifest. Schema validation only - never calls
@@ -93,8 +206,9 @@ runs in the background (failures logged, not surfaced).
 ```ts
 type RegisterManifestRequest = {
   name: string;                              // display name - sanitized to namespace
-  content?: string;                          // YAML or JSON; exactly one of content/uri required
+  content?: string;                          // YAML or JSON; content or uri is required. Non-empty content wins over uri; an empty content string falls back to uri.
   uri?: string;                              // http/https URL (10 MB cap, 30 s timeout)
+  // path is a rejected legacy field; use importChannel or content instead.
   source?: 'user' | 'library' | 'import';    // default 'user'
   sourceId?: string;
   rationale?: string;                        // persisted on snapshot .meta sidecar
@@ -150,6 +264,7 @@ type DeleteManifestResult = {
     cliError: string | null;
     rationaleLogRemoved: boolean;
     rationaleLogError: string | null;
+    recovery: RegistrationRecoveryBackup | null;
   };
 };
 ```

@@ -2,17 +2,27 @@
 
 Minimum bar before opening a PR:
 
-1. `npm run lint` passes clean (0 errors; `warn`-level `max-lines` / `complexity` is tracked-but-not-blocking).
-2. `npm run desktop:build` passes clean. **This step catches Node-only imports leaking into the renderer Vite bundle** - `vitest` alone misses them because vitest runs in Node and accepts `crypto`/`fs`/`path` happily.
-3. `npm test` (= `vitest run`) passes clean. Test counts change as features
-   land; use the command's current summary rather than copying an old count.
-   For reference, macOS parity PR #75 passed 1,584 tests in 117 files, and
-   main PR #76 passed the full suite plus 32 focused nested-navigation tests.
-   Mac port PR #77 passed 79 focused tests and two isolated Playwright
-   scenarios; those focused results do not replace a final full-suite run.
-4. `npm audit --omit=dev --audit-level=high` returns 0 vulnerabilities (CF-SEC-014).
-5. If you changed anything under `packages/core/src/oscfg/` or the elevation / health code, exercise an actual `oscfg` operation in an elevated shell on Windows (smoke-testing notes below).
-6. If you added a registered type, add it to `packages/core/src/oscfg/registered-types.ts` and make sure the type-allowlist tests still pass.
+1. `node scripts/verify-public-package-assets.mjs` and
+   `node --test scripts/verify-public-package-assets.node-test.mjs` pass.
+2. Run the smallest focused Vitest selection that covers the change.
+3. `npm test` (= `vitest run`) passes clean. Test counts change as
+   features land; use the command's current summary rather than
+   copying an old count. Historical PRs may cite exact counts in their
+   own validation notes, but this page should not copy those numbers.
+4. `npm run lint` passes clean (0 errors; `warn`-level `max-lines` /
+   `complexity` is tracked-but-not-blocking).
+5. `npm run desktop:build` passes clean. **This step catches Node-only
+   imports leaking into the renderer Vite bundle** - `vitest` alone
+   misses them because Vitest runs in Node and accepts `crypto` / `fs`
+   / `path` happily.
+6. `npm audit --omit=dev --audit-level=high` returns 0 high or
+   critical production vulnerabilities (CF-SEC-014).
+7. If you changed anything under `packages/core/src/oscfg/` or the
+   elevation / health code, exercise an actual `oscfg` operation in an
+   elevated shell on Windows (smoke-testing notes below).
+8. If you added a registered type, add it to
+   `packages/core/src/oscfg/registered-types.ts` and make sure the
+   type-allowlist tests still pass.
 
 ## What we test
 
@@ -23,6 +33,18 @@ Minimum bar before opening a PR:
 - **History/snapshot store** - round-trip + dedupe + retention + per-namespace mutex.
 - **Author resolution** (`history/author.ts`) - env → git → OS user → unknown, plus the never-throws contract.
 - **Security-audit invariants** - `circular-guard.test.ts` covers CF-SEC-007 spoof-resistance (launder-attempt detection, NFC normalisation); `cfs.test.ts` covers CF-SEC-015 flavor capability checks (`safeCfs` returns undefined on missing namespaces); `log.test.ts` covers the secret-redaction patterns.
+
+## CI gates
+
+The `PR check` workflow runs automatically on pull requests and pushes
+to both `main` and `mac-author-build`; `workflow_dispatch` remains
+available for manual re-runs. It has three jobs:
+
+| Job | What it runs |
+| --- | --- |
+| `Lint` | Public packaging guard, Node `--test` packaging guard, `npm run lint`. |
+| `Vitest (core + desktop projects)` | `npm audit --omit=dev --audit-level=high`, `npm run core:build`, `npm test`, Linux `npm run desktop:build`, and desktop artifact smoke checks. |
+| `Playwright Electron smoke` | Windows Electron smoke through `npx playwright test --config apps/desktop/playwright.config.ts`. |
 
 ## What we *don't* test (in CI)
 
@@ -77,7 +99,7 @@ A handful of tests assert performance. Don't loosen these without justification:
 When you add a test on `main`, the cherry-pick port to `mac-author-build` usually applies cleanly. Two gotchas:
 
 - Tests that import from `apps/desktop/src/pages/Manifests/index.tsx` should use the hook directly (`apps/desktop/src/pages/Manifests/state/useManifestList.ts`) when possible - page-level tests that import the full page may pull in flavor-specific code paths that diverge between branches.
-- Mocking `window.cfs` in a renderer test should set up a partial preload shape; on mac, expect deploy/elevation/health/auditResults to be absent. See `apps/desktop/src/lib/cfs.test.ts` for the pattern.
+- Mocking `window.cfs` in a renderer test should set up a partial preload shape; on mac, expect `health`, `deploy`, `deployRecovery`, `revert`, `auditResults`, and `system` to be absent. See `apps/desktop/src/lib/cfs.test.ts` for the pattern.
 
 ## See also
 

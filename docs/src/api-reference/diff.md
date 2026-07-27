@@ -18,7 +18,7 @@ than 2 are registered, the handler throws 400 with `data.missing`.
 type MatrixCell = {
   value: unknown;
   status: 'identical' | 'differs' | 'missing';
-  fromTestWrapper?: true;
+  fromTestWrapper?: boolean;
 };
 
 type MatrixRow = {

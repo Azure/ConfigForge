@@ -7,9 +7,9 @@ ConfigForge uses GitHub Actions from `.github/workflows/`. The product is an Ele
 | Workflow | File | Trigger | Output |
 | --- | --- | --- | --- |
 | **PR check** | `pr-check.yml` | Pull requests to and pushes on `main` or `mac-author-build`; manual `workflow_dispatch` | Public-asset guard and tests, lint, Vitest, Linux desktop build verification, and Windows Playwright Electron smoke |
-| **Release** | `release.yml` | Clean tag push `vX.Y.Z` on `main`; manual dispatch for rebuilds | Windows + Linux installers, per-platform SHA256SUMS, SBOMs, draft GitHub Release upload |
+| **Release** | `release.yml` | Clean tag push matching `vX.Y.Z` with no hyphen suffix; manual dispatch for rebuilds | Windows + Linux installers, per-platform SHA256SUMS, SBOMs, draft GitHub Release upload |
 | **Release (macOS author)** | `release-mac.yml` | Manual `workflow_dispatch` of the protected `main` definition with an existing `mac-vX.Y.Z-author.N` tag | Checkout and verify the supplied tag; build and upload exactly five unsigned macOS Author assets to the existing draft release |
-| **Docs** | `docs.yml` | Docs changes on `main` / PRs touching docs | mdBook build, markdownlint, `gh-pages` deploy on push to `main` |
+| **Docs** | `docs.yml` | Pushes to `main` touching `docs/**`, `.github/workflows/docs.yml`, or `README.md`; PRs touching `docs/**` or `.github/workflows/docs.yml`; manual dispatch | mdBook build, markdownlint, `gh-pages` deploy on push to `main` |
 
 The Win/Linux Release workflow intentionally ignores hyphen-suffix tags
 (`!v*-*`). macOS Author releases use separate tags such as
@@ -23,20 +23,23 @@ Three jobs run in parallel:
 1. **Lint** (`ubuntu-latest`) - run the dependency-free public-asset and
    package-lock registry guard with its Node tests, then `npm ci` and
    `npm run lint`.
-2. **Vitest + build** (`ubuntu-latest`) - `npm ci`, `npm run core:build`, `npm test`, `npm run desktop:build`, then smoke-checks the built renderer/main files.
+2. **Vitest + build** (`ubuntu-latest`) - `npm ci`,
+   `npm audit --omit=dev --audit-level=high`, `npm run core:build`,
+   `npm test`, `npm run desktop:build`, then smoke-checks the built
+   renderer/main/preload files.
 3. **Playwright Electron smoke** (`windows-latest`) - installs, builds the desktop app, generates icons, then runs `npx playwright test --config apps/desktop/playwright.config.ts`.
 
 Test counts change as features land. Use the current `npm test` summary as the
 authority. For reference, macOS parity PR #75 passed 1,584 Vitest tests in 117
 files; main PR #76 then passed its full suite plus 32 focused nested-navigation
 tests. Mac port PR #77 passed 79 focused tests and two isolated Playwright
-scenarios. The final `0.3.93-author.1` preparation tree passed 1,598 Vitest
-tests in 117 files, and its tag-pinned packaging run completed successfully.
-The prior `0.3.93-author.2` preparation passed PR check run
-[#30186333208](https://github.com/Azure/ConfigForge/actions/runs/30186333208),
-and its tag-pinned packaging run also completed successfully. The current
-`v0.3.94` and `mac-v0.3.94-author.1` tagged source lines rely on GitHub CI for
-npm-backed validation. Their matching releases remain unpublished drafts.
+scenarios. The prior `mac-v0.3.93-author.2` draft release remains unpublished;
+workflow run
+[#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
+verified its five assets. The current macOS Author tagged source is
+`mac-v0.3.94-author.1`, with an unpublished draft release. Use its current
+GitHub checks and release metadata as the authority rather than pinning a
+workflow run in this document.
 
 Caching covers npm, Electron binaries, electron-builder, and Playwright browser downloads. Concurrency cancels stale PR runs on the same branch.
 
@@ -87,10 +90,8 @@ For `mac-v0.3.94-author.1`, it uses exactly these expected asset names:
 5. `SHA256SUMS-macos-author.txt`
 
 The workflow refuses a published release and never publishes automatically.
-For the prior `mac-v0.3.93-author.2` release, workflow run
-[#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
-passed every gate and verified these five assets. The matching GitHub release
-exists but remains a draft and is unpublished.
+For `mac-v0.3.94-author.1`, use the current GitHub checks and draft release as
+the authority for actual build and asset status.
 
 ## Linux runner notes
 
@@ -106,7 +107,11 @@ exists but remains a draft and is unpublished.
 
 ## Docs workflow
 
-`docs.yml` builds the mdBook under `docs/`, runs markdownlint, and deploys to `gh-pages` on pushes to `main`. GitHub Pages must be configured to serve from the `gh-pages` branch.
+`docs.yml` builds the mdBook under `docs/`, runs markdownlint, and deploys to
+`gh-pages` only on pushes to `main`. The workflow runs for pushes to `main`
+touching `docs/**`, `.github/workflows/docs.yml`, or `README.md`; pull
+requests touching `docs/**` or `.github/workflows/docs.yml`; and manual
+dispatch. GitHub Pages must be configured to serve from the `gh-pages` branch.
 
 ## CI minute budget
 

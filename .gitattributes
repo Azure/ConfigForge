@@ -1,7 +1,12 @@
 # Default to automatic text detection.
 * text=auto
 
-# Shell and repository scripts must retain LF endings for Linux/macOS runners.
+# v0.2.0+: shell scripts must keep LF line endings even on Windows checkouts.
+# Without this, shell helpers such as scripts/verify-no-cli-binary.sh can fail
+# with "set: pipefail: invalid option name" on Linux runners because the
+# shebang and set lines come through with trailing CR. The wired packaging
+# guard is scripts/verify-public-package-assets.mjs; verify-no-cli-binary.sh
+# remains available as a manual check.
 *.sh                                text eol=lf
 scripts/**                          text eol=lf
 

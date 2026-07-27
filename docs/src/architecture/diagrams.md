@@ -1,6 +1,6 @@
 # Diagrams
 
-Reference diagrams for the current Electron + `@configforge/core` architecture. They cover request flow, registration/deploy states, AI provenance, and CIS lookup.
+Reference diagrams for the current Electron + `@configforge/core` architecture. They cover request flow, Full-edition registration/deploy states, AI provenance, and CIS lookup. The macOS Author edition omits the device-operation namespaces shown in the deploy/audit/revert paths.
 
 Diagrams render via the `mdbook-mermaid` preprocessor; both the
 preprocessor version and the release tarball SHA256 are pinned in
@@ -8,7 +8,7 @@ preprocessor version and the release tarball SHA256 are pinned in
 
 ## Request flow
 
-A renderer action crosses the preload bridge, enters Electron main IPC, then calls pure core handlers. Deploy/audit handlers use the upstream `oscfg` CLI through the core wrapper.
+A renderer action crosses the preload bridge, enters Electron main IPC, then calls pure core handlers. Full-edition deploy/audit handlers use the upstream `oscfg` CLI through the core wrapper; the macOS Author exposed preload omits those namespaces.
 
 ```mermaid
 flowchart LR
@@ -37,7 +37,8 @@ flowchart LR
 
 ## Registration state machine
 
-What a manifest can become and how the transitions happen.
+What a manifest can become in the Full edition and how the transitions happen.
+The macOS Author edition stops at authoring, registration, history, and export.
 `Authored` is the case where someone runs `oscfg apply` out-of-band;
 ConfigForge picks them up via `oscfg get namespace` during the list
 call when `{ live: true }` is passed.
@@ -63,14 +64,15 @@ stateDiagram-v2
 
 ## AI provenance + circular-guard
 
-The diff analysis is a local heuristic (no LLM/network). Each element
-of the retrieval chain contributes a heuristic citation, and `Apply`
-is hidden until a citation-coverage threshold is met. AI-generated
-output is **labeled** with a marker (`<!-- ai-generated:rev=N -->`)
-plus a spoof-resistant per-process FNV-1a 64-bit content-hash registry
-(CF-SEC-007). Note: the marker is advisory — the `assertNotAiGenerated`
-check is available in core but is **not currently wired** into
-ingestion, so marked content is not auto-rejected today.
+The diff analysis is a local heuristic (no LLM/network). Sources and
+citation coverage are displayed in the AI panel. When `sources.length === 0`
+or `citationCoverage < 0.5`, the panel shows a low-confidence advisory
+banner; it does not gate an Apply action. AI-generated output is **labeled**
+with a marker (`<!-- ai-generated:rev=N -->`) plus a spoof-resistant
+per-process FNV-1a 64-bit content-hash registry (CF-SEC-007). Note: the
+marker is advisory — the `assertNotAiGenerated` check is available in core
+but is **not currently wired** into ingestion, so marked content is not
+auto-rejected today.
 
 ```mermaid
 flowchart TD
@@ -80,14 +82,14 @@ flowchart TD
   Guard -->|yes| Flag[Flagged: re-fed AI<br/>advisory only, not blocked]
   Guard -->|no| Sources
   Flag --> Sources
-  Sources --> Coverage{citationCoverage ≥ 0.5?}
-  Coverage -->|yes| ShowApply[Apply visible]
-  Coverage -->|no| Advisory[Advisory only: Apply hidden]
+  Sources --> Coverage{sources.length === 0<br/>or citationCoverage < 0.5?}
+  Coverage -->|yes| Advisory[Low-confidence advisory banner]
+  Coverage -->|no| Display[Display sources and coverage]
 ```
 
 > **Warning:** A response with `sources: []` is **always** advisory.
-> The Apply button is never visible without at least one cited
-> source.
+> Citation coverage affects the warning banner only; there is no
+> Apply visibility gate in the AI panel.
 
 ## CIS lookup flow
 
@@ -103,9 +105,13 @@ flowchart TD
   T3 -->|hit| Result
   T3 -->|miss| T4{XCCDF fuzzy title / CSP words}
   T4 -->|hit| Result
-  T4 -->|miss| T5{Azure Policy JSON word match}
-  T5 -->|hit| Result
-  T5 -->|no match| Unmatched["Unmatched"]
+  T4 -->|miss| T5{Azure Policy benchmark?}
+  T5 -->|linux| T6{linuxFuzzyMatch<br/>buildLinuxResourceTokens}
+  T5 -->|windows| T7{PascalCase / CSP word overlap<br/>threshold 0.8}
+  T6 -->|hit| Result
+  T7 -->|hit| Result
+  T6 -->|no match| Unmatched["Unmatched"]
+  T7 -->|no match| Unmatched
 
   subgraph "Runtime CIS data directory"
     JSON["*.json legacy catalogs<br/>packages/core/src/cis/data.ts"]
@@ -118,6 +124,8 @@ flowchart TD
   T3 -.-> XML
   T4 -.-> XML
   T5 -.-> Policy
+  T6 -.-> Policy
+  T7 -.-> Policy
 ```
 
 > The resolved CIS data directory is `<repo>/public/_baselines/cis/_data/` in dev and `<process.resourcesPath>/public-assets/_baselines/cis/_data/` in packaged builds.

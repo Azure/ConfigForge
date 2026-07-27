@@ -57,8 +57,8 @@ apps/desktop/
 │  │  ├─ ManifestEditor/
 │  │  │  ├─ index.tsx        # Composition (~451 lines, down from 1,585)
 │  │  │  ├─ helpers.tsx      # Pure render helpers
-│  │  │  ├─ state/           # useManifestEditorState, useDeployFlow, useDocsModal + tests
-│  │  │  └─ components/      # DocsModal, ManifestContent, DeployResultPanel, ComplianceTable, ManifestHeader
+│  │  │  ├─ state/           # useManifestEditorState, useDeployFlow + tests
+│  │  │  └─ components/      # AddSettingsPane, ManifestContent, VisualManifestViewer, DeployResultPanel, ComplianceTable, ManifestDetailFooter, ManifestHeader
 │  │  ├─ Manifests/          # useManifestList, useFlashMessage, useBulkSelection + tests
 │  │  ├─ ManifestNew/        # useNewManifestForm + tests
 │  │  ├─ Library/            # useLibraryFilters + tests

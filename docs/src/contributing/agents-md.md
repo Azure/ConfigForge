@@ -13,11 +13,10 @@ slow path; you should still skim `AGENTS.md` once.
 
 ## Why we have it
 
-The same conventions apply to humans and AI agents - but only an AI
-agent will reliably read a long markdown file before making the
-first commit. `AGENTS.md` is short on purpose so they will. Human
-contributors get this docs site; agents get the single-file
-`AGENTS.md`.
+The same conventions apply to humans and AI agents. `AGENTS.md` is
+the comprehensive canonical guide that agents load before work. This
+page is only a human-readable summary and should not be treated as
+complete.
 
 ## What it covers
 
@@ -42,7 +41,8 @@ contributors get this docs site; agents get the single-file
 - Manifest schema for the current upstream CLI version (`oscfg
   1.3.9-preview11`).
 - CIS data integration, CIS Diff behavior, renderer-safe matrix diff
-  helpers, and the v0.3.46 fuzzy-matcher guardrails.
+  helpers, Linux fuzzy matching (v0.3.50+), and the v0.3.51 CIS Diff
+  two-code-path fallback.
 - Spreadsheet visual editing, including lossless typed values and Test
   wrapper / Group source-path handling.
 - Unsigned release builds — no code signing in CI (artifacts are unsigned by design).

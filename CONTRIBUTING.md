@@ -1,6 +1,6 @@
 # Contributing to ConfigForge
 
-Thanks for taking the time to look. ConfigForge is a community open-source project; pull requests, issue reports, and design feedback from anyone are welcome.
+Thanks for taking the time to look. ConfigForge is a community-maintained project. Pull requests, issue reports, and design feedback are welcome from contributors with access to the private repository.
 
 ## Code of Conduct
 
@@ -35,7 +35,7 @@ All four must exit zero. CI will surface regressions.
 In addition:
 
 - `npm audit --omit=dev --audit-level=high` should show zero high/critical CVEs. The release workflow enforces this as a hard gate (CF-SEC-014).
-- The release workflow runs `scripts/verify-no-cli-binary.sh` against `apps/desktop/release/`. This will fail the build if any `oscfg*` binary is found in artifacts. ConfigForge v0.2.0+ does **not** bundle the OSConfig CLI.
+- The wired public packaging guard is `scripts/verify-public-package-assets.mjs`; it runs in PR checks, release workflows, and desktop `dist*` scripts. `scripts/verify-no-cli-binary.sh` remains available as a manual check, but no workflow currently invokes it. ConfigForge v0.2.0+ does **not** bundle the OSConfig CLI.
 - If you add an external runtime dependency, justify it in the PR description and update `THIRDPARTYNOTICES.md`.
 - **Prettier** is available (`npm run format`, `npm run format:check`) but **not** gated in CI. Adopt it on files you touch; mass-format runs are discouraged.
 

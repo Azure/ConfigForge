@@ -25,12 +25,12 @@ From the repo root:
 # 30 seconds when Electron is cached.
 npm run desktop:dist:win
 
-# Linux tarball — works from any host (no Linux native tools needed).
-# AppImage / deb / rpm are configured but require a Linux build host
-# (see "Cross-platform build matrix" below).
+# Linux artifacts — attempts tar.gz, AppImage, deb, and rpm.
+# Use a Linux host, Linux CI, WSL, Docker, or invoke a tar.gz-only
+# electron-builder target explicitly.
 npm run desktop:dist:linux
 
-# Both at once (Linux tar.gz only when run from Windows):
+# Both at once (platform-native targets for the current host):
 npm run desktop:dist
 ```
 
@@ -47,7 +47,7 @@ After `npm run desktop:dist:win` from a Windows host:
 | `ConfigForge-Setup-${version}-x64.zip` | Portable zip | ~149 MB | Unzip-and-run, no install. Useful for sandbox testing or restricted environments. |
 | `ConfigForge-Setup-${version}-x64.exe.blockmap` | Block map | ~120 KB | electron-updater delta updates |
 
-After `npm run desktop:dist:linux` (or from Linux host):
+After `npm run desktop:dist:linux` from a Linux host:
 
 | File | Format | Size | Use case |
 |---|---|---|---|
@@ -115,7 +115,7 @@ build. Before running `npm run desktop:dist`, verify:
 After `npm run desktop:dist:win`:
 
 1. **Launch test** — double-click
-   `release/<version>/win-unpacked/ConfigForge.exe` (or run
+   `release/<version>/win-unpacked/configforge.exe` (or run
    the NSIS installer first then launch the installed copy):
    - [ ] Window opens within 3 seconds
    - [ ] Mica titlebar visible on Win11 22000+
@@ -144,8 +144,11 @@ After `npm run desktop:dist:win`:
          `public-assets\_baselines\cis\_data\` must not be packaged.
    - [ ] **No `oscfg-resources/` directory** under
          `<install-dir>\resources\` — v0.2.0+ ships **no** CLI
-         binary. `scripts/verify-no-cli-binary.sh` enforces this
-         at release time. Users install `oscfg` separately per
+         binary. The release workflow runs
+         `scripts/verify-public-package-assets.mjs` before installation and
+         packaging; `scripts/verify-no-cli-binary.sh` remains available as a
+         manual check but is not currently invoked by CI. Users install
+         `oscfg` separately per
          [INSTALL.md](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md).
 
 5. **SBOM artifact (release builds only)** — when triggered via
