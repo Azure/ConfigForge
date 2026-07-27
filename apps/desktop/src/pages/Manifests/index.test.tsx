@@ -332,6 +332,7 @@ describe('ManifestsPage administrative table', () => {
     const alphaRow = await screen.findByRole('row', { name: /Alpha Security Baseline/ });
     const platformStatus = within(alphaRow).getByText('Windows').parentElement;
     expect(platformStatus).not.toBeNull();
+    expect(platformStatus).toHaveAttribute('aria-label', 'Windows');
     expect(platformStatus).toHaveAttribute('tabindex', '0');
     await expectTooltipOnHover(user, platformStatus as HTMLElement, 'Windows');
 

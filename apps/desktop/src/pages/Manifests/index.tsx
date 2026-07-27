@@ -813,7 +813,11 @@ export function ManifestsPage() {
                         </td>
                         <td className="px-3 py-2">
                           <Tooltip content={platformLabel} relationship="description" withArrow>
-                            <span className="inline-flex items-center gap-2" tabIndex={0}>
+                            <span
+                              aria-label={platformLabel}
+                              className="inline-flex items-center gap-2"
+                              tabIndex={0}
+                            >
                               <BaselinePlatformMark platform={platform} />
                               <span className="truncate">{platformLabel}</span>
                             </span>
