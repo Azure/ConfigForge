@@ -786,29 +786,34 @@ export function ManifestsPage() {
                             content={`${displayName} — ${manifest.Name}. ${modifiedTitle}`}
                             relationship="description"
                           >
-                            <button
-                              type="button"
-                              onClick={() => handleOpenRow(manifest.Name)}
-                              disabled={actionsBusy}
-                              aria-label={t("administration.table.openBaseline", {
-                                name: manifest.Name,
-                              })}
-                              className="group flex max-w-full items-center gap-2 text-left"
+                            <span
+                              className="inline-flex max-w-full"
+                              tabIndex={actionsBusy ? 0 : undefined}
                             >
-                              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
-                                <BaselinePlatformMark platform={platform} />
-                              </span>
-                              <span className="min-w-0">
-                                <span className="block max-w-[34rem] truncate font-medium text-blue-700 group-hover:underline dark:text-blue-300">
-                                  {displayName}
+                              <button
+                                type="button"
+                                onClick={() => handleOpenRow(manifest.Name)}
+                                disabled={actionsBusy}
+                                aria-label={t("administration.table.openBaseline", {
+                                  name: manifest.Name,
+                                })}
+                                className="group flex max-w-full items-center gap-2 text-left"
+                              >
+                                <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-blue-50 text-blue-700 dark:bg-blue-950 dark:text-blue-300">
+                                  <BaselinePlatformMark platform={platform} />
                                 </span>
-                                {shouldShowNamespace(displayName, manifest.Name) && (
-                                  <span className="block max-w-[34rem] truncate text-xs text-slate-500 dark:text-slate-400">
-                                    {manifest.Name}
+                                <span className="min-w-0">
+                                  <span className="block max-w-[34rem] truncate font-medium text-blue-700 group-hover:underline dark:text-blue-300">
+                                    {displayName}
                                   </span>
-                                )}
-                              </span>
-                            </button>
+                                  {shouldShowNamespace(displayName, manifest.Name) && (
+                                    <span className="block max-w-[34rem] truncate text-xs text-slate-500 dark:text-slate-400">
+                                      {manifest.Name}
+                                    </span>
+                                  )}
+                                </span>
+                              </button>
+                            </span>
                           </Tooltip>
                         </td>
                         <td className="px-3 py-2">
@@ -816,7 +821,6 @@ export function ManifestsPage() {
                             <span
                               aria-label={platformLabel}
                               className="inline-flex items-center gap-2"
-                              tabIndex={0}
                             >
                               <BaselinePlatformMark platform={platform} />
                               <span className="truncate">{platformLabel}</span>
@@ -833,12 +837,12 @@ export function ManifestsPage() {
                             withArrow
                           >
                             <span
+                              aria-label={issuesTitle ?? issuesLabel}
                               className={`inline-flex rounded-full px-2 py-0.5 text-xs font-medium ${
                                 issues === 0
                                   ? "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300"
                                   : "bg-amber-50 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
                               }`}
-                              tabIndex={0}
                             >
                               {issuesLabel}
                             </span>
@@ -872,7 +876,7 @@ export function ManifestsPage() {
                         </td>
                         <td className="whitespace-nowrap px-3 py-2 tabular-nums text-slate-600 dark:text-slate-300">
                           <Tooltip content={modifiedTitle} relationship="description" withArrow>
-                            <span className="inline-block" tabIndex={0}>
+                            <span aria-label={modifiedTitle} className="inline-block">
                               {modifiedDateLabel}
                             </span>
                           </Tooltip>

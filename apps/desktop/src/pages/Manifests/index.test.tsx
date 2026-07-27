@@ -100,13 +100,6 @@ async function expectTooltipOnHover(
   await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
 }
 
-async function expectTooltipOnFocus(target: HTMLElement, expectedText: string | RegExp) {
-  fireEvent.focus(target);
-  expect(await screen.findByRole('tooltip')).toHaveTextContent(expectedText);
-  fireEvent.blur(target);
-  await waitFor(() => expect(screen.queryByRole('tooltip')).not.toBeInTheDocument());
-}
-
 let currentData: OscManifest[];
 let listMock: ReturnType<typeof vi.fn>;
 let getSourceMock: ReturnType<typeof vi.fn>;
@@ -333,25 +326,23 @@ describe('ManifestsPage administrative table', () => {
     const platformStatus = within(alphaRow).getByText('Windows').parentElement;
     expect(platformStatus).not.toBeNull();
     expect(platformStatus).toHaveAttribute('aria-label', 'Windows');
-    expect(platformStatus).toHaveAttribute('tabindex', '0');
     await expectTooltipOnHover(user, platformStatus as HTMLElement, 'Windows');
 
     const linuxRow = screen.getByRole('row', { name: /linux-beta/ });
     const issuesStatus = within(linuxRow).getByText('2 issues');
-    expect(issuesStatus).toHaveAttribute('tabindex', '0');
+    expect(issuesStatus).toHaveAttribute(
+      'aria-label',
+      'Missing expected value\nUnsupported setting',
+    );
     await expectTooltipOnHover(
       user,
-      issuesStatus,
-      /Missing expected value\s+Unsupported setting/,
-    );
-    await expectTooltipOnFocus(
       issuesStatus,
       /Missing expected value\s+Unsupported setting/,
     );
 
     const modifiedDate = within(alphaRow).getAllByRole('cell')[6].querySelector('span');
     expect(modifiedDate).not.toBeNull();
-    expect(modifiedDate).toHaveAttribute('tabindex', '0');
+    expect(modifiedDate).toHaveAttribute('aria-label', expect.stringMatching(/^Last modified /));
     await expectTooltipOnHover(user, modifiedDate as HTMLElement, /^Last modified /);
   });
 
