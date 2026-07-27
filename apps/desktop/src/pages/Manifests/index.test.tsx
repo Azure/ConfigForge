@@ -3,6 +3,7 @@
 
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { act, fireEvent, render, screen, waitFor, within } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { FluentProvider, webLightTheme } from "@fluentui/react-components";
 import { MemoryRouter, Route, Routes, useLocation } from "react-router-dom";
 import type { OscManifest } from "@configforge/core/types";
@@ -65,6 +66,17 @@ function renderManifests() {
       </MemoryRouter>
     </FluentProvider>,
   );
+}
+
+async function expectTooltipOnHover(
+  user: ReturnType<typeof userEvent.setup>,
+  target: Element,
+  expectedText: string | RegExp,
+) {
+  await user.hover(target);
+  expect(await screen.findByRole("tooltip")).toHaveTextContent(expectedText);
+  await user.unhover(target);
+  await waitFor(() => expect(screen.queryByRole("tooltip")).not.toBeInTheDocument());
 }
 
 let currentData: OscManifest[];
@@ -206,6 +218,7 @@ afterEach(async () => {
 
 describe("ManifestsPage administrative table", () => {
   it("renders dense table columns and truthful issue/compliance statuses", async () => {
+    const user = userEvent.setup();
     renderManifests();
 
     expect(await screen.findByRole("heading", { name: "My Baselines" })).toBeInTheDocument();
@@ -251,12 +264,37 @@ describe("ManifestsPage administrative table", () => {
     const notAudited = within(unauditedRow).getByText("Not audited");
     expect(notAudited).toHaveClass("bg-slate-100", "text-slate-600");
     expect(notAudited).not.toHaveAttribute("title");
-    expect(notAudited.closest("td")).toHaveAttribute(
-      "title",
-      expect.stringContaining("No audit data"),
-    );
+    expect(notAudited.closest("td")).not.toHaveAttribute("title");
+    expect(notAudited.tagName).toBe("SPAN");
+    await expectTooltipOnHover(user, notAudited, "No audit data is available for this baseline");
     expect(within(unauditedRow).getAllByRole("cell")[3]).toHaveClass("text-left");
     expect(within(unauditedRow).getAllByRole("cell")[3]).not.toHaveClass("text-right");
+  });
+
+  it("shows Fluent tooltips for platform, validation issues, and modified date cells", async () => {
+    const user = userEvent.setup();
+    renderManifests();
+
+    const alphaRow = await screen.findByRole("row", { name: /Alpha Security Baseline/ });
+    const platformStatus = within(alphaRow).getByText("Windows").parentElement;
+    expect(platformStatus).not.toBeNull();
+    expect(platformStatus).toHaveAttribute("aria-label", "Windows");
+    await expectTooltipOnHover(user, platformStatus as HTMLElement, "Windows");
+
+    const linuxRow = screen.getByRole("row", { name: /linux-beta/ });
+    const issuesStatus = within(linuxRow).getByText("2 issues");
+    expect(issuesStatus).toHaveAttribute("aria-label", "2 issues");
+    const issuesDescriptionId = issuesStatus.getAttribute("aria-describedby");
+    expect(issuesDescriptionId).not.toBeNull();
+    expect(document.getElementById(issuesDescriptionId as string)).toHaveTextContent(
+      /Missing expected value\s+Unsupported setting/,
+    );
+    await expectTooltipOnHover(user, issuesStatus, /Missing expected value\s+Unsupported setting/);
+
+    const modifiedDate = within(alphaRow).getAllByRole("cell")[6].querySelector("span");
+    expect(modifiedDate).not.toBeNull();
+    expect(modifiedDate).toHaveAttribute("aria-label", expect.stringMatching(/^Last modified /));
+    await expectTooltipOnHover(user, modifiedDate as HTMLElement, /^Last modified /);
   });
 
   it("sorts columns through ascending, descending, and unsorted states", async () => {
@@ -501,6 +539,7 @@ describe("ManifestsPage administrative table", () => {
   });
 
   it("does not crash on malformed legacy LastModifiedAt metadata and shows unavailable", async () => {
+    const user = userEvent.setup();
     installCfs([
       makeManifest("legacy", {
         DisplayName: "Legacy Baseline",
@@ -511,11 +550,12 @@ describe("ManifestsPage administrative table", () => {
     renderManifests();
 
     const open = await screen.findByRole("button", { name: "Open baseline legacy" });
-    expect(open).toHaveAttribute(
-      "title",
-      expect.stringContaining("Last modified date unavailable"),
-    );
-    expect(screen.getByRole("row", { name: /Legacy Baseline/ })).toHaveTextContent("—");
+    expect(open).not.toHaveAttribute("title");
+    const row = screen.getByRole("row", { name: /Legacy Baseline/ });
+    const unavailableDate = within(row).getByText("—");
+    expect(unavailableDate.closest("td")).not.toHaveAttribute("title");
+    await expectTooltipOnHover(user, unavailableDate, "Last modified date unavailable");
+    expect(row).toHaveTextContent("—");
   });
 
   it("renders Date Modified from the local calendar date instead of the UTC date", async () => {
