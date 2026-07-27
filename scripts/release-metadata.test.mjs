@@ -196,7 +196,7 @@ describe('public release metadata', () => {
     expect(contributing).toContain('creates immutable release tags and draft');
     expect(support).toContain('The current repository maintainer is');
     expect(readme).toContain('for ownership, active-branch, review, release, and cherry-pick guidance');
-    expect(security).toContain('v0.3.94');
+    expect(security).toContain('v0.3.95');
     expect(security).toContain('mac-v0.3.94-author.1');
     expect(security).toContain('Microsoft Security Response Center');
     expect(security).toContain('Microsoft OSConfig project');

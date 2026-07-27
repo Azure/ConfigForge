@@ -15,17 +15,17 @@ The renderer is built with Vite and routes through a typed IPC bridge (`window.c
 
 ### Current repository snapshot
 
-The following release references were verified on 2026-07-26:
+The following release references were verified on 2026-07-27:
 
 | Line | Reference | State |
 |---|---|---|
-| `main` | `v0.3.94` | Current Windows/Linux tagged source. The matching GitHub release is a draft and unpublished. PR [#86](https://github.com/Azure/ConfigForge/pull/86) patches dev-only `brace-expansion`; PRs [#88](https://github.com/Azure/ConfigForge/pull/88) and [#91](https://github.com/Azure/ConfigForge/pull/91) establish the public packaging and policy surface; PR [#89](https://github.com/Azure/ConfigForge/pull/89) refreshes nine synthetic-content screenshots. |
+| `main` | `v0.3.95` | Current Windows/Linux tagged source. The matching GitHub release is a draft and unpublished. PR [#97](https://github.com/Azure/ConfigForge/pull/97) corrects documentation drift and PR [#100](https://github.com/Azure/ConfigForge/pull/100) replaces unreliable native hover titles with FluentUI tooltips on My Baselines status cells. |
 | `mac-author-build` | `mac-v0.3.94-author.1` | Current author-only macOS tagged source. The matching GitHub release is a draft and unpublished. |
 
 On `mac-author-build`, the root package, desktop package, and lockfile records
 use `0.3.94-author.1`. The current macOS Author tagged source is
 `mac-v0.3.94-author.1`, and its matching GitHub release remains a draft and
-unpublished. The Full-edition package versions are `0.3.94`; do not copy
+unpublished. The Full-edition package versions are `0.3.95`; do not copy
 macOS package metadata to `main`.
 
 ### Current feature inventory

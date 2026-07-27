@@ -6,10 +6,10 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The current Windows/Linux tagged source is `v0.3.94`, and its matching GitHub
+The current Windows/Linux tagged source is `v0.3.95`, and its matching GitHub
 release is a draft and unpublished. The current macOS Author tagged source is
 `mac-v0.3.94-author.1`, and its matching GitHub release is also a draft and
-unpublished. The package versions are `0.3.94` for the Full edition and
+unpublished. The package versions are `0.3.95` for the Full edition and
 `0.3.94-author.1` for the macOS Author edition.
 
 ## What it looks like
@@ -199,7 +199,8 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **0.3.94** (current Windows/Linux tagged source; draft unpublished) | Excludes CIS benchmark source data from public installers, publishes the public licensing/privacy/support/security policy surface, patches dev-only `brace-expansion` 5.x, and refreshes nine README screenshots with synthetic benchmark content in PR #89 |
+| **0.3.95** (current Windows/Linux tagged source; draft unpublished) | Replaces unreliable native hover titles with FluentUI tooltips on My Baselines status cells (keyboard accessible, ARIA-exposed multiline details) in PR #100; corrects documentation architecture and release-state drift in PR #97 |
+| **0.3.94** (prior Full edition) | Excludes CIS benchmark source data from public installers, publishes the public licensing/privacy/support/security policy surface, patches dev-only `brace-expansion` 5.x, and refreshes nine README screenshots with synthetic benchmark content in PR #89 |
 | **0.3.94-author.1** (current macOS tagged source; draft unpublished) | Carries the public-source packaging, policy, privacy, security, and nine synthetic screenshot updates into the author-only Apple Silicon edition without adding device operations |
 | **0.3.93-author.2** (historical macOS source milestone; no current tag or release) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83/#84. Historical workflow evidence is superseded by the current `mac-v0.3.94-author.1` draft release metadata. |
 | **0.3.93-author.1** (historical macOS source milestone; no current tag or release) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77. Historical workflow evidence is superseded by the current `mac-v0.3.94-author.1` draft release metadata. |

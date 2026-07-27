@@ -15,7 +15,7 @@ body:
     attributes:
       label: ConfigForge version
       description: Include the tag, package version, or commit SHA.
-      placeholder: v0.3.94
+      placeholder: v0.3.95
     validations:
       required: true
 
