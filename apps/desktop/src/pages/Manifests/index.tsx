@@ -762,6 +762,7 @@ export function ManifestsPage() {
                             total: compliance.total,
                           })
                       : t("administration.status.notAuditedTitle");
+                    const baselineTooltip = `${displayName} — ${manifest.Name}. ${modifiedTitle}`;
 
                     return (
                       <tr
@@ -783,10 +784,11 @@ export function ManifestsPage() {
                         </td>
                         <td className="min-w-0 px-3 py-2">
                           <Tooltip
-                            content={`${displayName} — ${manifest.Name}. ${modifiedTitle}`}
+                            content={baselineTooltip}
                             relationship="description"
                           >
                             <span
+                              aria-label={baselineTooltip}
                               className="inline-flex max-w-full"
                               tabIndex={actionsBusy ? 0 : undefined}
                             >
