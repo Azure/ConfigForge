@@ -27,6 +27,35 @@ foundational work by theme.
   dependency is not bundled with the desktop app.
   ([#86](https://github.com/Azure/ConfigForge/pull/86))
 
+## [0.3.94-author.1] - 2026-07-26 (draft, unpublished)
+
+> `mac-v0.3.94-author.1` is the current macOS Author tagged source. Its
+> matching GitHub release remains an unpublished draft. The author-only
+> capability boundary is unchanged.
+
+### Changed
+
+- Align public licensing, privacy, security, support, contribution, packaging,
+  and ownership guidance while preserving the author-only capability boundary.
+  ([#90](https://github.com/Azure/ConfigForge/pull/90),
+  [#92](https://github.com/Azure/ConfigForge/pull/92),
+  [#93](https://github.com/Azure/ConfigForge/pull/93))
+- Refresh the same nine synthetic-content documentation screenshots used by
+  the Full edition without adding CIS data or screenshot tooling.
+  ([#94](https://github.com/Azure/ConfigForge/pull/94))
+
+### Security
+
+- Update dev-only `brace-expansion` 5.x to 5.0.8 with the reviewed public npm
+  registry URL and integrity metadata. The dependency is not bundled with the
+  macOS Author application.
+  ([#86](https://github.com/Azure/ConfigForge/pull/86))
+
+### Unchanged
+
+- Device deployment, audit, enforcement, revert, elevation, health, and
+  audit-results storage remain excluded from the macOS Author edition.
+
 ## v0.3.93 — 2026-07-25
 
 - Add nested multi-value keyboard navigation: Enter saves and moves down,
