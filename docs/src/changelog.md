@@ -4,10 +4,61 @@ A concise release history for ConfigForge. Newer entries use their release
 tags and state publication status explicitly; older entries summarize the
 foundational work by theme.
 
-## Unreleased
+## v0.3.94 — 2026-07-26
 
-- **Security:** Updated dev-only `brace-expansion` 5.x to 5.0.8 for
-  GHSA-mh99-v99m-4gvg / CVE-2026-14257, resolving Dependabot alert #53.
+`v0.3.94` is the current Windows/Linux tagged source. Its matching GitHub
+release remains a draft and is unpublished; this entry does not indicate
+publication.
+
+- **Public packaging:** Exclude CIS benchmark source data from public
+  installers while keeping Benchmark Mapping and CIS Diff available for
+  user-supplied benchmark files.
+  ([#88](https://github.com/Azure/ConfigForge/pull/88))
+- **Privacy:** Clarify that ConfigForge sends no product telemetry, update
+  checks contact GitHub Releases, and separately installed `oscfg` may send
+  required diagnostics under its own policy.
+  ([#88](https://github.com/Azure/ConfigForge/pull/88))
+- **Project policy:** Publish canonical MIT licensing, community ownership,
+  contribution, best-effort support, and private security-reporting guidance
+  with structured issue and pull-request templates.
+  ([#88](https://github.com/Azure/ConfigForge/pull/88),
+  [#91](https://github.com/Azure/ConfigForge/pull/91))
+- **Documentation:** Refresh nine README screenshots with reviewed synthetic
+  Industry Benchmark content while adding no licensed CIS benchmark data or
+  screenshot tooling. ([#89](https://github.com/Azure/ConfigForge/pull/89))
+- **Security:** Update dev-only `brace-expansion` 5.x to 5.0.8 for
+  GHSA-mh99-v99m-4gvg / CVE-2026-14257, resolving Dependabot alert #53; this
+  dependency is not bundled with the desktop app.
+  ([#86](https://github.com/Azure/ConfigForge/pull/86))
+
+## macOS Author mac-v0.3.94-author.1 — 2026-07-26 (draft, unpublished)
+
+> `mac-v0.3.94-author.1` is the current macOS Author tagged source. Its
+> matching GitHub release remains an unpublished draft. The author-only
+> capability boundary is unchanged.
+
+### Changed
+
+- Align public licensing, privacy, security, support, contribution, packaging,
+  and ownership guidance while preserving the author-only capability boundary.
+  ([#90](https://github.com/Azure/ConfigForge/pull/90),
+  [#92](https://github.com/Azure/ConfigForge/pull/92),
+  [#93](https://github.com/Azure/ConfigForge/pull/93))
+- Refresh the same nine synthetic-content documentation screenshots used by
+  the Full edition without adding CIS data or screenshot tooling.
+  ([#94](https://github.com/Azure/ConfigForge/pull/94))
+
+### Security
+
+- Update dev-only `brace-expansion` 5.x to 5.0.8 with the reviewed public npm
+  registry URL and integrity metadata. The dependency is not bundled with the
+  macOS Author application.
+  ([#86](https://github.com/Azure/ConfigForge/pull/86))
+
+### Unchanged
+
+- Device deployment, audit, enforcement, revert, elevation, health, and
+  audit-results storage remain excluded from the macOS Author edition.
 
 ## v0.3.93 — 2026-07-25
 
@@ -32,8 +83,8 @@ foundational work by theme.
 
 ## macOS Author mac-v0.3.93-author.2 — 2026-07-25 (draft, unpublished)
 
-Annotated tag `mac-v0.3.93-author.2` and the current `mac-author-build` head
-resolve to `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The matching GitHub
+Annotated tag `mac-v0.3.93-author.2` resolved to the then-current
+`mac-author-build` head at `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. The matching GitHub
 release contains five verified assets but remains a draft and is unpublished.
 Workflow run
 [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)

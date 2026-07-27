@@ -15,22 +15,18 @@ The renderer is built with Vite and routes through a typed IPC bridge (`window.c
 
 ### Current repository snapshot
 
-The following release references were verified on 2026-07-25:
+The following release references were verified on 2026-07-26:
 
 | Line | Reference | State |
 |---|---|---|
-| `main` | `v0.3.93` | Full Windows/Linux line. Latest tag and package version are `v0.3.93` and `0.3.93`; PR [#76](https://github.com/Azure/ConfigForge/pull/76) adds nested value keyboard editing and PR [#82](https://github.com/Azure/ConfigForge/pull/82) repairs the standalone Windows Server 2025 audits. |
-| `mac-author-build` | `c4ce196` (PR [#84](https://github.com/Azure/ConfigForge/pull/84)) | Current author-only macOS head and target of annotated tag `mac-v0.3.93-author.2`. The matching GitHub release exists with five verified assets, but it is a draft and is unpublished. |
+| `main` | `v0.3.94` | Current Windows/Linux tagged source. The matching GitHub release is a draft and unpublished. PR [#86](https://github.com/Azure/ConfigForge/pull/86) patches dev-only `brace-expansion`; PRs [#88](https://github.com/Azure/ConfigForge/pull/88) and [#91](https://github.com/Azure/ConfigForge/pull/91) establish the public packaging and policy surface; PR [#89](https://github.com/Azure/ConfigForge/pull/89) refreshes nine synthetic-content screenshots. |
+| `mac-author-build` | `mac-v0.3.94-author.1` | Current author-only macOS tagged source. The matching GitHub release is a draft and unpublished. |
 
 On `mac-author-build`, the root package, desktop package, and lockfile records
-use `0.3.93-author.2`. The annotated `mac-v0.3.93-author.2` tag resolves to
-`c4ce196574f1d3fdf878d4c5856f64539f6dec7a`, which is also the current macOS
-branch head. The matching GitHub release is intentionally a draft and must
-remain unpublished unless a maintainer separately approves publication.
-Workflow run
-[#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
-completed successfully and verified all five assets. The package versions on
-`main` are `0.3.93`; do not copy macOS package metadata to `main`.
+use `0.3.94-author.1`. The current macOS Author tagged source is
+`mac-v0.3.94-author.1`, and its matching GitHub release remains a draft and
+unpublished. The Full-edition package versions are `0.3.94`; do not copy
+macOS package metadata to `main`.
 
 ### Current feature inventory
 
@@ -120,13 +116,12 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
 - The macOS tag must resolve to the exact final validated commit on
   `mac-author-build`. `scripts/ship-mac.ps1` accepts only the `mac-v` form and
   defaults to `Azure/ConfigForge`.
-- The existing `0.3.93-author.2` draft release contains exactly these verified
-  assets:
+- The `0.3.94-author.1` release contract expects exactly these asset names:
 
   | Asset | Exact name |
   |---|---|
-  | DMG | `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg` |
-  | Blockmap | `ConfigForge-Author-0.3.93-author.2-mac-arm64.dmg.blockmap` |
+  | DMG | `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg` |
+  | Blockmap | `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg.blockmap` |
   | Update metadata | `latest-mac.yml` |
   | CycloneDX SBOM | `sbom-macos-author.cdx.json` |
   | SHA-256 manifest | `SHA256SUMS-macos-author.txt` |
@@ -142,7 +137,7 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
   gh workflow run "Release (macOS author)" `
     --repo Azure/ConfigForge `
     --ref main `
-    -f release_tag=mac-v0.3.93-author.2
+    -f release_tag=mac-v0.3.94-author.1
   ```
 
 - `--ref main` selects the reviewed workflow definition, not the source to
@@ -456,13 +451,18 @@ When touching IPC contracts or `packages/core/src/handlers/`, exercise the chann
   [#30176765724](https://github.com/Azure/ConfigForge/actions/runs/30176765724)
   passed the install, production audit, build, SBOM, checksum, and upload
   gates and verified the five expected assets.
-- Current annotated tag `mac-v0.3.93-author.2` and `mac-author-build` both
-  resolve to merge `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. PR check run
+- The prior annotated tag `mac-v0.3.93-author.2` resolved to merge
+  `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. PR check run
   [#30186333208](https://github.com/Azure/ConfigForge/actions/runs/30186333208)
   passed, and tag-pinned workflow run
   [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580)
   passed the install, production audit, build, SBOM, checksum, and upload
-  gates. Both macOS releases remain drafts and are unpublished.
+  gates. The prior author.1 and author.2 releases remain drafts and
+  unpublished.
+- The current macOS Author tagged source is `mac-v0.3.94-author.1`, with an
+  unpublished draft release. Use current GitHub checks and release metadata
+  as the authority for build and asset status rather than recording a merge
+  SHA or workflow run here.
 
 ---
 

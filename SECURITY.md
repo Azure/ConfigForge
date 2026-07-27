@@ -2,12 +2,12 @@
 
 ## Supported versions
 
-Security fixes are evaluated for the current tagged release lines.
+Security fixes are evaluated for the current tagged source lines.
 
 | Edition | Current version | Security updates |
 | --- | --- | --- |
-| Full edition for Windows and Linux | `v0.3.93` | Supported |
-| macOS Author edition | `mac-v0.3.93-author.2` | Supported tagged source; release remains a draft |
+| Full edition for Windows and Linux | `v0.3.94` | Supported tagged source; release remains a draft |
+| macOS Author edition | `mac-v0.3.94-author.1` | Supported tagged source; release remains a draft |
 | Older versions | Earlier tags | Not supported |
 
 ## Security scope

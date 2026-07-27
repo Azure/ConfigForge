@@ -8,11 +8,12 @@ Benchmark Mapping, history, rationale, and Audit Pack export while omitting
 device operations. The native `oscfg` CLI is **not bundled** and is **not
 required** for authoring in either edition.
 
-The latest tagged Full-edition release is `v0.3.93`. The current macOS Author
-line is `0.3.93-author.2` with annotated tag
-`mac-v0.3.93-author.2`. Its GitHub release exists with five verified assets
-but remains a draft and is unpublished. Public downloads are unavailable
-until a maintainer publishes it. The package version on `main` is `0.3.93`.
+The current Windows/Linux tagged source is `v0.3.94`, and its matching GitHub
+release is a draft and unpublished. The current macOS Author tagged source is
+`mac-v0.3.94-author.1`, and its matching GitHub release is also a draft and
+unpublished. Public downloads remain unavailable until a maintainer publishes
+the releases. The package versions are `0.3.94` for the Full edition and
+`0.3.94-author.1` for the macOS Author edition.
 
 ## Prerequisites
 
@@ -30,10 +31,9 @@ cd ConfigForge
 ```
 
 > **Note:** `main` is the active Windows/Linux Full-edition line. On an Apple
-> Silicon Mac (M1 or later), maintainers with draft-release access can use the
-> verified package; other users can build the `mac-v0.3.93-author.2` tag from
-> source while the release remains unpublished. Intel Macs and universal
-> binaries are not supported.
+> Silicon Mac (M1 or later), users can build the
+> `mac-v0.3.94-author.1` tagged source while the matching release remains
+> unpublished. Intel Macs and universal binaries are not supported.
 > macOS release builds are unsigned by design. Clear quarantine after
 > copying the app into Applications:
 >
