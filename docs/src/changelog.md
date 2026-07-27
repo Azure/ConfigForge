@@ -6,6 +6,10 @@ foundational work by theme.
 
 ## v0.3.94 — 2026-07-26
 
+`v0.3.94` is the current Windows/Linux tagged source. Its matching GitHub
+release remains a draft and is unpublished; this entry does not indicate
+publication.
+
 - **Public packaging:** Exclude CIS benchmark source data from public
   installers while keeping Benchmark Mapping and CIS Diff available for
   user-supplied benchmark files.

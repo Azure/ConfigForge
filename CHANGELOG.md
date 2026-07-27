@@ -2,6 +2,9 @@
 
 ## [0.3.94] - 2026-07-26
 
+> `v0.3.94` is the current Windows/Linux tagged source. Its matching GitHub
+> release remains a draft and is unpublished.
+
 ### Changed
 
 - Exclude CIS benchmark source data from public installers; Benchmark Mapping
