@@ -15,17 +15,17 @@ The renderer is built with Vite and routes through a typed IPC bridge (`window.c
 
 ### Current repository snapshot
 
-The following release references were verified on 2026-07-27:
+The following release references were verified on 2026-07-28:
 
 | Line | Reference | State |
 |---|---|---|
-| `main` | `v0.3.95` | Current Windows/Linux tagged source. The matching GitHub release is a draft and unpublished. PR [#97](https://github.com/Azure/ConfigForge/pull/97) corrects documentation drift and PR [#100](https://github.com/Azure/ConfigForge/pull/100) replaces unreliable native hover titles with FluentUI tooltips on My Baselines status cells. |
-| `mac-author-build` | `mac-v0.3.94-author.1` | Current author-only macOS tagged source. The matching GitHub release is a draft and unpublished. |
+| `main` | `v0.3.96` | Current Windows/Linux tagged source. The matching GitHub release is a draft and unpublished. PR [#104](https://github.com/Azure/ConfigForge/pull/104) preserves the full WS2025 control sets and hardens Machine Configuration MOF export. |
+| `mac-author-build` | `mac-v0.3.96-author.1` | Current author-only macOS tagged source. The matching GitHub release is a draft and unpublished. PR [#105](https://github.com/Azure/ConfigForge/pull/105) ports the same authoring/export changes. |
 
 On `mac-author-build`, the root package, desktop package, and lockfile records
-use `0.3.94-author.1`. The current macOS Author tagged source is
-`mac-v0.3.94-author.1`, and its matching GitHub release remains a draft and
-unpublished. The Full-edition package versions are `0.3.95`; do not copy
+use `0.3.96-author.1`. The current macOS Author tagged source is
+`mac-v0.3.96-author.1`, and its matching GitHub release remains a draft and
+unpublished. The Full-edition package versions are `0.3.96`; do not copy
 macOS package metadata to `main`.
 
 ### Current feature inventory
@@ -116,12 +116,12 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
 - The macOS tag must resolve to the exact final validated commit on
   `mac-author-build`. `scripts/ship-mac.ps1` accepts only the `mac-v` form and
   defaults to `Azure/ConfigForge`.
-- The `0.3.94-author.1` release contract expects exactly these asset names:
+- The `0.3.96-author.1` release contract expects exactly these asset names:
 
   | Asset | Exact name |
   |---|---|
-  | DMG | `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg` |
-  | Blockmap | `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg.blockmap` |
+  | DMG | `ConfigForge-Author-0.3.96-author.1-mac-arm64.dmg` |
+  | Blockmap | `ConfigForge-Author-0.3.96-author.1-mac-arm64.dmg.blockmap` |
   | Update metadata | `latest-mac.yml` |
   | CycloneDX SBOM | `sbom-macos-author.cdx.json` |
   | SHA-256 manifest | `SHA256SUMS-macos-author.txt` |
@@ -137,7 +137,7 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
   gh workflow run "Release (macOS author)" `
     --repo Azure/ConfigForge `
     --ref main `
-    -f release_tag=mac-v0.3.94-author.1
+    -f release_tag=mac-v0.3.96-author.1
   ```
 
 - `--ref main` selects the reviewed workflow definition, not the source to
@@ -443,9 +443,9 @@ When touching IPC contracts or `packages/core/src/handlers/`, exercise the chann
   errors, the desktop build, and a production audit with 0 vulnerabilities.
 - Historical `0.3.93-author.1` and `0.3.93-author.2` validation records are
   superseded; their tags/releases no longer exist. Use the current
-  `mac-v0.3.94-author.1` unpublished draft release metadata and current GitHub
+  `mac-v0.3.96-author.1` unpublished draft release metadata and current GitHub
   checks as the authority for macOS Author build and asset status.
-- The current macOS Author tagged source is `mac-v0.3.94-author.1`, with an
+- The current macOS Author tagged source is `mac-v0.3.96-author.1`, with an
   unpublished draft release. Use current GitHub checks and release metadata
   as the authority for build and asset status rather than recording a merge
   SHA or workflow run here.

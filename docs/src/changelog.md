@@ -4,7 +4,10 @@ A concise release history for ConfigForge. Newer entries use their release
 tags and state publication status explicitly; older entries summarize the
 foundational work by theme.
 
-## Unreleased
+## v0.3.96 — 2026-07-28
+
+`v0.3.96` is the current Windows/Linux tagged source. Its matching GitHub
+release remains a draft and unpublished.
 
 - **Windows Server 2025 baselines:** Rebuilt the full Member Server (320),
   Domain Controller (321), and Workgroup Member (296) profiles without losing
@@ -17,9 +20,8 @@ foundational work by theme.
 
 ## v0.3.95 — 2026-07-27
 
-`v0.3.95` is the current Windows/Linux tagged source. Its matching GitHub
-release remains a draft and is unpublished; this entry does not indicate
-publication.
+`v0.3.95` is the prior Windows/Linux tagged source. Its matching GitHub release
+was an unpublished draft; this entry does not indicate publication.
 
 - **Fixed:** Replace unreliable native HTML hover titles with FluentUI
   tooltips on the My Baselines name, platform, validation,
