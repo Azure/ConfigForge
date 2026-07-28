@@ -19,19 +19,18 @@ The following release references describe the current tagged source lines:
 
 | Line | Reference | State |
 |---|---|---|
-| `main` | `v0.3.94` | Current Full-edition Windows/Linux tagged source. Its matching GitHub release remains an unpublished draft. PR [#86](https://github.com/Azure/ConfigForge/pull/86) updates dev-only `brace-expansion` 5.x to 5.0.8, and PR [#89](https://github.com/Azure/ConfigForge/pull/89) refreshes the shared synthetic screenshots. |
-| `mac-author-build` | `mac-v0.3.94-author.1` | Current author-only macOS tagged source. Its matching GitHub release remains an unpublished draft. PRs [#90](https://github.com/Azure/ConfigForge/pull/90), [#92](https://github.com/Azure/ConfigForge/pull/92), and [#93](https://github.com/Azure/ConfigForge/pull/93) supply public-readiness and documentation updates; PR [#94](https://github.com/Azure/ConfigForge/pull/94) ports the exact nine screenshot PNGs. |
+| `main` | `v0.3.95` | Current Full-edition Windows/Linux tagged source (PR [#102](https://github.com/Azure/ConfigForge/pull/102) merged at `6c593c0`). Its matching GitHub release remains an unpublished draft. |
+| `mac-author-build` | `mac-v0.3.95-author.1` | Current author-only macOS tagged source. Its matching GitHub release remains an unpublished draft. PR [#99](https://github.com/Azure/ConfigForge/pull/99) ports documentation-accuracy corrections; PR [#101](https://github.com/Azure/ConfigForge/pull/101) replaces unreliable native HTML hover titles with FluentUI tooltips on My Baselines status cells. |
 
 On `mac-author-build`, the root package, desktop package, and matching lockfile
-records use `0.3.94-author.1`. The only dependency delta from the prior macOS
-line is the reviewed dev-only `brace-expansion` 5.0.8 metadata from `main`.
-The package version on `main` is `0.3.94`; do not copy macOS package metadata
-to `main`.
+records use `0.3.95-author.1`. This release carries no dependency changes from
+the prior macOS line. The package version on `main` is `0.3.95`; do not copy
+macOS package metadata to `main`.
 
-The prior annotated tag `mac-v0.3.93-author.2` still resolves to
-`c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. Its five assets were verified by
+The prior annotated tag `mac-v0.3.94-author.1` resolves to
+`c1c8cdfd17b85c2e85d48e2ab7f52f1b4a02787b`. Its five assets were verified by
 workflow run
-[#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580),
+[#30233283418](https://github.com/Azure/ConfigForge/actions/runs/30233283418),
 but that release remains a draft and unpublished.
 
 ### Current feature inventory
@@ -122,12 +121,15 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
 - The macOS tag must resolve to the exact final validated commit on
   `mac-author-build`. `scripts/ship-mac.ps1` accepts only the `mac-v` form and
   defaults to `Azure/ConfigForge`.
-- The current `0.3.94-author.1` draft release uses these expected asset names:
+- The current macOS Author tagged source `mac-v0.3.95-author.1` expects
+  these asset names. Its matching GitHub release remains an unpublished
+  draft; this documentation does not assert asset availability or
+  publication:
 
   | Asset | Exact name |
   |---|---|
-  | DMG | `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg` |
-  | Blockmap | `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg.blockmap` |
+  | DMG | `ConfigForge-Author-0.3.95-author.1-mac-arm64.dmg` |
+  | Blockmap | `ConfigForge-Author-0.3.95-author.1-mac-arm64.dmg.blockmap` |
   | Update metadata | `latest-mac.yml` |
   | CycloneDX SBOM | `sbom-macos-author.cdx.json` |
   | SHA-256 manifest | `SHA256SUMS-macos-author.txt` |
@@ -143,7 +145,7 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
   gh workflow run "Release (macOS author)" `
     --repo Azure/ConfigForge `
     --ref main `
-    -f release_tag=mac-v0.3.94-author.1
+    -f release_tag=mac-v0.3.95-author.1
   ```
 
 - `--ref main` selects the reviewed workflow definition, not the source to
@@ -447,15 +449,15 @@ When touching IPC contracts or `packages/core/src/handlers/`, exercise the chann
 - PR #77 at `aec0775` ported all five PR #76 commits and passed 79 focused
   Manifest Editor tests, two isolated Playwright scenarios, lint with 0
   errors, the desktop build, and a production audit with 0 vulnerabilities.
-- The prior annotated tag `mac-v0.3.93-author.2` still resolves to
-  `c4ce196574f1d3fdf878d4c5856f64539f6dec7a`. Its five assets were verified by
+- The prior annotated tag `mac-v0.3.94-author.1` resolves to
+  `c1c8cdfd17b85c2e85d48e2ab7f52f1b4a02787b`. Its five assets were verified by
   workflow run
-  [#30186678580](https://github.com/Azure/ConfigForge/actions/runs/30186678580),
+  [#30233283418](https://github.com/Azure/ConfigForge/actions/runs/30233283418),
   but that release remains a draft and unpublished.
-- The current macOS Author tagged source is `mac-v0.3.94-author.1`, with an
-  unpublished draft release. Use current GitHub checks and release metadata
-  as the authority for build and asset status rather than recording a merge
-  SHA or workflow run here.
+- The current macOS Author tagged source is `mac-v0.3.95-author.1`. Its
+  matching GitHub release remains an unpublished draft; use current GitHub
+  checks and release metadata as the authority for build and asset status
+  rather than recording a merge SHA or workflow run here.
 
 ---
 

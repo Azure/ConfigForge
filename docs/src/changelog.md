@@ -3,6 +3,24 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## macOS Author v0.3.95-author.1 — 2026-07-27
+
+`mac-v0.3.95-author.1` is the current macOS Author tagged source. Its
+matching GitHub release remains an unpublished draft. This entry does not
+indicate publication or assert asset availability. The macOS flavor remains
+author-only and does not include device operations.
+
+- **Fixed:** Replace unreliable native HTML hover titles with FluentUI
+  tooltips on the My Baselines name, platform, validation,
+  compliance/Not Audited, and modified-date cells, preserving multiline
+  validation details. The mac compliance pill remains intentionally
+  non-clickable, and the tooltip triggers expose an accessible ARIA shape
+  without adding extra table tab stops.
+  ([#101](https://github.com/Azure/ConfigForge/pull/101))
+- **Documentation:** Port applicable documentation-accuracy corrections from
+  `main` PR #97 to the macOS Author line.
+  ([#99](https://github.com/Azure/ConfigForge/pull/99))
+
 ## macOS Author v0.3.94-author.1 — 2026-07-26
 
 `mac-v0.3.94-author.1` is the current macOS Author tagged source. Its matching

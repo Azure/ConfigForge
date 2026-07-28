@@ -1,52 +1,43 @@
-# ConfigForge Author 0.3.94-author.1 - macOS
+# ConfigForge Author 0.3.95-author.1 - macOS
 
-> **Release state: draft and unpublished.** `mac-v0.3.94-author.1` is the
-> current macOS Author tagged source. Its matching GitHub release must remain
-> a draft until a maintainer completes validation and approves publication.
-> The expected asset names are listed below; this document does not assert
-> that the assets have already been uploaded.
+> **Release state: draft and unpublished.** `mac-v0.3.95-author.1` is the
+> current macOS Author tagged source. Its matching GitHub release remains an
+> unpublished draft until a maintainer completes validation and approves
+> publication. The expected asset names are listed below; this document does
+> not assert that the assets have already been uploaded or that the release
+> has been published.
 
-This release improves public-source readiness, refreshes shared
-documentation screenshots with synthetic benchmark content, and updates one
-dev-only dependency. It remains an author-only Apple Silicon build. It does
-not add device deployment, device audit, enforcement, revert, elevation,
-OSConfig CLI health, or audit-results storage.
+This release fixes unreliable My Baselines status tooltips and ports
+documentation-accuracy corrections. It remains an author-only Apple Silicon
+build. It does not add device deployment, device audit, enforcement, revert,
+elevation, OSConfig CLI health, or audit-results storage.
 
-## Security update
+## Fixed: reliable My Baselines status tooltips
 
-- Update dev-only `brace-expansion` 5.x from 5.0.7 to 5.0.8 for
-  [GHSA-mh99-v99m-4gvg](https://github.com/advisories/GHSA-mh99-v99m-4gvg)
-  and CVE-2026-14257.
-- Use the exact public npm registry URL, SHA-512 integrity value, and Node.js
-  engine metadata reviewed in PR
-  [#86](https://github.com/Azure/ConfigForge/pull/86).
-- Keep every other macOS dependency and version stream unchanged. The updated
-  package is used by build and test tooling and is not bundled in the app.
+- Replace unreliable native HTML `title` hover tooltips with FluentUI
+  `Tooltip` on the baseline name, platform, validation, compliance/Not
+  Audited, and modified-date cells in the My Baselines table.
+- Preserve multiline validation details through a stable
+  `aria-describedby` target instead of relying on OS-rendered native tooltips.
+- Keep the mac compliance cell intentionally non-clickable — it stays a
+  non-interactive `<span>` with the existing gray "not audited" styling, now
+  wrapped only in `Tooltip`. No button, click handler, or route navigation
+  was added.
+- Preserve the accessible ARIA shape: no extra table tab stops are
+  introduced by the tooltip triggers.
+- See PR [#101](https://github.com/Azure/ConfigForge/pull/101), which ports
+  the reviewed main PR [#100](https://github.com/Azure/ConfigForge/pull/100)
+  fix to the mac-specific table layout.
 
-## Public-source readiness
+## Documentation accuracy
 
-- Align licensing, privacy, security reporting, best-effort support,
-  contribution templates, repository ownership, and release guidance through
-  PRs [#90](https://github.com/Azure/ConfigForge/pull/90),
-  [#92](https://github.com/Azure/ConfigForge/pull/92), and
-  [#93](https://github.com/Azure/ConfigForge/pull/93).
-- Run a dependency-free public-package guard before packaging. The guard
-  rejects licensed CIS assets, unsafe CIS builder filters, and non-public npm
-  registry URLs.
-- Keep maintainer, branch, and release guidance in existing documentation.
-  This release does not add a standalone governance file.
-
-## Synthetic documentation screenshots
-
-- Port the exact nine reviewed screenshot PNGs from PR
-  [#94](https://github.com/Azure/ConfigForge/pull/94).
-- Use runtime-only synthetic **Industry Benchmark** content in Benchmark
-  Mapping and CIS Diff examples.
-- Commit no CIS benchmark data, generated benchmark catalog, or screenshot
-  tooling.
-
-The screenshots are shared documentation assets. They do not change the
-macOS Author capability set.
+- Port the applicable documentation-accuracy corrections from main PR
+  [#97](https://github.com/Azure/ConfigForge/pull/97) via PR
+  [#99](https://github.com/Azure/ConfigForge/pull/99), including corrected
+  IPC surface, symbol/path references, and third-party notice licensing.
+- Keep the macOS Author version stream and release references unaffected by
+  the documentation port; no package, version, or workflow files changed in
+  PR #99.
 
 ## Included authoring capabilities
 
@@ -87,22 +78,24 @@ Release preparation uses these dependency-free local checks:
 - Run Git whitespace and diff-scope checks.
 
 GitHub CI is authoritative for npm-backed lint, Vitest, build, audit, and
-Playwright validation. Publication requires successful CI and verification of
-the five expected assets.
+Playwright validation. Publication requires successful CI, a completed
+packaging build, and verification of the five expected assets before the
+draft release is published.
 
 ## Expected draft release assets
 
-The macOS release workflow uses exactly these expected asset names:
+The macOS release workflow uses exactly these expected asset names for
+`mac-v0.3.95-author.1`:
 
-1. `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.94-author.1-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.95-author.1-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.95-author.1-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`
 
 ## Contributors
 
-PRs #86, #90, #92, #93, and #94 were contributed by
+PRs #99 and #101 were contributed by
 [@ABMFST](https://github.com/ABMFST) with Copilot collaboration.
 
 ## Reporting issues
