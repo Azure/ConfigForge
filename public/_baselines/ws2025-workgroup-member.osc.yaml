@@ -1933,6 +1933,7 @@ resources:
           keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\NetBT\Parameters
           valueName: NodeType
           valueType: REG_DWORD
+          value: 0
       expression: (value == 0)
   - name: NetworkConnectionsNC_ShowSharedAccessUI
     type: Microsoft.OSConfig/Test
@@ -2441,6 +2442,7 @@ resources:
           keyPath: HKEY_LOCAL_MACHINE:\System\CurrentControlSet\Services\LanManServer\Parameters
           valueName: SMBServerNameHardeningLevel
           valueType: REG_DWORD
+          value: 0
       expression: (value == 0)
   - name: SharesThatCanBeAccessedAnonymously
     type: Microsoft.OSConfig/Test
