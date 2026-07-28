@@ -150,5 +150,11 @@ describe("WS2025 full-overlay invariants", () => {
       valueType: "REG_BINARY",
       value: "AA==",
     });
+    expect(
+      byName.get("NetBTNodeTypeConfiguration")?.properties?.resource?.properties,
+    ).toMatchObject({ value: 0 });
+    expect(
+      byName.get("ServerSPNTargetNameValidationLevel")?.properties?.resource?.properties,
+    ).toMatchObject({ value: 0 });
   });
 });
