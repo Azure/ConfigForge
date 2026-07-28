@@ -40,8 +40,8 @@
 
 ## [0.3.94] - 2026-07-26
 
-> `v0.3.94` is the current Windows/Linux tagged source. Its matching GitHub
-> release remains a draft and is unpublished.
+> `v0.3.94` is a prior Windows/Linux tagged source. Its matching GitHub
+> release was an unpublished draft.
 
 ### Changed
 

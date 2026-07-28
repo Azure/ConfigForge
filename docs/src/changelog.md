@@ -35,9 +35,8 @@ was an unpublished draft; this entry does not indicate publication.
 
 ## v0.3.94 — 2026-07-26
 
-`v0.3.94` is the current Windows/Linux tagged source. Its matching GitHub
-release remains a draft and is unpublished; this entry does not indicate
-publication.
+`v0.3.94` is a prior Windows/Linux tagged source. Its matching GitHub release
+was an unpublished draft; this entry does not indicate publication.
 
 - **Public packaging:** Exclude CIS benchmark source data from public
   installers while keeping Benchmark Mapping and CIS Diff available for
@@ -62,8 +61,8 @@ publication.
 
 ## macOS Author mac-v0.3.94-author.1 — 2026-07-26 (draft, unpublished)
 
-> `mac-v0.3.94-author.1` is the current macOS Author tagged source. Its
-> matching GitHub release remains an unpublished draft. The author-only
+> `mac-v0.3.94-author.1` is a prior macOS Author tagged source. Its
+> matching GitHub release was an unpublished draft. The author-only
 > capability boundary is unchanged.
 
 ### Changed

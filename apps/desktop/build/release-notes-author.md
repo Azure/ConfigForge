@@ -41,7 +41,8 @@ revert, elevation, OSConfig CLI health, or audit-results storage.
 
 ## Included authoring capabilities
 
-- YAML, JSON, MOF, CSV, and Visual editing with validation
+- YAML, JSON, and Visual editing with validation
+- MOF and CSV import/export for packaging and spreadsheet workflows
 - Microsoft Baselines and local, URL, CSV, JSON, YAML, and XLSX import
 - Pairwise, CIS, and Matrix Diff
 - User-supplied Benchmark Mapping data
