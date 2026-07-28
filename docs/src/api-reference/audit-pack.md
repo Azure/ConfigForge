@@ -48,7 +48,7 @@ log → citations → footer.
 | Compliance | `ComplianceReport` (when `against` is set AND CIS data present) | "not available" line |
 | Version history | history snapshots + author/rationale | columns render `—`; max 50 rows |
 | Rationale log | `~/.configforge/rationale/<ns>.jsonl` | omitted; max 30 entries |
-| Citations | AI-analysis `Provenance` records | omitted (no on-disk provenance store yet) |
+| Citations | analysis `Provenance` records | omitted (no on-disk provenance store yet) |
 | Footer | timestamp + page numbers | always present |
 
 > Each section is no-throw best-effort. A failing section emits a

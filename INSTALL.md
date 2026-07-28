@@ -157,8 +157,7 @@ device operations.
 Repository documentation is maintained under
 [`docs/src`](https://github.com/Azure/ConfigForge/tree/main/docs/src) and built
 into an mdBook site by `.github/workflows/docs.yml`, which deploys it to the
-`gh-pages` branch. While the repository is private, GitHub serves that site
-only to repository collaborators; it is not available at a public URL.
+`gh-pages` branch at <https://azure.github.io/ConfigForge/>.
 
 ---
 

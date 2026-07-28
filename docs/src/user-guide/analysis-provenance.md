@@ -9,8 +9,8 @@
 The Intelligent Diff Insights panel explains a pairwise diff with a
 locally-computed summary, risk badge, and source/provenance panel. The
 analysis is a **local, deterministic heuristic** — there is no LLM or
-network call. AI-adjacent responses carry a **provenance bundle** (a
-heuristic list of sources with confidence scores), and AI-generated
+network call. Generated analysis results carry a **provenance bundle** (a
+heuristic list of sources with confidence scores), and generated
 output is **labeled** with a marker so it can be recognized if it is
 ever fed back in.
 
@@ -79,7 +79,7 @@ tracking links collapse to one.
 
 The guard lives in
 [`packages/core/src/ai/circular-guard.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/ai/circular-guard.ts).
-We tag every AI-generated comment block with:
+We tag every generated comment block with:
 
 ```yaml
 # <!-- ai-generated:rev=2 -->
@@ -115,13 +115,13 @@ Implementation notes:
   entries, but the marker-based check remains the primary signal.
 - **Process-local** - does not persist across launches.
 
-> **Note:** Marker presence implies AI-generated; marker absence is
+> **Note:** Marker presence implies generated; marker absence is
 > "unknown" (treated as user content). Old manifests without markers
-> are not retroactively flagged as user-written or AI-generated.
+> are not retroactively flagged as user-written or generated.
 
 ## "Show your work" toggle
 
-The AI panel has a **Show your work** toggle (off by default). When
+The analysis panel has a **Show your work** toggle (off by default). When
 on, the panel reveals:
 
 - an input fingerprint;

@@ -18,7 +18,7 @@ baselines before the CLI catches up - it just isn't called
 
 A single self-contained document (PDF or Markdown) per manifest,
 bundling header / compliance scorecard / version history /
-rationale log / AI provenance. The auditor deliverable. See
+rationale log / analysis provenance. The auditor deliverable. See
 [User Guide → Audit-pack](../user-guide/audit-pack.md).
 
 ## BYO-CLI
@@ -66,13 +66,13 @@ of the generic "Manifest registered" message.
 
 ## Citation coverage
 
-A 0..1 number: the mean of per-source confidence for an AI response
-(a heuristic label, not a verified-evidence measure). Below 0.5 the
-[Apply](../user-guide/ai-provenance.md) button is hidden.
+A 0..1 number: the mean of per-source confidence for an analysis result
+(a heuristic label, not a verified-evidence measure). Below 0.5 the analysis
+result is labeled as low-confidence advisory content.
 
 ## Circular-guard
 
-Labels AI-generated output with an inline marker
+Labels generated output with an inline marker
 (`<!-- ai-generated:rev=N -->`) plus a spoof-resistant per-process
 content-hash registry (CF-SEC-007 - see
 [FNV-1a hash registry](#fnv-1a-hash-registry-cf-sec-007) below) so
@@ -133,10 +133,10 @@ Cross-merge is forbidden - sync the two via `git cherry-pick`.
 
 ## FNV-1a hash registry (CF-SEC-007)
 
-The spoof-resistance layer added to the AI
+The spoof-resistance layer added to the generated-content
 [circular-guard](#circular-guard). A per-process in-memory registry
 of NFC-normalised 64-bit FNV-1a hashes of every chunk of content
-ever tagged as AI-generated. Pure JS hash - no Node `crypto`
+ever tagged as generated. Pure JS hash - no Node `crypto`
 import - so the module is safe to pull into the renderer Vite
 bundle. FIFO eviction at 4,096 entries. Even if an attacker strips
 the inline `<!-- ai-generated:rev=N -->` marker before re-feeding
@@ -217,10 +217,10 @@ namespace.
 
 ## Provenance
 
-The bibliography attached to every AI response - a list of sources
+The bibliography attached to every analysis result - a list of sources
 (`CIS`, `NIST`, `MSDocs`, `GPO`, `manifest`, `user-input`) with
 confidence scores 0..1. See
-[User Guide → AI provenance](../user-guide/ai-provenance.md).
+[User Guide → Analysis provenance](../user-guide/analysis-provenance.md).
 
 ## Rationale
 

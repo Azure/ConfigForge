@@ -9,16 +9,16 @@
 > OSConfig and run an audit to populate it.)
 >
 > Both the PDF and the Markdown emitter pass user-supplied and
-> AI-generated content through the
+> generated content through the
 > [`packages/core/src/markdown/escape.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/markdown/escape.ts)
 > guard (CF-SEC-005 / CF-SEC-006), so HTML / Markdown injection
-> embedded in a manifest name, rationale entry, or AI suggestion is
+> embedded in a manifest name, rationale entry, or generated suggestion is
 > rendered as literal text.
 
 The audit-pack is the auditor deliverable: a single self-contained
 document per manifest that answers *what's deployed?*, *how does it
-score?*, and *who changed what?*. If persisted AI provenance is added
-later, citations can render too; today live AI provenance is not stored
+score?*, and *who changed what?*. If persisted analysis provenance is added
+later, citations can render too; today live analysis provenance is not stored
 per manifest.
 
 ## Generate
@@ -49,7 +49,7 @@ The PDF is assembled in this fixed order:
 | 2b | **Compliance scorecard** | `ComplianceReport` (only when a local CIS comparison is requested) | section omitted when no comparison is requested |
 | 3 | **Version history** | history snapshots + author/rationale | author/rationale columns render `(none)` if absent; max 50 rows |
 | 4 | **Rationale log** | `~/.configforge/rationale/<ns>.jsonl` (loaded by `tryLoadRationale` in `audit-pack/rationale-loader.ts`) | section omitted if log empty; otherwise newest-first with timestamp + author + resource + reason (skipped entries appear with a `(rationale skipped)` sentinel) |
-| 5 | **AI provenance citations** | AI-analysis `Provenance` bundle | section omitted. See "Known gaps" below |
+| 5 | **Analysis provenance citations** | analysis `Provenance` bundle | section omitted. See "Known gaps" below |
 | – | **Footer** | generation timestamp, page numbers | always present |
 
 > **Note:** The audit-pack is intentionally forward-compatible. If a
@@ -60,17 +60,17 @@ The PDF is assembled in this fixed order:
 > "(section unavailable)" line and the rest of the document still
 > emits.
 >
-> **⚠ Known gap, AI provenance:** The PDF builder accepts a
+> **⚠ Known gap, analysis provenance:** The PDF builder accepts a
 > `provenance` input, but there is **no per-manifest provenance
 > store**. The type layer + helpers ship in
 > `@configforge/core/ai/provenance` (`decorateWithProvenance`,
 > `dedupeSources`, `computeCitationCoverage`). Provenance is
-> attached to live AI responses inside the analyzer, but never
+> attached to live analysis results inside the analyzer, but never
 > persisted to disk. The audit-pack handler's `tryLoadProvenance`
 > therefore always returns `undefined` and the **Citations** section
 > is omitted from every audit pack today. Wiring this up requires (a)
 > deciding the storage shape, (b) hooking the analyzer to append on
-> each AI response, (c) hooking the manifest editor's "accept
+> each analysis result, (c) hooking the manifest editor's "accept
 > suggestion" flow to persist alongside the manifest snapshot. Until
 > then the Citations section will not render.
 
@@ -118,4 +118,4 @@ this rather than parse the binary.
 - [API Reference → Audit-pack](../api-reference/audit-pack.md)
 - [User Guide > Benchmark Mapping](./cis-compliance.md)
 - [User Guide → Rationale](./rationale.md)
-- [User Guide → AI provenance](./ai-provenance.md)
+- [User Guide → Analysis provenance](./analysis-provenance.md)

@@ -404,7 +404,11 @@ If you add a new preload namespace that's flavor-conditional, document it on `cf
 
 ## Filing upstream bugs
 
-OSConfig CLI bugs are not bugs in ConfigForge. File them in the Microsoft ADO `OS` project (area path `OS\Core\ENS\Edge Security\ESCC\OSConfig`). The public mirror at https://github.com/microsoft/osconfig has issues disabled.
+Report reproducible `oscfg` CLI problems through
+[ConfigForge GitHub Issues](https://github.com/Azure/ConfigForge/issues).
+Include the CLI version, operating system, exact command, minimal manifest,
+logs, and expected versus actual behavior. Maintainers will triage whether the
+problem belongs to ConfigForge or the upstream CLI.
 
 ---
 

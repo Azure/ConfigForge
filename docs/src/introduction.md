@@ -1,11 +1,9 @@
 # Introduction
 
-> ⚠️ **Microsoft community-maintained project.** Source is hosted in the
-> private [`Azure/ConfigForge`](https://github.com/Azure/ConfigForge)
-> repository. ConfigForge is
-> **not** an officially supported Microsoft product and is **not intended for
-> production use**. Use it for experimentation, learning, and community
-> contributions at your own risk.
+> ⚠️ **Microsoft community-maintained project.** ConfigForge is **not** an
+> officially supported Microsoft product and is **not intended for production
+> use**. Use it for experimentation, learning, and community contributions at
+> your own risk.
 
 ## What is ConfigForge?
 
@@ -68,7 +66,7 @@ data is available locally).
 
 Pairwise diff for two manifests, plus an N-way **master-matrix** that
 puts up to 10 baselines side-by-side as columns and shows which ones
-agree and which ones differ on every setting. AI-generated narrative
+agree and which ones differ on every setting. generated narrative
 explanations describe *why* each delta matters in plain English. Excel
 export with conditional formatting for the auditor's offline review.
 

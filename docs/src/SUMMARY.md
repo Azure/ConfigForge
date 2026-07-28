@@ -16,7 +16,7 @@
 - [CIS cross-reference & compliance](./user-guide/cis-compliance.md)
 - [Rationale & change-author capture](./user-guide/rationale.md)
 - [Audit-pack (PDF + Markdown)](./user-guide/audit-pack.md)
-- [AI analysis with provenance](./user-guide/ai-provenance.md)
+- [Analysis provenance](./user-guide/analysis-provenance.md)
 - [History, snapshots, retention](./user-guide/history-snapshots.md)
 
 # Architecture

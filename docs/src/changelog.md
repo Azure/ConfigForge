@@ -536,7 +536,7 @@ about. Skipped entries (`skipped:true`) are kept with a
 `(rationale skipped)` sentinel so the explicit no-rationale
 events remain audit-visible.
 
-The AI provenance / **Citations** section is still gated and
+The analysis provenance / **Citations** section is still gated and
 omitted - that needs a per-manifest provenance store, which
 was intentionally not built. Documented as a known gap.
 
@@ -560,7 +560,7 @@ Adds `GET /api/cis/status` and a `useCisAvailable()` React hook.
 When CIS data is absent, the editor sidebar, the compliance
 dropdown, and the audit-pack tip are **hidden** rather than
 rendering empty results. The rest of the app - editor, deploy,
-audit, history, rationale, audit-pack PDF, AI analyzer, diff
+audit, history, rationale, audit-pack PDF, local analyzer, diff
 matrix - works exactly the same.
 
 ## Remove bundled CIS benchmark data
@@ -640,7 +640,7 @@ root for AI-agent tool discovery.
 
 `src/lib/audit-pack/` builds a single self-contained PDF per
 manifest: header → compliance scorecard → version history with
-author/rationale (works without) → AI provenance citations.
+author/rationale (works without) → analysis provenance citations.
 New endpoint `GET /api/manifests/[id]/audit-pack?format=pdf|markdown`.
 
 ## Inline rationale + change-author capture
@@ -659,13 +659,13 @@ back to a fuzzy-match suggestion list (Levenshtein-bound) so the UX
 gap closes. Strict matches stay marked
 `high confidence`; fuzzy ones get `low confidence`.
 
-## AI provenance + bibliography + circular-reference guard
+## Analysis provenance + bibliography + circular-reference guard
 
-Every AI response now carries a `provenance` field listing sources
+Every analysis result now carries a `provenance` field listing sources
 (`CIS`, `NIST`, `MSDocs`, `GPO`, `manifest`, `user-input`) with
-confidence scores. The `circular-guard` refuses to ground on content
-tagged `<!-- ai-generated -->`. Apply buttons hidden when
-`citationCoverage < 0.5` or `sources.length === 0`.
+confidence scores. The `circular-guard` labels content tagged
+`<!-- ai-generated -->`; low citation coverage is displayed as advisory
+provenance metadata.
 
 ## Microsoft↔CIS cross-reference + compliance % report
 
@@ -680,7 +680,7 @@ view. Markdown audit-pack export.
 `/api/diff/matrix` plus the `/diff/matrix` UI page. Pick 2-10
 registered manifests; see a master-matrix table where each row is a
 setting and each column is a baseline, with `identical` / `differs` /
-`partial` colour-coding. AI-driven semantic explanations of *why*
+`partial` colour-coding. Local semantic explanations of *why*
 values differ. Excel export with conditional formatting.
 
 ## CIS Windows benchmarks

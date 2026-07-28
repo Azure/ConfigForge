@@ -49,7 +49,7 @@ public assets.
 ## What still works without these files
 
 - The full manifest editor, deploy, audit, history, rationale, audit
-  pack PDF, AI analyzer, diff matrix — everything except the CIS
+  pack PDF, local analyzer, diff matrix — everything except the CIS
   features below.
 - Any CIS catalog entries are hidden from the **Library** page.
 

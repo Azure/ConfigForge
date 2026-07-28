@@ -84,7 +84,7 @@ Same 10-baseline cap (`MATRIX_XLSX_MAX_BASELINES = 10`).
 ## See also
 
 - [User Guide - Matrix diff](../user-guide/matrix-diff.md)
-- [User Guide - AI provenance](../user-guide/ai-provenance.md)
+- [User Guide - analysis provenance](../user-guide/analysis-provenance.md)
 - [API Reference - `cfs.exportChannel.*`](./history-import-export.md)
 
 ## `cfs.cis.bulkLookup(namespace, benchmarkFilename?)` - channel `cfs:cis:bulk-lookup`

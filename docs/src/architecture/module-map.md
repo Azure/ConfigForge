@@ -57,7 +57,7 @@ Routes are wired in `apps/desktop/src/App.tsx`; sidebar labels are wired in `app
 | `manifest-editor.tsx` | Monaco-based YAML/JSON editor + inline validator. Validates against `data/osc-manifest-schema.json` (Monaco JSON mode) AND a custom inline validator that's tighter (e.g. enforces `keyPath` + `valueName` + `valueType` for Registry resources). |
 | `diff-viewer.tsx` | Pairwise diff component used by the Diff page. |
 | `ai-analysis-panel.tsx` | AI changelog generation panel (Diff page). |
-| `conflict-detector.tsx` | AI-driven conflict detection across selected manifests. |
+| `conflict-detector.tsx` | local conflict detection across selected manifests. |
 | `HealthIndicator.tsx` | Footer pill: 🟢/🟠/🔴/⚪ states. Clickable amber opens `CliRequiredModal`. |
 | `WelcomeDialog.tsx` | First-run two-card welcome. Persists dismissal via `localStorage['cfs.welcome.dismissedAt']`. |
 | `CliRequiredModal.tsx` | Shared install dialog opened by Manifests / ManifestEditor / Layout / WelcomeDialog when `oscfg` is missing. |
@@ -85,7 +85,7 @@ Single source of truth for business logic. Each handler is a pure function calle
 | `export.ts` | Manifest → YAML/JSON round-trip. |
 | `library.ts` | Catalog of bundled baselines. |
 | `history.ts` | Snapshot store wrappers. |
-| `audit-pack.ts` | PDF + markdown audit-pack builder. Uses `escapeMarkdown()` for any user-supplied or AI-generated text (CF-SEC-005/006). |
+| `audit-pack.ts` | PDF + markdown audit-pack builder. Uses `escapeMarkdown()` for any user-supplied or generated text (CF-SEC-005/006). |
 | `docs.ts`, `docs-write.ts` | Manifest documentation generation/save surfaces. |
 | `baseline-csv.ts` | Per-baseline CSV parser. |
 | `downloads.ts` | Browser-download surface (filename/MIME negotiation). |
@@ -124,7 +124,7 @@ Single source of truth for business logic. Each handler is a pure function calle
 | `format.ts` | Pretty-prints CLI output for the UI. |
 | `concurrency.ts` | Per-namespace mutex. |
 
-## `packages/core/src/ai/` -- AI analysis (local heuristic)
+## `packages/core/src/ai/` -- Local analysis and provenance
 
 | File | Role |
 | --- | --- |
@@ -136,7 +136,7 @@ Single source of truth for business logic. Each handler is a pure function calle
 
 | File | Role |
 | --- | --- |
-| `escape.ts` | `escapeMarkdown(text)`: escapes `<`, `>`, `&`, etc. so user-supplied or AI-generated content rendered as markdown can't inject HTML / script (CF-SEC-005/006). |
+| `escape.ts` | `escapeMarkdown(text)`: escapes `<`, `>`, `&`, etc. so user-supplied or generated content rendered as markdown can't inject HTML / script (CF-SEC-005/006). |
 
 ## `packages/core/src/manifest/` -- Registration metadata
 

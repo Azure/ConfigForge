@@ -1,6 +1,8 @@
 # Contributing to ConfigForge
 
-Thanks for taking the time to look. ConfigForge is a community-maintained project. Pull requests, issue reports, and design feedback are welcome from contributors with access to the private repository.
+Thanks for taking the time to look. ConfigForge is a community-maintained
+project. Pull requests, issue reports, and design feedback are welcome from
+community contributors.
 
 ## Code of Conduct
 
@@ -118,7 +120,11 @@ the software bill of materials (SBOM).
 
 ## Filing OSConfig CLI bugs
 
-Bugs in the underlying `oscfg` CLI are not bugs in ConfigForge. File them upstream in the Microsoft ADO `OS` project (area path `OS\Core\ENS\Edge Security\ESCC\OSConfig`). The public mirror at https://github.com/microsoft/osconfig has issues disabled.
+Report reproducible `oscfg` CLI problems through
+[ConfigForge GitHub Issues](https://github.com/Azure/ConfigForge/issues).
+Include the CLI version, operating system, exact command, minimal manifest,
+logs, and expected versus actual behavior. Maintainers will triage whether the
+problem belongs to ConfigForge or the upstream CLI.
 
 ## Getting help
 
