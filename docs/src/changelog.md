@@ -3,6 +3,12 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## Unreleased
+
+- **Detailed compliance reasons:** ConfigForge now preserves the reason
+  returned by `oscfg` for expression-backed Test resources. All WS2025
+  wrappers include templates that explain the actual value and requirement.
+
 ## macOS Author v0.3.96-author.1 — 2026-07-28
 
 `mac-v0.3.96-author.1` is the current macOS Author tagged source. Its matching

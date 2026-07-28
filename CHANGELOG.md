@@ -1,5 +1,15 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Preserve the authoritative `oscfg` compliance reason for expression-backed
+  Test resources instead of replacing it with a generic failure message.
+- Add human-readable `{value}` templates to every Windows Server 2025 Test
+  wrapper so direct CLI and ConfigForge audits explain the actual value and
+  required condition.
+
 ## [0.3.96-author.1] - 2026-07-28
 
 > `mac-v0.3.96-author.1` is the current macOS Author tagged source. Its

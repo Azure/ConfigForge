@@ -11,6 +11,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AllowAnonymousSIDOrNameTranslation
     type: Microsoft.OSConfig/Test
     properties:
@@ -20,6 +21,7 @@ resources:
           name: EnableAnonymousNameTranslation
           value: false
       expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: AllowCustomSSPAPIntoLSASS
     type: Microsoft.OSConfig/Test
     properties:
@@ -31,6 +33,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: AllowedToFormatAndEjectRemovableMedia
     type: Microsoft.OSConfig/Test
     properties:
@@ -42,6 +45,7 @@ resources:
           valueType: REG_SZ
           value: '0'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: AllowICMPRedirectsToOverrideOSPFGeneratedRoutes
     type: Microsoft.OSConfig/Test
     properties:
@@ -53,6 +57,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: AllowLocalSystemNULLSessionFallback
     type: Microsoft.OSConfig/Test
     properties:
@@ -64,6 +69,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: AllowLocalSystemToUseComputerIdentityForNTLM
     type: Microsoft.OSConfig/Test
     properties:
@@ -75,6 +81,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AllowPKU2UAuthenticationAllowOnlineID
     type: Microsoft.OSConfig/Test
     properties:
@@ -86,6 +93,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AllowSystemToBeShutDownWithoutHavingToLogOn
     type: Microsoft.OSConfig/Test
     properties:
@@ -97,6 +105,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: AllowTheComputerToIgnoreNetBIOSNameReleaseRequestsExceptFromWINSServers
     type: Microsoft.OSConfig/Test
     properties:
@@ -108,6 +117,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AllowUIAccessApplicationsToPromptForElevation
     type: Microsoft.OSConfig/Test
     properties:
@@ -119,6 +129,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: AmountOfIdleTimeRequiredBeforeSuspendingSession
     type: Microsoft.OSConfig/Test
     properties:
@@ -130,6 +141,7 @@ resources:
           valueType: REG_DWORD
           value: 15
       expression: (value != null && value >= 1 && value <= 15)
+      template: The value {value} must be between 1 and 15.
   - name: ApplicationIdentityStartupType
     type: Microsoft.OSConfig/Test
     properties:
@@ -141,6 +153,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: ApplicationManagementMSIAllowUserControlOverInstall
     type: Microsoft.OSConfig/Test
     properties:
@@ -152,6 +165,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ApplicationManagementMSIAlwaysInstallWithElevatedPrivileges
     type: Microsoft.OSConfig/Test
     properties:
@@ -163,6 +177,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: AppRuntimeAllowMicrosoftAccountsToBeOptional
     type: Microsoft.OSConfig/Test
     properties:
@@ -174,6 +189,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditAccountLockout
     type: Microsoft.OSConfig/Test
     properties:
@@ -183,6 +199,7 @@ resources:
           subcategory: '{0CCE9217-69AE-11D9-BED3-505054503030}'
           value: 2
       expression: ([2,3].exists(item, value == item))
+      template: The value {value} must be one of [2,3].
   - name: AuditAuthenticationPolicyChange
     type: Microsoft.OSConfig/Test
     properties:
@@ -192,6 +209,7 @@ resources:
           subcategory: '{0CCE9230-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditAuthorizationPolicyChange
     type: Microsoft.OSConfig/Test
     properties:
@@ -201,6 +219,7 @@ resources:
           subcategory: '{0CCE9231-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditBackupAndRestorePrivilege
     type: Microsoft.OSConfig/Test
     properties:
@@ -212,6 +231,7 @@ resources:
           valueType: REG_BINARY
           value: AA==
       expression: '["MDA=","AA=="].exists(item, value == item)'
+      template: The value {value} must represent disabled backup and restore privilege auditing.
   - name: AuditClientDoesNotSupportEncryption
     type: Microsoft.OSConfig/Test
     properties:
@@ -223,6 +243,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditClientDoesNotSupportSigning
     type: Microsoft.OSConfig/Test
     properties:
@@ -234,6 +255,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditComputerAccountManagement
     type: Microsoft.OSConfig/Test
     properties:
@@ -243,6 +265,7 @@ resources:
           subcategory: '{0CCE9236-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditCredentialValidation
     type: Microsoft.OSConfig/Test
     properties:
@@ -252,6 +275,7 @@ resources:
           subcategory: '{0CCE923F-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditDetailedFileShare
     type: Microsoft.OSConfig/Test
     properties:
@@ -261,6 +285,7 @@ resources:
           subcategory: '{0CCE9244-69AE-11D9-BED3-505054503030}'
           value: 2
       expression: ([2,3].exists(item, value == item))
+      template: The value {value} must be one of [2,3].
   - name: AuditDirectoryServiceAccess
     type: Microsoft.OSConfig/Test
     properties:
@@ -270,6 +295,7 @@ resources:
           subcategory: '{0CCE923B-69AE-11D9-BED3-505054503030}'
           value: 2
       expression: ([2,3].exists(item, value == item))
+      template: The value {value} must be one of [2,3].
   - name: AuditDirectoryServiceChanges
     type: Microsoft.OSConfig/Test
     properties:
@@ -279,6 +305,7 @@ resources:
           subcategory: '{0CCE923C-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditDirectoryServiceReplication
     type: Microsoft.OSConfig/Test
     properties:
@@ -288,6 +315,7 @@ resources:
           subcategory: '{0CCE923D-69AE-11D9-BED3-505054503030}'
           value: 0
       expression: (value != null && value >= 0)
+      template: The value {value} must be greater than or equal to 0.
   - name: AuditDistributionGroupManagement
     type: Microsoft.OSConfig/Test
     properties:
@@ -297,6 +325,7 @@ resources:
           subcategory: '{0CCE9238-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditFileShare
     type: Microsoft.OSConfig/Test
     properties:
@@ -306,6 +335,7 @@ resources:
           subcategory: '{0CCE9224-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditGroupMembership
     type: Microsoft.OSConfig/Test
     properties:
@@ -315,6 +345,7 @@ resources:
           subcategory: '{0CCE9249-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditInsecureGuestLogon
     type: Microsoft.OSConfig/Test
     properties:
@@ -326,6 +357,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditIPsecDriver
     type: Microsoft.OSConfig/Test
     properties:
@@ -335,6 +367,7 @@ resources:
           subcategory: '{0CCE9213-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditKerberosAuthenticationService
     type: Microsoft.OSConfig/Test
     properties:
@@ -344,6 +377,7 @@ resources:
           subcategory: '{0CCE9242-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditKerberosServiceTicketOperations
     type: Microsoft.OSConfig/Test
     properties:
@@ -353,6 +387,7 @@ resources:
           subcategory: '{0CCE9240-69AE-11D9-BED3-505054503030}'
           value: 2
       expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: AuditLogoff
     type: Microsoft.OSConfig/Test
     properties:
@@ -362,6 +397,7 @@ resources:
           subcategory: '{0CCE9216-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditLogon
     type: Microsoft.OSConfig/Test
     properties:
@@ -371,6 +407,7 @@ resources:
           subcategory: '{0CCE9215-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditMPSSVCRuleLevelPolicyChange
     type: Microsoft.OSConfig/Test
     properties:
@@ -380,6 +417,7 @@ resources:
           subcategory: '{0CCE9232-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditOtherAccountManagementEvents
     type: Microsoft.OSConfig/Test
     properties:
@@ -389,6 +427,7 @@ resources:
           subcategory: '{0CCE923A-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditOtherLogonLogoffEvents
     type: Microsoft.OSConfig/Test
     properties:
@@ -398,6 +437,7 @@ resources:
           subcategory: '{0CCE921C-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditOtherObjectAccessEvents
     type: Microsoft.OSConfig/Test
     properties:
@@ -407,6 +447,7 @@ resources:
           subcategory: '{0CCE9227-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditOtherPolicyChangeEvents
     type: Microsoft.OSConfig/Test
     properties:
@@ -416,6 +457,7 @@ resources:
           subcategory: '{0CCE9234-69AE-11D9-BED3-505054503030}'
           value: 2
       expression: ([2,3].exists(item, value == item))
+      template: The value {value} must be one of [2,3].
   - name: AuditOtherSystemEvents
     type: Microsoft.OSConfig/Test
     properties:
@@ -425,6 +467,7 @@ resources:
           subcategory: '{0CCE9214-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditPnPExternalDevice
     type: Microsoft.OSConfig/Test
     properties:
@@ -434,6 +477,7 @@ resources:
           subcategory: '{0CCE9248-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditPolicyChange
     type: Microsoft.OSConfig/Test
     properties:
@@ -443,6 +487,7 @@ resources:
           subcategory: '{0CCE922F-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditProcessCreatedOrStarted
     type: Microsoft.OSConfig/Test
     properties:
@@ -452,6 +497,7 @@ resources:
           subcategory: '{0CCE922B-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditRemovableStorage
     type: Microsoft.OSConfig/Test
     properties:
@@ -461,6 +507,7 @@ resources:
           subcategory: '{0CCE9245-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditSecurityGroupManagement
     type: Microsoft.OSConfig/Test
     properties:
@@ -470,6 +517,7 @@ resources:
           subcategory: '{0CCE9237-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditSecurityStateChange
     type: Microsoft.OSConfig/Test
     properties:
@@ -479,6 +527,7 @@ resources:
           subcategory: '{0CCE9210-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditSecuritySystemExtension
     type: Microsoft.OSConfig/Test
     properties:
@@ -488,6 +537,7 @@ resources:
           subcategory: '{0CCE9211-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditSensitivePrivilegeUse
     type: Microsoft.OSConfig/Test
     properties:
@@ -497,6 +547,7 @@ resources:
           subcategory: '{0CCE9228-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditServerDoesNotSupportEncryption
     type: Microsoft.OSConfig/Test
     properties:
@@ -508,6 +559,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditServerDoesNotSupportSigning
     type: Microsoft.OSConfig/Test
     properties:
@@ -519,6 +571,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditSettingsIncludeCmdLine
     type: Microsoft.OSConfig/Test
     properties:
@@ -530,6 +583,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditSpecialLogon
     type: Microsoft.OSConfig/Test
     properties:
@@ -539,6 +593,7 @@ resources:
           subcategory: '{0CCE921B-69AE-11D9-BED3-505054503030}'
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: AuditSystemIntegrity
     type: Microsoft.OSConfig/Test
     properties:
@@ -548,6 +603,7 @@ resources:
           subcategory: '{0CCE9212-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditUserAccountManagement
     type: Microsoft.OSConfig/Test
     properties:
@@ -557,6 +613,7 @@ resources:
           subcategory: '{0CCE9235-69AE-11D9-BED3-505054503030}'
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AutoplayDisallowAutoplayForNonVolumeDevices
     type: Microsoft.OSConfig/Test
     properties:
@@ -568,6 +625,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AutoplaySetDefaultAutoRunBehavior
     type: Microsoft.OSConfig/Test
     properties:
@@ -579,6 +637,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AutoplayTurnOffAutoPlay
     type: Microsoft.OSConfig/Test
     properties:
@@ -590,6 +649,7 @@ resources:
           valueType: REG_DWORD
           value: 255
       expression: ((((value == 255)) || ((value == null))))
+      template: The value {value} must be one of 255, (not set).
   - name: BehaviorOfTheElevationPromptForAdministrators
     type: Microsoft.OSConfig/Test
     properties:
@@ -601,6 +661,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: (value != null && value >= 1 && value <= 2)
+      template: The value {value} must be between 1 and 2.
   - name: BehaviorOfTheElevationPromptForStandardUsers
     type: Microsoft.OSConfig/Test
     properties:
@@ -612,6 +673,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: BlockConsumerMicrosoftAccounts
     type: Microsoft.OSConfig/Test
     properties:
@@ -623,6 +685,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: BlockNetbiosDiscovery
     type: Microsoft.OSConfig/Test
     properties:
@@ -634,6 +697,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: BlockNTLM
     type: Microsoft.OSConfig/Test
     properties:
@@ -645,6 +709,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: (value != null && value >= 0 && value <= 1)
+      template: The value {value} must be between 0 and 1.
   - name: BlockNTLMServerExceptionList
     type: Microsoft.OSConfig/Test
     properties:
@@ -656,6 +721,7 @@ resources:
           valueType: REG_MULTI_SZ
           value: []
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ClearVirtualMemoryPageFile
     type: Microsoft.OSConfig/Test
     properties:
@@ -666,6 +732,7 @@ resources:
           valueName: ClearPageFileAtShutdown
           valueType: REG_DWORD
       expression: (value == 0)
+      template: The value {value} must be 0.
   - name: ConfigureDNSClientNETBIOS
     type: Microsoft.OSConfig/Test
     properties:
@@ -677,6 +744,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: ConfigureKernelShadowStacksLaunch
     type: Microsoft.OSConfig/Test
     properties:
@@ -688,6 +756,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: (value != null && value >= 1 && value <= 2)
+      template: The value {value} must be between 1 and 2.
   - name: ConfigureSMBV1ClientDriver
     type: Microsoft.OSConfig/Test
     properties:
@@ -699,6 +768,7 @@ resources:
           valueType: REG_DWORD
           value: 4
       expression: ((((value == 4)) || ((value == null))))
+      template: The value {value} must be one of 4, (not set).
   - name: ConfigureSMBV1Server
     type: Microsoft.OSConfig/Test
     properties:
@@ -710,6 +780,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ConnectivityDisableDownloadingOfPrintDriversOverHTTP
     type: Microsoft.OSConfig/Test
     properties:
@@ -721,6 +792,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: ConnectivityProhibitInstallationAndConfigurationOfNetworkBridge
     type: Microsoft.OSConfig/Test
     properties:
@@ -732,6 +804,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: CredentialProvidersAllowPINLogon
     type: Microsoft.OSConfig/Test
     properties:
@@ -743,6 +816,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: CredentialsDelegationRemoteHostAllowsDelegationOfNonExportableCredentials
     type: Microsoft.OSConfig/Test
     properties:
@@ -754,6 +828,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: CredentialsUIDisablePasswordReveal
     type: Microsoft.OSConfig/Test
     properties:
@@ -765,6 +840,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: CredentialsUIEnumerateAdministrators
     type: Microsoft.OSConfig/Test
     properties:
@@ -776,6 +852,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: CredSspAllowEncryptionOracle
     type: Microsoft.OSConfig/Test
     properties:
@@ -787,6 +864,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: CryptographyAllowedKerberosEncryptionTypes
     type: Microsoft.OSConfig/Test
     properties:
@@ -798,6 +876,7 @@ resources:
           valueType: REG_DWORD
           value: 2147483640
       expression: ([2147483624,2147483632,2147483640].exists(item, value == item))
+      template: The value {value} must be one of [2147483624,2147483632,2147483640].
   - name: CryptographyEccCurve
     type: Microsoft.OSConfig/Test
     properties:
@@ -811,6 +890,7 @@ resources:
             - NistP256
             - NistP384
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: CryptographyForceStrongKeyProtection
     type: Microsoft.OSConfig/Test
     properties:
@@ -822,6 +902,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: CryptographySSLCipherSuites
     type: Microsoft.OSConfig/Test
     properties:
@@ -833,6 +914,7 @@ resources:
           valueType: REG_SZ
           value: TLS_AES_128_GCM_SHA256,TLS_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256,TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384,TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA384,TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256,TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DetectApplicationInstallationsAndPromptForElevation
     type: Microsoft.OSConfig/Test
     properties:
@@ -844,6 +926,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DeviceGuardRequireMicrosoftSignedBootChain
     type: Microsoft.OSConfig/Test
     properties:
@@ -855,6 +938,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DeviceGuardRequirePlatformSecurityFeatures
     type: Microsoft.OSConfig/Test
     properties:
@@ -866,6 +950,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ([1,3].exists(item, value == item))
+      template: The value {value} must be one of [1,3].
   - name: DeviceGuardRequireUEFIMemoryAttributesTable
     type: Microsoft.OSConfig/Test
     properties:
@@ -877,6 +962,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DeviceInstallationPreventDeviceMetadataFromNetwork
     type: Microsoft.OSConfig/Test
     properties:
@@ -888,6 +974,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DeviceLockAccountLockoutPolicy
     type: Microsoft.OSConfig/Test
     properties:
@@ -897,6 +984,7 @@ resources:
           name: LockoutDuration
           value: 15
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DeviceLockAccountLockoutPolicy_LockoutThreshold
     type: Microsoft.OSConfig/Test
     properties:
@@ -906,6 +994,7 @@ resources:
           name: LockoutThreshold
           value: 3
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DeviceLockAccountLockoutPolicy_LockoutReset
     type: Microsoft.OSConfig/Test
     properties:
@@ -915,6 +1004,7 @@ resources:
           name: LockoutReset
           value: 15
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DeviceLockClearTextPassword
     type: Microsoft.OSConfig/Test
     properties:
@@ -924,6 +1014,7 @@ resources:
           name: EnablePasswordReversibleEncryption
           value: false
       expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: DeviceLockMaximumPasswordAge
     type: Microsoft.OSConfig/Test
     properties:
@@ -933,6 +1024,7 @@ resources:
           name: MaximumPasswordAge
           value: 42
       expression: (value != null && value >= 1 && value <= 60)
+      template: The value {value} must be between 1 and 60.
   - name: DeviceLockMinimumPasswordAge
     type: Microsoft.OSConfig/Test
     properties:
@@ -942,6 +1034,7 @@ resources:
           name: MinimumPasswordAge
           value: 1
       expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: DeviceLockPasswordComplexity
     type: Microsoft.OSConfig/Test
     properties:
@@ -951,6 +1044,7 @@ resources:
           name: EnforcePasswordComplexity
           value: true
       expression: ((((value == true)) || ((value == null))))
+      template: The value {value} must be one of true, (not set).
   - name: DeviceLockPasswordHistorySize
     type: Microsoft.OSConfig/Test
     properties:
@@ -960,6 +1054,7 @@ resources:
           name: PasswordHistoryLength
           value: 24
       expression: ((((value == 24)) || ((value == null))))
+      template: The value {value} must be one of 24, (not set).
   - name: DeviceLockPreventEnablingLockScreenCamera
     type: Microsoft.OSConfig/Test
     properties:
@@ -971,6 +1066,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DeviceLockPreventLockScreenSlideShow
     type: Microsoft.OSConfig/Test
     properties:
@@ -982,6 +1078,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DigitallyEncryptOrSignSecureChannelDataAlways
     type: Microsoft.OSConfig/Test
     properties:
@@ -993,6 +1090,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DigitallyEncryptSecureChannelDataWhenPossible
     type: Microsoft.OSConfig/Test
     properties:
@@ -1004,6 +1102,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DigitallySignCommunicationsAlwaysClient
     type: Microsoft.OSConfig/Test
     properties:
@@ -1015,6 +1114,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DigitallySignCommunicationsAlwaysServer
     type: Microsoft.OSConfig/Test
     properties:
@@ -1026,6 +1126,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DigitallySignCommunicationsIfClientAgrees
     type: Microsoft.OSConfig/Test
     properties:
@@ -1037,6 +1138,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DigitallySignCommunicationsIfServerAgrees
     type: Microsoft.OSConfig/Test
     properties:
@@ -1048,6 +1150,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DigitallySignSecureChannelDataWhenPossible
     type: Microsoft.OSConfig/Test
     properties:
@@ -1059,6 +1162,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DisableLocalAccountPasswordChanges
     type: Microsoft.OSConfig/Test
     properties:
@@ -1070,6 +1174,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: DisableSMBv1Client
     type: Microsoft.OSConfig/Test
     properties:
@@ -1084,6 +1189,7 @@ resources:
             - MRxSmb20
             - NSI
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DisconnectClientsWhenLogonHoursExpire
     type: Microsoft.OSConfig/Test
     properties:
@@ -1095,6 +1201,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DmaGuardDeviceEnumerationPolicy
     type: Microsoft.OSConfig/Test
     properties:
@@ -1106,6 +1213,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ([0,1].exists(item, value == item))
+      template: The value {value} must be one of [0,1].
   - name: DnsClientTurn_Off_Multicast
     type: Microsoft.OSConfig/Test
     properties:
@@ -1117,6 +1225,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: DODownloadMode
     type: Microsoft.OSConfig/Test
     properties:
@@ -1128,6 +1237,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: ([0,1,2,99,100].exists(item, value == item))
+      template: The value {value} must be one of [0,1,2,99,100].
   - name: DoNotAllowAnonymousEnumerationOfSAMAccounts
     type: Microsoft.OSConfig/Test
     properties:
@@ -1139,6 +1249,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DoNotAllowAnonymousEnumerationOfSamAccountsAndShares
     type: Microsoft.OSConfig/Test
     properties:
@@ -1150,6 +1261,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DoNotDisplayLastSignedIn
     type: Microsoft.OSConfig/Test
     properties:
@@ -1161,6 +1273,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DoNotRequireCTRLALTDEL
     type: Microsoft.OSConfig/Test
     properties:
@@ -1172,6 +1285,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EnableAuthRateLimiter
     type: Microsoft.OSConfig/Test
     properties:
@@ -1183,6 +1297,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EnableAuthRateLimiterTimeout
     type: Microsoft.OSConfig/Test
     properties:
@@ -1194,6 +1309,7 @@ resources:
           valueType: REG_DWORD
           value: 2000
       expression: (value != null && value >= 2000 && value <= 5000)
+      template: The value {value} must be between 2000 and 5000.
   - name: EnabledNTPClient
     type: Microsoft.OSConfig/Test
     properties:
@@ -1204,6 +1320,7 @@ resources:
           valueName: Enabled
           valueType: REG_DWORD
       expression: (value == 0)
+      template: The value {value} must be 0.
   - name: EnableGuestAccountStatus
     type: Microsoft.OSConfig/Test
     properties:
@@ -1213,6 +1330,7 @@ resources:
           name: EnableGuestAccount
           value: false
       expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: EnableMailslotsLanmanServer
     type: Microsoft.OSConfig/Test
     properties:
@@ -1224,6 +1342,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: EnableMailslotsLanmanWorkstation
     type: Microsoft.OSConfig/Test
     properties:
@@ -1235,6 +1354,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: EnableStructuredExceptionHandlingOverwriteProtection
     type: Microsoft.OSConfig/Test
     properties:
@@ -1246,6 +1366,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: EncryptNTFSPagingFile
     type: Microsoft.OSConfig/Test
     properties:
@@ -1257,6 +1378,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: EventLogChannelSecurityLogRetention
     type: Microsoft.OSConfig/Test
     properties:
@@ -1268,6 +1390,7 @@ resources:
           valueType: REG_SZ
           value: '0'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EventLogChannelSetupLogMaxSize
     type: Microsoft.OSConfig/Test
     properties:
@@ -1279,6 +1402,7 @@ resources:
           valueType: REG_DWORD
           value: 32768
       expression: (value != null && value >= 32768)
+      template: The value {value} must be greater than or equal to 32768.
   - name: EventLogChannelSetupLogRetention
     type: Microsoft.OSConfig/Test
     properties:
@@ -1290,6 +1414,7 @@ resources:
           valueType: REG_SZ
           value: '0'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EventLogChannelSystemLogRetention
     type: Microsoft.OSConfig/Test
     properties:
@@ -1301,6 +1426,7 @@ resources:
           valueType: REG_SZ
           value: '0'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EventLogPercentageThresholdSecurityEventLogMaximumSizeReached
     type: Microsoft.OSConfig/Test
     properties:
@@ -1312,6 +1438,7 @@ resources:
           valueType: REG_DWORD
           value: 90
       expression: (value != null && value >= 50 && value <= 90)
+      template: The value {value} must be between 50 and 90.
   - name: EventLogServiceControlEventLogBehavior
     type: Microsoft.OSConfig/Test
     properties:
@@ -1323,6 +1450,7 @@ resources:
           valueType: REG_SZ
           value: '0'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EventLogServiceSpecifyMaximumFileSizeApplicationLog
     type: Microsoft.OSConfig/Test
     properties:
@@ -1334,6 +1462,7 @@ resources:
           valueType: REG_DWORD
           value: 32768
       expression: (value != null && value >= 32768)
+      template: The value {value} must be greater than or equal to 32768.
   - name: EventLogServiceSpecifyMaximumFileSizeSecurityLog
     type: Microsoft.OSConfig/Test
     properties:
@@ -1345,6 +1474,7 @@ resources:
           valueType: REG_DWORD
           value: 196608
       expression: (value != null && value >= 196608)
+      template: The value {value} must be greater than or equal to 196608.
   - name: EventLogServiceSpecifyMaximumFileSizeSystemLog
     type: Microsoft.OSConfig/Test
     properties:
@@ -1356,6 +1486,7 @@ resources:
           valueType: REG_DWORD
           value: 32768
       expression: (value != null && value >= 32768)
+      template: The value {value} must be greater than or equal to 32768.
   - name: ExperienceAllowWindowsConsumerFeatures
     type: Microsoft.OSConfig/Test
     properties:
@@ -1367,6 +1498,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ExperienceDisableConsumerAccountStateContent
     type: Microsoft.OSConfig/Test
     properties:
@@ -1378,6 +1510,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: ExperienceDoNotShowFeedbackNotifications
     type: Microsoft.OSConfig/Test
     properties:
@@ -1389,6 +1522,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FileExplorerTurnOffHeapTerminationOnCorruption
     type: Microsoft.OSConfig/Test
     properties:
@@ -1400,6 +1534,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: FirewallDomainProfileApplyLocalConnectionSecurityRules
     type: Microsoft.OSConfig/Test
     properties:
@@ -1411,6 +1546,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileApplyLocalFirewallRules
     type: Microsoft.OSConfig/Test
     properties:
@@ -1422,6 +1558,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: FirewallDomainProfileDisplayNotification
     type: Microsoft.OSConfig/Test
     properties:
@@ -1433,6 +1570,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileInboundConnection
     type: Microsoft.OSConfig/Test
     properties:
@@ -1444,6 +1582,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileLogDroppedPackets
     type: Microsoft.OSConfig/Test
     properties:
@@ -1455,6 +1594,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileLogFileMaxSize
     type: Microsoft.OSConfig/Test
     properties:
@@ -1466,6 +1606,7 @@ resources:
           valueType: REG_DWORD
           value: 16384
       expression: (value != null && value >= 16384)
+      template: The value {value} must be greater than or equal to 16384.
   - name: FirewallDomainProfileLogFileName
     type: Microsoft.OSConfig/Test
     properties:
@@ -1477,6 +1618,7 @@ resources:
           valueType: REG_SZ
           value: '%SystemRoot%\System32\logfiles\firewall\domainfw.log'
       expression: (value != null && value.matches(".log"))
+      template: The value {value} must match the pattern ".log".
   - name: FirewallDomainProfileLogSuccessfulConnections
     type: Microsoft.OSConfig/Test
     properties:
@@ -1488,6 +1630,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileOutboundConnection
     type: Microsoft.OSConfig/Test
     properties:
@@ -1499,6 +1642,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: FirewallDomainProfileState
     type: Microsoft.OSConfig/Test
     properties:
@@ -1510,6 +1654,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileUnicastResponse
     type: Microsoft.OSConfig/Test
     properties:
@@ -1521,6 +1666,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: FirewallPrivateProfileApplyLocalConnectionSecurityRules
     type: Microsoft.OSConfig/Test
     properties:
@@ -1532,6 +1678,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileApplyLocalFirewallRules
     type: Microsoft.OSConfig/Test
     properties:
@@ -1543,6 +1690,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileDisplayNotification
     type: Microsoft.OSConfig/Test
     properties:
@@ -1554,6 +1702,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileInboundConnection
     type: Microsoft.OSConfig/Test
     properties:
@@ -1565,6 +1714,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileLogDroppedPackets
     type: Microsoft.OSConfig/Test
     properties:
@@ -1576,6 +1726,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileLogFileMaxSize
     type: Microsoft.OSConfig/Test
     properties:
@@ -1587,6 +1738,7 @@ resources:
           valueType: REG_DWORD
           value: 16384
       expression: (value != null && value >= 16384)
+      template: The value {value} must be greater than or equal to 16384.
   - name: FirewallPrivateProfileLogFileName
     type: Microsoft.OSConfig/Test
     properties:
@@ -1598,6 +1750,7 @@ resources:
           valueType: REG_SZ
           value: '%SystemRoot%\System32\logfiles\firewall\privatefw.log'
       expression: (value != null && value.matches(".log"))
+      template: The value {value} must match the pattern ".log".
   - name: FirewallPrivateProfileLogSuccessfulConnections
     type: Microsoft.OSConfig/Test
     properties:
@@ -1609,6 +1762,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileOutboundConnection
     type: Microsoft.OSConfig/Test
     properties:
@@ -1620,6 +1774,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: FirewallPrivateProfileState
     type: Microsoft.OSConfig/Test
     properties:
@@ -1631,6 +1786,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileUnicastResponse
     type: Microsoft.OSConfig/Test
     properties:
@@ -1642,6 +1798,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: FirewallPublicProfileApplyLocalConnectionSecurityRules
     type: Microsoft.OSConfig/Test
     properties:
@@ -1653,6 +1810,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileApplyLocalFirewallRules
     type: Microsoft.OSConfig/Test
     properties:
@@ -1664,6 +1822,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileDisplayNotification
     type: Microsoft.OSConfig/Test
     properties:
@@ -1675,6 +1834,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileInboundConnection
     type: Microsoft.OSConfig/Test
     properties:
@@ -1686,6 +1846,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileLogDroppedPackets
     type: Microsoft.OSConfig/Test
     properties:
@@ -1697,6 +1858,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileLogFileMaxSize
     type: Microsoft.OSConfig/Test
     properties:
@@ -1708,6 +1870,7 @@ resources:
           valueType: REG_DWORD
           value: 16384
       expression: (value != null && value >= 16384)
+      template: The value {value} must be greater than or equal to 16384.
   - name: FirewallPublicProfileLogFileName
     type: Microsoft.OSConfig/Test
     properties:
@@ -1719,6 +1882,7 @@ resources:
           valueType: REG_SZ
           value: '%SystemRoot%\System32\logfiles\firewall\publicfw.log'
       expression: (value != null && value.matches(".log"))
+      template: The value {value} must match the pattern ".log".
   - name: FirewallPublicProfileLogSuccessfulConnections
     type: Microsoft.OSConfig/Test
     properties:
@@ -1730,6 +1894,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileOutboundConnection
     type: Microsoft.OSConfig/Test
     properties:
@@ -1741,6 +1906,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: FirewallPublicProfileState
     type: Microsoft.OSConfig/Test
     properties:
@@ -1752,6 +1918,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileUnicastResponse
     type: Microsoft.OSConfig/Test
     properties:
@@ -1763,6 +1930,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: ForceAuditPolicySubcategorySettingsToOverrideAuditPolicyCategorySettings
     type: Microsoft.OSConfig/Test
     properties:
@@ -1774,6 +1942,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: GroupPolicyDisableBackgroundPolicy
     type: Microsoft.OSConfig/Test
     properties:
@@ -1785,6 +1954,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: GroupPolicyEnableCDP
     type: Microsoft.OSConfig/Test
     properties:
@@ -1796,6 +1966,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: GroupPolicyNoBackgroundPolicy
     type: Microsoft.OSConfig/Test
     properties:
@@ -1807,6 +1978,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: GroupPolicyNoGPOListChanges
     type: Microsoft.OSConfig/Test
     properties:
@@ -1818,6 +1990,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: ICMNC_ExitOnISP
     type: Microsoft.OSConfig/Test
     properties:
@@ -1829,6 +2002,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: ImpersonateClient
     type: Microsoft.OSConfig/Test
     properties:
@@ -1842,6 +2016,7 @@ resources:
             - '*S-1-5-19'
             - '*S-1-5-20'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: IPSourceRoutingProtectionLevel
     type: Microsoft.OSConfig/Test
     properties:
@@ -1853,6 +2028,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: IPv6SourceRoutingProtectionLevel
     type: Microsoft.OSConfig/Test
     properties:
@@ -1864,6 +2040,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: KDCHashAlgorithms
     type: Microsoft.OSConfig/Test
     properties:
@@ -1875,6 +2052,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: KDCHashAlgorithmsSHA1
     type: Microsoft.OSConfig/Test
     properties:
@@ -1886,6 +2064,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: KDCHashAlgorithmsSHA256
     type: Microsoft.OSConfig/Test
     properties:
@@ -1897,6 +2076,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: KDCHashAlgorithmsSHA384
     type: Microsoft.OSConfig/Test
     properties:
@@ -1908,6 +2088,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: KDCHashAlgorithmsSHA512
     type: Microsoft.OSConfig/Test
     properties:
@@ -1919,6 +2100,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: KerberosHashAlgorithms
     type: Microsoft.OSConfig/Test
     properties:
@@ -1930,6 +2112,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: KerberosHashAlgorithmsSHA1
     type: Microsoft.OSConfig/Test
     properties:
@@ -1941,6 +2124,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: KerberosHashAlgorithmsSHA256
     type: Microsoft.OSConfig/Test
     properties:
@@ -1952,6 +2136,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: KerberosHashAlgorithmsSHA384
     type: Microsoft.OSConfig/Test
     properties:
@@ -1963,6 +2148,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: KerberosHashAlgorithmsSHA512
     type: Microsoft.OSConfig/Test
     properties:
@@ -1974,6 +2160,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: LANManagerAuthenticationLevel
     type: Microsoft.OSConfig/Test
     properties:
@@ -1985,6 +2172,7 @@ resources:
           valueType: REG_DWORD
           value: 5
       expression: ((((value == 5)) || ((value == null))))
+      template: The value {value} must be one of 5, (not set).
   - name: LanmanWorkstationEnableInsecureGuestLogons
     type: Microsoft.OSConfig/Test
     properties:
@@ -1996,6 +2184,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: LDAPClientSigningRequirements
     type: Microsoft.OSConfig/Test
     properties:
@@ -2007,6 +2196,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: (value != null && value >= 1 && value <= 2)
+      template: The value {value} must be between 1 and 2.
   - name: LDAPServerChannelBindingTokenRequirements
     type: Microsoft.OSConfig/Test
     properties:
@@ -2018,6 +2208,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: LDAPServerLDAPServerIntegritySigningRequirementsEnforcement
     type: Microsoft.OSConfig/Test
     properties:
@@ -2029,6 +2220,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: LetEveryonePermissionsApplyToAnonymousUsers
     type: Microsoft.OSConfig/Test
     properties:
@@ -2040,6 +2232,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: LimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly
     type: Microsoft.OSConfig/Test
     properties:
@@ -2051,6 +2244,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: LogonBlockUserFromShowingAccountDetailsOnSignin
     type: Microsoft.OSConfig/Test
     properties:
@@ -2062,6 +2256,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: LogonDontEnumerateConnectedUsers
     type: Microsoft.OSConfig/Test
     properties:
@@ -2073,6 +2268,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: LSAPPLProtection
     type: Microsoft.OSConfig/Test
     properties:
@@ -2084,6 +2280,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: (value != null && value >= 1 && value <= 2)
+      template: The value {value} must be between 1 and 2.
   - name: MachineInactivityLimit
     type: Microsoft.OSConfig/Test
     properties:
@@ -2095,6 +2292,7 @@ resources:
           valueType: REG_DWORD
           value: 900
       expression: (value != null && value >= 1 && value <= 900)
+      template: The value {value} must be between 1 and 900.
   - name: MaximumMachineAccountPasswordAge
     type: Microsoft.OSConfig/Test
     properties:
@@ -2106,6 +2304,7 @@ resources:
           valueType: REG_DWORD
           value: 30
       expression: ((((value == 30)) || ((value == null))))
+      template: The value {value} must be one of 30, (not set).
   - name: MessageTextUserLogon
     type: Microsoft.OSConfig/Test
     properties:
@@ -2117,6 +2316,7 @@ resources:
           valueType: REG_SZ
           value: This system is for authorized use only. Unauthorized access is prohibited and may be subject to criminal and civil penalties. By logging in, you acknowledge and consent to monitoring and recording for security and administrative purposes. If such monitoring reveals evidence of unauthorized activity, it may be provided to appropriate authorities
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: MessageTextUserLogonTitle
     type: Microsoft.OSConfig/Test
     properties:
@@ -2128,6 +2328,7 @@ resources:
           valueType: REG_SZ
           value: 'Notice to Users: Authorized Access Only'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: MinimumSessionSecurityForNTLMSSPBasedClients
     type: Microsoft.OSConfig/Test
     properties:
@@ -2139,6 +2340,7 @@ resources:
           valueType: REG_DWORD
           value: 537395200
       expression: ((((value == 537395200)) || ((value == null))))
+      template: The value {value} must be one of 537395200, (not set).
   - name: MinimumSessionSecurityForNTLMSSPBasedServers
     type: Microsoft.OSConfig/Test
     properties:
@@ -2150,6 +2352,7 @@ resources:
           valueType: REG_DWORD
           value: 537395200
       expression: ((((value == 537395200)) || ((value == null))))
+      template: The value {value} must be one of 537395200, (not set).
   - name: MinimumSMBClientVersion
     type: Microsoft.OSConfig/Test
     properties:
@@ -2161,6 +2364,7 @@ resources:
           valueType: REG_DWORD
           value: 768
       expression: ([768,770,785].exists(item, value == item))
+      template: The value {value} must be one of [768,770,785].
   - name: MinimumSMBServerVersion
     type: Microsoft.OSConfig/Test
     properties:
@@ -2172,6 +2376,7 @@ resources:
           valueType: REG_DWORD
           value: 768
       expression: ([768,770,785].exists(item, value == item))
+      template: The value {value} must be one of [768,770,785].
   - name: MitigationOptionsFontBlocking
     type: Microsoft.OSConfig/Test
     properties:
@@ -2183,6 +2388,7 @@ resources:
           valueType: REG_SZ
           value: '1000000000000'
       expression: ((((value == "1000000000000")) || ((value == null))))
+      template: The value {value} must be one of "1000000000000", (not set).
   - name: NetBTNodeTypeConfiguration
     type: Microsoft.OSConfig/Test
     properties:
@@ -2194,6 +2400,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: NetworkConnectionsNC_ShowSharedAccessUI
     type: Microsoft.OSConfig/Test
     properties:
@@ -2205,6 +2412,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: NetworkProviderHardenedPathsNETLOGON
     type: Microsoft.OSConfig/Test
     properties:
@@ -2216,6 +2424,7 @@ resources:
           valueType: REG_SZ
           value: RequireMutualAuthentication=1, RequireIntegrity=1
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: NetworkProviderHardenedPathsSYSVOL
     type: Microsoft.OSConfig/Test
     properties:
@@ -2227,6 +2436,7 @@ resources:
           valueType: REG_SZ
           value: RequireMutualAuthentication=1, RequireIntegrity=1
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: NetworkSecurityForceLogoffWhenLogonHoursExpire
     type: Microsoft.OSConfig/Test
     properties:
@@ -2237,6 +2447,7 @@ resources:
           type: integer
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: OnlyElevateUIAccessApplicationsThatAreInstalledInSecureLocations
     type: Microsoft.OSConfig/Test
     properties:
@@ -2248,6 +2459,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: OverrideMinimumEnabledDTLSVersionClient
     type: Microsoft.OSConfig/Test
     properties:
@@ -2258,6 +2470,7 @@ resources:
           type: string
           value: '1.2'
       expression: ((((value == "1.2")) || ((value == null))))
+      template: The value {value} must be one of "1.2", (not set).
   - name: OverrideMinimumEnabledDTLSVersionServer
     type: Microsoft.OSConfig/Test
     properties:
@@ -2268,6 +2481,7 @@ resources:
           type: string
           value: '1.2'
       expression: ((((value == "1.2")) || ((value == null))))
+      template: The value {value} must be one of "1.2", (not set).
   - name: OverrideMinimumEnabledTLSVersionClient
     type: Microsoft.OSConfig/Test
     properties:
@@ -2278,6 +2492,7 @@ resources:
           type: string
           value: '1.2'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: OverrideMinimumEnabledTLSVersionServer
     type: Microsoft.OSConfig/Test
     properties:
@@ -2288,6 +2503,7 @@ resources:
           type: string
           value: '1.2'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: PowerShellExecutionPolicyEnableTranscripting
     type: Microsoft.OSConfig/Test
     properties:
@@ -2299,6 +2515,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: PreventUsersFromInstallingPrinterDriversWhenConnectingToSharedPrinters
     type: Microsoft.OSConfig/Test
     properties:
@@ -2310,6 +2527,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: PrintersRestrictDriverInstallationToAdministrators
     type: Microsoft.OSConfig/Test
     properties:
@@ -2321,6 +2539,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: PrivacyAllowInputPersonalization
     type: Microsoft.OSConfig/Test
     properties:
@@ -2332,6 +2551,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: PromptUserToChangePasswordBeforeExpiration
     type: Microsoft.OSConfig/Test
     properties:
@@ -2343,6 +2563,7 @@ resources:
           valueType: REG_DWORD
           value: 14
       expression: (value != null && value >= 5 && value <= 14)
+      template: The value {value} must be between 5 and 14.
   - name: RDPPortNumber
     type: Microsoft.OSConfig/Test
     properties:
@@ -2354,6 +2575,7 @@ resources:
           valueType: REG_DWORD
           value: 3389
       expression: ((((value == 3389)) || ((value == null))))
+      template: The value {value} must be one of 3389, (not set).
   - name: RecoveryConsoleAllowFloppyCopyAndAllDrives
     type: Microsoft.OSConfig/Test
     properties:
@@ -2365,6 +2587,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: RefuseMachineAccountPasswordChanged
     type: Microsoft.OSConfig/Test
     properties:
@@ -2376,6 +2599,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: RemoteAssistanceSolicitedRemoteAssistance
     type: Microsoft.OSConfig/Test
     properties:
@@ -2387,6 +2611,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: RemoteAssistanceUnsolicitedRemoteAssistance
     type: Microsoft.OSConfig/Test
     properties:
@@ -2398,6 +2623,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RemoteDesktopServicesClientConnectionEncryptionLevel
     type: Microsoft.OSConfig/Test
     properties:
@@ -2409,6 +2635,7 @@ resources:
           valueType: REG_DWORD
           value: 3
       expression: (value != null && value >= 3 && value <= 4)
+      template: The value {value} must be between 3 and 4.
   - name: RemoteDesktopServicesDoNotAllowDriveRedirection
     type: Microsoft.OSConfig/Test
     properties:
@@ -2420,6 +2647,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RemoteDesktopServicesDoNotAllowPasswordSaving
     type: Microsoft.OSConfig/Test
     properties:
@@ -2431,6 +2659,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RemoteDesktopServicesPromptForPasswordUponConnection
     type: Microsoft.OSConfig/Test
     properties:
@@ -2442,6 +2671,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RemoteDesktopServicesRequireSecureRPCCommunication
     type: Microsoft.OSConfig/Test
     properties:
@@ -2453,6 +2683,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RemotelyAccessibleRegistryPaths
     type: Microsoft.OSConfig/Test
     properties:
@@ -2467,6 +2698,7 @@ resources:
             - System\CurrentControlSet\Control\Server Applications
             - Software\Microsoft\Windows NT\CurrentVersion
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RemotelyAccessibleRegistryPathsAndSubpaths
     type: Microsoft.OSConfig/Test
     properties:
@@ -2489,6 +2721,7 @@ resources:
             - Software\Microsoft\Windows NT\CurrentVersion\Perflib
             - System\CurrentControlSet\Services\SysmonLog
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RemoteManagementAllowBasicAuthentication_Client
     type: Microsoft.OSConfig/Test
     properties:
@@ -2500,6 +2733,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RemoteManagementAllowBasicAuthentication_Service
     type: Microsoft.OSConfig/Test
     properties:
@@ -2511,6 +2745,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: RemoteManagementAllowRemoteServerManagement
     type: Microsoft.OSConfig/Test
     properties:
@@ -2522,6 +2757,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RemoteManagementAllowRemoteServerManagement_IPv4Filter
     type: Microsoft.OSConfig/Test
     properties:
@@ -2533,6 +2769,7 @@ resources:
           valueType: REG_SZ
           value: '*'
       expression: ((((value == "*")) || ((value == null))))
+      template: The value {value} must be one of "*", (not set).
   - name: RemoteManagementAllowRemoteServerManagement_IPv6Filter
     type: Microsoft.OSConfig/Test
     properties:
@@ -2544,6 +2781,7 @@ resources:
           valueType: REG_SZ
           value: '*'
       expression: ((((value == "*")) || ((value == null))))
+      template: The value {value} must be one of "*", (not set).
   - name: RemoteManagementAllowUnencryptedTraffic_Client
     type: Microsoft.OSConfig/Test
     properties:
@@ -2555,6 +2793,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RemoteManagementAllowUnencryptedTraffic_Service
     type: Microsoft.OSConfig/Test
     properties:
@@ -2566,6 +2805,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: RemoteManagementDisallowDigestAuthentication
     type: Microsoft.OSConfig/Test
     properties:
@@ -2577,6 +2817,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: RemoteManagementDisallowStoringOfRunAsCredentials
     type: Microsoft.OSConfig/Test
     properties:
@@ -2588,6 +2829,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RenameAdministratorAccount
     type: Microsoft.OSConfig/Test
     properties:
@@ -2596,6 +2838,7 @@ resources:
         properties:
           name: AdministratorAccountName
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RenameGuestAccount
     type: Microsoft.OSConfig/Test
     properties:
@@ -2604,6 +2847,7 @@ resources:
         properties:
           name: GuestAccountName
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RequireCaseInsensitivityForNonWindowsSubsystems
     type: Microsoft.OSConfig/Test
     properties:
@@ -2615,6 +2859,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RequireEncryption
     type: Microsoft.OSConfig/Test
     properties:
@@ -2626,6 +2871,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: (value != null && value >= 0 && value <= 1)
+      template: The value {value} must be between 0 and 1.
   - name: RequireStrongSessionKey
     type: Microsoft.OSConfig/Test
     properties:
@@ -2637,6 +2883,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RestrictAnonymousAccessToNamedPipesAndShares
     type: Microsoft.OSConfig/Test
     properties:
@@ -2648,6 +2895,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RSSDisableEnclosureDownload
     type: Microsoft.OSConfig/Test
     properties:
@@ -2659,6 +2907,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RunAllAdministratorsInAdminApprovalMode
     type: Microsoft.OSConfig/Test
     properties:
@@ -2670,6 +2919,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: SafeDllSearchMode
     type: Microsoft.OSConfig/Test
     properties:
@@ -2681,6 +2931,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: SAMRPCPasswordChangePolicy
     type: Microsoft.OSConfig/Test
     properties:
@@ -2692,6 +2943,7 @@ resources:
           valueType: REG_DWORD
           value: 2
       expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: SearchAllowIndexingEncryptedStoresOrItems
     type: Microsoft.OSConfig/Test
     properties:
@@ -2703,6 +2955,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: SendUnencryptedPasswordToThirdPartySMBServers
     type: Microsoft.OSConfig/Test
     properties:
@@ -2714,6 +2967,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ServerSPNTargetNameValidationLevel
     type: Microsoft.OSConfig/Test
     properties:
@@ -2725,6 +2979,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: SharesThatCanBeAccessedAnonymously
     type: Microsoft.OSConfig/Test
     properties:
@@ -2736,6 +2991,7 @@ resources:
           valueType: REG_MULTI_SZ
           value: []
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: SharingAndSecurityModelForLocalAccounts
     type: Microsoft.OSConfig/Test
     properties:
@@ -2747,6 +3003,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ShellDataExecutionPrevention
     type: Microsoft.OSConfig/Test
     properties:
@@ -2758,6 +3015,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ShutdownSystemImmediatelyIfUnableToLogSecurityAudits
     type: Microsoft.OSConfig/Test
     properties:
@@ -2769,6 +3027,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: SmartCardRemovalBehavior
     type: Microsoft.OSConfig/Test
     properties:
@@ -2780,6 +3039,7 @@ resources:
           valueType: REG_SZ
           value: '1'
       expression: (value == "1")
+      template: The value {value} must be "1".
   - name: SmartScreenEnableSmartScreenInShell
     type: Microsoft.OSConfig/Test
     properties:
@@ -2791,6 +3051,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: SmartScreenPreventOverrideForFilesInShell
     type: Microsoft.OSConfig/Test
     properties:
@@ -2802,6 +3063,7 @@ resources:
           valueType: REG_SZ
           value: Block
       expression: ((((value == "Block")) || ((value == null))))
+      template: The value {value} must be one of "Block", (not set).
   - name: StrengthenDefaultPermissionsOfInternalSystemObjects
     type: Microsoft.OSConfig/Test
     properties:
@@ -2813,6 +3075,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: SwitchToTheSecureDesktopWhenPromptingForElevation
     type: Microsoft.OSConfig/Test
     properties:
@@ -2824,6 +3087,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: SystemAllowTelemetry
     type: Microsoft.OSConfig/Test
     properties:
@@ -2835,6 +3099,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: (value != null && value >= 0 && value <= 1)
+      template: The value {value} must be between 0 and 1.
   - name: SystemBootStartDriverInitialization
     type: Microsoft.OSConfig/Test
     properties:
@@ -2846,6 +3111,7 @@ resources:
           valueType: REG_DWORD
           value: 3
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: SystemEnableSoftwareRestrictionPolicies
     type: Microsoft.OSConfig/Test
     properties:
@@ -2856,6 +3122,7 @@ resources:
           valueName: AuthenticodeEnabled
           valueType: REG_DWORD
       expression: (value == 0)
+      template: The value {value} must be 0.
   - name: SystemMinimizeInternetConnections
     type: Microsoft.OSConfig/Test
     properties:
@@ -2867,6 +3134,7 @@ resources:
           valueType: REG_DWORD
           value: 3
       expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: SystemWindowsSearchService
     type: Microsoft.OSConfig/Test
     properties:
@@ -2878,6 +3146,7 @@ resources:
           valueType: REG_DWORD
           value: 4
       expression: ((((value == 4)) || ((value == null))))
+      template: The value {value} must be one of 4, (not set).
   - name: TerminalServerTS_TEMP_DELETE
     type: Microsoft.OSConfig/Test
     properties:
@@ -2889,6 +3158,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: TerminalServerTS_TEMP_PER_SESSION
     type: Microsoft.OSConfig/Test
     properties:
@@ -2900,6 +3170,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: TerminalServerTS_USER_AUTHENTICATION_POLICY
     type: Microsoft.OSConfig/Test
     properties:
@@ -2911,6 +3182,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: TurnOff_Windows_Error_Reporting
     type: Microsoft.OSConfig/Test
     properties:
@@ -2922,6 +3194,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: TurnOffPrintingOverHTTP
     type: Microsoft.OSConfig/Test
     properties:
@@ -2933,6 +3206,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: UseAdminApprovalMode
     type: Microsoft.OSConfig/Test
     properties:
@@ -2944,6 +3218,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: UserRightsAccessCredentialManagerAsTrustedCaller
     type: Microsoft.OSConfig/Test
     properties:
@@ -2953,6 +3228,7 @@ resources:
           name: SeTrustedCredManAccessPrivilege
           value: []
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsAccessFromNetwork
     type: Microsoft.OSConfig/Test
     properties:
@@ -2965,6 +3241,7 @@ resources:
             - '*S-1-5-32-544'
             - '*S-1-5-9'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsActAsPartOfTheOperatingSystem
     type: Microsoft.OSConfig/Test
     properties:
@@ -2974,6 +3251,7 @@ resources:
           name: SeTcbPrivilege
           value: []
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsAdjustMemoryQuotasForProcess
     type: Microsoft.OSConfig/Test
     properties:
@@ -2986,6 +3264,7 @@ resources:
             - '*S-1-5-19'
             - '*S-1-5-20'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsAllowLocalLogOn
     type: Microsoft.OSConfig/Test
     properties:
@@ -2997,6 +3276,7 @@ resources:
             - '*S-1-5-32-544'
             - '*S-1-5-9'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsAllowLogOnThroughRemoteDesktop
     type: Microsoft.OSConfig/Test
     properties:
@@ -3007,6 +3287,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsBackupFilesAndDirectories
     type: Microsoft.OSConfig/Test
     properties:
@@ -3017,6 +3298,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsChangeSystemTime
     type: Microsoft.OSConfig/Test
     properties:
@@ -3029,6 +3311,7 @@ resources:
             - '*S-1-5-32-549'
             - '*S-1-5-19'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsChangeTimeZone
     type: Microsoft.OSConfig/Test
     properties:
@@ -3040,6 +3323,7 @@ resources:
             - '*S-1-5-32-544'
             - '*S-1-5-19'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsCreateGlobalObjects
     type: Microsoft.OSConfig/Test
     properties:
@@ -3053,6 +3337,7 @@ resources:
             - '*S-1-5-19'
             - '*S-1-5-20'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsCreatePageFile
     type: Microsoft.OSConfig/Test
     properties:
@@ -3063,6 +3348,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsCreatePermanentSharedObjects
     type: Microsoft.OSConfig/Test
     properties:
@@ -3072,6 +3358,7 @@ resources:
           name: SeCreatePermanentPrivilege
           value: []
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsCreateSymbolicLinks
     type: Microsoft.OSConfig/Test
     properties:
@@ -3083,6 +3370,7 @@ resources:
             - '*S-1-5-32-544'
             - '*S-1-5-83-0'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsCreateToken
     type: Microsoft.OSConfig/Test
     properties:
@@ -3092,6 +3380,7 @@ resources:
           name: SeCreateTokenPrivilege
           value: []
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsDebugPrograms
     type: Microsoft.OSConfig/Test
     properties:
@@ -3102,6 +3391,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsDenyAccessFromNetwork
     type: Microsoft.OSConfig/Test
     properties:
@@ -3112,6 +3402,7 @@ resources:
           value:
             - '*S-1-5-32-546'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsDenyLocalLogOn
     type: Microsoft.OSConfig/Test
     properties:
@@ -3122,6 +3413,7 @@ resources:
           value:
             - '*S-1-5-32-546'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsDenyLogOnAsBatchJob
     type: Microsoft.OSConfig/Test
     properties:
@@ -3132,6 +3424,7 @@ resources:
           value:
             - '*S-1-5-32-546'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsDenyLogOnAsService
     type: Microsoft.OSConfig/Test
     properties:
@@ -3142,6 +3435,7 @@ resources:
           value:
             - '*S-1-5-32-546'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsDenyRemoteDesktopServicesLogOn
     type: Microsoft.OSConfig/Test
     properties:
@@ -3152,6 +3446,7 @@ resources:
           value:
             - '*S-1-5-32-546'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsEnableDelegation
     type: Microsoft.OSConfig/Test
     properties:
@@ -3162,6 +3457,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsGenerateSecurityAudits
     type: Microsoft.OSConfig/Test
     properties:
@@ -3174,6 +3470,7 @@ resources:
             - '*S-1-5-20'
             - '*S-1-5-82-3006700770-424185619-1745488364-794895919-4004696415'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsIncreaseSchedulingPriority
     type: Microsoft.OSConfig/Test
     properties:
@@ -3184,6 +3481,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsLoadUnloadDeviceDrivers
     type: Microsoft.OSConfig/Test
     properties:
@@ -3195,6 +3493,7 @@ resources:
             - '*S-1-5-32-544'
             - '*S-1-5-32-550'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsLockMemory
     type: Microsoft.OSConfig/Test
     properties:
@@ -3204,6 +3503,7 @@ resources:
           name: SeLockMemoryPrivilege
           value: []
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsManageAuditingAndSecurityLog
     type: Microsoft.OSConfig/Test
     properties:
@@ -3214,6 +3514,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsManageVolume
     type: Microsoft.OSConfig/Test
     properties:
@@ -3224,6 +3525,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsModifyFirmwareEnvironment
     type: Microsoft.OSConfig/Test
     properties:
@@ -3234,6 +3536,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsModifyObjectLabel
     type: Microsoft.OSConfig/Test
     properties:
@@ -3243,6 +3546,7 @@ resources:
           name: SeRelabelPrivilege
           value: []
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsProfileSingleProcess
     type: Microsoft.OSConfig/Test
     properties:
@@ -3253,6 +3557,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsProfileSystemPerformance
     type: Microsoft.OSConfig/Test
     properties:
@@ -3264,6 +3569,7 @@ resources:
             - '*S-1-5-32-544'
             - '*S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsRemoteShutdown
     type: Microsoft.OSConfig/Test
     properties:
@@ -3274,6 +3580,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsReplaceProcessLevelToken
     type: Microsoft.OSConfig/Test
     properties:
@@ -3285,6 +3592,7 @@ resources:
             - '*S-1-5-19'
             - '*S-1-5-20'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsRestoreFilesAndDirectories
     type: Microsoft.OSConfig/Test
     properties:
@@ -3295,6 +3603,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsShutDownTheSystem
     type: Microsoft.OSConfig/Test
     properties:
@@ -3305,6 +3614,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsTakeOwnership
     type: Microsoft.OSConfig/Test
     properties:
@@ -3315,6 +3625,7 @@ resources:
           value:
             - '*S-1-5-32-544'
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: VirtualizeFileAndRegistryWriteFailuresToPerUserLocations
     type: Microsoft.OSConfig/Test
     properties:
@@ -3326,6 +3637,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsExplorerShellProtocolProtectedModeTitle_2
     type: Microsoft.OSConfig/Test
     properties:
@@ -3337,6 +3649,7 @@ resources:
           valueType: REG_DWORD
           value: 0
       expression: 'true'
+      template: The value {value} is informational for this control.
   - name: WindowsHelloAntiSpoofing
     type: Microsoft.OSConfig/Test
     properties:
@@ -3348,6 +3661,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsLogonAllowAutomaticRestartSignOn
     type: Microsoft.OSConfig/Test
     properties:
@@ -3359,6 +3673,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsLogonConfigAutomaticRestartSignOn
     type: Microsoft.OSConfig/Test
     properties:
@@ -3370,6 +3685,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsLogonDisableLockScreenAppNotifications
     type: Microsoft.OSConfig/Test
     properties:
@@ -3381,6 +3697,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsLogonDontDisplayNetworkSelectionUI
     type: Microsoft.OSConfig/Test
     properties:
@@ -3392,6 +3709,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsPowerShellTurnOnPowerShellScriptBlockLogging
     type: Microsoft.OSConfig/Test
     properties:
@@ -3403,6 +3721,7 @@ resources:
           valueType: REG_DWORD
           value: 1
       expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WinVerityTrustSignatureValidationVulnerabilityMitigation1
     type: Microsoft.OSConfig/Test
     properties:
@@ -3414,6 +3733,7 @@ resources:
           valueType: REG_SZ
           value: '1'
       expression: (value == "1")
+      template: The value {value} must be "1".
   - name: WinVerityTrustSignatureValidationVulnerabilityMitigation2
     type: Microsoft.OSConfig/Test
     properties:
@@ -3425,3 +3745,4 @@ resources:
           valueType: REG_SZ
           value: '1'
       expression: (value == "1")
+      template: The value {value} must be "1".
