@@ -4,6 +4,12 @@ A concise release history for ConfigForge. Newer entries use their release
 tags and state publication status explicitly; older entries summarize the
 foundational work by theme.
 
+## Unreleased
+
+- **Detailed compliance reasons:** ConfigForge now preserves the reason
+  returned by `oscfg` for expression-backed Test resources. All WS2025
+  wrappers include templates that explain the actual value and requirement.
+
 ## v0.3.96 — 2026-07-28
 
 `v0.3.96` is the current Windows/Linux tagged source. Its matching GitHub

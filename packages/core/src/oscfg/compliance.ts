@@ -164,18 +164,18 @@ const IDENTITY_KEYS = new Set([
   'moniker',
   'subcategory',
   'policy',
-  'path',    // address field for File, FileLine, FilePermission, CSP
-  'name',    // address field for KernelModule, AccountPolicy, User, UserRightsAssignment
+  'path', // address field for File, FileLine, FilePermission, CSP
+  'name', // address field for KernelModule, AccountPolicy, User, UserRightsAssignment
 ]);
 
 // Properties that are only meaningful for SET, not returned on GET.
 // If the CLI doesn't echo these back, don't treat them as "missing".
 const WRITE_ONLY_KEYS = new Set([
-  'content',    // Microsoft.OSConfig/File — file content to write
-  'search',     // Microsoft.OSConfig/FileLine — search pattern (CLI uses 'find')
-  'find',       // Microsoft.OSConfig/FileLine — alias for search
-  'line',       // Microsoft.OSConfig/FileLine — replacement line
-  'replace',    // Microsoft.OSConfig/FileLine — replacement text
+  'content', // Microsoft.OSConfig/File — file content to write
+  'search', // Microsoft.OSConfig/FileLine — search pattern (CLI uses 'find')
+  'find', // Microsoft.OSConfig/FileLine — alias for search
+  'line', // Microsoft.OSConfig/FileLine — replacement line
+  'replace', // Microsoft.OSConfig/FileLine — replacement text
 ]);
 
 export function compareDesiredActual(
@@ -193,8 +193,7 @@ export function compareDesiredActual(
     };
   }
 
-  const actualProps =
-    (actual.properties as Record<string, unknown> | undefined) ?? actual;
+  const actualProps = (actual.properties as Record<string, unknown> | undefined) ?? actual;
 
   // `Microsoft.OSConfig/Test` has authoritative compliance built in — the
   // CLI evaluates the schema/expression against the nested resource's
@@ -216,11 +215,18 @@ export function compareDesiredActual(
       const actualValue = innerResource
         ? ((innerResource.properties as Record<string, unknown> | undefined)?.value ?? null)
         : null;
-      const schema = (desired.properties.schema ?? (actualProps as Record<string, unknown>).schema) as
-        | Record<string, unknown>
-        | undefined;
+      const schema = (desired.properties.schema ??
+        (actualProps as Record<string, unknown>).schema) as Record<string, unknown> | undefined;
+      const cliReason = typeof compliance.reason === 'string' ? compliance.reason.trim() : '';
 
-      const reason = humanizeComplianceReason(status, actualValue, schema);
+      // Schema-backed Tests can use our richer local humanizer. Expression-
+      // backed Tests have no schema to interpret, so preserve the authoritative
+      // CLI reason (including the Test template's actual-vs-required detail)
+      // instead of collapsing it to "does not meet the requirement".
+      const reason =
+        schema && Object.keys(schema).length > 0
+          ? humanizeComplianceReason(status, actualValue, schema)
+          : cliReason || humanizeComplianceReason(status, actualValue, schema);
 
       if (status === 'compliant') {
         return {
@@ -256,9 +262,8 @@ export function compareDesiredActual(
     // with no compliance field while their siblings did), leaving
     // the auditor staring at "Could not read" rows that they were
     // perfectly capable of evaluating from the data on screen.
-    const localFallbackSchema = (desired.properties.schema ?? (actualProps as Record<string, unknown>).schema) as
-      | Record<string, unknown>
-      | undefined;
+    const localFallbackSchema = (desired.properties.schema ??
+      (actualProps as Record<string, unknown>).schema) as Record<string, unknown> | undefined;
     const localInner = (actualProps as Record<string, unknown>).resource as
       | Record<string, unknown>
       | undefined;
@@ -359,7 +364,9 @@ export function compareDesiredActual(
       registryValueChecked = true;
     }
     if (!valuesEqual(desiredVal, actualVal)) {
-      mismatches.push(`${key}: ${formatVal(actualVal)} is not equal to ${formatVal(desiredVal)} (expected ${formatVal(desiredVal)})`);
+      mismatches.push(
+        `${key}: ${formatVal(actualVal)} is not equal to ${formatVal(desiredVal)} (expected ${formatVal(desiredVal)})`,
+      );
     }
   }
 
@@ -527,12 +534,20 @@ function humanizeComplianceReason(
     const min = schema.minimum;
     const max = schema.maximum;
     if (actualValue === null || actualValue === undefined) {
-      const rangeStr = min !== undefined && max !== undefined
-        ? `${min} to ${max}` : min !== undefined ? `≥ ${min}` : `≤ ${max}`;
+      const rangeStr =
+        min !== undefined && max !== undefined
+          ? `${min} to ${max}`
+          : min !== undefined
+            ? `≥ ${min}`
+            : `≤ ${max}`;
       return `Value is not set on the device (allowed range: ${rangeStr})`;
     }
-    const rangeStr = min !== undefined && max !== undefined
-      ? `${min} to ${max}` : min !== undefined ? `≥ ${min}` : `≤ ${max}`;
+    const rangeStr =
+      min !== undefined && max !== undefined
+        ? `${min} to ${max}`
+        : min !== undefined
+          ? `≥ ${min}`
+          : `≤ ${max}`;
     return isCompliant
       ? `${av} is within the allowed range: ${rangeStr}`
       : `${av} is outside the allowed range: ${rangeStr}`;
@@ -546,7 +561,9 @@ function humanizeComplianceReason(
   }
 
   // Fallback
-  return isCompliant ? `${av} meets the compliance requirement` : `${av} does not meet the compliance requirement`;
+  return isCompliant
+    ? `${av} meets the compliance requirement`
+    : `${av} does not meet the compliance requirement`;
 }
 
 /**
@@ -581,25 +598,25 @@ function evaluateSchemaLocally(
   // oneOf: [{const: X}, {type: 'null'}, ...] — common LAPS/Defender pattern.
   if (Array.isArray(schema.oneOf)) {
     const branches = schema.oneOf as Record<string, unknown>[];
-    const allowsNull = branches.some(
-      (b) => b && (b.type === 'null' || b.type === null),
-    );
+    const allowsNull = branches.some((b) => b && (b.type === 'null' || b.type === null));
     const constBranch = branches.find((b) => b && b.const !== undefined);
     const expected = constBranch?.const;
     if (actualIsNullish) {
       if (allowsNull) {
         return {
           status: 'compliant',
-          reason: expected !== undefined
-            ? `Value is not set (default matches expected ${expected})`
-            : 'Value is not set (schema allows null)',
+          reason:
+            expected !== undefined
+              ? `Value is not set (default matches expected ${expected})`
+              : 'Value is not set (schema allows null)',
         };
       }
       return {
         status: 'noncompliant',
-        reason: expected !== undefined
-          ? `Value is not set on the device (expected ${expected})`
-          : 'Value is not set on the device',
+        reason:
+          expected !== undefined
+            ? `Value is not set on the device (expected ${expected})`
+            : 'Value is not set on the device',
       };
     }
     if (constBranch && actualValue === expected) {
@@ -607,9 +624,10 @@ function evaluateSchemaLocally(
     }
     return {
       status: 'noncompliant',
-      reason: expected !== undefined
-        ? `${av} is not equal to ${expected} (expected ${expected})`
-        : `${av} does not match any allowed schema branch`,
+      reason:
+        expected !== undefined
+          ? `${av} is not equal to ${expected} (expected ${expected})`
+          : `${av} does not match any allowed schema branch`,
     };
   }
 
@@ -657,11 +675,12 @@ function evaluateSchemaLocally(
   if (schema.minimum !== undefined || schema.maximum !== undefined) {
     const min = schema.minimum as number | undefined;
     const max = schema.maximum as number | undefined;
-    const rangeStr = min !== undefined && max !== undefined
-      ? `${min} to ${max}`
-      : min !== undefined
-        ? `≥ ${min}`
-        : `≤ ${max}`;
+    const rangeStr =
+      min !== undefined && max !== undefined
+        ? `${min} to ${max}`
+        : min !== undefined
+          ? `≥ ${min}`
+          : `≤ ${max}`;
     if (actualIsNullish) {
       return {
         status: 'noncompliant',

@@ -18,6 +18,7 @@ interface BaselineResource {
     };
     expression?: string;
     schema?: unknown;
+    template?: string;
   };
 }
 
@@ -112,6 +113,8 @@ describe("WS2025 full-overlay invariants", () => {
       expect(wrapper.type).toBe("Microsoft.OSConfig/Test");
       expect(wrapper.properties?.schema).toBeUndefined();
       expect(wrapper.properties?.expression).toEqual(expect.any(String));
+      expect(wrapper.properties?.template).toEqual(expect.any(String));
+      expect(wrapper.properties?.template).toContain("{value}");
 
       const inner = wrapper.properties?.resource;
       if (inner?.type === "Microsoft.Windows/Registry") {

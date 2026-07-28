@@ -49,7 +49,10 @@ describe('compareDesiredActual — indeterminate state', () => {
       properties: {
         resource: {
           type: 'Microsoft.Windows/CSP',
-          properties: { path: './Vendor/MSFT/Policy/Result/UserRights/AccessFromNetwork', type: 'array' },
+          properties: {
+            path: './Vendor/MSFT/Policy/Result/UserRights/AccessFromNetwork',
+            type: 'array',
+          },
         },
         schema: {},
       },
@@ -71,6 +74,45 @@ describe('compareDesiredActual — indeterminate state', () => {
     const r = compareDesiredActual(desired, actual);
     expect(r.status).toBe('indeterminate');
     expect(r.reason).toMatch(/did not return a compliance verdict/i);
+  });
+
+  it('preserves the CLI reason for expression-backed Test resources', () => {
+    const desired: DesiredResource = {
+      name: 'expression-mismatch',
+      type: 'Microsoft.OSConfig/Test',
+      properties: {
+        resource: {
+          type: 'Microsoft.Windows/Registry',
+          properties: {
+            keyPath: 'HKLM:\\Software\\X',
+            valueName: 'V',
+            valueType: 'REG_DWORD',
+            value: 5,
+          },
+        },
+        expression: 'value == 5',
+        template: 'The value {value} must be 5.',
+      },
+    };
+    const actual = {
+      properties: {
+        compliance: {
+          status: 'noncompliant',
+          reason: 'The value 3 must be 5.',
+        },
+        resources: [
+          {
+            type: 'Microsoft.Windows/Registry',
+            properties: { value: 3 },
+          },
+        ],
+      },
+    };
+
+    const result = compareDesiredActual(desired, actual);
+
+    expect(result.status).toBe('noncompliant');
+    expect(result.reason).toBe('The value 3 must be 5.');
   });
 
   it('still returns noncompliant when the device DID respond but disagreed', () => {
@@ -264,7 +306,16 @@ describe('summarizeCompliance', () => {
 describe('defender baseline — Bug 1 regression (null-tolerant enum schemas)', () => {
   const baseline = yaml.load(
     readFileSync(
-      join(__dirname, '..', '..', '..', '..', 'public', '_baselines', 'defender-antivirus.osc.yaml'),
+      join(
+        __dirname,
+        '..',
+        '..',
+        '..',
+        '..',
+        'public',
+        '_baselines',
+        'defender-antivirus.osc.yaml',
+      ),
       'utf8',
     ),
   ) as { resources: Array<Record<string, unknown>> };
