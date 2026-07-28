@@ -27,9 +27,7 @@ describe('parseSecurityDefinition (PR17 hardening)', () => {
   });
 
   it('throws when document is null', () => {
-    expect(() => parseSecurityDefinition('null')).toThrowError(
-      /document must be an object/i,
-    );
+    expect(() => parseSecurityDefinition('null')).toThrowError(/document must be an object/i);
   });
 
   it('does not throw on otherwise empty but valid object', () => {
@@ -69,7 +67,8 @@ describe('exportToAzurePolicy structural shape', () => {
         resource: {
           type: 'Microsoft.Windows/Registry',
           properties: {
-            keyPath: 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\LAPS',
+            keyPath:
+              'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\LAPS',
             valueName: 'BackupDirectory',
             valueType: 'Dword',
             value: 1,
@@ -85,7 +84,8 @@ describe('exportToAzurePolicy structural shape', () => {
         resource: {
           type: 'Microsoft.Windows/Registry',
           properties: {
-            keyPath: 'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\LAPS',
+            keyPath:
+              'HKEY_LOCAL_MACHINE\\SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Policies\\LAPS',
             valueName: 'PasswordLength',
             valueType: 'Dword',
             value: 15,
@@ -110,7 +110,10 @@ describe('exportToAzurePolicy structural shape', () => {
             configurationParameter: Record<string, string>;
           };
         };
-        parameters: Record<string, { type: string; defaultValue?: string; allowedValues?: string[] }>;
+        parameters: Record<
+          string,
+          { type: string; defaultValue?: string; allowedValues?: string[] }
+        >;
         policyRule: {
           if: { anyOf: unknown[] };
           then: {
@@ -150,8 +153,12 @@ describe('exportToAzurePolicy structural shape', () => {
     // so the operator must replace them with their actual MOF .zip URL
     // and SHA256 hash. Shipping a default URL would silently deploy a
     // bogus package.
-    expect(p.properties.metadata.guestConfiguration.contentUri).toBe('REPLACE_WITH_YOUR_MOF_PACKAGE_URI');
-    expect(p.properties.metadata.guestConfiguration.contentHash).toBe('REPLACE_WITH_SHA256_OF_PACKAGE_ZIP');
+    expect(p.properties.metadata.guestConfiguration.contentUri).toBe(
+      'REPLACE_WITH_YOUR_MOF_PACKAGE_URI',
+    );
+    expect(p.properties.metadata.guestConfiguration.contentHash).toBe(
+      'REPLACE_WITH_SHA256_OF_PACKAGE_ZIP',
+    );
   });
 
   it('emits one ARM parameter per manifest setting + scaffolding params', () => {
@@ -199,9 +206,7 @@ describe('exportToAzurePolicy structural shape', () => {
       { name: 'settingname', type: 'T', properties: { value: 2 } },
     ];
 
-    expect(() => exportToAzurePolicy('collision', colliding)).toThrow(
-      /parameter name collision/i,
-    );
+    expect(() => exportToAzurePolicy('collision', colliding)).toThrow(/parameter name collision/i);
   });
 
   it('configurationParameter (metadata) maps ARM names to MOF parameter names', () => {
@@ -223,9 +228,7 @@ describe('exportToAzurePolicy structural shape', () => {
     expect(fields).toContain(
       'Microsoft.GuestConfiguration/guestConfigurationAssignments/parameterHash',
     );
-    const hashClause = cond.allOf.find((c) =>
-      c.field.includes('parameterHash'),
-    );
+    const hashClause = cond.allOf.find((c) => c.field.includes('parameterHash'));
     // Hash expression references every setting's ARM parameter so any
     // drift triggers reassignment.
     expect(hashClause!.equals).toContain("parameters('PasswordBackup')");
@@ -241,7 +244,8 @@ describe('exportToAzurePolicy structural shape', () => {
 
   it('deployment template has TWO resources (VM + Arc) gated by condition', () => {
     const p = policyOf(lapsResources, { effect: 'DeployIfNotExists' });
-    const resources = p.properties.policyRule.then.details.deployment!.properties.template.resources;
+    const resources =
+      p.properties.policyRule.then.details.deployment!.properties.template.resources;
     expect(resources).toHaveLength(2);
     const vm = resources.find((r) => r.type.startsWith('Microsoft.Compute/'));
     const arc = resources.find((r) => r.type.startsWith('Microsoft.HybridCompute/'));
@@ -290,8 +294,8 @@ describe('exportToAzurePolicy structural shape', () => {
     // configurationParameter is an empty object, not undefined.
     expect(p.properties.metadata.guestConfiguration.configurationParameter).toEqual({});
     // parameterHash still defined (base64 of empty string).
-    const hashClause = p.properties.policyRule.then.details.existenceCondition.allOf.find(
-      (c) => c.field.includes('parameterHash'),
+    const hashClause = p.properties.policyRule.then.details.existenceCondition.allOf.find((c) =>
+      c.field.includes('parameterHash'),
     );
     expect(hashClause).toBeDefined();
   });
@@ -322,10 +326,10 @@ describe('exportToAzurePolicy structural shape', () => {
 //
 // Regression guard for the Export → MOF → New-GuestConfigurationPackage flow.
 // The emitted MOF must reference the real `Microsoft.OSConfig` PSGallery module
-// (NOT the bare `OSConfig`, which fails to resolve) and must NOT pin a
-// `ModuleVersion`, so the packaging cmdlet binds to whatever Microsoft.OSConfig
-// (1.2.0+) the customer has installed. Verified end-to-end against
-// GuestConfiguration 4.11.0 + Microsoft.OSConfig 1.3.11.
+// (NOT the bare `OSConfig`, which fails to resolve) and uses the portable
+// `0.0.0` Machine Configuration placeholder. The packaging workflow resolves
+// it to the customer's newest installed Microsoft.OSConfig version immediately
+// before New-GuestConfigurationPackage runs.
 import { exportToMof } from './index';
 
 describe('exportToMof — Machine Configuration module binding', () => {
@@ -336,9 +340,66 @@ describe('exportToMof — Machine Configuration module binding', () => {
       properties: {
         resource: {
           type: 'Microsoft.Windows/Registry',
-          properties: { keyPath: 'HKLM:\\SOFTWARE\\X', valueName: 'BackupDirectory', valueType: 'Dword', value: 1 },
+          properties: {
+            keyPath: 'HKLM:\\SOFTWARE\\X',
+            valueName: 'BackupDirectory',
+            valueType: 'REG_DWORD',
+            value: 1,
+          },
         },
         schema: { const: 2 },
+      },
+    },
+    {
+      name: 'NetworkLogon',
+      type: 'Microsoft.OSConfig/Test',
+      properties: {
+        resource: {
+          type: 'Microsoft.Windows/UserRightsAssignment',
+          properties: {
+            name: 'SeNetworkLogonRight',
+            value: ['*S-1-5-32-544', '*S-1-5-11'],
+          },
+        },
+        expression: 'value.size() == 2',
+      },
+    },
+    {
+      name: 'GuestAccount',
+      type: 'Microsoft.OSConfig/Test',
+      properties: {
+        resource: {
+          type: 'Microsoft.Windows/AccountPolicy',
+          properties: { name: 'EnableGuestAccount', value: false },
+        },
+        expression: 'value == false',
+      },
+    },
+    {
+      name: 'AdministratorName',
+      type: 'Microsoft.OSConfig/Test',
+      properties: {
+        resource: {
+          type: 'Microsoft.Windows/AccountPolicy',
+          properties: { name: 'AdministratorAccountName', value: null },
+        },
+        expression: 'value != null',
+      },
+    },
+    {
+      name: 'EmptyBanner',
+      type: 'Microsoft.OSConfig/Test',
+      properties: {
+        resource: {
+          type: 'Microsoft.Windows/Registry',
+          properties: {
+            keyPath: 'HKLM:\\SOFTWARE\\X',
+            valueName: 'Banner',
+            valueType: 'REG_SZ',
+            value: '',
+          },
+        },
+        expression: 'value == ""',
       },
     },
   ];
@@ -353,9 +414,34 @@ describe('exportToMof — Machine Configuration module binding', () => {
     expect(mof).not.toContain('ModuleName = "OSConfig";');
   });
 
-  it('omits ModuleVersion so packaging binds to any installed Microsoft.OSConfig (no exact-version pin)', () => {
+  it('emits portable ModuleVersion 0.0.0 for package-time version resolution', () => {
     const mof = exportToMof('LapsBaseline', resources);
-    expect(mof).not.toMatch(/ModuleVersion\s*=/);
+    expect(mof).toContain('ModuleVersion = "0.0.0";');
+    expect(mof.match(/ModuleVersion = "0\.0\.0";/g)).toHaveLength(resources.length);
+  });
+
+  it('emits one shared correlation group so AuditAndSet remediation can call OSConfig.Set', () => {
+    const mof = exportToMof('LapsBaseline', resources);
+    const groups = Array.from(
+      mof.matchAll(/CorrelationGroup = "(\{[0-9a-f-]{36}\})";/gi),
+      (match) => match[1],
+    );
+    expect(groups).toHaveLength(resources.length);
+    expect(new Set(groups).size).toBe(1);
+  });
+
+  it('moves desired values into canonical MOF Value fields for remediation', () => {
+    const mof = exportToMof('LapsBaseline', resources);
+    const propertyLines = mof.match(/    Properties = ".*";/g) ?? [];
+    expect(propertyLines).toHaveLength(resources.length);
+    expect(propertyLines.filter((line) => line.includes('\\"value\\"'))).toHaveLength(1);
+    expect(mof).toContain('    Value = "1";\n    ValueName = "value";\n    ValueType = "integer";');
+    expect(mof).toContain(
+      '    Value = "*S-1-5-32-544,*S-1-5-11";\n    ValueName = "value";\n    ValueType = "string[]";',
+    );
+    expect(mof).toContain('    Value = "0";\n    ValueName = "value";\n    ValueType = "boolean";');
+    expect(mof).toContain('    Value = null;\n    ValueName = "value";\n    ValueType = "string";');
+    expect(mof).toContain('    Value = "";\n    ValueName = "value";\n    ValueType = "string";');
   });
 
   it('still emits the OSConfig DSC resource class and the configuration footer', () => {

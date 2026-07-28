@@ -126,38 +126,56 @@ installed to bundle it into the package:
 
 ```powershell
 Install-Module GuestConfiguration -Scope AllUsers -Force
-# OSConfig resource module (any 1.2.0 or later - the MOF is not
-# pinned to a specific version, so it binds to whatever is installed)
+# The exported MOF carries a portable 0.0.0 placeholder. Resolve it to
+# the newest module installed on the packaging machine before packaging.
 Install-Module Microsoft.OSConfig -Scope AllUsers -Repository PSGallery -Force
 ```
 
 Then build and publish:
 
 ```powershell
+$InstalledOSConfig = Get-Module -ListAvailable Microsoft.OSConfig |
+  Sort-Object Version -Descending |
+  Select-Object -First 1
+$ResolvedMof = '.\MySecurityBaseline.resolved.mof'
+(Get-Content '.\MySecurityBaseline.mof' -Raw).Replace(
+  'ModuleVersion = "0.0.0";',
+  "ModuleVersion = `"$($InstalledOSConfig.Version)`";"
+) | Set-Content $ResolvedMof -Encoding utf8
+
 # MOF to Machine Configuration package (.zip)
 New-GuestConfigurationPackage `
   -Name MySecurityBaseline `
-  -Configuration .\MySecurityBaseline.mof `
-  -Type AuditAndSet
+  -Configuration $ResolvedMof `
+  -Type Audit `
+  -Path .\package
 
-# Publish the package, then generate the Azure Policy definition
-Publish-GuestConfigurationPackage -Path .\MySecurityBaseline\MySecurityBaseline.zip
+# Upload the returned ZIP to Azure Storage with Set-AzStorageBlobContent,
+# then pass its read-only URI to the policy generator.
 New-GuestConfigurationPolicy `
   -PolicyId <new-guid> `
-  -ContentUri <published-package-uri> `
+  -ContentUri <package-uri> `
   -DisplayName 'My Security Baseline' `
-  -Path .\policy
+  -Path .\policy `
+  -Platform Windows `
+  -PolicyVersion 1.0.0 `
+  -Mode Audit
 ```
 
 Then assign the generated definition in Azure Policy. Use this route
 when you want to own the packaging and publishing step - custom
 storage, your own GUIDs/versioning, or package signing.
 
-> The exported MOF references the `Microsoft.OSConfig` module by name
-> only (no version pin), so packaging succeeds against any installed
-> `Microsoft.OSConfig` 1.2.0+. If the module isn't installed,
+> The exported MOF uses `ModuleVersion = "0.0.0"` as a portable placeholder.
+> Resolve it to the packaging machine's installed version as shown above;
+> Machine Configuration runtime requires the exact bundled version. If the module isn't installed,
 > `New-GuestConfigurationPackage` fails with *"Failed to find a module
 > with the name 'Microsoft.OSConfig'."*
+>
+> Microsoft.OSConfig 1.3.11 can audit these packages, but its PowerShell
+> resource has an upstream `Set()` serialization defect. The example therefore
+> defaults to Audit. Use `AuditAndSet` plus an Apply mode only with a newer
+> module that contains the fix.
 
 ## What changes don't trigger a save
 

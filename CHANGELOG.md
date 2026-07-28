@@ -1,5 +1,21 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+
+- Rebuild the three Windows Server 2025 role baselines without removing or
+  reordering any controls: Member Server remains 320 resources, Domain
+  Controller 321, and Workgroup Member 296. The full overlays use canonical
+  `REG_*` Registry contracts, writable CSP `Config` paths, five additional
+  CSP-to-Registry mappings, and CEL expressions equivalent to the existing
+  compliance schemas.
+- Export `Microsoft.OSConfig` MOFs with a portable `ModuleVersion = "0.0.0"`
+  placeholder, one shared correlation-group GUID, and canonical `Value`,
+  `ValueName`, and `ValueType` fields. Packaging instructions resolve the
+  placeholder to each customer's installed module version before creating the
+  Machine Configuration ZIP.
+
 ## [0.3.95-author.1] - 2026-07-27
 
 > `mac-v0.3.95-author.1` is the current macOS Author tagged source. Its

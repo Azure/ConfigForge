@@ -273,6 +273,64 @@ function mofEscape(s: string): string {
   return s.replace(/\\/g, '\\\\').replace(/"/g, '\\"').replace(/\r?\n/g, '\\r\\n');
 }
 
+function newUuid(): string {
+  if (globalThis.crypto?.randomUUID) return globalThis.crypto.randomUUID();
+  const bytes = new Uint8Array(16);
+  if (globalThis.crypto?.getRandomValues) {
+    globalThis.crypto.getRandomValues(bytes);
+  } else {
+    for (let index = 0; index < bytes.length; index += 1) {
+      bytes[index] = Math.floor(Math.random() * 256);
+    }
+  }
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (byte) => byte.toString(16).padStart(2, '0'));
+  return [
+    hex.slice(0, 4).join(''),
+    hex.slice(4, 6).join(''),
+    hex.slice(6, 8).join(''),
+    hex.slice(8, 10).join(''),
+    hex.slice(10).join(''),
+  ].join('-');
+}
+
+function inferMofValueType(
+  value: unknown,
+  resourceType: string,
+  properties: Record<string, unknown>,
+): 'string' | 'string[]' | 'integer' | 'boolean' {
+  if (Array.isArray(value)) return 'string[]';
+  if (typeof value === 'boolean') return 'boolean';
+  if (typeof value === 'number' || typeof value === 'bigint') return 'integer';
+  if (typeof value === 'string') return 'string';
+
+  if (value === null && resourceType === 'Microsoft.Windows/Registry') {
+    const registryType = String(properties.valueType ?? '').toUpperCase();
+    if (registryType === 'REG_MULTI_SZ' || registryType === 'MULTISTRING') return 'string[]';
+    if (
+      registryType === 'REG_DWORD' ||
+      registryType === 'REG_QWORD' ||
+      registryType === 'DWORD' ||
+      registryType === 'QWORD'
+    ) {
+      return 'integer';
+    }
+  }
+
+  return 'string';
+}
+
+function mofValueString(
+  value: unknown,
+  valueType: 'string' | 'string[]' | 'integer' | 'boolean',
+): string | null {
+  if (value === null || value === undefined) return null;
+  if (valueType === 'string[]') return (value as unknown[]).map(String).join(',');
+  if (valueType === 'boolean') return value ? '1' : '0';
+  return String(value);
+}
+
 /**
  * Serialize a manifest's resources to Machine-Configuration MOF.
  *
@@ -287,13 +345,14 @@ function mofEscape(s: string): string {
  * does via `Get-OscManifest -Format Mof` → `ConvertTo-Mof`.
  */
 export function exportToMof(
-  manifestName: string,
+  _manifestName: string,
   resources: Array<
     { name?: string; type?: string; properties?: Record<string, unknown> } | unknown
   >,
 ): string {
   const instances: string[] = [];
-  const configurationName = crypto?.randomUUID?.() ?? manifestName.replace(/[^a-zA-Z0-9_.-]/g, '_');
+  const configurationName = newUuid();
+  const correlationGroup = `{${newUuid()}}`;
 
   for (const raw of Array.isArray(resources) ? resources : []) {
     if (!raw || typeof raw !== 'object') continue;
@@ -305,6 +364,9 @@ export function exportToMof(
     let expression: string | undefined;
     let schema: unknown | undefined;
     let template: string | undefined;
+    let hasValue = false;
+    let value: unknown;
+    let valueType: 'string' | 'string[]' | 'integer' | 'boolean' | undefined;
 
     // Test-wrapped resources: unwrap to the inner resource (mirrors PS module
     // ConvertTo-Mof lines 1979-1992).
@@ -325,6 +387,19 @@ export function exportToMof(
       if (typeof outerProps.template === 'string') template = outerProps.template;
     }
 
+    if (Object.prototype.hasOwnProperty.call(props, 'value')) {
+      hasValue = true;
+      value = props.value;
+      valueType = inferMofValueType(value, type, props);
+      props = { ...props };
+      // Microsoft.OSConfig.GetActualValue() treats an empty scalar Value as
+      // absent and falls back to Properties.value. Preserve that one fallback
+      // so empty-string requirements survive the MOF round trip.
+      if (!(value === '' && valueType === 'string')) {
+        delete props.value;
+      }
+    }
+
     const propsJson = JSON.stringify(props);
 
     const lines: string[] = [];
@@ -336,16 +411,28 @@ export function exportToMof(
     // module on PSGallery. `New-GuestConfigurationPackage` resolves the module
     // by `ModuleName` to bundle it into the Machine Configuration package, so
     // this MUST be the real module id `Microsoft.OSConfig` (not `OSConfig`).
-    // `ModuleVersion` is intentionally OMITTED: the packaging cmdlet requires it
-    // to match an *installed* version exactly, and customers install whatever
-    // `Microsoft.OSConfig` is current. Omitting it lets the cmdlet bind to the
-    // installed module (1.2.0+); pinning a version would break packaging the
-    // moment the customer's installed version differs.
+    // `0.0.0` is the portable placeholder used by Microsoft's baseline MOFs.
+    // Before New-GuestConfigurationPackage runs, the packaging workflow must
+    // replace it with that customer's newest installed Microsoft.OSConfig
+    // version. The runtime requires an exact version; resolving at package time
+    // keeps the exported MOF portable across customer environments.
     lines.push(`    ModuleName = "Microsoft.OSConfig";`);
+    lines.push(`    ModuleVersion = "0.0.0";`);
     lines.push(`    ConfigurationName = "${mofEscape(configurationName)}";`);
+    lines.push(`    CorrelationGroup = "${correlationGroup}";`);
     lines.push(`    Name = "${mofEscape(name)}";`);
     lines.push(`    Type = "${mofEscape(type)}";`);
     lines.push(`    Properties = "${mofEscape(propsJson)}";`);
+    if (hasValue && valueType) {
+      const serializedValue = mofValueString(value, valueType);
+      lines.push(
+        serializedValue === null
+          ? '    Value = null;'
+          : `    Value = "${mofEscape(serializedValue)}";`,
+      );
+      lines.push('    ValueName = "value";');
+      lines.push(`    ValueType = "${valueType}";`);
+    }
     if (expression) {
       lines.push(`    Expression = "${mofEscape(expression)}";`);
     }
