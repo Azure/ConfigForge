@@ -13,7 +13,7 @@ ConfigForge uses GitHub Actions from `.github/workflows/`. The product is an Ele
 
 The Win/Linux Release workflow intentionally ignores hyphen-suffix tags
 (`!v*-*`). macOS Author releases use separate tags such as
-`mac-v0.3.96-author.1`; dispatch the protected `main` workflow definition
+`mac-v0.3.97-author.1`; dispatch the protected `main` workflow definition
 manually and let its checkout step select the immutable macOS tag.
 
 ## What `pr-check.yml` runs
@@ -35,7 +35,7 @@ files; main PR #76 then passed its full suite plus 32 focused nested-navigation
 tests. Mac port PR #77 passed 79 focused tests and two isolated Playwright
 scenarios. Historical `0.3.93-author.1` and `0.3.93-author.2` validation
 records are superseded; their tags and releases no longer exist. The current
-macOS Author tagged source is `mac-v0.3.96-author.1`, with an unpublished
+macOS Author tagged source is `mac-v0.3.97-author.1`, with an unpublished
 draft release. Use its current GitHub checks and release metadata as the
 authority rather than pinning a workflow run in this document.
 
@@ -71,7 +71,7 @@ the immutable macOS tag:
 gh workflow run "Release (macOS author)" \
   --repo Azure/ConfigForge \
   --ref main \
-  -f release_tag=mac-v0.3.96-author.1
+  -f release_tag=mac-v0.3.97-author.1
 ```
 
 The target draft release and tag must already exist. The workflow loads its
@@ -79,16 +79,16 @@ definition from `main`, checks out `release_tag`, verifies that
 `HEAD` resolves to the tag, checks that tagged tree with the dependency-free
 public-asset guard from protected `main`, then builds with
 `electron-builder.author.yml`.
-The `mac-v0.3.96-author.1` release contract expects exactly these assets:
+The `mac-v0.3.97-author.1` release contract expects exactly these assets:
 
-1. `ConfigForge-Author-0.3.96-author.1-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.96-author.1-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.97-author.1-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.97-author.1-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`
 
 The workflow refuses a published release and never publishes automatically.
-For `mac-v0.3.96-author.1`, use the current GitHub checks and draft release as
+For `mac-v0.3.97-author.1`, use the current GitHub checks and draft release as
 the authority for actual build and asset status.
 
 ## Linux runner notes

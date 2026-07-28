@@ -21,7 +21,7 @@
     because we forgot step 1 on an earlier author release and had to retry).
 
 .PARAMETER Tag
-    The release tag, e.g. "mac-v0.3.96-author.1". Must already exist as a
+    The release tag, e.g. "mac-v0.3.97-author.1". Must already exist as a
     git tag on the mac-author-build branch and be pushed to origin.
 
 .PARAMETER ReleaseTitle
@@ -35,10 +35,10 @@
     Optional path to a release-notes file. Cannot be combined with -Notes.
 
 .EXAMPLE
-    .\scripts\ship-mac.ps1 -Tag mac-v0.3.96-author.1
+    .\scripts\ship-mac.ps1 -Tag mac-v0.3.97-author.1
 
 .EXAMPLE
-    .\scripts\ship-mac.ps1 -Tag mac-v0.3.96-author.1 -NotesFile .\apps\desktop\build\release-notes-author.md
+    .\scripts\ship-mac.ps1 -Tag mac-v0.3.97-author.1 -NotesFile .\apps\desktop\build\release-notes-author.md
 #>
 
 [CmdletBinding()]

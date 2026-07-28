@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## [0.3.97] - 2026-07-28
+
+> `v0.3.97` is the current Windows/Linux tagged source. Its matching GitHub
+> release remains a draft and unpublished.
 
 ### Fixed
 
@@ -12,8 +15,8 @@
 
 ## [0.3.96] - 2026-07-28
 
-> `v0.3.96` is the current Windows/Linux tagged source. Its matching GitHub
-> release remains a draft and unpublished.
+> `v0.3.96` is the prior Windows/Linux tagged source. Its matching GitHub
+> release was an unpublished draft.
 
 ### Fixed
 

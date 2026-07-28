@@ -6,11 +6,11 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The current Windows/Linux tagged source is `v0.3.96`, and its matching GitHub
+The current Windows/Linux tagged source is `v0.3.97`, and its matching GitHub
 release is a draft and unpublished. The current macOS Author tagged source is
-`mac-v0.3.96-author.1`, and its matching GitHub release is also a draft and
-unpublished. The package versions are `0.3.96` for the Full edition and
-`0.3.96-author.1` for the macOS Author edition.
+`mac-v0.3.97-author.1`, and its matching GitHub release is also a draft and
+unpublished. The package versions are `0.3.97` for the Full edition and
+`0.3.97-author.1` for the macOS Author edition.
 
 ## What it looks like
 
@@ -199,8 +199,10 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **0.3.96** (current Windows/Linux tagged source; draft unpublished) | Preserves all 320/321/296 WS2025 controls while fixing Registry/CSP contracts and CEL compliance, and hardens Machine Configuration MOF export in PR #104 |
-| **0.3.96-author.1** (current macOS tagged source; draft unpublished) | Ports the same WS2025 authoring and global MOF export fixes to the author-only macOS line in PR #105 |
+| **0.3.97** (current Windows/Linux tagged source; draft unpublished) | Preserves authoritative CLI reasons for expression-backed Test resources and adds detailed templates to all WS2025 controls |
+| **0.3.97-author.1** (current macOS tagged source; draft unpublished) | Ports the same detailed audit-reason behavior to the author-only macOS line |
+| **0.3.96** (prior Windows/Linux draft) | Preserves all 320/321/296 WS2025 controls while fixing Registry/CSP contracts and CEL compliance, and hardens Machine Configuration MOF export in PR #104 |
+| **0.3.96-author.1** (prior macOS draft) | Ports the same WS2025 authoring and global MOF export fixes to the author-only macOS line in PR #105 |
 | **0.3.95** (prior Windows/Linux draft) | Replaces unreliable native hover titles with FluentUI tooltips on My Baselines status cells (keyboard accessible, ARIA-exposed multiline details) in PR #100; corrects documentation architecture and release-state drift in PR #97 |
 | **0.3.94** (prior Full edition) | Excludes CIS benchmark source data from public installers, publishes the public licensing/privacy/support/security policy surface, patches dev-only `brace-expansion` 5.x, and refreshes nine README screenshots with synthetic benchmark content in PR #89 |
 | **0.3.94-author.1** (prior macOS draft) | Carries the public-source packaging, policy, privacy, security, and nine synthetic screenshot updates into the author-only Apple Silicon edition without adding device operations |
