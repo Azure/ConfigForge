@@ -1,6 +1,6 @@
 # Diagrams
 
-Reference diagrams for the current Electron + `@configforge/core` architecture. They cover request flow, Full-edition registration/deploy states, AI provenance, and CIS lookup. The macOS Author edition omits the device-operation namespaces shown in the deploy/audit/revert paths.
+Reference diagrams for the current Electron + `@configforge/core` architecture. They cover request flow, Full-edition registration/deploy states, analysis provenance, and CIS lookup. The macOS Author edition omits the device-operation namespaces shown in the deploy/audit/revert paths.
 
 Diagrams render via the `mdbook-mermaid` preprocessor; both the
 preprocessor version and the release tarball SHA256 are pinned in
@@ -62,12 +62,12 @@ stateDiagram-v2
 > Audit / Revert open `<CliRequiredModal />` instead of running
 > when `oscfg` is missing.
 
-## AI provenance + circular-guard
+## Analysis provenance + circular-guard
 
 The diff analysis is a local heuristic (no LLM/network). Sources and
-citation coverage are displayed in the AI panel. When `sources.length === 0`
+citation coverage are displayed in the analysis panel. When `sources.length === 0`
 or `citationCoverage < 0.5`, the panel shows a low-confidence advisory
-banner; it does not gate an Apply action. AI-generated output is **labeled**
+banner. Generated output is **labeled**
 with a marker (`<!-- ai-generated:rev=N -->`) plus a spoof-resistant
 per-process FNV-1a 64-bit content-hash registry (CF-SEC-007). Note: the
 marker is advisory — the `assertNotAiGenerated` check is available in core
@@ -88,8 +88,7 @@ flowchart TD
 ```
 
 > **Warning:** A response with `sources: []` is **always** advisory.
-> Citation coverage affects the warning banner only; there is no
-> Apply visibility gate in the AI panel.
+> Citation coverage affects the warning banner only.
 
 ## CIS lookup flow
 
@@ -134,4 +133,4 @@ flowchart TD
 
 - [Architecture → System overview](./system-overview.md)
 - [Architecture → Registration semantics](./registration-semantics.md)
-- [User Guide → AI analysis with provenance](../user-guide/ai-provenance.md)
+- [User Guide → Analysis provenance](../user-guide/analysis-provenance.md)

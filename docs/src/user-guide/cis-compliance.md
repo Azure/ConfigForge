@@ -171,7 +171,7 @@ storage. Open
 Markdown**, or trigger the audit-pack IPC channel with `format: 'pdf'`
 or `format: 'markdown'`.
 
-Today AI provenance is not persisted per manifest, so the
+Today analysis provenance is not persisted per manifest, so the
 citations/provenance section is omitted in normal UI-generated audit
 packs. Both formats omit the CIS section gracefully when CIS data isn't
 available. See [Audit-pack](./audit-pack.md).
@@ -198,4 +198,4 @@ available. See [Audit-pack](./audit-pack.md).
 
 - [API Reference > Compliance](../api-reference/compliance.md)
 - [User Guide > Audit-pack](./audit-pack.md)
-- [User Guide > AI analysis with provenance](./ai-provenance.md)
+- [User Guide > Analysis provenance](./analysis-provenance.md)

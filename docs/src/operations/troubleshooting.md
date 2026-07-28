@@ -124,13 +124,6 @@ Fix: trim the history (`CONFIGFORGE_HISTORY_MAX_COUNT`), or use the
 Markdown export for a leaner output. The PDF builder is already
 streaming; it doesn't buffer the whole document.
 
-## "AI suggestion's Apply button is disabled"
-
-Cause: `citationCoverage < 0.5` or `sources.length === 0`.
-
-Fix: this is intentional. Ask the analyzer for grounding; if it
-genuinely can't cite anything, treat the suggestion as advisory.
-
 ## "CIS drawer or CIS Diff shows no matches"
 
 Symptom: the CIS cross-reference drawer or **Diff → CIS Diff** table shows no matched rules.

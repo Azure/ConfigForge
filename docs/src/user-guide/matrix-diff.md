@@ -183,5 +183,5 @@ came from:
 ## See also
 
 - [API Reference → Diff matrix](../api-reference/diff.md)
-- [User Guide → AI analysis with provenance](./ai-provenance.md)
+- [User Guide → Analysis provenance](./analysis-provenance.md)
 - [User Guide → Benchmark Mapping](./cis-compliance.md)

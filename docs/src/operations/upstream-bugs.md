@@ -1,24 +1,14 @@
-# Filing upstream bugs
+# Reporting `oscfg` issues
 
 `oscfg` is in active preview. ConfigForge currently targets
-`oscfg 1.3.9-preview11` and can hit CLI bugs from time to time; this page
-tells you where to file them.
+`oscfg 1.3.9-preview11` and can encounter CLI defects.
 
-> **Warning:** Do **not** open issues on
-> [`microsoft/osconfig`](https://github.com/microsoft/osconfig) on
-> GitHub. Issues are disabled there; that repo is a public mirror,
-> not the development tree. The repo is read-only from the
-> community's perspective.
+Report the problem through
+[ConfigForge GitHub Issues](https://github.com/Azure/ConfigForge/issues).
+Maintainers will determine whether the failure is in ConfigForge integration
+or the upstream CLI and route it appropriately.
 
-## The real tracker
-
-Internal Azure DevOps:
-
-- Organization: `microsoft`
-- Project: `OS`
-- Area path: `OS\Core\ENS\Edge Security\ESCC\OSConfig`
-
-Filing checklist:
+## Issue checklist
 
 1. **Title** - short, imperative, mention the verb that failed.
    *"`oscfg get resource` opens log file in protected dir on every
@@ -54,8 +44,8 @@ unless the *underlying* code is the issue:
 The Linux side of the CLI is currently **unverified end-to-end** by
 ConfigForge CI (no Linux runner with `oscfg` installed). If
 you have a Linux environment, smoke-test the flow and capture
-evidence under `.probe/` (gitignored). File under the same area
-path with a `Linux` tag.
+evidence under `.probe/` (gitignored). Include `Linux` in the GitHub issue
+title or labels.
 
 ## See also
 

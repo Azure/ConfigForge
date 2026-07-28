@@ -111,7 +111,7 @@ current macOS branch.
 One click on **Audit Pack** opens a download surface with PDF + Markdown
 buttons, an inline PDF preview, and a sidebar showing exactly what's in the
 pack (baseline header, compliance report, version history, rationale log, and
-AI provenance labels). This authoring/export workflow is available in both the
+analysis provenance labels). This authoring/export workflow is available in both the
 Full and macOS Author editions; it does not perform a device audit.
 
 ![Audit pack download page: PDF + Markdown buttons, inline preview, what's-included sidebar](./docs/images/screenshots/audit-pack.png)
@@ -200,7 +200,7 @@ is not a universal binary.
 |---|---|
 | `apps/desktop/**` | The Electron app: renderer (React + FluentUI v9 + Vite), main process, preload bridge, electron-builder config |
 | `apps/desktop/src/pages/<Page>/` | Each lighthouse page lives in its own directory with `index.tsx` (composition), `state/` (custom hooks + their tests), `components/` (memoised sub-components), and optional `helpers.tsx`. Pattern landed during the Phase A-E renderer-page split |
-| `packages/core/**` | Platform-neutral core: manifests, history, audit-pack, oscfg wrapper, AI provenance labeling (`circular-guard`, `provenance`; local heuristic, advisory). Imported as `@configforge/core` from the desktop app |
+| `packages/core/**` | Platform-neutral core: manifests, history, audit-pack, oscfg wrapper, analysis provenance labeling (`circular-guard`, `provenance`; local heuristic, advisory). Imported as `@configforge/core` from the desktop app |
 | `resources/oscfg/**` | **Dev-only convenience drop** for contributors who bring their own `oscfg` binary. Never shipped to users; the installer carries no Microsoft-owned binaries |
 | `public/_baselines/**` | Curated baseline manifests (Windows Server, Defender, LAPS, Secured Core, Linux SFF, etc.), bundled into installers |
 | `docs/**` | mdbook documentation site (separate from the app) |
@@ -220,8 +220,7 @@ is not a universal binary.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
   Quick Start, User Guide, Architecture, API Reference, and Operations. The
   `docs` workflow builds this into an mdBook site and deploys it to the
-  `gh-pages` branch. While the repository is private, that site is served only
-  to repository collaborators rather than at a public URL.
+  `gh-pages` branch at <https://azure.github.io/ConfigForge/>.
 
 ## Contributing
 

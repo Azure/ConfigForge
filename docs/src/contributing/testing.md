@@ -50,7 +50,7 @@ available for manual re-runs. It has three jobs:
 
 - The actual `oscfg` binary. CI doesn't have it. End-to-end CLI tests run during local Windows smoke (see [Smoke testing](../operations/smoke-testing.md)).
 - The Linux CLI side with a live `oscfg` install. CI verifies Linux builds, but not live deploy/audit operations.
-- The AI analyzer's *content quality*. We test that `provenance` is populated and `citationCoverage` is honest; we don't grade the prose.
+- The local analyzer's *content quality*. We test that `provenance` is populated and `citationCoverage` is honest; we don't grade the prose.
 - Visual regression. Playwright traces are available but a pixel-diff workflow is out of scope.
 
 ## Vitest layout
