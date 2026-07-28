@@ -1,9 +1,21 @@
 # Changelog
 
+## [0.3.98-author.1] - 2026-07-28
+
+> `mac-v0.3.98-author.1` is the current macOS Author tagged source. Its
+> matching GitHub release remains an unpublished draft.
+
+### Documentation
+
+- Add standalone Azure Machine Configuration instructions to the README and a
+  complete mdBook deployment guide.
+- Remove nonexistent Apply-button guidance, internal tracker details, obsolete
+  private-repository wording, and unused AI-analysis terminology.
+
 ## [0.3.97-author.1] - 2026-07-28
 
-> `mac-v0.3.97-author.1` is the current macOS Author tagged source. Its
-> matching GitHub release remains an unpublished draft.
+> `mac-v0.3.97-author.1` is the prior macOS Author tagged source. Its
+> matching GitHub release was an unpublished draft.
 
 ### Fixed
 

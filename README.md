@@ -6,10 +6,10 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The current Windows/Linux Full-edition tagged source is `v0.3.97`. The
-current macOS Author tagged source is `mac-v0.3.97-author.1`. Both matching
+The current Windows/Linux Full-edition tagged source is `v0.3.98`. The
+current macOS Author tagged source is `mac-v0.3.98-author.1`. Both matching
 GitHub releases remain unpublished drafts. The Full-edition package version
-on `main` is `0.3.97`; the macOS Author package version is `0.3.97-author.1`.
+on `main` is `0.3.98`; the macOS Author package version is `0.3.98-author.1`.
 
 The macOS Author release ports applicable documentation-accuracy corrections
 from `main` PR [#97](https://github.com/Azure/ConfigForge/pull/97) via PR
@@ -242,8 +242,10 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **0.3.97-author.1** (current macOS tagged source; draft unpublished) | Preserves authoritative CLI reasons and adds detailed templates to every WS2025 control. |
-| **0.3.97** (current Windows/Linux tagged source; draft unpublished) | Preserves authoritative CLI reasons for expression-backed Test resources and adds detailed WS2025 reason templates. |
+| **0.3.98-author.1** (current macOS tagged source; draft unpublished) | Adds complete Machine Configuration documentation and removes stale/internal public-doc guidance. |
+| **0.3.98** (current Windows/Linux tagged source; draft unpublished) | Adds the same public Machine Configuration guide and documentation cleanup to the Full edition. |
+| **0.3.97-author.1** (prior macOS draft) | Preserves authoritative CLI reasons and adds detailed templates to every WS2025 control. |
+| **0.3.97** (prior Windows/Linux draft) | Preserves authoritative CLI reasons for expression-backed Test resources and adds detailed WS2025 reason templates. |
 | **0.3.96-author.1** (prior macOS draft) | Ports the full 320/321/296 WS2025 control-preservation work and global Machine Configuration MOF export fixes from main PR #104 through PR #105. |
 | **0.3.96** (prior Windows/Linux draft) | Preserves every WS2025 control while fixing Registry/CSP contracts and CEL compliance, and hardens Machine Configuration MOF export in PR #104. |
 | **0.3.95-author.1** (prior macOS draft, unpublished) | Fixes unreliable My Baselines status tooltips by replacing native HTML hover titles with FluentUI tooltips (PR #101), and ports documentation-accuracy corrections from main PR #97 (PR #99). |

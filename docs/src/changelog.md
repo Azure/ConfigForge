@@ -3,10 +3,21 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## macOS Author v0.3.98-author.1 — 2026-07-28
+
+`mac-v0.3.98-author.1` is the current macOS Author tagged source. Its matching
+GitHub release remains an unpublished draft.
+
+- **Machine Configuration documentation:** Add standalone README guidance and
+  a complete mdBook deployment workflow.
+- **Public documentation cleanup:** Remove nonexistent Apply-button guidance,
+  internal tracker details, obsolete private-repository wording, and unused
+  AI-analysis terminology.
+
 ## macOS Author v0.3.97-author.1 — 2026-07-28
 
-`mac-v0.3.97-author.1` is the current macOS Author tagged source. Its matching
-GitHub release remains an unpublished draft.
+`mac-v0.3.97-author.1` is the prior macOS Author tagged source. Its matching
+GitHub release was an unpublished draft.
 
 - **Detailed compliance reasons:** ConfigForge now preserves the reason
   returned by `oscfg` for expression-backed Test resources. All WS2025
