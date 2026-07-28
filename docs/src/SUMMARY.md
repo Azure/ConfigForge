@@ -11,6 +11,7 @@
 # User Guide
 
 - [Manifest editor](./user-guide/manifest-editor.md)
+- [Azure Machine Configuration deployment](./user-guide/machine-configuration.md)
 - [Diff: pairwise + master matrix](./user-guide/matrix-diff.md)
 - [CIS cross-reference & compliance](./user-guide/cis-compliance.md)
 - [Rationale & change-author capture](./user-guide/rationale.md)

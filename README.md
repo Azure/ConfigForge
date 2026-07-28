@@ -12,6 +12,53 @@ release is a draft and unpublished. The current macOS Author tagged source is
 unpublished. The package versions are `0.3.97` for the Full edition and
 `0.3.97-author.1` for the macOS Author edition.
 
+## Export to Azure Machine Configuration
+
+Use this supported path to deploy a ConfigForge baseline through Azure Policy:
+
+`ConfigForge baseline → MOF → resolved MOF → Machine Configuration ZIP → Azure Storage → generated policy JSON → policy definition → assignment`
+
+1. Open **Baseline Detail**, select **Export**, and save the baseline as
+   **MOF (`.mof`)**.
+2. On a PowerShell 7 packaging machine, install `GuestConfiguration`,
+   `Microsoft.OSConfig`, and the required `Az` modules.
+3. Resolve the exported MOF's portable `ModuleVersion = "0.0.0"` placeholder
+   to the newest `Microsoft.OSConfig` version installed on that machine:
+
+   ```powershell
+   $Module = Get-Module -ListAvailable Microsoft.OSConfig |
+     Sort-Object Version -Descending |
+     Select-Object -First 1
+   (Get-Content .\Baseline.mof -Raw).Replace(
+     'ModuleVersion = "0.0.0";',
+     "ModuleVersion = `"$($Module.Version)`";"
+   ) | Set-Content .\Baseline.resolved.mof -Encoding utf8
+   ```
+
+4. Create and test an Audit package:
+
+   ```powershell
+   $Package = New-GuestConfigurationPackage `
+     -Name ConfigForgeBaseline_1_0_0 `
+     -Configuration .\Baseline.resolved.mof `
+     -Type Audit `
+     -Path .\package `
+     -Force
+
+   Get-GuestConfigurationPackageComplianceStatus -Path $Package.Path
+   ```
+
+5. Upload the ZIP with `Set-AzStorageBlobContent`, create a read-only package
+   URI, then run `New-GuestConfigurationPolicy -Mode Audit`.
+6. Publish the returned JSON with `New-AzPolicyDefinition` and assign it with
+   `New-AzPolicyAssignment`. Azure VMs also need the built-in Machine
+   Configuration prerequisite initiative.
+
+Use a unique package name/version and do not modify the ZIP after generating
+the policy because the definition includes its content hash. Audit is the
+documented default while Microsoft.OSConfig 1.3.11 retains its upstream
+remediation serialization defect.
+
 ## What it looks like
 
 Left rail order is **Dashboard, My Baselines, Microsoft Baselines, Export Readiness, Diff, Benchmark Mapping, Settings**.
@@ -171,7 +218,7 @@ is not a universal binary.
 - **[`SUPPORT.md`](./SUPPORT.md)** and **[`SECURITY.md`](./SECURITY.md)**: best-effort support boundaries and private vulnerability reporting.
 - **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
 - **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current macOS
-  Author tagged source is `mac-v0.3.96-author.1`; its matching release is a
+  Author tagged source is `mac-v0.3.97-author.1`; its matching release is a
   draft and unpublished.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
   Quick Start, User Guide, Architecture, API Reference, and Operations. The
@@ -206,8 +253,8 @@ is not a universal binary.
 | **0.3.95** (prior Windows/Linux draft) | Replaces unreliable native hover titles with FluentUI tooltips on My Baselines status cells (keyboard accessible, ARIA-exposed multiline details) in PR #100; corrects documentation architecture and release-state drift in PR #97 |
 | **0.3.94** (prior Full edition) | Excludes CIS benchmark source data from public installers, publishes the public licensing/privacy/support/security policy surface, patches dev-only `brace-expansion` 5.x, and refreshes nine README screenshots with synthetic benchmark content in PR #89 |
 | **0.3.94-author.1** (prior macOS draft) | Carries the public-source packaging, policy, privacy, security, and nine synthetic screenshot updates into the author-only Apple Silicon edition without adding device operations |
-| **0.3.93-author.2** (historical macOS source milestone; no current tag or release) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83/#84. Historical workflow evidence is superseded by the current `mac-v0.3.96-author.1` draft release metadata. |
-| **0.3.93-author.1** (historical macOS source milestone; no current tag or release) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77. Historical workflow evidence is superseded by the current `mac-v0.3.96-author.1` draft release metadata. |
+| **0.3.93-author.2** (historical macOS source milestone; no current tag or release) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83/#84. Historical workflow evidence is superseded by the current `mac-v0.3.97-author.1` draft release metadata. |
+| **0.3.93-author.1** (historical macOS source milestone; no current tag or release) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77. Historical workflow evidence is superseded by the current `mac-v0.3.97-author.1` draft release metadata. |
 | **0.3.93** (prior Full edition) | Adds nested Enter/Tab editing and repairs standalone Windows Server 2025 audits, CIS mapping, and Matrix Diff policy identity handling |
 | **0.3.92** | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
 | **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
