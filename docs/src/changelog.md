@@ -3,6 +3,17 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## Unreleased
+
+- **Windows Server 2025 baselines:** Rebuilt the full Member Server (320),
+  Domain Controller (321), and Workgroup Member (296) profiles without losing
+  controls or changing their order. Registry resources use canonical contracts,
+  writable CSP paths replace read-only paths, and existing schema semantics are
+  represented as CEL expressions.
+- **Machine Configuration MOF export:** Exported resources use a portable
+  `Microsoft.OSConfig` `0.0.0` placeholder that is resolved at package time,
+  plus the correlation and typed value fields required by the DSC resource.
+
 ## macOS Author v0.3.95-author.1 — 2026-07-27
 
 `mac-v0.3.95-author.1` is the current macOS Author tagged source. Its
