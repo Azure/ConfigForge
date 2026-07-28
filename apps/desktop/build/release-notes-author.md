@@ -1,30 +1,29 @@
-# ConfigForge Author 0.3.97-author.1 - macOS
+# ConfigForge Author 0.3.98-author.1 - macOS
 
-> **Release state: draft and unpublished.** `mac-v0.3.97-author.1` is the
-> current macOS Author tagged source.
+> **Release state: draft and unpublished.**
 
-This release keeps the complete WS2025 baseline and Machine Configuration
-export fixes from 0.3.96 while restoring detailed compliance explanations.
+This documentation-focused release adds a complete Azure Machine Configuration
+deployment path and removes stale public guidance.
 
-## Detailed compliance reasons
+## Added
 
-- Preserve the authoritative reason returned by `oscfg` for expression-backed
-  Test resources instead of replacing it with a generic pass/fail sentence.
-- Add human-readable `{value}` templates to all 320 Member Server, 321 Domain
-  Controller, and 296 Workgroup Member controls.
-- Direct CLI and ConfigForge audits now report messages such as:
-  `The value 3 must be one of 5, (not set).`
+- Standalone Machine Configuration workflow in the README.
+- Full mdBook guide covering MOF export, module-version resolution, package
+  creation, local testing, Azure Storage, policy generation, assignment,
+  verification, and troubleshooting.
 
-## Author-only boundary
+## Corrected
 
-The macOS preload still excludes device deployment, device audit, enforcement,
-revert, elevation, CLI health, and audit-results storage. MOF and baseline
-authoring/export remain available.
+- Removed guidance for a nonexistent suggestion Apply button.
+- Removed internal tracker and repository details from public documentation.
+- Removed obsolete private-repository wording.
+- Replaced unused AI-analysis product terminology with accurate local-analysis
+  and provenance terminology.
 
-## Expected draft release assets
+## Expected assets
 
-1. `ConfigForge-Author-0.3.97-author.1-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.97-author.1-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.98-author.1-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.98-author.1-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`

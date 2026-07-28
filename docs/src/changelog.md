@@ -4,10 +4,22 @@ A concise release history for ConfigForge. Newer entries use their release
 tags and state publication status explicitly; older entries summarize the
 foundational work by theme.
 
+## v0.3.98 — 2026-07-28
+
+`v0.3.98` is the current Windows/Linux tagged source. Its matching GitHub
+release remains a draft and unpublished.
+
+- **Machine Configuration documentation:** Add a standalone README workflow
+  and a complete mdBook guide for MOF resolution, packaging, testing, Storage,
+  Azure Policy, assignment, verification, and troubleshooting.
+- **Public documentation cleanup:** Remove nonexistent Apply-button guidance,
+  internal tracker details, obsolete private-repository wording, and unused
+  AI-analysis terminology.
+
 ## v0.3.97 — 2026-07-28
 
-`v0.3.97` is the current Windows/Linux tagged source. Its matching GitHub
-release remains a draft and unpublished.
+`v0.3.97` is the prior Windows/Linux tagged source. Its matching GitHub release
+was an unpublished draft.
 
 - **Detailed compliance reasons:** ConfigForge now preserves the reason
   returned by `oscfg` for expression-backed Test resources. All WS2025

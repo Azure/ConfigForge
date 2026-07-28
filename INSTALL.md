@@ -8,11 +8,11 @@ ConfigForge has two editions:
   and Audit Pack export are available. Device Deploy, Audit, and Revert are
   intentionally omitted.
 
-The current Windows/Linux tagged source is `v0.3.97`, and its matching GitHub
+The current Windows/Linux tagged source is `v0.3.98`, and its matching GitHub
 release is a draft and unpublished. The current macOS Author tagged source is
-`mac-v0.3.97-author.1`, and its matching GitHub release is also a draft and
-unpublished. The package versions are `0.3.97` for the Full edition and
-`0.3.97-author.1` for the macOS Author edition.
+`mac-v0.3.98-author.1`, and its matching GitHub release is also a draft and
+unpublished. The package versions are `0.3.98` for the Full edition and
+`0.3.98-author.1` for the macOS Author edition.
 
 ConfigForge does **not** bundle the OSConfig CLI. To use the Full edition's Deploy, Audit, or Revert features against a real Windows or Linux machine, install `oscfg` separately from its upstream source.
 
@@ -128,7 +128,7 @@ later). The release contains an ARM64-only binary. It is not an x64 or
 universal build and does not support Intel Macs. Rosetta does not provide
 ARM64-on-Intel compatibility.
 
-The current macOS Author tagged source is `mac-v0.3.97-author.1`. Its matching
+The current macOS Author tagged source is `mac-v0.3.98-author.1`. Its matching
 GitHub release is a draft and is not available from the public
 [Azure/ConfigForge releases](https://github.com/Azure/ConfigForge/releases)
 page until a maintainer publishes it. Users can build the tagged source by
