@@ -6,8 +6,8 @@ Security fixes are evaluated for the current tagged source lines.
 
 | Edition | Current version | Security updates |
 | --- | --- | --- |
-| Full edition for Windows and Linux | `v0.3.95` | Supported tagged source; release remains a draft |
-| macOS Author edition | `mac-v0.3.94-author.1` | Supported tagged source; release remains a draft |
+| Full edition for Windows and Linux | `v0.3.96` | Supported tagged source; release remains a draft |
+| macOS Author edition | `mac-v0.3.96-author.1` | Supported tagged source; release remains a draft |
 | Older versions | Earlier tags | Not supported |
 
 ## Security scope
