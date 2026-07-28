@@ -55,7 +55,7 @@ low confidence / advisory only.
 | Condition | UI behaviour |
 | --- | --- |
 | `sources.length === 0` | Sources panel: *"No sources cited. Advisory only."* Low-confidence banner shown. |
-| `citationCoverage < 0.5` | Banner: *"Low confidence. Verify before applying."* |
+| `citationCoverage < 0.5` | Banner: *"Low confidence. Verify before relying on this result."* |
 | `0.5 ≤ citationCoverage < 0.8` | Sources panel shows citation coverage; user should verify. |
 | `≥ 0.8` | Default UI. |
 
