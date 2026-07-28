@@ -17,6 +17,41 @@ from `main` PR [#97](https://github.com/Azure/ConfigForge/pull/97) via PR
 native HTML hover titles with FluentUI tooltips on the My Baselines status
 cells via PR [#101](https://github.com/Azure/ConfigForge/pull/101).
 
+## Export to Azure Machine Configuration
+
+The macOS Author edition can author and export the MOF used by Azure Machine
+Configuration:
+
+`ConfigForge baseline → MOF → resolved MOF → Machine Configuration ZIP → Azure Storage → generated policy JSON → policy definition → assignment`
+
+1. Open **Baseline Detail**, select **Export**, and save the baseline as
+   **MOF (`.mof`)**.
+2. Move the MOF to a supported PowerShell 7 packaging machine. Local Machine
+   Configuration package testing is not supported on macOS.
+3. Install `GuestConfiguration` and `Microsoft.OSConfig`, then replace the
+   portable `ModuleVersion = "0.0.0"` placeholder with the newest installed
+   module version:
+
+   ```powershell
+   $Module = Get-Module -ListAvailable Microsoft.OSConfig |
+     Sort-Object Version -Descending |
+     Select-Object -First 1
+   (Get-Content .\Baseline.mof -Raw).Replace(
+     'ModuleVersion = "0.0.0";',
+     "ModuleVersion = `"$($Module.Version)`";"
+   ) | Set-Content .\Baseline.resolved.mof -Encoding utf8
+   ```
+
+4. Create an Audit package with `New-GuestConfigurationPackage`, verify it
+   with `Get-GuestConfigurationPackageComplianceStatus`, upload it to Azure
+   Storage, and generate the policy with
+   `New-GuestConfigurationPolicy -Mode Audit`.
+5. Publish and assign the returned policy JSON through Azure Policy.
+
+Use unique package versions and do not modify the ZIP after policy generation.
+Audit is the documented default while Microsoft.OSConfig 1.3.11 retains its
+upstream remediation serialization defect.
+
 ## What it looks like
 
 Left rail order is **Dashboard, My Baselines, Microsoft Baselines, Export Readiness, Diff, Benchmark Mapping, Settings**.
@@ -180,7 +215,7 @@ is not a universal binary.
 - **[`SUPPORT.md`](./SUPPORT.md)** and **[`SECURITY.md`](./SECURITY.md)**: best-effort support boundaries and private vulnerability reporting.
 - **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
 - **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current macOS
-  Author line is tagged as `mac-v0.3.96-author.1`; its release is an
+  Author line is tagged as `mac-v0.3.97-author.1`; its release is an
   unpublished draft.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
   Quick Start, User Guide, Architecture, API Reference, and Operations. The

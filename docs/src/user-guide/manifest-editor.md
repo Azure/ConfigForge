@@ -71,11 +71,11 @@ a newline for structured values.
 
 ## Resource wrappers
 
-Two resource types are *wrappers* that nest other resources:
+Two resource types are _wrappers_ that nest other resources:
 
-| Wrapper | Behaviour |
-| --- | --- |
-| `Microsoft.OSConfig/Group` | A logical group; nested resources are validated recursively. |
+| Wrapper                    | Behaviour                                                                          |
+| -------------------------- | ---------------------------------------------------------------------------------- |
+| `Microsoft.OSConfig/Group` | A logical group; nested resources are validated recursively.                       |
 | `Microsoft.OSConfig/Test`  | An assertion. Wraps a single resource and adds an `expression`/`compliance` field. |
 
 The platform validator (`packages/core/src/platform.ts`) walks both
@@ -100,12 +100,12 @@ edit → validate → persist source.yaml + .json → optional snapshot →
 The current renderer **Export** menu writes the manifest in these
 formats:
 
-| Format | Extension | Use |
-| --- | --- | --- |
-| YAML | `.osc.yaml` | Native OSConfig manifest - the canonical source. |
-| JSON | `.json` | The manifest as JSON. |
-| MOF | `.mof` | DSC Managed Object Format for the Azure Machine Configuration toolchain (see below). Read-only in the editor. |
-| CSV | `.csv` | Flat per-resource rows for spreadsheets / bulk review. |
+| Format | Extension   | Use                                                                                                           |
+| ------ | ----------- | ------------------------------------------------------------------------------------------------------------- |
+| YAML   | `.osc.yaml` | Native OSConfig manifest - the canonical source.                                                              |
+| JSON   | `.json`     | The manifest as JSON.                                                                                         |
+| MOF    | `.mof`      | DSC Managed Object Format for the Azure Machine Configuration toolchain (see below). Read-only in the editor. |
+| CSV    | `.csv`      | Flat per-resource rows for spreadsheets / bulk review.                                                        |
 
 Use the separate **Docs** button to download generated Markdown
 documentation. Azure Policy export exists in the core handler but is
@@ -166,11 +166,15 @@ Then assign the generated definition in Azure Policy. Use this route
 when you want to own the packaging and publishing step - custom
 storage, your own GUIDs/versioning, or package signing.
 
+See [Deploy through Azure Machine Configuration](./machine-configuration.md)
+for the complete package, Storage, Azure Policy, assignment, verification, and
+troubleshooting workflow.
+
 > The exported MOF uses `ModuleVersion = "0.0.0"` as a portable placeholder.
 > Resolve it to the packaging machine's installed version as shown above;
 > Machine Configuration runtime requires the exact bundled version. If the module isn't installed,
-> `New-GuestConfigurationPackage` fails with *"Failed to find a module
-> with the name 'Microsoft.OSConfig'."*
+> `New-GuestConfigurationPackage` fails with _"Failed to find a module
+> with the name 'Microsoft.OSConfig'."_
 >
 > Microsoft.OSConfig 1.3.11 can audit these packages, but its PowerShell
 > resource has an upstream `Set()` serialization defect. The example therefore
@@ -186,13 +190,13 @@ storage, your own GUIDs/versioning, or package signing.
 
 ## Errors you'll see
 
-| Error | Meaning | Fix |
-| --- | --- | --- |
-| `resources is required` | Top-level YAML doesn't have a `resources:` array. | Wrap your resources under `resources:`. |
-| `invalid Group/Test wrapper` | A `Microsoft.OSConfig/Group` or `Microsoft.OSConfig/Test` has no nested array. | Add `resources:` (Group) or `resource:` (Test) inside. |
-| `Unsupported resource type` | The target CLI doesn't know this type, it's not in the registered whitelist. | Soft warning only; the rest of the manifest still applies. |
-| `mixed-platform manifest` | Your YAML has both Windows and Linux resource types. | Split it. `'mixed'` is rejected at deploy time. |
-| `CLI not installed` (on Deploy / Audit / Revert) | OSConfig isn't on this machine. | The dialog's **Install** button opens the [OSConfig CLI docs](https://github.com/microsoft/osconfig/tree/main/docs/cli); **Recheck** auto-dismisses once the resolver finds it. |
+| Error                                            | Meaning                                                                        | Fix                                                                                                                                                                             |
+| ------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `resources is required`                          | Top-level YAML doesn't have a `resources:` array.                              | Wrap your resources under `resources:`.                                                                                                                                         |
+| `invalid Group/Test wrapper`                     | A `Microsoft.OSConfig/Group` or `Microsoft.OSConfig/Test` has no nested array. | Add `resources:` (Group) or `resource:` (Test) inside.                                                                                                                          |
+| `Unsupported resource type`                      | The target CLI doesn't know this type, it's not in the registered whitelist.   | Soft warning only; the rest of the manifest still applies.                                                                                                                      |
+| `mixed-platform manifest`                        | Your YAML has both Windows and Linux resource types.                           | Split it. `'mixed'` is rejected at deploy time.                                                                                                                                 |
+| `CLI not installed` (on Deploy / Audit / Revert) | OSConfig isn't on this machine.                                                | The dialog's **Install** button opens the [OSConfig CLI docs](https://github.com/microsoft/osconfig/tree/main/docs/cli); **Recheck** auto-dismisses once the resolver finds it. |
 
 ## Breadcrumbs
 
