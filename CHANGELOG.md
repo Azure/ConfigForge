@@ -1,6 +1,9 @@
 # Changelog
 
-## Unreleased
+## [0.3.97-author.1] - 2026-07-28
+
+> `mac-v0.3.97-author.1` is the current macOS Author tagged source. Its
+> matching GitHub release remains an unpublished draft.
 
 ### Fixed
 
@@ -12,8 +15,8 @@
 
 ## [0.3.96-author.1] - 2026-07-28
 
-> `mac-v0.3.96-author.1` is the current macOS Author tagged source. Its
-> matching GitHub release remains an unpublished draft. The author-only
+> `mac-v0.3.96-author.1` is the prior macOS Author tagged source. Its
+> matching GitHub release was an unpublished draft. The author-only
 > capability boundary is unchanged.
 
 ### Fixed

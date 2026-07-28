@@ -3,7 +3,10 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
-## Unreleased
+## macOS Author v0.3.97-author.1 — 2026-07-28
+
+`mac-v0.3.97-author.1` is the current macOS Author tagged source. Its matching
+GitHub release remains an unpublished draft.
 
 - **Detailed compliance reasons:** ConfigForge now preserves the reason
   returned by `oscfg` for expression-backed Test resources. All WS2025
@@ -11,8 +14,8 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 ## macOS Author v0.3.96-author.1 — 2026-07-28
 
-`mac-v0.3.96-author.1` is the current macOS Author tagged source. Its matching
-GitHub release remains an unpublished draft. The author-only capability
+`mac-v0.3.96-author.1` is the prior macOS Author tagged source. Its matching
+GitHub release was an unpublished draft. The author-only capability
 boundary is unchanged.
 
 - **Windows Server 2025 baselines:** Rebuilt the full Member Server (320),
