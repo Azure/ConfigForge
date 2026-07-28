@@ -38,8 +38,8 @@ author-only and does not include device operations.
 
 ## macOS Author v0.3.94-author.1 — 2026-07-26
 
-`mac-v0.3.94-author.1` is the current macOS Author tagged source. Its matching
-GitHub release remains an unpublished draft. This entry does not indicate
+`mac-v0.3.94-author.1` is a prior macOS Author tagged source. Its matching
+GitHub release was an unpublished draft. This entry does not indicate
 publication or assert asset availability. The macOS flavor remains
 author-only and does not include device operations.
 
