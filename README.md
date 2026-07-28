@@ -6,10 +6,10 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The current Windows/Linux Full-edition tagged source is `v0.3.95`. The
-current macOS Author tagged source is `mac-v0.3.95-author.1`. Both matching
+The current Windows/Linux Full-edition tagged source is `v0.3.96`. The
+current macOS Author tagged source is `mac-v0.3.96-author.1`. Both matching
 GitHub releases remain unpublished drafts. The Full-edition package version
-on `main` is `0.3.95`; the macOS Author package version is `0.3.95-author.1`.
+on `main` is `0.3.96`; the macOS Author package version is `0.3.96-author.1`.
 
 The macOS Author release ports applicable documentation-accuracy corrections
 from `main` PR [#97](https://github.com/Azure/ConfigForge/pull/97) via PR
@@ -180,7 +180,7 @@ is not a universal binary.
 - **[`SUPPORT.md`](./SUPPORT.md)** and **[`SECURITY.md`](./SECURITY.md)**: best-effort support boundaries and private vulnerability reporting.
 - **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
 - **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current macOS
-  Author line is tagged as `mac-v0.3.95-author.1`; its release is an
+  Author line is tagged as `mac-v0.3.96-author.1`; its release is an
   unpublished draft.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
   Quick Start, User Guide, Architecture, API Reference, and Operations. The
@@ -208,8 +208,10 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **0.3.95-author.1** (current macOS tagged source; draft unpublished) | Fixes unreliable My Baselines status tooltips by replacing native HTML hover titles with FluentUI tooltips (PR #101), and ports documentation-accuracy corrections from main PR #97 (PR #99). |
-| **0.3.95** (current Windows/Linux tagged source; draft unpublished) | Replaces unreliable native HTML hover titles with FluentUI tooltips on My Baselines status cells (PR #100) and corrects architecture/CI/release-state documentation drift (PR #97). |
+| **0.3.96-author.1** (current macOS tagged source; draft unpublished) | Ports the full 320/321/296 WS2025 control-preservation work and global Machine Configuration MOF export fixes from main PR #104 through PR #105. |
+| **0.3.96** (current Windows/Linux tagged source; draft unpublished) | Preserves every WS2025 control while fixing Registry/CSP contracts and CEL compliance, and hardens Machine Configuration MOF export in PR #104. |
+| **0.3.95-author.1** (prior macOS draft, unpublished) | Fixes unreliable My Baselines status tooltips by replacing native HTML hover titles with FluentUI tooltips (PR #101), and ports documentation-accuracy corrections from main PR #97 (PR #99). |
+| **0.3.95** (prior Windows/Linux draft, unpublished) | Replaces unreliable My Baselines status tooltips with FluentUI tooltips (PR #100) and corrects documentation drift (PR #97). |
 | **0.3.94-author.1** (prior macOS draft, unpublished) | Carries the public-source packaging, policy, privacy, security, and nine synthetic screenshot updates into the author-only Apple Silicon edition without adding device operations. |
 | **0.3.94** (prior Windows/Linux tagged source) | Excludes CIS benchmark source data from public installers, publishes the public licensing/privacy/support/security policy surface, patches dev-only `brace-expansion` 5.x, and refreshes nine README screenshots with synthetic benchmark content in PR #89. |
 | **0.3.93-author.2** (prior macOS draft, unpublished) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83; PR #84 prepares the immutable tag. Workflow run #30186678580 verified all five assets. |
