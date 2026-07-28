@@ -3,7 +3,11 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
-## Unreleased
+## macOS Author v0.3.96-author.1 — 2026-07-28
+
+`mac-v0.3.96-author.1` is the current macOS Author tagged source. Its matching
+GitHub release remains an unpublished draft. The author-only capability
+boundary is unchanged.
 
 - **Windows Server 2025 baselines:** Rebuilt the full Member Server (320),
   Domain Controller (321), and Workgroup Member (296) profiles without losing
@@ -16,8 +20,8 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 ## macOS Author v0.3.95-author.1 — 2026-07-27
 
-`mac-v0.3.95-author.1` is the current macOS Author tagged source. Its
-matching GitHub release remains an unpublished draft. This entry does not
+`mac-v0.3.95-author.1` is the prior macOS Author tagged source. Its
+matching GitHub release was an unpublished draft. This entry does not
 indicate publication or assert asset availability. The macOS flavor remains
 author-only and does not include device operations.
 

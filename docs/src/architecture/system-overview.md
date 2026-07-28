@@ -1,6 +1,6 @@
 # System overview
 
-ConfigForge is an Electron desktop app for authoring, validating, comparing, and exporting OSConfig manifests (`.osc.yaml`). The Full edition (`v0.3.95`) also supports live deploy/audit/revert operations; the macOS Author edition (`mac-v0.3.95-author.1`) intentionally omits those device-operation namespaces. The renderer uses Electron 42, React 18, Fluent UI v9, and Vite; shared business logic lives in the platform-neutral `@configforge/core` package.
+ConfigForge is an Electron desktop app for authoring, validating, comparing, and exporting OSConfig manifests (`.osc.yaml`). The Full edition (`v0.3.96`) also supports live deploy/audit/revert operations; the macOS Author edition (`mac-v0.3.96-author.1`) intentionally omits those device-operation namespaces. The renderer uses Electron 42, React 18, Fluent UI v9, and Vite; shared business logic lives in the platform-neutral `@configforge/core` package.
 
 There is no HTTP server, database, queue, or microservice layer in the current app. Renderer code calls the Electron preload bridge (`window.cfs.*`), the main process validates IPC payloads, and pure handlers in `packages/core` own filesystem and CLI operations.
 

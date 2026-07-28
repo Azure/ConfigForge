@@ -1,6 +1,10 @@
 # Changelog
 
-## Unreleased
+## [0.3.96-author.1] - 2026-07-28
+
+> `mac-v0.3.96-author.1` is the current macOS Author tagged source. Its
+> matching GitHub release remains an unpublished draft. The author-only
+> capability boundary is unchanged.
 
 ### Fixed
 
@@ -18,8 +22,8 @@
 
 ## [0.3.95-author.1] - 2026-07-27
 
-> `mac-v0.3.95-author.1` is the current macOS Author tagged source. Its
-> matching GitHub release remains an unpublished draft. This entry does not
+> `mac-v0.3.95-author.1` is the prior macOS Author tagged source. Its
+> matching GitHub release was an unpublished draft. This entry does not
 > indicate publication or assert asset availability. The author-only
 > capability boundary is unchanged: device deploy, audit, enforce, revert,
 > elevation, health, and audit-results storage remain excluded.
