@@ -21,6 +21,18 @@ This project welcomes contributions and suggestions. Most contributions require 
 
 Commits should still include a `Co-authored-by` trailer when AI tooling assisted (see Commit conventions below).
 
+## Source-build prerequisites
+
+ConfigForge source builds support **Node.js 22.12+ LTS** and **Node.js 24
+LTS**, with npm 10 or later. The repository includes `.nvmrc` and
+`.node-version` files that select Node 22 as the default toolchain. Confirm
+`node --version` reports `v22.12+` or `v24.x` before installing packages.
+
+If dependencies were installed under another Node.js release, switch to Node
+22 or 24, delete `node_modules`, and run `npm ci` again. The repository's
+lifecycle guard rejects unsupported Node.js versions before Vite, tests, lint,
+or packaging can start.
+
 ## Pre-PR bar
 
 Every PR must pass these gates before review:

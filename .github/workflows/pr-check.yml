@@ -96,6 +96,25 @@ jobs:
           test -f apps/desktop/dist/electron/preload.js
           echo "✓ desktop build artifacts present"
 
+  node24-compat:
+    name: Node 24 source-build compatibility
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Verify source build
+        run: npm run desktop:build
+      - name: Test source-build guards
+        run: |
+          npm run test:node-guard
+          npx --no-install vitest run apps/desktop/src/vite-config.test.ts
+
   e2e:
     name: Playwright Electron smoke
     runs-on: windows-latest

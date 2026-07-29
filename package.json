@@ -5,7 +5,7 @@
   "license": "MIT",
   "description": "ConfigForge \u2014 Cross-platform Electron desktop app for OSConfig security baseline authoring",
   "engines": {
-    "node": ">=22.0.0 <23.0.0",
+    "node": ">=22.12.0 <23.0.0 || >=24.0.0 <25.0.0",
     "npm": ">=10.0.0"
   },
   "workspaces": [
@@ -13,7 +13,18 @@
     "packages/*"
   ],
   "scripts": {
-    "test": "vitest run",
+    "check:node": "node scripts/check-node-version.mjs",
+    "preinstall": "npm run check:node",
+    "pretest": "npm run check:node",
+    "prelint": "npm run check:node",
+    "precore:build": "npm run check:node",
+    "predesktop:dev": "npm run check:node",
+    "predesktop:build": "npm run check:node",
+    "predesktop:dist": "npm run check:node",
+    "predesktop:dist:win": "npm run check:node",
+    "predesktop:dist:linux": "npm run check:node",
+    "test": "npm run test:node-guard && vitest run",
+    "test:node-guard": "node --test scripts/check-node-version.node-test.mjs",
     "test:watch": "vitest",
     "lint": "npm run lint -w @configforge/desktop",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,json,md,yml,yaml}\"",
