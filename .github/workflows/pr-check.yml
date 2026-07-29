@@ -113,7 +113,7 @@ jobs:
       - name: Test source-build guards
         run: |
           npm run test:node-guard
-          npx --no-install vitest run apps/desktop/src/vite-config.test.ts
+          npx --no-install vitest run scripts/vite-config.test.mjs
 
   e2e:
     name: Playwright Electron smoke
