@@ -25,8 +25,11 @@
     "dist": "npm run icons && npm run build && npm run verify:public-assets && electron-builder",
     "dist:win": "npm run icons && npm run build && npm run verify:public-assets && electron-builder --win",
     "dist:linux": "npm run icons && npm run build && npm run verify:public-assets && electron-builder --linux",
+    "predev:author": "node ../../scripts/check-node-version.mjs",
     "dev:author": "concurrently -k -n vite,electron -c cyan,magenta \"cross-env VITE_CFS_FLAVOR=author npm run dev:vite\" \"cross-env CFS_FLAVOR=author npm run dev:electron\"",
+    "prebuild:author": "node ../../scripts/check-node-version.mjs",
     "build:author": "cross-env VITE_CFS_FLAVOR=author npm run build:renderer && cross-env CFS_FLAVOR=author npm run build:electron",
+    "predist:mac:author": "node ../../scripts/check-node-version.mjs",
     "dist:mac:author": "npm run icons && npm run build:author && npm run verify:public-assets && electron-builder --mac --config=electron-builder.author.yml"
   },
   "dependencies": {
