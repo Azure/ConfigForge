@@ -34,6 +34,7 @@ function devCspPlugin() {
 }
 
 const corePackageRoot = path.resolve(__dirname, '..', '..', 'packages', 'core', 'src');
+const rendererTarget = 'es2022';
 
 export default defineConfig(({ mode }) => ({
   plugins: [react(), devCspPlugin()],
@@ -48,18 +49,24 @@ export default defineConfig(({ mode }) => ({
     ],
   },
   base: './',
+  optimizeDeps: {
+    esbuildOptions: {
+      // Keep dev dependency optimization aligned with the Electron renderer.
+      // Vite's older browser defaults make esbuild 0.28 reject Monaco's
+      // destructuring syntax before the dev server can start.
+      target: rendererTarget,
+    },
+  },
   build: {
     outDir: 'dist',
     emptyOutDir: true,
     // Sourcemaps in dev only — production maps add ~50MB to the build
     // output and 3-5s to rollup with no runtime benefit for shipped users.
     sourcemap: mode === 'development',
-    target: 'es2022',
+    target: rendererTarget,
   },
   server: {
     port: 5173,
     strictPort: true,
   },
 }));
-
-

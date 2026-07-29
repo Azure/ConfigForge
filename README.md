@@ -153,20 +153,26 @@ The Diff page includes a **CIS Diff** tab that scores any baseline against any u
 ## Quick start: run from source
 
 ```powershell
-# Requires Node 22 LTS (see .nvmrc): `nvm use` if you have nvm.
+# Requires Node 22.12+ LTS or Node 24 LTS.
+# .nvmrc and .node-version select the default Node 22 toolchain.
 git clone https://github.com/Azure/ConfigForge.git
 cd ConfigForge
 git checkout main
+node --version                     # must report v22.12+ or v24.x
 npm ci
 npm run desktop:dev               # Windows + Linux full flavor
 
 # On an Apple Silicon Mac, use the author flavor instead:
 git checkout mac-author-build
+node --version                     # must report v22.12+ or v24.x
 npm ci
 npm run dev:author -w @configforge/desktop
 ```
 
 Both development commands run Vite (renderer) + Electron with hot-reload.
+Source builds reject unsupported Node.js releases before Vite starts. If
+dependencies were installed with an unsupported release, switch to Node 22 or
+24, delete `node_modules`, run `npm ci`, and retry the development command.
 
 ### Optional: install the OSConfig CLI for Deploy / Audit
 

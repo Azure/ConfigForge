@@ -11,9 +11,11 @@
   },
   "license": "MIT",
   "scripts": {
+    "predev": "node ../../scripts/check-node-version.mjs",
     "dev": "concurrently -k -n vite,electron -c cyan,magenta \"npm:dev:vite\" \"npm:dev:electron\"",
     "dev:vite": "vite",
     "dev:electron": "wait-on http://localhost:5173 && cross-env NODE_ENV=development electron .",
+    "prebuild": "node ../../scripts/check-node-version.mjs",
     "build": "npm run build:renderer && npm run build:electron",
     "build:renderer": "vite build",
     "build:electron": "node scripts/build-electron.mjs",
