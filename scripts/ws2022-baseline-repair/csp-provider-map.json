@@ -1,0 +1,1665 @@
+{
+  "_provenance": {
+    "description": "Policy CSP OMA-URI -> dedicated provider + addressing, extracted from the reviewed WS2025 CSP repair. Values are NOT carried over; only the mechanism is.",
+    "derivedFrom": {
+      "before": "50d469c^ (public/_baselines/ws2025-*.osc.yaml)",
+      "after": "HEAD (public/_baselines/ws2025-*.osc.yaml)"
+    },
+    "regenerate": "node scripts/ws2022-baseline-repair/derive-maps.mjs"
+  },
+  "entries": [
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountLogon_AuditCredentialValidation",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE923F-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditCredentialValidation",
+        "ws2025-member-server:AuditCredentialValidation",
+        "ws2025-domain-controller:AuditCredentialValidation"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditCredentialValidation",
+        "ws2022-domain-member:AuditCredentialValidation"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountLogon_AuditKerberosAuthenticationService",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9242-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-domain-controller:AuditKerberosAuthenticationService"
+      ],
+      "usedBy": [
+        "ws2022-domain-controller:AuditKerberosAuthenticationService"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditAccountLockout",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9217-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 2,
+      "evidence": [
+        "ws2025-workgroup-member:AuditAccountLockout",
+        "ws2025-member-server:AuditAccountLockout",
+        "ws2025-domain-controller:AuditAccountLockout"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditAccountLockout",
+        "ws2022-domain-member:AuditAccountLockout",
+        "ws2022-domain-controller:AuditAccountLockout"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditGroupMembership",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9249-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditGroupMembership",
+        "ws2025-member-server:AuditGroupMembership",
+        "ws2025-domain-controller:AuditGroupMembership"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditGroupMembership",
+        "ws2022-domain-member:AuditGroupMembership",
+        "ws2022-domain-controller:AuditGroupMembership"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditLogoff",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9216-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditLogoff",
+        "ws2025-member-server:AuditLogoff",
+        "ws2025-domain-controller:AuditLogoff"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditLogoff",
+        "ws2022-domain-member:AuditLogoff",
+        "ws2022-domain-controller:AuditLogoff"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditLogon",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9215-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditLogon",
+        "ws2025-member-server:AuditLogon",
+        "ws2025-domain-controller:AuditLogon"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditLogon",
+        "ws2022-domain-member:AuditLogon",
+        "ws2022-domain-controller:AuditLogon"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditOtherLogonLogoffEvents",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE921C-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditOtherLogonLogoffEvents",
+        "ws2025-member-server:AuditOtherLogonLogoffEvents",
+        "ws2025-domain-controller:AuditOtherLogonLogoffEvents"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditOtherLogonLogoffEvents",
+        "ws2022-domain-member:AuditOtherLogonLogoffEvents",
+        "ws2022-domain-controller:AuditOtherLogonLogoffEvents"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditSpecialLogon",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE921B-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditSpecialLogon",
+        "ws2025-member-server:AuditSpecialLogon",
+        "ws2025-domain-controller:AuditSpecialLogon"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditSpecialLogon",
+        "ws2022-domain-member:AuditSpecialLogon",
+        "ws2022-domain-controller:AuditSpecialLogon"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditComputerAccountManagement",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9236-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-domain-controller:AuditComputerAccountManagement"
+      ],
+      "usedBy": [
+        "ws2022-domain-controller:AuditComputerAccountManagement"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditDistributionGroupManagement",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9238-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-domain-controller:AuditDistributionGroupManagement"
+      ],
+      "usedBy": [
+        "ws2022-domain-controller:AuditDistributionGroupManagement"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditOtherAccountManagementEvents",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE923A-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-domain-controller:AuditOtherAccountManagementEvents"
+      ],
+      "usedBy": [
+        "ws2022-domain-controller:AuditOtherAccountManagementEvents"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditSecurityGroupManagement",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9237-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditSecurityGroupManagement",
+        "ws2025-member-server:AuditSecurityGroupManagement",
+        "ws2025-domain-controller:AuditSecurityGroupManagement"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditSecurityGroupManagement",
+        "ws2022-domain-member:AuditSecurityGroupManagement",
+        "ws2022-domain-controller:AuditSecurityGroupManagement"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditUserAccountManagement",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9235-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditUserAccountManagement",
+        "ws2025-member-server:AuditUserAccountManagement",
+        "ws2025-domain-controller:AuditUserAccountManagement"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditUserAccountManagement",
+        "ws2022-domain-member:AuditUserAccountManagement",
+        "ws2022-domain-controller:AuditUserAccountManagement"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/DetailedTracking_AuditPNPActivity",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9248-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditPnPExternalDevice",
+        "ws2025-member-server:AuditPnPExternalDevice",
+        "ws2025-domain-controller:AuditPnPExternalDevice"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditPnPExternalDevice",
+        "ws2022-domain-member:AuditPnPExternalDevice",
+        "ws2022-domain-controller:AuditPnPExternalDevice"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/DetailedTracking_AuditProcessCreation",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE922B-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditProcessCreatedOrStarted",
+        "ws2025-member-server:AuditProcessCreatedOrStarted",
+        "ws2025-domain-controller:AuditProcessCreatedOrStarted"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditProcessCreatedOrStarted",
+        "ws2022-domain-member:AuditProcessCreatedOrStarted",
+        "ws2022-domain-controller:AuditProcessCreatedOrStarted"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceAccess",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE923B-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 2,
+      "evidence": [
+        "ws2025-domain-controller:AuditDirectoryServiceAccess"
+      ],
+      "usedBy": [
+        "ws2022-domain-controller:AuditDirectoryServiceAccess"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceChanges",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE923C-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-domain-controller:AuditDirectoryServiceChanges"
+      ],
+      "usedBy": [
+        "ws2022-domain-controller:AuditDirectoryServiceChanges"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceReplication",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE923D-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 0,
+      "evidence": [
+        "ws2025-domain-controller:AuditDirectoryServiceReplication"
+      ],
+      "usedBy": [
+        "ws2022-domain-controller:AuditDirectoryServiceReplication"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditDetailedFileShare",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9244-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 2,
+      "evidence": [
+        "ws2025-workgroup-member:AuditDetailedFileShare",
+        "ws2025-member-server:AuditDetailedFileShare",
+        "ws2025-domain-controller:AuditDetailedFileShare"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditDetailedFileShare",
+        "ws2022-domain-member:AuditDetailedFileShare",
+        "ws2022-domain-controller:AuditDetailedFileShare"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditFileShare",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9224-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditFileShare",
+        "ws2025-member-server:AuditFileShare",
+        "ws2025-domain-controller:AuditFileShare"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditFileShare",
+        "ws2022-domain-member:AuditFileShare",
+        "ws2022-domain-controller:AuditFileShare"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditOtherObjectAccessEvents",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9227-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditOtherObjectAccessEvents",
+        "ws2025-member-server:AuditOtherObjectAccessEvents",
+        "ws2025-domain-controller:AuditOtherObjectAccessEvents"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditOtherObjectAccessEvents",
+        "ws2022-domain-member:AuditOtherObjectAccessEvents",
+        "ws2022-domain-controller:AuditOtherObjectAccessEvents"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditRemovableStorage",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9245-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditRemovableStorage",
+        "ws2025-member-server:AuditRemovableStorage",
+        "ws2025-domain-controller:AuditRemovableStorage"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditRemovableStorage",
+        "ws2022-domain-member:AuditRemovableStorage",
+        "ws2022-domain-controller:AuditRemovableStorage"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditAuthenticationPolicyChange",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9230-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditAuthenticationPolicyChange",
+        "ws2025-member-server:AuditAuthenticationPolicyChange",
+        "ws2025-domain-controller:AuditAuthenticationPolicyChange"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditAuthenticationPolicyChange",
+        "ws2022-domain-member:AuditAuthenticationPolicyChange",
+        "ws2022-domain-controller:AuditAuthenticationPolicyChange"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditAuthorizationPolicyChange",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9231-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditAuthorizationPolicyChange",
+        "ws2025-member-server:AuditAuthorizationPolicyChange",
+        "ws2025-domain-controller:AuditAuthorizationPolicyChange"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditAuthorizationPolicyChange",
+        "ws2022-domain-member:AuditAuthorizationPolicyChange",
+        "ws2022-domain-controller:AuditAuthorizationPolicyChange"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditMPSSVCRuleLevelPolicyChange",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9232-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditMPSSVCRuleLevelPolicyChange",
+        "ws2025-member-server:AuditMPSSVCRuleLevelPolicyChange",
+        "ws2025-domain-controller:AuditMPSSVCRuleLevelPolicyChange"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditMPSSVCRuleLevelPolicyChange",
+        "ws2022-domain-member:AuditMPSSVCRuleLevelPolicyChange",
+        "ws2022-domain-controller:AuditMPSSVCRuleLevelPolicyChange"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditOtherPolicyChangeEvents",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9234-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 2,
+      "evidence": [
+        "ws2025-workgroup-member:AuditOtherPolicyChangeEvents",
+        "ws2025-member-server:AuditOtherPolicyChangeEvents",
+        "ws2025-domain-controller:AuditOtherPolicyChangeEvents"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditChangeCategoryOther",
+        "ws2022-domain-member:AuditChangeCategoryOther",
+        "ws2022-domain-controller:AuditChangeCategoryOther"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditPolicyChange",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE922F-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditPolicyChange",
+        "ws2025-member-server:AuditPolicyChange",
+        "ws2025-domain-controller:AuditPolicyChange"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditPolicyChange",
+        "ws2022-domain-member:AuditPolicyChange",
+        "ws2022-domain-controller:AuditPolicyChange"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/PrivilegeUse_AuditSensitivePrivilegeUse",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9228-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditSensitivePrivilegeUse",
+        "ws2025-member-server:AuditSensitivePrivilegeUse",
+        "ws2025-domain-controller:AuditSensitivePrivilegeUse"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditSensitivePrivilegeUse",
+        "ws2022-domain-member:AuditSensitivePrivilegeUse",
+        "ws2022-domain-controller:AuditSensitivePrivilegeUse"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/System_AuditIPsecDriver",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9213-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditIPsecDriver",
+        "ws2025-member-server:AuditIPsecDriver",
+        "ws2025-domain-controller:AuditIPsecDriver"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditIPsecDriver",
+        "ws2022-domain-member:AuditIPsecDriver",
+        "ws2022-domain-controller:AuditIPsecDriver"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/System_AuditOtherSystemEvents",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9214-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditOtherSystemEvents",
+        "ws2025-member-server:AuditOtherSystemEvents",
+        "ws2025-domain-controller:AuditOtherSystemEvents"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditOtherSystemEvents",
+        "ws2022-domain-member:AuditOtherSystemEvents",
+        "ws2022-domain-controller:AuditOtherSystemEvents"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/System_AuditSecurityStateChange",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9210-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditSecurityStateChange",
+        "ws2025-member-server:AuditSecurityStateChange",
+        "ws2025-domain-controller:AuditSecurityStateChange"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditSecurityStateChange",
+        "ws2022-domain-member:AuditSecurityStateChange",
+        "ws2022-domain-controller:AuditSecurityStateChange"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/System_AuditSecuritySystemExtension",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9211-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:AuditSecuritySystemExtension",
+        "ws2025-member-server:AuditSecuritySystemExtension",
+        "ws2025-domain-controller:AuditSecuritySystemExtension"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditSecuritySystemExtension",
+        "ws2022-domain-member:AuditSecuritySystemExtension",
+        "ws2022-domain-controller:AuditSecuritySystemExtension"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/Audit/System_AuditSystemIntegrity",
+      "target": {
+        "type": "Microsoft.Windows/AuditPolicy",
+        "properties": {
+          "subcategory": "{0CCE9212-69AE-11D9-BED3-505054503030}"
+        }
+      },
+      "ws2025Value": 3,
+      "evidence": [
+        "ws2025-workgroup-member:AuditSystemIntegrity",
+        "ws2025-member-server:AuditSystemIntegrity",
+        "ws2025-domain-controller:AuditSystemIntegrity"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AuditSystemIntegrity",
+        "ws2022-domain-member:AuditSystemIntegrity",
+        "ws2022-domain-controller:AuditSystemIntegrity"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/DeviceLock/AccountLockoutPolicy",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "LockoutDuration"
+        }
+      },
+      "ws2025Value": 15,
+      "evidence": [
+        "ws2025-workgroup-member:DeviceLockAccountLockoutPolicy",
+        "ws2025-member-server:DeviceLockAccountLockoutPolicy",
+        "ws2025-domain-controller:DeviceLockAccountLockoutPolicy"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:AccountLockoutPolicy",
+        "ws2022-domain-member:AccountLockoutPolicy",
+        "ws2022-domain-controller:AccountLockoutPolicy"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/DeviceLock/ClearTextPassword",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "EnablePasswordReversibleEncryption"
+        }
+      },
+      "ws2025Value": false,
+      "evidence": [
+        "ws2025-workgroup-member:DeviceLockClearTextPassword",
+        "ws2025-member-server:DeviceLockClearTextPassword",
+        "ws2025-domain-controller:DeviceLockClearTextPassword"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:DeviceLockClearTextPassword",
+        "ws2022-domain-member:DeviceLockClearTextPassword",
+        "ws2022-domain-controller:DeviceLockClearTextPassword"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/DeviceLock/MaximumPasswordAge",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "MaximumPasswordAge"
+        }
+      },
+      "ws2025Value": 42,
+      "evidence": [
+        "ws2025-workgroup-member:DeviceLockMaximumPasswordAge",
+        "ws2025-member-server:DeviceLockMaximumPasswordAge",
+        "ws2025-domain-controller:DeviceLockMaximumPasswordAge"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:DeviceLockMaximumPasswordAge",
+        "ws2022-domain-member:DeviceLockMaximumPasswordAge",
+        "ws2022-domain-controller:DeviceLockMaximumPasswordAge"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/DeviceLock/MinimumPasswordAge",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "MinimumPasswordAge"
+        }
+      },
+      "ws2025Value": 1,
+      "evidence": [
+        "ws2025-workgroup-member:DeviceLockMinimumPasswordAge",
+        "ws2025-member-server:DeviceLockMinimumPasswordAge",
+        "ws2025-domain-controller:DeviceLockMinimumPasswordAge"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:DeviceLockMinimumPasswordAge",
+        "ws2022-domain-member:DeviceLockMinimumPasswordAge",
+        "ws2022-domain-controller:DeviceLockMinimumPasswordAge"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/DeviceLock/MinimumPasswordLength",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "MinimumPasswordLength"
+        }
+      },
+      "ws2025Value": 14,
+      "evidence": [
+        "ws2025-workgroup-member:DeviceLockMinimumPasswordLength",
+        "ws2025-member-server:DeviceLockMinimumPasswordLength"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:DeviceLockMinDevicePasswordLength",
+        "ws2022-domain-member:DeviceLockMinDevicePasswordLength",
+        "ws2022-domain-controller:DeviceLockMinDevicePasswordLength"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/DeviceLock/PasswordComplexity",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "EnforcePasswordComplexity"
+        }
+      },
+      "ws2025Value": true,
+      "evidence": [
+        "ws2025-workgroup-member:DeviceLockPasswordComplexity",
+        "ws2025-member-server:DeviceLockPasswordComplexity",
+        "ws2025-domain-controller:DeviceLockPasswordComplexity"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:DeviceLockPasswordComplexity",
+        "ws2022-domain-member:DeviceLockPasswordComplexity",
+        "ws2022-domain-controller:DeviceLockPasswordComplexity"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/DeviceLock/PasswordHistorySize",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "PasswordHistoryLength"
+        }
+      },
+      "ws2025Value": 24,
+      "evidence": [
+        "ws2025-workgroup-member:DeviceLockPasswordHistorySize",
+        "ws2025-member-server:DeviceLockPasswordHistorySize",
+        "ws2025-domain-controller:DeviceLockPasswordHistorySize"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:DeviceLockPasswordHistorySize",
+        "ws2022-domain-member:DeviceLockPasswordHistorySize",
+        "ws2022-domain-controller:DeviceLockPasswordHistorySize"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_EnableGuestAccountStatus",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "EnableGuestAccount"
+        }
+      },
+      "ws2025Value": false,
+      "evidence": [
+        "ws2025-workgroup-member:EnableGuestAccountStatus",
+        "ws2025-member-server:EnableGuestAccountStatus",
+        "ws2025-domain-controller:EnableGuestAccountStatus"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:EnableGuestAccountStatus",
+        "ws2022-domain-member:EnableGuestAccountStatus",
+        "ws2022-domain-controller:EnableGuestAccountStatus"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_RenameAdministratorAccount",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "AdministratorAccountName"
+        }
+      },
+      "evidence": [
+        "ws2025-workgroup-member:RenameAdministratorAccount",
+        "ws2025-member-server:RenameAdministratorAccount",
+        "ws2025-domain-controller:RenameAdministratorAccount"
+      ],
+      "usedBy": [
+        "ws2022-domain-member:RenameAdministratorAccount",
+        "ws2022-domain-controller:RenameAdministratorAccount"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_RenameGuestAccount",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "GuestAccountName"
+        }
+      },
+      "evidence": [
+        "ws2025-workgroup-member:RenameGuestAccount",
+        "ws2025-member-server:RenameGuestAccount",
+        "ws2025-domain-controller:RenameGuestAccount"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:RenameGuestAccount",
+        "ws2022-domain-member:RenameGuestAccount",
+        "ws2022-domain-controller:RenameGuestAccount"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_AllowAnonymousSIDOrNameTranslation",
+      "target": {
+        "type": "Microsoft.Windows/AccountPolicy",
+        "properties": {
+          "name": "EnableAnonymousNameTranslation"
+        }
+      },
+      "ws2025Value": false,
+      "evidence": [
+        "ws2025-workgroup-member:AllowAnonymousSIDOrNameTranslation",
+        "ws2025-member-server:AllowAnonymousSIDOrNameTranslation",
+        "ws2025-domain-controller:AllowAnonymousSIDOrNameTranslation"
+      ],
+      "usedBy": [
+        "ws2022-domain-member:AllowAnonymousSIDOrNameTranslation",
+        "ws2022-domain-controller:AllowAnonymousSIDOrNameTranslation"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/AccessCredentialManagerAsTrustedCaller",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeTrustedCredManAccessPrivilege"
+        }
+      },
+      "ws2025Value": [],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsAccessCredentialManagerAsTrustedCaller",
+        "ws2025-member-server:UserRightsAccessCredentialManagerAsTrustedCaller",
+        "ws2025-domain-controller:UserRightsAccessCredentialManagerAsTrustedCaller"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsAccessCredentialManagerAsTrustedCaller",
+        "ws2022-domain-member:UserRightsAccessCredentialManagerAsTrustedCaller",
+        "ws2022-domain-controller:UserRightsAccessCredentialManagerAsTrustedCaller"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/AccessFromNetwork",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeNetworkLogonRight"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544",
+        "*S-1-5-11"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsAccessFromNetwork",
+        "ws2025-member-server:UserRightsAccessFromNetwork",
+        "ws2025-domain-controller:UserRightsAccessFromNetwork"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsAccessFromNetwork",
+        "ws2022-domain-member:UserRightsAccessFromNetwork"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ActAsPartOfTheOperatingSystem",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeTcbPrivilege"
+        }
+      },
+      "ws2025Value": [],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsActAsPartOfTheOperatingSystem",
+        "ws2025-member-server:UserRightsActAsPartOfTheOperatingSystem",
+        "ws2025-domain-controller:UserRightsActAsPartOfTheOperatingSystem"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsActAsPartOfTheOperatingSystem",
+        "ws2022-domain-member:UserRightsActAsPartOfTheOperatingSystem",
+        "ws2022-domain-controller:UserRightsActAsPartOfTheOperatingSystem"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/AdjustMemoryQuotasForProcess",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeIncreaseQuotaPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544",
+        "*S-1-5-19",
+        "*S-1-5-20"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsAdjustMemoryQuotasForProcess",
+        "ws2025-member-server:UserRightsAdjustMemoryQuotasForProcess",
+        "ws2025-domain-controller:UserRightsAdjustMemoryQuotasForProcess"
+      ],
+      "usedBy": [
+        "ws2022-domain-member:UserRightsAdjustMemoryQuotasForProcess",
+        "ws2022-domain-controller:UserRightsAdjustMemoryQuotasForProcess"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/AllowLocalLogOn",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeInteractiveLogonRight"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsAllowLocalLogOn",
+        "ws2025-member-server:UserRightsAllowLocalLogOn",
+        "ws2025-domain-controller:UserRightsAllowLocalLogOn"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsAllowLocalLogOn",
+        "ws2022-domain-member:UserRightsAllowLocalLogOn"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/AllowLogOnThroughRemoteDesktop",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeRemoteInteractiveLogonRight"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544",
+        "*S-1-5-32-555"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsAllowLogOnThroughRemoteDesktop",
+        "ws2025-member-server:UserRightsAllowLogOnThroughRemoteDesktop",
+        "ws2025-domain-controller:UserRightsAllowLogOnThroughRemoteDesktop"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsAllowLogOnThroughRemoteDesktop",
+        "ws2022-domain-member:UserRightsAllowLogOnThroughRemoteDesktop",
+        "ws2022-domain-controller:UserRightsAllowLogOnThroughRemoteDesktop"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/BackupFilesAndDirectories",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeBackupPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsBackupFilesAndDirectories",
+        "ws2025-member-server:UserRightsBackupFilesAndDirectories",
+        "ws2025-domain-controller:UserRightsBackupFilesAndDirectories"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsBackupFilesAndDirectories",
+        "ws2022-domain-member:UserRightsBackupFilesAndDirectories"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/BypassTraverseChecking",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeChangeNotifyPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544",
+        "*S-1-5-11",
+        "*S-1-5-32-551",
+        "*S-1-5-19",
+        "*S-1-5-20"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsBypassTraverseChecking",
+        "ws2025-member-server:UserRightsBypassTraverseChecking"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsBypassTraverseChecking",
+        "ws2022-domain-member:UserRightsBypassTraverseChecking"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ChangeSystemTime",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeSystemtimePrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544",
+        "*S-1-5-32-549",
+        "*S-1-5-19"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsChangeSystemTime",
+        "ws2025-member-server:UserRightsChangeSystemTime",
+        "ws2025-domain-controller:UserRightsChangeSystemTime"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsChangeSystemTime",
+        "ws2022-domain-member:UserRightsChangeSystemTime"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ChangeTimeZone",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeTimeZonePrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544",
+        "*S-1-5-19"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsChangeTimeZone",
+        "ws2025-member-server:UserRightsChangeTimeZone",
+        "ws2025-domain-controller:UserRightsChangeTimeZone"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsChangeTimeZone",
+        "ws2022-domain-member:UserRightsChangeTimeZone",
+        "ws2022-domain-controller:UserRightsChangeTimeZone"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreateGlobalObjects",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeCreateGlobalPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544",
+        "*S-1-5-6",
+        "*S-1-5-19",
+        "*S-1-5-20"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsCreateGlobalObjects",
+        "ws2025-member-server:UserRightsCreateGlobalObjects",
+        "ws2025-domain-controller:UserRightsCreateGlobalObjects"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsCreateGlobalObjects",
+        "ws2022-domain-member:UserRightsCreateGlobalObjects",
+        "ws2022-domain-controller:UserRightsCreateGlobalObjects"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreatePageFile",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeCreatePagefilePrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsCreatePageFile",
+        "ws2025-member-server:UserRightsCreatePageFile",
+        "ws2025-domain-controller:UserRightsCreatePageFile"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsCreatePageFile",
+        "ws2022-domain-member:UserRightsCreatePageFile",
+        "ws2022-domain-controller:UserRightsCreatePageFile"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreatePermanentSharedObjects",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeCreatePermanentPrivilege"
+        }
+      },
+      "ws2025Value": [],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsCreatePermanentSharedObjects",
+        "ws2025-member-server:UserRightsCreatePermanentSharedObjects",
+        "ws2025-domain-controller:UserRightsCreatePermanentSharedObjects"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsCreatePermanentSharedObjects",
+        "ws2022-domain-member:UserRightsCreatePermanentSharedObjects",
+        "ws2022-domain-controller:UserRightsCreatePermanentSharedObjects"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreateSymbolicLinks",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeCreateSymbolicLinkPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544",
+        "*S-1-5-83-0"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsCreateSymbolicLinks",
+        "ws2025-member-server:UserRightsCreateSymbolicLinks",
+        "ws2025-domain-controller:UserRightsCreateSymbolicLinks"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsCreateSymbolicLinks",
+        "ws2022-domain-member:UserRightsCreateSymbolicLinks",
+        "ws2022-domain-controller:UserRightsCreateSymbolicLinks"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreateToken",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeCreateTokenPrivilege"
+        }
+      },
+      "ws2025Value": [],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsCreateToken",
+        "ws2025-member-server:UserRightsCreateToken",
+        "ws2025-domain-controller:UserRightsCreateToken"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsCreateToken",
+        "ws2022-domain-member:UserRightsCreateToken",
+        "ws2022-domain-controller:UserRightsCreateToken"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/DenyAccessFromNetwork",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeDenyNetworkLogonRight"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-546"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsDenyAccessFromNetwork",
+        "ws2025-member-server:UserRightsDenyAccessFromNetwork",
+        "ws2025-domain-controller:UserRightsDenyAccessFromNetwork"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsDenyAccessFromNetwork",
+        "ws2022-domain-member:UserRightsDenyAccessFromNetwork",
+        "ws2022-domain-controller:UserRightsDenyAccessFromNetwork"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/DenyLocalLogOn",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeDenyInteractiveLogonRight"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-546"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsDenyLocalLogOn",
+        "ws2025-member-server:UserRightsDenyLocalLogOn",
+        "ws2025-domain-controller:UserRightsDenyLocalLogOn"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsDenyLocalLogOn",
+        "ws2022-domain-member:UserRightsDenyLocalLogOn",
+        "ws2022-domain-controller:UserRightsDenyLocalLogOn"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/DenyLogOnAsBatchJob",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeDenyBatchLogonRight"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-546"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsDenyLogOnAsBatchJob",
+        "ws2025-member-server:UserRightsDenyLogOnAsBatchJob",
+        "ws2025-domain-controller:UserRightsDenyLogOnAsBatchJob"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsDenyLogOnAsBatchJob",
+        "ws2022-domain-member:UserRightsDenyLogOnAsBatchJob",
+        "ws2022-domain-controller:UserRightsDenyLogOnAsBatchJob"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/DenyLogOnAsService",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeDenyServiceLogonRight"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-546"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsDenyLogOnAsService",
+        "ws2025-member-server:UserRightsDenyLogOnAsService",
+        "ws2025-domain-controller:UserRightsDenyLogOnAsService"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsDenyLogOnAsService",
+        "ws2022-domain-member:UserRightsDenyLogOnAsService",
+        "ws2022-domain-controller:UserRightsDenyLogOnAsService"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/DenyRemoteDesktopServicesLogOn",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeDenyRemoteInteractiveLogonRight"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-546"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsDenyRemoteDesktopServicesLogOn",
+        "ws2025-member-server:UserRightsDenyRemoteDesktopServicesLogOn",
+        "ws2025-domain-controller:UserRightsDenyRemoteDesktopServicesLogOn"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsDenyRemoteDesktopServicesLogOn"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/EnableDelegation",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeEnableDelegationPrivilege"
+        }
+      },
+      "ws2025Value": [],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsEnableDelegation",
+        "ws2025-member-server:UserRightsEnableDelegation",
+        "ws2025-domain-controller:UserRightsEnableDelegation"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsEnableDelegation",
+        "ws2022-domain-member:UserRightsEnableDelegation"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/GenerateSecurityAudits",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeAuditPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-19",
+        "*S-1-5-20",
+        "*S-1-5-82-3006700770-424185619-1745488364-794895919-4004696415"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsGenerateSecurityAudits",
+        "ws2025-member-server:UserRightsGenerateSecurityAudits",
+        "ws2025-domain-controller:UserRightsGenerateSecurityAudits"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsGenerateSecurityAudits",
+        "ws2022-domain-member:UserRightsGenerateSecurityAudits",
+        "ws2022-domain-controller:UserRightsGenerateSecurityAudits"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/IncreaseProcessWorkingSet",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeIncreaseWorkingSetPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544",
+        "*S-1-5-19"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsIncreaseProcessWorkingSet",
+        "ws2025-member-server:UserRightsIncreaseProcessWorkingSet"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsIncreaseProcessWorkingSet",
+        "ws2022-domain-member:UserRightsIncreaseProcessWorkingSet"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/IncreaseSchedulingPriority",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeIncreaseBasePriorityPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsIncreaseSchedulingPriority",
+        "ws2025-member-server:UserRightsIncreaseSchedulingPriority",
+        "ws2025-domain-controller:UserRightsIncreaseSchedulingPriority"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsIncreaseSchedulingPriority",
+        "ws2022-domain-member:UserRightsIncreaseSchedulingPriority",
+        "ws2022-domain-controller:UserRightsIncreaseSchedulingPriority"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/LoadUnloadDeviceDrivers",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeLoadDriverPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsLoadUnloadDeviceDrivers",
+        "ws2025-member-server:UserRightsLoadUnloadDeviceDrivers",
+        "ws2025-domain-controller:UserRightsLoadUnloadDeviceDrivers"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsLoadUnloadDeviceDrivers",
+        "ws2022-domain-member:UserRightsLoadUnloadDeviceDrivers",
+        "ws2022-domain-controller:UserRightsLoadUnloadDeviceDrivers"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/LockMemory",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeLockMemoryPrivilege"
+        }
+      },
+      "ws2025Value": [],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsLockMemory",
+        "ws2025-member-server:UserRightsLockMemory",
+        "ws2025-domain-controller:UserRightsLockMemory"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsLockMemory",
+        "ws2022-domain-member:UserRightsLockMemory",
+        "ws2022-domain-controller:UserRightsLockMemory"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ManageAuditingAndSecurityLog",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeSecurityPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsManageAuditingAndSecurityLog",
+        "ws2025-member-server:UserRightsManageAuditingAndSecurityLog",
+        "ws2025-domain-controller:UserRightsManageAuditingAndSecurityLog"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsManageAuditingAndSecurityLog",
+        "ws2022-domain-member:UserRightsManageAuditingAndSecurityLog",
+        "ws2022-domain-controller:UserRightsManageAuditingAndSecurityLog"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ManageVolume",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeManageVolumePrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsManageVolume",
+        "ws2025-member-server:UserRightsManageVolume",
+        "ws2025-domain-controller:UserRightsManageVolume"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsManageVolume",
+        "ws2022-domain-member:UserRightsManageVolume",
+        "ws2022-domain-controller:UserRightsManageVolume"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ModifyFirmwareEnvironment",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeSystemEnvironmentPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsModifyFirmwareEnvironment",
+        "ws2025-member-server:UserRightsModifyFirmwareEnvironment",
+        "ws2025-domain-controller:UserRightsModifyFirmwareEnvironment"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsModifyFirmwareEnvironment",
+        "ws2022-domain-member:UserRightsModifyFirmwareEnvironment",
+        "ws2022-domain-controller:UserRightsModifyFirmwareEnvironment"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ModifyObjectLabel",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeRelabelPrivilege"
+        }
+      },
+      "ws2025Value": [],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsModifyObjectLabel",
+        "ws2025-member-server:UserRightsModifyObjectLabel",
+        "ws2025-domain-controller:UserRightsModifyObjectLabel"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsModifyObjectLabel",
+        "ws2022-domain-member:UserRightsModifyObjectLabel",
+        "ws2022-domain-controller:UserRightsModifyObjectLabel"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ProfileSingleProcess",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeProfileSingleProcessPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsProfileSingleProcess",
+        "ws2025-member-server:UserRightsProfileSingleProcess",
+        "ws2025-domain-controller:UserRightsProfileSingleProcess"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsProfileSingleProcess",
+        "ws2022-domain-member:UserRightsProfileSingleProcess",
+        "ws2022-domain-controller:UserRightsProfileSingleProcess"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ProfileSystemPerformance",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeSystemProfilePrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544",
+        "*S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsProfileSystemPerformance",
+        "ws2025-member-server:UserRightsProfileSystemPerformance",
+        "ws2025-domain-controller:UserRightsProfileSystemPerformance"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsProfileSystemPerformance",
+        "ws2022-domain-member:UserRightsProfileSystemPerformance",
+        "ws2022-domain-controller:UserRightsProfileSystemPerformance"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/RemoteShutdown",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeRemoteShutdownPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsRemoteShutdown",
+        "ws2025-member-server:UserRightsRemoteShutdown",
+        "ws2025-domain-controller:UserRightsRemoteShutdown"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsRemoteShutdown",
+        "ws2022-domain-member:UserRightsRemoteShutdown",
+        "ws2022-domain-controller:UserRightsRemoteShutdown"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ReplaceProcessLevelToken",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeAssignPrimaryTokenPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-19",
+        "*S-1-5-20"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsReplaceProcessLevelToken",
+        "ws2025-member-server:UserRightsReplaceProcessLevelToken",
+        "ws2025-domain-controller:UserRightsReplaceProcessLevelToken"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsReplaceProcessLevelToken",
+        "ws2022-domain-member:UserRightsReplaceProcessLevelToken",
+        "ws2022-domain-controller:UserRightsReplaceProcessLevelToken"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/RestoreFilesAndDirectories",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeRestorePrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsRestoreFilesAndDirectories",
+        "ws2025-member-server:UserRightsRestoreFilesAndDirectories",
+        "ws2025-domain-controller:UserRightsRestoreFilesAndDirectories"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsRestoreFilesAndDirectories",
+        "ws2022-domain-member:UserRightsRestoreFilesAndDirectories"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ShutDownTheSystem",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeShutdownPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsShutDownTheSystem",
+        "ws2025-member-server:UserRightsShutDownTheSystem",
+        "ws2025-domain-controller:UserRightsShutDownTheSystem"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsShutDownTheSystem",
+        "ws2022-domain-member:UserRightsShutDownTheSystem",
+        "ws2022-domain-controller:UserRightsShutDownTheSystem"
+      ]
+    },
+    {
+      "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/TakeOwnership",
+      "target": {
+        "type": "Microsoft.Windows/UserRightsAssignment",
+        "properties": {
+          "name": "SeTakeOwnershipPrivilege"
+        }
+      },
+      "ws2025Value": [
+        "*S-1-5-32-544"
+      ],
+      "evidence": [
+        "ws2025-workgroup-member:UserRightsTakeOwnership",
+        "ws2025-member-server:UserRightsTakeOwnership",
+        "ws2025-domain-controller:UserRightsTakeOwnership"
+      ],
+      "usedBy": [
+        "ws2022-workgroup-member:UserRightsTakeOwnership",
+        "ws2022-domain-member:UserRightsTakeOwnership",
+        "ws2022-domain-controller:UserRightsTakeOwnership"
+      ]
+    }
+  ]
+}
