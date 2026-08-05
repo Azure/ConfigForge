@@ -63,7 +63,7 @@ export const SOURCE_COMMIT = '173177e9eaa34d0b910b44d0749192859831fd50';
 export const LIVE_SMOKE = {
   profile: 'ws2022-workgroup-member.osc.yaml',
   host: 'Windows Server 2025 (not Windows Server 2022)',
-  oscfgVersion: '1.3.12',
+  oscfgVersion: '1.3.12-preview5',
   shipped: { compliant: 171, readErrors: 29 },
   repaired: { compliant: 200, nonCompliant: 2, readErrors: 0 },
   caveat:

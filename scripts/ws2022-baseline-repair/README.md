@@ -147,7 +147,8 @@ Per-profile providers after the repair:
 
 ## Live smoke evidence (not native WS2022 validation)
 
-The `ws2022-workgroup-member` profile was executed with `oscfg` **1.3.12** on a
+The `ws2022-workgroup-member` profile was executed with `oscfg`
+**1.3.12-preview5** on a
 **Windows Server 2025** host — *not* a Windows Server 2022 host:
 
 | Baseline | Compliant | Non-compliant | Read errors |

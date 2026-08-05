@@ -622,7 +622,7 @@ describe('conversion report', () => {
     const smoke = conversionReport._provenance.liveSmoke;
     expect(smoke).toEqual(LIVE_SMOKE);
     expect(smoke.profile).toBe('ws2022-workgroup-member.osc.yaml');
-    expect(smoke.oscfgVersion).toBe('1.3.12');
+    expect(smoke.oscfgVersion).toBe('1.3.12-preview5');
     expect(smoke.shipped).toEqual({ compliant: 171, readErrors: 29 });
     expect(smoke.repaired).toEqual({ compliant: 200, nonCompliant: 2, readErrors: 0 });
     expect(smoke.host).toMatch(/Windows Server 2025/);
