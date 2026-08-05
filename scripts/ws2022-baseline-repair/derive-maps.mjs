@@ -2,21 +2,24 @@
 // Licensed under the MIT License.
 //
 // Derives the two reviewable data tables used by `repair-ws2022-baselines.mjs`
-// from the *already reviewed and merged* WS2025 baseline repair (PRs #82/#93):
+// from the *already reviewed and merged* WS2025 baseline repair:
 //
 //   csp-provider-map.json      CSP OMA-URI  ->  dedicated provider + addressing
 //   schema-expression-map.json JSON Schema  ->  CEL expression + human template
 //
 // Both tables are pure evidence extraction. Nothing is invented here: every
 // entry is the (before, after) pair of one WS2025 rule that a human already
-// reviewed. The tables are committed so the repair is auditable without git
-// archaeology; this script exists so they can be regenerated and diffed.
+// reviewed and merged to `main`. The tables are committed so the repair is
+// auditable without git archaeology; this script exists so they can be
+// regenerated and diffed.
 //
-// Evidence commits (see `git log public/_baselines/ws2025-workgroup-member.osc.yaml`):
-//   50d469c^  generated WS2025, Policy/Result CSP form           (CSP addressing)
-//   50d469c   CSP -> dedicated providers                          (provider mapping)
-//   6fb3052^  dedicated providers, legacy `schema:` form          (schema shapes)
-//   6fb3052   `schema:` -> `expression:` + `template:`            (CEL translation)
+// PROVENANCE RULES
+// ----------------
+//  * Every artifact is loaded with `git show <full 40-char SHA>:<path>`.
+//    The working tree is never read. `HEAD`, branch names and abbreviated
+//    SHAs are all mutable, so none of them are used.
+//  * Every pinned commit must be an ancestor of `origin/main`, which this
+//    script verifies before it derives anything.
 //
 // Usage:  node scripts/ws2022-baseline-repair/derive-maps.mjs [--check]
 
@@ -28,20 +31,40 @@ import yaml from 'js-yaml';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const REPO = path.resolve(HERE, '..', '..');
-const BASELINES = path.join(REPO, 'public', '_baselines');
 
-const CSP_COMMIT = '50d469c';
-const SCHEMA_COMMIT = '6fb3052';
-// Last commit carrying the original generated WS2022 profiles (the repair input).
-const WS2022_SOURCE_REF = '173177e';
+/**
+ * Pinned evidence commits, all reachable from `origin/main`.
+ *
+ *   providerBeforeCommit  ab71aaf  generated WS2025, `Policy/Result` CSP form
+ *   providerAfterCommit   50d469c  "fix(baselines): repair WS2025 standalone
+ *                                  audits" — CSP moved onto dedicated providers
+ *   schemaBeforeCommit    50d469c  same commit: dedicated providers, legacy
+ *                                  `schema:` compliance blocks
+ *   schemaAfterCommit     37ab26a  "fix(compliance): preserve CLI Test reasons"
+ *                                  — `schema:` replaced by `expression:` +
+ *                                  `template:`
+ *   ws2022SourceCommit    173177e  last commit carrying the generated WS2022
+ *                                  profiles (the repair input)
+ *
+ * Note the deliberate overlap: `50d469c` is the *after* state for the provider
+ * mapping and the *before* state for the schema translation, which is exactly
+ * how the two reviewed changes were layered on main.
+ */
+export const EVIDENCE = {
+  providerBeforeCommit: 'ab71aaf778a87322899a671e6d06bce0fa40aa2a',
+  providerAfterCommit: '50d469c3cf5e16729f1359538b10ef4bc0b6de78',
+  schemaBeforeCommit: '50d469c3cf5e16729f1359538b10ef4bc0b6de78',
+  schemaAfterCommit: '37ab26a74bd7a6aa7f6df9a6ecc0fba3a7521821',
+  ws2022SourceCommit: '173177e9eaa34d0b910b44d0749192859831fd50',
+};
 
-const WS2025 = [
+export const WS2025 = [
   ['ws2025-workgroup-member.osc.yaml', 'workgroup-member'],
   ['ws2025-member-server.osc.yaml', 'member-server'],
   ['ws2025-domain-controller.osc.yaml', 'domain-controller'],
 ];
 
-const WS2022 = [
+export const WS2022 = [
   'ws2022-workgroup-member.osc.yaml',
   'ws2022-domain-member.osc.yaml',
   'ws2022-domain-controller.osc.yaml',
@@ -49,26 +72,50 @@ const WS2022 = [
 
 const CSP_TYPE = 'Microsoft.Windows/CSP';
 
-function showAt(commit, file) {
+const git = (args) => execFileSync('git', args, {
+  cwd: REPO,
+  encoding: 'utf8',
+  maxBuffer: 64 * 1024 * 1024,
+}).trim();
+
+/** Fail loudly if any pinned SHA is not a full SHA reachable from origin/main. */
+export function assertPinnedAndReachable(evidence = EVIDENCE, cwd = REPO) {
+  for (const [label, sha] of Object.entries(evidence)) {
+    if (!/^[0-9a-f]{40}$/.test(sha)) {
+      throw new Error(`${label}: ${sha} is not a full 40-character SHA`);
+    }
+    const resolved = execFileSync('git', ['rev-parse', `${sha}^{commit}`], {
+      cwd, encoding: 'utf8',
+    }).trim();
+    if (resolved !== sha) {
+      throw new Error(`${label}: ${sha} does not resolve to itself — refusing to derive`);
+    }
+    try {
+      execFileSync('git', ['merge-base', '--is-ancestor', sha, 'origin/main'], { cwd });
+    } catch {
+      throw new Error(`${label}: ${sha} is not reachable from origin/main`);
+    }
+  }
+}
+
+/** Load a baseline exclusively from a pinned commit — never the working tree. */
+export function showAt(commit, file, cwd = REPO) {
+  if (!/^[0-9a-f]{40}$/.test(commit)) {
+    throw new Error(`refusing to read a baseline from a non-pinned ref: ${commit}`);
+  }
   const text = execFileSync('git', ['show', `${commit}:public/_baselines/${file}`], {
-    cwd: REPO,
-    encoding: 'utf8',
-    maxBuffer: 64 * 1024 * 1024,
+    cwd, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024,
   });
   return yaml.load(text);
 }
 
-function loadLocal(file) {
-  return yaml.load(readFileSync(path.join(BASELINES, file), 'utf8'));
-}
-
 const byName = (doc) => new Map((doc.resources ?? []).map((r) => [r.name, r]));
 
-/** Every OMA-URI addressed by any bundled WS2022 profile. */
+/** Every OMA-URI addressed by any bundled WS2022 profile at the pinned source. */
 function ws2022CspPaths() {
   const wanted = new Map();
   for (const file of WS2022) {
-    for (const rule of showAt(WS2022_SOURCE_REF, file).resources ?? []) {
+    for (const rule of showAt(EVIDENCE.ws2022SourceCommit, file).resources ?? []) {
       const inner = rule.properties?.resource;
       if (inner?.type !== CSP_TYPE) continue;
       const cspPath = String(inner.properties?.path ?? '');
@@ -79,13 +126,13 @@ function ws2022CspPaths() {
   return wanted;
 }
 
-function deriveCspProviderMap() {
+export function deriveCspProviderMap() {
   const wanted = ws2022CspPaths();
   const found = new Map();
 
   for (const [file, tag] of WS2025) {
-    const before = byName(showAt(`${CSP_COMMIT}^`, file));
-    const after = byName(loadLocal(file));
+    const before = byName(showAt(EVIDENCE.providerBeforeCommit, file));
+    const after = byName(showAt(EVIDENCE.providerAfterCommit, file));
     for (const [name, rule] of before) {
       const from = rule.properties?.resource;
       if (from?.type !== CSP_TYPE) continue;
@@ -132,21 +179,22 @@ function deriveCspProviderMap() {
       description:
         'Policy CSP OMA-URI -> dedicated provider + addressing, extracted from the reviewed '
         + 'WS2025 CSP repair. Values are NOT carried over; only the mechanism is.',
-      derivedFrom: {
-        before: `${CSP_COMMIT}^ (public/_baselines/ws2025-*.osc.yaml)`,
-        after: 'HEAD (public/_baselines/ws2025-*.osc.yaml)',
-      },
+      providerBeforeCommit: EVIDENCE.providerBeforeCommit,
+      providerAfterCommit: EVIDENCE.providerAfterCommit,
+      ws2022SourceCommit: EVIDENCE.ws2022SourceCommit,
+      paths: WS2025.map(([file]) => `public/_baselines/${file}`),
+      reachableFromOriginMain: true,
       regenerate: 'node scripts/ws2022-baseline-repair/derive-maps.mjs',
     },
     entries,
   };
 }
 
-function deriveSchemaExpressionMap() {
+export function deriveSchemaExpressionMap() {
   const table = new Map();
   for (const [file] of WS2025) {
-    const before = byName(showAt(`${SCHEMA_COMMIT}^`, file));
-    const after = byName(loadLocal(file));
+    const before = byName(showAt(EVIDENCE.schemaBeforeCommit, file));
+    const after = byName(showAt(EVIDENCE.schemaAfterCommit, file));
     for (const [name, rule] of before) {
       const next = after.get(name);
       if (!next) continue;
@@ -184,10 +232,10 @@ function deriveSchemaExpressionMap() {
         'Legacy JSON-Schema compliance shape -> CEL expression + human template, extracted '
         + 'from the reviewed WS2025 schema translation. Keyed by schema shape AND the kind '
         + 'of the desired value, because string-typed values use an int() coercion form.',
-      derivedFrom: {
-        before: `${SCHEMA_COMMIT}^ (public/_baselines/ws2025-*.osc.yaml)`,
-        after: 'HEAD (public/_baselines/ws2025-*.osc.yaml)',
-      },
+      schemaBeforeCommit: EVIDENCE.schemaBeforeCommit,
+      schemaAfterCommit: EVIDENCE.schemaAfterCommit,
+      paths: WS2025.map(([file]) => `public/_baselines/${file}`),
+      reachableFromOriginMain: true,
       regenerate: 'node scripts/ws2022-baseline-repair/derive-maps.mjs',
     },
     entries,
@@ -206,22 +254,29 @@ const targets = [
   ['schema-expression-map.json', deriveSchemaExpressionMap],
 ];
 
-const check = process.argv.includes('--check');
-let drift = 0;
-for (const [file, build] of targets) {
-  const next = `${JSON.stringify(build(), null, 2)}\n`;
-  const dest = path.join(HERE, file);
-  if (check) {
-    const current = readFileSync(dest, 'utf8');
-    if (current !== next) {
-      drift += 1;
-      console.error(`DRIFT: ${file} differs from the derived table`);
-    } else {
-      console.log(`ok: ${file}`);
+function main() {
+  assertPinnedAndReachable();
+  const check = process.argv.includes('--check');
+  let drift = 0;
+  for (const [file, build] of targets) {
+    const next = `${JSON.stringify(build(), null, 2)}\n`;
+    const dest = path.join(HERE, file);
+    if (check) {
+      const current = readFileSync(dest, 'utf8');
+      if (current.replace(/\r\n/g, '\n') !== next) {
+        drift += 1;
+        console.error(`DRIFT: ${file} differs from the derived table`);
+      } else {
+        console.log(`ok: ${file}`);
+      }
+      continue;
     }
-    continue;
+    writeFileSync(dest, next, 'utf8');
+    console.log(`wrote: ${file}`);
   }
-  writeFileSync(dest, next, 'utf8');
-  console.log(`wrote: ${file}`);
+  if (check && drift) process.exit(1);
 }
-if (check && drift) process.exit(1);
+
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  main();
+}

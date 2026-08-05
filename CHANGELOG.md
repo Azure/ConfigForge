@@ -16,7 +16,10 @@
   rules: zero. OSConfig security baseline support remains officially Windows
   Server 2025 only, so these profiles are still best-effort — see
   `scripts/ws2022-baseline-repair/README.md` for the conversion evidence and
-  known limitations.
+  known limitations. User rights that must be granted to nobody keep a real
+  assertion (`value == null || value.size() == 0`) rather than being downgraded
+  to informational: 7 controls on each member profile and 6 on the domain
+  controller. No assertion downgrades remain in any profile.
 
 ## [0.3.98] - 2026-07-28
 

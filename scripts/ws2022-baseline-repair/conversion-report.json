@@ -1,9 +1,25 @@
 {
   "_provenance": {
     "description": "Per-profile provenance for the WS2022 Policy CSP repair. Committed so the shipped baselines can be validated without git history (CI checks out shallow).",
-    "source": "173177e:public/_baselines/ws2022-*.osc.yaml",
+    "sourceCommit": "173177e9eaa34d0b910b44d0749192859831fd50",
+    "source": "173177e9eaa34d0b910b44d0749192859831fd50:public/_baselines/ws2022-*.osc.yaml",
     "regenerate": "node scripts/ws2022-baseline-repair/repair-ws2022-baselines.mjs",
-    "verify": "node scripts/ws2022-baseline-repair/repair-ws2022-baselines.mjs --check"
+    "verify": "node scripts/ws2022-baseline-repair/repair-ws2022-baselines.mjs --check",
+    "liveSmoke": {
+      "profile": "ws2022-workgroup-member.osc.yaml",
+      "host": "Windows Server 2025 (not Windows Server 2022)",
+      "oscfgVersion": "1.3.12",
+      "shipped": {
+        "compliant": 171,
+        "readErrors": 29
+      },
+      "repaired": {
+        "compliant": 200,
+        "nonCompliant": 2,
+        "readErrors": 0
+      },
+      "caveat": "Executed on Windows Server 2025 hardware, so it demonstrates that the repaired provider addressing reads on a standalone machine. It is NOT native Windows Server 2022 validation, and the 2 non-compliant results are genuine findings on that host rather than read failures."
+    }
   },
   "profiles": [
     {
@@ -130,43 +146,121 @@
           "evidence": "ws2025-member-server:SharesThatCanBeAccessedAnonymously"
         }
       ],
-      "assertionDowngrades": [
+      "assertionRestatements": [
         {
           "name": "UserRightsAccessCredentialManagerAsTrustedCaller",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/AccessCredentialManagerAsTrustedCaller",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsActAsPartOfTheOperatingSystem",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ActAsPartOfTheOperatingSystem",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsCreatePermanentSharedObjects",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreatePermanentSharedObjects",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsCreateToken",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreateToken",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsEnableDelegation",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/EnableDelegation",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsLockMemory",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/LockMemory",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsModifyObjectLabel",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ModifyObjectLabel",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         }
       ],
+      "assertionDowngrades": [],
       "valueChanges": [
         {
           "name": "AccountLockoutPolicy",
@@ -1679,38 +1773,105 @@
           "evidence": "ws2025-member-server:SharesThatCanBeAccessedAnonymously"
         }
       ],
-      "assertionDowngrades": [
+      "assertionRestatements": [
         {
           "name": "UserRightsAccessCredentialManagerAsTrustedCaller",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/AccessCredentialManagerAsTrustedCaller",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsActAsPartOfTheOperatingSystem",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ActAsPartOfTheOperatingSystem",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsCreatePermanentSharedObjects",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreatePermanentSharedObjects",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsCreateToken",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreateToken",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsLockMemory",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/LockMemory",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsModifyObjectLabel",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ModifyObjectLabel",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         }
       ],
+      "assertionDowngrades": [],
       "valueChanges": [
         {
           "name": "AccountLockoutPolicy",
@@ -3125,43 +3286,121 @@
           "evidence": "ws2025-member-server:SharesThatCanBeAccessedAnonymously"
         }
       ],
-      "assertionDowngrades": [
+      "assertionRestatements": [
         {
           "name": "UserRightsAccessCredentialManagerAsTrustedCaller",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/AccessCredentialManagerAsTrustedCaller",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsActAsPartOfTheOperatingSystem",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ActAsPartOfTheOperatingSystem",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsCreatePermanentSharedObjects",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreatePermanentSharedObjects",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsCreateToken",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/CreateToken",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsEnableDelegation",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/EnableDelegation",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsLockMemory",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/LockMemory",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         },
         {
           "name": "UserRightsModifyObjectLabel",
           "cspPath": "./Vendor/MSFT/Policy/Result/UserRights/ModifyObjectLabel",
-          "reason": "scalar compliance schema {\"oneOf\":[{\"const\":\"\"},{\"type\":\"null\"}]} does not apply to a principal list"
+          "from": {
+            "oneOf": [
+              {
+                "const": ""
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "to": "value == null || value.size() == 0",
+          "reason": "the scalar \"empty or not set\" schema is restated over the principal list the UserRightsAssignment provider returns"
         }
       ],
+      "assertionDowngrades": [],
       "valueChanges": [
         {
           "name": "AccountLockoutPolicy",

@@ -12,8 +12,12 @@ foundational work by theme.
   addressing and value types, and replace ambiguous compliance schemas with
   explicit CEL expressions. Standalone servers no longer report those settings
   as unread. Resource counts are now 259 (Member Server), 244 (Domain
-  Controller), and 202 (Workgroup Member). WS2022 remains best-effort —
-  OSConfig security baseline support is officially Windows Server 2025 only.
+  Controller), and 202 (Workgroup Member). User rights that must be granted to
+  nobody keep a real assertion (`value == null || value.size() == 0`) instead of
+  being downgraded to informational, so no assertion downgrades remain. WS2022
+  remains best-effort — OSConfig security baseline support is officially
+  Windows Server 2025 only, and the one live smoke run was executed on a
+  Windows Server 2025 host, not a WS2022 host.
 
 ## v0.3.98 — 2026-07-28
 
