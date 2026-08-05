@@ -4,6 +4,17 @@ A concise release history for ConfigForge. Newer entries use their release
 tags and state publication status explicitly; older entries summarize the
 foundational work by theme.
 
+## Unreleased
+
+- **Windows Server 2022 standalone baselines:** Convert every
+  `Policy/Result` CSP rule in the three WS2022 role baselines to dedicated
+  Audit Policy, User Rights, and Account Policy providers, normalize registry
+  addressing and value types, and replace ambiguous compliance schemas with
+  explicit CEL expressions. Standalone servers no longer report those settings
+  as unread. Resource counts are now 259 (Member Server), 244 (Domain
+  Controller), and 202 (Workgroup Member). WS2022 remains best-effort —
+  OSConfig security baseline support is officially Windows Server 2025 only.
+
 ## v0.3.98 — 2026-07-28
 
 `v0.3.98` is the current Windows/Linux tagged source. Its matching GitHub
