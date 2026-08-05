@@ -46,11 +46,32 @@ const REPO = path.resolve(HERE, '..', '..');
 const BASELINES = path.join(REPO, 'public', '_baselines');
 
 /**
- * The conversion input is pinned to the last commit that carries the original
- * generated WS2022 profiles, so the repair stays reproducible and `--check`
- * keeps working after the repaired files are committed on top.
+ * The conversion input is pinned to the full SHA of the last commit that
+ * carries the original generated WS2022 profiles, so the repair stays
+ * reproducible and `--check` keeps working after the repaired files are
+ * committed on top. Full SHA (not an abbreviation, not a branch) so the input
+ * cannot drift; reachable from `origin/main`.
  */
-const SOURCE_REF = '173177e';
+export const SOURCE_COMMIT = '173177e9eaa34d0b910b44d0749192859831fd50';
+
+/**
+ * Reviewer-supplied live audit of the workgroup-member profile, recorded as
+ * evidence for the read-failure claim. NOT a native WS2022 validation: the run
+ * was performed against a Windows Server 2025 host, because that is the only
+ * platform OSConfig supports the security-baseline scenario on.
+ */
+export const LIVE_SMOKE = {
+  profile: 'ws2022-workgroup-member.osc.yaml',
+  host: 'Windows Server 2025 (not Windows Server 2022)',
+  oscfgVersion: '1.3.12',
+  shipped: { compliant: 171, readErrors: 29 },
+  repaired: { compliant: 200, nonCompliant: 2, readErrors: 0 },
+  caveat:
+    'Executed on Windows Server 2025 hardware, so it demonstrates that the repaired '
+    + 'provider addressing reads on a standalone machine. It is NOT native Windows '
+    + 'Server 2022 validation, and the 2 non-compliant results are genuine findings '
+    + 'on that host rather than read failures.',
+};
 
 const CSP = 'Microsoft.Windows/CSP';
 const REGISTRY = 'Microsoft.Windows/Registry';
@@ -271,6 +292,47 @@ function compileSchema(schema, kind) {
   return { ...translateSchema(schema, kind), source: 'derived' };
 }
 
+/**
+ * `Microsoft.Windows/UserRightsAssignment` reads back a list of principals, so
+ * the generated scalar schema has to be restated over a list rather than
+ * dropped. The only scalar shape the WS2022 profiles use on a user right is
+ * "empty string or not set", which is exactly "no principals are assigned":
+ *
+ *   {"oneOf":[{"const":""},{"type":"null"}]}   ->   value == null || value.size() == 0
+ *
+ * `size()` on a list is standard CEL and is already exercised against a
+ * `UserRightsAssignment` resource in this repo
+ * (`packages/core/src/import-export/index.test.ts`, `expression: 'value.size() == 2'`).
+ * CEL's `||` short-circuits, so the null branch is evaluated before `size()`
+ * is ever applied to a missing value.
+ *
+ * Returns `null` for any other shape so an unreviewed schema still surfaces as
+ * an explicit downgrade instead of being silently reinterpreted.
+ */
+export function translatePrincipalListSchema(schema, beforeValue, afterList) {
+  if (!schema || typeof schema !== 'object') return null;
+  if (!Array.isArray(afterList) || afterList.length !== 0) return null;
+  if (beforeValue !== '' && beforeValue !== null) return null;
+
+  const keys = Object.keys(schema);
+  const isEmptyOrNull = keys.length === 1
+    && Array.isArray(schema.oneOf)
+    && schema.oneOf.length === 2
+    && schema.oneOf.some((branch) => branch?.type === 'null')
+    && schema.oneOf.some(
+      (branch) => branch
+        && Object.prototype.hasOwnProperty.call(branch, 'const')
+        && branch.const === '',
+    );
+  if (!isEmptyOrNull) return null;
+
+  return {
+    expression: 'value == null || value.size() == 0',
+    template: 'The value {value} must be unassigned (no principals).',
+    source: 'principal-list-restatement',
+  };
+}
+
 /** Re-type schema constants after a provider-mandated value cast (0 -> false). */
 function retypeSchema(schema, before, after) {
   if (!schema || typeof schema !== 'object' || before === after) return schema;
@@ -385,6 +447,7 @@ function convertCsp(rule, report) {
   const properties = clone(entry.target.properties) ?? {};
   let nextValue = value;
   let compiledSchema = schema;
+  let restated = null;
   let downgrade = null;
 
   if (entry.target.type === URA) {
@@ -392,8 +455,21 @@ function convertCsp(rule, report) {
       const before = valueKind(value);
       nextValue = toUserRightsList(value, rule.name, report);
       if (before !== 'array' && schema && Object.keys(schema).length > 0) {
-        downgrade = `scalar compliance schema ${JSON.stringify(schema)} does not apply to a principal list`;
-        compiledSchema = {};
+        restated = translatePrincipalListSchema(schema, value, nextValue);
+        if (restated) {
+          report.assertionRestatements.push({
+            name: rule.name,
+            cspPath,
+            from: schema,
+            to: restated.expression,
+            reason:
+              'the scalar "empty or not set" schema is restated over the principal list the '
+              + 'UserRightsAssignment provider returns',
+          });
+        } else {
+          downgrade = `scalar compliance schema ${JSON.stringify(schema)} does not apply to a principal list`;
+          compiledSchema = {};
+        }
       }
     }
   } else if (entry.target.type === ACCOUNT) {
@@ -419,7 +495,8 @@ function convertCsp(rule, report) {
     name: rule.name, cspPath, to: entry.target.type, evidence: entry.evidence,
   });
 
-  const compiled = compileSchema(compiledSchema, valueKind(hasValue ? nextValue : undefined));
+  const compiled = restated
+    ?? compileSchema(compiledSchema, valueKind(hasValue ? nextValue : undefined));
   return [{
     name: rule.name,
     type: TEST,
@@ -530,7 +607,7 @@ function convertList(resources, report) {
 export function repairProfile(filename) {
   const source = yaml.load(execFileSync(
     'git',
-    ['show', `${SOURCE_REF}:public/_baselines/${filename}`],
+    ['show', `${SOURCE_COMMIT}:public/_baselines/${filename}`],
     { cwd: REPO, encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 },
   ));
   const report = {
@@ -542,6 +619,7 @@ export function repairProfile(filename) {
     converted: [],
     residualCsp: [],
     assertionDowngrades: [],
+    assertionRestatements: [],
     shapeRepairs: [],
     reshaped: [],
     sourceRuleNames: [],
@@ -589,6 +667,8 @@ export function repairProfile(filename) {
 function main() {
   const check = process.argv.includes('--check');
   const wantReport = process.argv.includes('--report');
+  // `--check` verifies and `--report` prints; only a bare invocation writes.
+  const write = !check && !wantReport;
   const reports = [];
   let drift = 0;
   // `* text=auto` + core.autocrlf checks the YAML out with CRLF on Windows, so
@@ -608,6 +688,7 @@ function main() {
       }
       continue;
     }
+    if (!write) continue;
     writeFileSync(dest, text, 'utf8');
     console.log(`wrote: ${filename}`);
   }
@@ -617,9 +698,11 @@ function main() {
       description:
         'Per-profile provenance for the WS2022 Policy CSP repair. Committed so the '
         + 'shipped baselines can be validated without git history (CI checks out shallow).',
-      source: `${SOURCE_REF}:public/_baselines/ws2022-*.osc.yaml`,
+      sourceCommit: SOURCE_COMMIT,
+      source: `${SOURCE_COMMIT}:public/_baselines/ws2022-*.osc.yaml`,
       regenerate: 'node scripts/ws2022-baseline-repair/repair-ws2022-baselines.mjs',
       verify: 'node scripts/ws2022-baseline-repair/repair-ws2022-baselines.mjs --check',
+      liveSmoke: LIVE_SMOKE,
     },
     profiles: reports.map((report) => ({
       profile: report.profile,
@@ -632,6 +715,7 @@ function main() {
       providerCounts: report.providerCounts,
       expansions: report.expansions,
       registryShapeRepairs: report.shapeRepairs,
+      assertionRestatements: report.assertionRestatements,
       assertionDowngrades: report.assertionDowngrades,
       valueChanges: report.valueChanges,
       conversions: report.converted.map(({ name, cspPath, to, evidence }) => ({
@@ -649,23 +733,27 @@ function main() {
     } else {
       console.log('ok: conversion-report.json');
     }
-  } else {
+  } else if (write) {
     writeFileSync(reportPath, conversionReport, 'utf8');
     console.log('wrote: conversion-report.json');
   }
 
+  if (wantReport) console.log('--report is read-only: nothing was written.');
+
   for (const report of reports) {
     console.log('');
     console.log(`${report.profile}: ${report.sourceRules} -> ${report.outputRules} rules`);
-    console.log(`  CSP in source        : ${report.sourceCsp}`);
-    console.log(`  converted            : ${report.converted.length}`);
-    console.log(`  residual CSP         : ${report.residualCsp.length}`);
-    console.log(`  keyPath normalised   : ${report.keyPathNormalized}`);
-    console.log(`  registry shape repair: ${report.shapeRepairs.length}`);
-    console.log(`  assertion downgrades : ${report.assertionDowngrades.length}`);
-    console.log(`  providers            : ${JSON.stringify(report.providerCounts)}`);
+    console.log(`  CSP in source         : ${report.sourceCsp}`);
+    console.log(`  converted             : ${report.converted.length}`);
+    console.log(`  residual CSP          : ${report.residualCsp.length}`);
+    console.log(`  keyPath normalised    : ${report.keyPathNormalized}`);
+    console.log(`  registry shape repair : ${report.shapeRepairs.length}`);
+    console.log(`  assertion restatements: ${report.assertionRestatements.length}`);
+    console.log(`  assertion downgrades  : ${report.assertionDowngrades.length}`);
+    console.log(`  providers             : ${JSON.stringify(report.providerCounts)}`);
     if (wantReport) {
       for (const item of report.residualCsp) console.log(`   residual: ${item.name} (${item.cspPath})`);
+      for (const item of report.assertionRestatements) console.log(`   restated: ${item.name} -> ${item.to}`);
       for (const item of report.assertionDowngrades) console.log(`   downgraded: ${item.name} — ${item.reason}`);
       for (const line of report.reshaped) console.log(`   reshaped: ${line}`);
     }

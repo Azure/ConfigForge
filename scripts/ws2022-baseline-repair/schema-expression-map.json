@@ -1,10 +1,14 @@
 {
   "_provenance": {
     "description": "Legacy JSON-Schema compliance shape -> CEL expression + human template, extracted from the reviewed WS2025 schema translation. Keyed by schema shape AND the kind of the desired value, because string-typed values use an int() coercion form.",
-    "derivedFrom": {
-      "before": "6fb3052^ (public/_baselines/ws2025-*.osc.yaml)",
-      "after": "HEAD (public/_baselines/ws2025-*.osc.yaml)"
-    },
+    "schemaBeforeCommit": "50d469c3cf5e16729f1359538b10ef4bc0b6de78",
+    "schemaAfterCommit": "37ab26a74bd7a6aa7f6df9a6ecc0fba3a7521821",
+    "paths": [
+      "public/_baselines/ws2025-workgroup-member.osc.yaml",
+      "public/_baselines/ws2025-member-server.osc.yaml",
+      "public/_baselines/ws2025-domain-controller.osc.yaml"
+    ],
+    "reachableFromOriginMain": true,
     "regenerate": "node scripts/ws2022-baseline-repair/derive-maps.mjs"
   },
   "entries": [

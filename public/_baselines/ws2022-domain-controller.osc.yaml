@@ -2278,8 +2278,8 @@ resources:
         properties:
           name: SeTrustedCredManAccessPrivilege
           value: []
-      expression: 'true'
-      template: The value {value} is informational for this control.
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsActAsPartOfTheOperatingSystem
     type: Microsoft.OSConfig/Test
     properties:
@@ -2288,8 +2288,8 @@ resources:
         properties:
           name: SeTcbPrivilege
           value: []
-      expression: 'true'
-      template: The value {value} is informational for this control.
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsAdjustMemoryQuotasForProcess
     type: Microsoft.OSConfig/Test
     properties:
@@ -2360,8 +2360,8 @@ resources:
         properties:
           name: SeCreatePermanentPrivilege
           value: []
-      expression: 'true'
-      template: The value {value} is informational for this control.
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsCreateSymbolicLinks
     type: Microsoft.OSConfig/Test
     properties:
@@ -2382,8 +2382,8 @@ resources:
         properties:
           name: SeCreateTokenPrivilege
           value: []
-      expression: 'true'
-      template: The value {value} is informational for this control.
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsDenyAccessFromNetwork
     type: Microsoft.OSConfig/Test
     properties:
@@ -2472,8 +2472,8 @@ resources:
         properties:
           name: SeLockMemoryPrivilege
           value: []
-      expression: 'true'
-      template: The value {value} is informational for this control.
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsManageAuditingAndSecurityLog
     type: Microsoft.OSConfig/Test
     properties:
@@ -2515,8 +2515,8 @@ resources:
         properties:
           name: SeRelabelPrivilege
           value: []
-      expression: 'true'
-      template: The value {value} is informational for this control.
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsProfileSingleProcess
     type: Microsoft.OSConfig/Test
     properties:

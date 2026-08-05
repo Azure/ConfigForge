@@ -1,10 +1,15 @@
 {
   "_provenance": {
     "description": "Policy CSP OMA-URI -> dedicated provider + addressing, extracted from the reviewed WS2025 CSP repair. Values are NOT carried over; only the mechanism is.",
-    "derivedFrom": {
-      "before": "50d469c^ (public/_baselines/ws2025-*.osc.yaml)",
-      "after": "HEAD (public/_baselines/ws2025-*.osc.yaml)"
-    },
+    "providerBeforeCommit": "ab71aaf778a87322899a671e6d06bce0fa40aa2a",
+    "providerAfterCommit": "50d469c3cf5e16729f1359538b10ef4bc0b6de78",
+    "ws2022SourceCommit": "173177e9eaa34d0b910b44d0749192859831fd50",
+    "paths": [
+      "public/_baselines/ws2025-workgroup-member.osc.yaml",
+      "public/_baselines/ws2025-member-server.osc.yaml",
+      "public/_baselines/ws2025-domain-controller.osc.yaml"
+    ],
+    "reachableFromOriginMain": true,
     "regenerate": "node scripts/ws2022-baseline-repair/derive-maps.mjs"
   },
   "entries": [

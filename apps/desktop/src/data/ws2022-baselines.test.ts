@@ -54,6 +54,7 @@ interface ProfileReport {
   providerCounts: Record<string, number>;
   expansions: { name: string; into: string[] }[];
   registryShapeRepairs: { name: string; valueType: string }[];
+  assertionRestatements: { name: string; from: unknown; to: string; reason?: string }[];
   assertionDowngrades: { name: string }[];
   valueChanges: { name: string; from: unknown; to: unknown }[];
   conversions: { name: string; cspPath: string; to: string; evidence: string[] }[];
@@ -84,6 +85,41 @@ const USER_RIGHTS = "Microsoft.Windows/UserRightsAssignment";
 const ACCOUNT = "Microsoft.Windows/AccountPolicy";
 const CSP = "Microsoft.Windows/CSP";
 
+/**
+ * User rights whose WS2022 source demanded "empty string or not set". The
+ * `UserRightsAssignment` provider reads back a principal list, so the assertion
+ * is restated over that list instead of being downgraded to informational.
+ */
+const UNASSIGNED_EXPRESSION = "value == null || value.size() == 0";
+const UNASSIGNED_BASE = [
+  "UserRightsAccessCredentialManagerAsTrustedCaller",
+  "UserRightsActAsPartOfTheOperatingSystem",
+  "UserRightsCreatePermanentSharedObjects",
+  "UserRightsCreateToken",
+  "UserRightsLockMemory",
+  "UserRightsModifyObjectLabel",
+] as const;
+
+/**
+ * Minimal CEL harness for the restored assertion. `||` short-circuits the way
+ * CEL does, so `size()` is never applied to an unset value; any atom outside the
+ * grammar throws rather than being silently approximated.
+ */
+function evalUnassigned(expression: string, value: unknown): boolean {
+  return expression
+    .split("||")
+    .map((part) => part.trim())
+    .some((atom) => {
+      if (atom === "value == null") return value === null || value === undefined;
+      const sized = /^value\.size\(\) == (\d+)$/.exec(atom);
+      if (sized) {
+        if (!Array.isArray(value)) throw new Error(`size() applied to ${String(value)}`);
+        return value.length === Number(sized[1]);
+      }
+      throw new Error(`unsupported CEL atom for this harness: ${atom}`);
+    });
+}
+
 /** Exact post-repair shape, asserted per profile. */
 const EXPECTED = [
   {
@@ -93,6 +129,7 @@ const EXPECTED = [
     outputRules: 259,
     sourceCsp: 73,
     providers: { [REGISTRY]: 184, [AUDIT]: 26, [USER_RIGHTS]: 36, [ACCOUNT]: 13 },
+    unassignedUserRights: [...UNASSIGNED_BASE, "UserRightsEnableDelegation"],
   },
   {
     file: "ws2022-domain-controller.osc.yaml",
@@ -101,6 +138,9 @@ const EXPECTED = [
     outputRules: 244,
     sourceCsp: 71,
     providers: { [REGISTRY]: 171, [AUDIT]: 32, [USER_RIGHTS]: 28, [ACCOUNT]: 13 },
+    // A domain controller delegates through AD, so `UserRightsEnableDelegation`
+    // is not one of the controls the DC profile pins to "unassigned".
+    unassignedUserRights: [...UNASSIGNED_BASE],
   },
   {
     file: "ws2022-workgroup-member.osc.yaml",
@@ -109,6 +149,7 @@ const EXPECTED = [
     outputRules: 202,
     sourceCsp: 71,
     providers: { [REGISTRY]: 129, [AUDIT]: 26, [USER_RIGHTS]: 36, [ACCOUNT]: 11 },
+    unassignedUserRights: [...UNASSIGNED_BASE, "UserRightsEnableDelegation"],
   },
 ] as const;
 
@@ -376,25 +417,60 @@ describe.each(EXPECTED)("WS2022 baseline — $file", (expected) => {
   });
 
   describe("residual unread risk is declared, not hidden", () => {
-    it("treats every UserRightsAssignment rule as informational, matching shipped WS2025", () => {
+    it("asserts 'unassigned' on every user right whose source demanded it", () => {
+      const restated = rules.filter(
+        (r) =>
+          r.properties?.resource?.type === USER_RIGHTS &&
+          r.properties?.expression === UNASSIGNED_EXPRESSION,
+      );
+      expect(restated.map((r) => r.name).sort()).toEqual(
+        [...expected.unassignedUserRights].sort(),
+      );
+      expect(restated.length).toBe(expected.unassignedUserRights.length);
+      for (const rule of restated) {
+        expect(rule.properties?.resource?.properties?.value, rule.name).toEqual([]);
+        expect(rule.properties?.template, rule.name).toBe(
+          "The value {value} must be unassigned (no principals).",
+        );
+        expect(rule.properties?.template, rule.name).not.toContain("informational");
+      }
+    });
+
+    it("passes the restored assertion on an empty list and fails it on any principal", () => {
+      for (const rule of rules.filter(
+        (r) => r.properties?.expression === UNASSIGNED_EXPRESSION,
+      )) {
+        expect(evalUnassigned(rule.properties!.expression!, null), rule.name).toBe(true);
+        expect(evalUnassigned(rule.properties!.expression!, []), rule.name).toBe(true);
+        expect(
+          evalUnassigned(rule.properties!.expression!, ["*S-1-5-32-544"]),
+          rule.name,
+        ).toBe(false);
+      }
+    });
+
+    it("reconciles the restatements with the conversion report", () => {
+      const reported = report.assertionRestatements.map((item) => item.name).sort();
+      expect(reported).toEqual([...expected.unassignedUserRights].sort());
+      for (const item of report.assertionRestatements) {
+        expect(item.to, item.name).toBe(UNASSIGNED_EXPRESSION);
+        expect(byName.get(item.name)?.properties?.expression, item.name).toBe(
+          UNASSIGNED_EXPRESSION,
+        );
+      }
+    });
+
+    it("leaves every other UserRightsAssignment rule explicitly informational", () => {
+      const restated = new Set(expected.unassignedUserRights as readonly string[]);
       for (const rule of rules.filter((r) => r.properties?.resource?.type === USER_RIGHTS)) {
+        if (restated.has(rule.name!)) continue;
         expect(rule.properties?.expression, rule.name).toBe("true");
         expect(rule.properties?.template, rule.name).toContain("informational");
       }
     });
 
-    it("only downgrades assertions on UserRightsAssignment rules", () => {
-      for (const downgrade of report.assertionDowngrades) {
-        expect(byName.get(downgrade.name)?.properties?.resource?.type, downgrade.name).toBe(
-          USER_RIGHTS,
-        );
-      }
-    });
-
-    it("records a reason for every downgraded assertion", () => {
-      for (const downgrade of report.assertionDowngrades as { name: string; reason?: string }[]) {
-        expect(downgrade.reason, downgrade.name).toBeTruthy();
-      }
+    it("carries no remaining assertion downgrade", () => {
+      expect(report.assertionDowngrades).toEqual([]);
     });
 
     it("never leaves a rule without a readable assertion or template", () => {

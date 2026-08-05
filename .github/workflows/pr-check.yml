@@ -65,7 +65,12 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
+      # Full history: the WS2022 baseline-repair suite re-derives its mapping
+      # evidence with `git show <pinned SHA>` instead of trusting the committed
+      # tables, so a shallow checkout would make those assertions unrunnable.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
