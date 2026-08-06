@@ -106,6 +106,7 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
   const revertApi = hasCfsNamespace("revert") ? safeCfs("revert") : undefined;
   const canDeploy = HAS_DEPLOY && typeof deployApi?.run === "function";
   const canRevert = HAS_DEPLOY && typeof revertApi?.apply === "function";
+  const revertAvailable = manifest?.RevertAvailable || manifest?.Deployed;
   const canEdit = viewerMode === "visual" ? formatCache.current.yaml !== undefined : isEditable;
   const disabledLinkClass = editing ? "pointer-events-none opacity-50" : "";
 
@@ -343,8 +344,8 @@ export const ManifestDetailFooter = React.memo(function ManifestDetailFooter({
                 size="small"
                 icon={reverting ? <Spinner size="tiny" /> : <ArrowCounterclockwiseRegular />}
                 onClick={() => void handleRevert()}
-                disabled={busy || !manifest?.Deployed}
-                title={manifest?.Deployed ? t("actions.revertTitle") : t("actions.noRevertTitle")}
+                disabled={busy || !revertAvailable}
+                title={revertAvailable ? t("actions.revertTitle") : t("actions.noRevertTitle")}
                 aria-label={t("actions.revert")}
                 className="cfs-footer-action shrink-0 text-amber-700 dark:text-amber-400"
               >

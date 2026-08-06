@@ -172,10 +172,11 @@ import omitted `valueType` (and the JSON path also omitted `valueName`),
 so the editor's inline validator flagged every imported row as invalid.
 
 `valueType` is inferred from `expectedValue` via
-`inferRegistryValueType()` (exported from `import.ts`): integer-shaped
-values — numbers (`42`) and integer-shaped strings (`"0"`, `"-7"`,
-`"  42  "`) — get `Dword`; everything else gets `String`. Users can
-override after import. New import sources should re-use the same helper.
+`inferRegistryValueType()` (exported from `import.ts`) emits canonical
+upstream Registry types. Integer-shaped values in the DWORD range get
+`REG_DWORD`. Larger exact integers get `REG_QWORD`. Other values get
+`REG_SZ`. Users can override after import. New import sources should re-use
+the same helper.
 
 ## `cfs.exportChannel.get({ name, format?, effect?, osType? })` — channel `cfs:export:get`
 

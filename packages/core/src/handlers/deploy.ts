@@ -56,7 +56,7 @@ import {
   resolveOscfgBinary,
   sanitizeNamespace,
   updateRegistration,
-  parseYamlDocument,
+  parseYamlDocumentLossless,
   compareDesiredActual,
   normalizePropertiesForCli,
   summarizeCompliance,
@@ -468,7 +468,7 @@ function toUiResources(results: ComplianceResult[]): DeployResource[] {
 function loadDesiredFromSource(yaml: string | null): DesiredResource[] | null {
   if (!yaml) return null;
   try {
-    const doc = parseYamlDocument(yaml) as Record<string, unknown>;
+    const doc = parseYamlDocumentLossless(yaml) as Record<string, unknown>;
     const rs = Array.isArray(doc?.resources) ? (doc.resources as unknown[]) : [];
     return extractResourcesFull(rs);
   } catch {
@@ -638,18 +638,19 @@ async function runDeployInner(
 
     const counts = summarizeCompliance(audit.results);
     const ui = toUiResources(audit.results);
+    const unverifiedCount = counts.indeterminate + counts.errors;
 
     let warning: string | undefined;
     const bulkFailed = !bulk.success;
     const bulkEmpty = bulk.success && (bulk.data?.length ?? 0) === 0;
-    if (audit.fallbackErrors > 0) {
+    if (unverifiedCount > 0) {
       warning =
-        `Audit partial — ${audit.fallbackErrors} of ${desired.length} resources could not be read from the device` +
+        `Audit incomplete — ${unverifiedCount} of ${desired.length} resources could not be verified` +
         (bulk.error ? ` (${bulk.error})` : '') +
         (audit.fallbackRetries > 0
           ? ` (${audit.fallbackRetries} resources required a retry)`
           : '') +
-        `. Those resources are reported as "could not read" until they can be audited.`;
+        `. Inspect the resource results and OSConfig provider logs before relying on this audit.`;
     } else if (audit.fallbackRetries > 0) {
       warning =
         `Audit completed cleanly, but ${audit.fallbackRetries} resources required a retry due to transient CLI errors. ` +
@@ -702,7 +703,7 @@ async function runDeployInner(
         Resources: ui,
         DeployMethod: 'Manifest',
         DeployMode: 'audit' as const,
-        AuditIncomplete: audit.fallbackErrors > 0,
+        AuditIncomplete: unverifiedCount > 0,
         AuditRetries: audit.fallbackRetries,
         FallbackUsed: audit.fallbackUsed,
       },
@@ -752,7 +753,7 @@ async function runDeployInner(
     );
   }
 
-  const parsed = parseYamlDocument(sourceYaml);
+  const parsed = parseYamlDocumentLossless(sourceYaml);
   const resources = (parsed as Record<string, unknown>).resources ?? [];
   if (hasMixedPlatformResources(resources as unknown[])) {
     throw new HandlerError(400, 'Manifest mixes Windows and Linux resource types');
@@ -763,6 +764,13 @@ async function runDeployInner(
     throw new HandlerError(
       400,
       `Manifest targets a different platform than this machine (${platform}):\n${errs.join('\n')}`,
+    );
+  }
+  const desired = extractResourcesFull(resources as unknown[]);
+  if (desired.length === 0) {
+    throw new HandlerError(
+      400,
+      `"${req.name}" has no resources to enforce. Add at least one resource to the manifest before deploying.`,
     );
   }
 
@@ -909,10 +917,9 @@ async function runDeployInner(
   let deployed = false;
   let deployError: string | null = null;
   const applyResult = await applyManifest({ content: sourceYaml, namespace });
+  const applyAccepted = applyResult.success;
   if (!applyResult.success) {
     deployError = applyResult.error;
-    const check = await getResources({ namespace });
-    if (check.success && (check.data?.length ?? 0) > 0) deployed = true;
   } else {
     deployed = true;
   }
@@ -920,8 +927,6 @@ async function runDeployInner(
   // Post-apply: cancellation can be REQUESTED but cannot ABORT — we
   // commit the audit + finalize phases so the on-disk and on-device
   // state stay consistent.
-  const desired = extractResourcesFull(resources as unknown[]);
-
   emit(opts, {
     phase: 'audit',
     phaseIndex: 4,
@@ -949,23 +954,51 @@ async function runDeployInner(
   });
   const counts = summarizeCompliance(audit.results);
   const ui = toUiResources(audit.results);
+  const unverifiedCount = counts.indeterminate + counts.errors;
+  const fullyVerifiedCompliant =
+    counts.noncompliant === 0 &&
+    unverifiedCount === 0 &&
+    counts.compliant === desired.length;
 
-  if (deployed) {
-    const now = new Date().toISOString();
-    const patch: Parameters<typeof updateRegistration>[1] = {
-      lastAppliedAt: now,
-      lastAuditedAt: now,
-    };
+  const enforcementIncomplete = counts.noncompliant > 0;
+  const verificationIncomplete = !enforcementIncomplete && unverifiedCount > 0;
+  const noncompliantResourceLabel = `${counts.noncompliant} resource${counts.noncompliant === 1 ? '' : 's'}`;
+  const remainVerb = counts.noncompliant === 1 ? 'remains' : 'remain';
+  if (enforcementIncomplete) {
+    const verificationError = applyAccepted
+      ? `OSConfig accepted the apply command, but ${noncompliantResourceLabel} ${remainVerb} noncompliant after verification.`
+      : `Post-apply verification found ${noncompliantResourceLabel} still noncompliant; enforcement is incomplete.`;
+    deployError = applyAccepted
+      ? verificationError
+      : `${deployError ?? 'OSConfig apply failed'}; ${verificationError}`;
+    deployed = false;
+  } else if (verificationIncomplete) {
+    // Namespace presence is not evidence that this apply succeeded. Only an
+    // accepted apply may remain amber when verification is indeterminate.
+    deployed = applyAccepted;
+  } else {
+    // Matching values can predate this deploy attempt. A complete comparison
+    // is necessary but cannot prove that a failed apply installed enforcement.
+    deployed = applyAccepted && fullyVerifiedCompliant;
+  }
+
+  const now = new Date().toISOString();
+  const patch: Parameters<typeof updateRegistration>[1] = {
+    lastAuditedAt: now,
+  };
+  const verifiedSuccess = applyAccepted && fullyVerifiedCompliant;
+  if (verifiedSuccess) {
+    patch.lastAppliedAt = now;
     const src = extractResourceSummary(resources as unknown[]);
     if (src.length) patch.resourceSummary = src;
     const mfPlatform = detectManifestPlatform(resources as unknown[]);
     if (mfPlatform) patch.platform = mfPlatform;
-    updateRegistration(namespace, patch, {
-      expectedRevision: reg?.revision ?? null,
-    }).catch((err) => {
-      console.warn(`[deploy] failed to persist registration metadata for ${namespace}:`, err);
-    });
   }
+  await updateRegistration(namespace, patch, {
+    expectedRevision: reg?.revision ?? null,
+  }).catch((err) => {
+    console.warn(`[deploy] failed to persist registration metadata for ${namespace}:`, err);
+  });
 
   emit(opts, {
     phase: 'finalize',
@@ -989,21 +1022,37 @@ async function runDeployInner(
   }
 
   let warning: string | undefined;
-  if (audit.fallbackErrors > 0) {
+  if (enforcementIncomplete) {
     warning =
-      `Deploy completed but ${audit.fallbackErrors} of ${desired.length} resources could not be verified` +
+      'Enforcement is incomplete. Inspect the noncompliant resource results and the OSConfig provider, installed version, and logs before retrying.';
+    if (unverifiedCount > 0) {
+      warning += ` ${unverifiedCount} additional resources could not be verified and remain indeterminate.`;
+    }
+  } else if (unverifiedCount > 0) {
+    warning =
+      `Enforcement verification is incomplete: ${unverifiedCount} of ${desired.length} resources could not be verified` +
       (statusResult.error ? ` (${statusResult.error})` : '') +
       (audit.fallbackRetries > 0 ? ` (${audit.fallbackRetries} required a retry)` : '') +
-      `. Those are reported as "could not read" until they can be audited.`;
+      `. Inspect the resource results and OSConfig provider, installed version, and logs before relying on enforcement status.`;
+  } else if (!applyAccepted && fullyVerifiedCompliant) {
+    warning =
+      `OSConfig apply reported an error (${deployError ?? 'unknown error'}). ` +
+      'Post-apply verification found every requested resource compliant, but ConfigForge cannot confirm that enforcement was installed.';
   } else if (opts.signal?.aborted) {
     warning =
       'Deploy completed before cancellation could take effect. Audit results are based on what was reachable before cancellation.';
   }
 
   const enforceResponse: DeployResponse = {
-    message: deployed
-      ? `Manifest "${req.name}" enforced on ${hostname}${deployError ? ' (with warnings)' : ''}`
-      : `Deployment failed: ${deployError ?? 'unknown error'}`,
+    message: enforcementIncomplete
+      ? `Enforcement incomplete for "${req.name}" on ${hostname}: ${noncompliantResourceLabel} ${remainVerb} noncompliant after verification`
+      : verificationIncomplete
+        ? applyAccepted
+          ? `Manifest "${req.name}" applied on ${hostname}; enforcement verification is incomplete`
+          : `Deployment failed for "${req.name}" on ${hostname}; verification is incomplete`
+      : deployed
+        ? `Manifest "${req.name}" enforced on ${hostname}${deployError ? ' (with warnings)' : ''}`
+        : `Deployment failed: ${deployError ?? 'unknown error'}`,
     warning,
     cancelRequested: !!opts.signal?.aborted,
     cancelled: false,
@@ -1021,7 +1070,7 @@ async function runDeployInner(
       Resources: ui,
       DeployMethod: 'Manifest',
       DeployMode: mode,
-      AuditIncomplete: audit.fallbackErrors > 0,
+      AuditIncomplete: unverifiedCount > 0,
       AuditRetries: audit.fallbackRetries,
     },
   };

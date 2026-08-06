@@ -67,6 +67,18 @@ describe('audit-results-store', () => {
       expect((await readAuditResult('ns-b'))?.mode).toBe('enforce');
     });
 
+    it('round-trips unsafe integer evidence without precision loss', async () => {
+      await writeAuditResult('qword', 'enforce', {
+        desired: 18446744073709551615n,
+        actual: 18446744073709551614n,
+      });
+
+      expect((await readAuditResult('qword'))?.result).toEqual({
+        desired: 18446744073709551615n,
+        actual: 18446744073709551614n,
+      });
+    });
+
     it('overwrites a previous result for the same namespace', async () => {
       await writeAuditResult('ns', 'audit', { run: 'first' });
       await writeAuditResult('ns', 'enforce', { run: 'second' });

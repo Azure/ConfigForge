@@ -71,6 +71,24 @@ describe('buildMatrix — status classification', () => {
     expect(m[0].values.WS2025.status).toBe('differs');
   });
 
+  it('treats decimal strings as equivalent to numeric values', () => {
+    const m = buildMatrix([
+      { name: 'text', doc: doc(reg('NumericText', '24')) },
+      { name: 'number', doc: doc(reg('NumericText', 24)) },
+    ]);
+
+    expect(m[0].status).toBe('identical');
+  });
+
+  it('does not coerce quoted hexadecimal strings into numbers', () => {
+    const m = buildMatrix([
+      { name: 'text', doc: doc(reg('HexText', '0x10')) },
+      { name: 'number', doc: doc(reg('HexText', 16)) },
+    ]);
+
+    expect(m[0].status).toBe('differs');
+  });
+
   it('marks settings present in some baselines as partial', () => {
     const a = doc(reg('MaxAuthTries', 3), reg('LegalNotice', 'A'));
     const b = doc(reg('MaxAuthTries', 3));

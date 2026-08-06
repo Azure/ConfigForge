@@ -10,11 +10,12 @@
  */
 import {
   getRegistrationSource,
-  parseYamlDocument,
+  parseYamlDocumentLossless,
   sanitizeNamespace,
 } from '../oscfg';
 import { buildMatrix, type MatrixCell } from '../diff/matrix';
 import { buildXlsx, type XlsxCell, type XlsxSheet } from '../diff/xlsx-builder';
+import { stringifyLosslessJson } from '../manifest/lossless';
 import { HandlerError } from './errors';
 
 export const MATRIX_XLSX_MAX_BASELINES = 10;
@@ -59,7 +60,7 @@ export async function buildMatrixXlsx(rawNames: string): Promise<MatrixXlsxArtif
       const ns = sanitizeNamespace(name);
       const yamlText = await getRegistrationSource(ns);
       if (!yamlText) return null;
-      return { name, doc: parseYamlDocument(yamlText) as Record<string, unknown> };
+      return { name, doc: parseYamlDocumentLossless(yamlText) as Record<string, unknown> };
     }),
   );
   const present = fetched.filter(
@@ -121,6 +122,6 @@ function formatCellValue(v: unknown): string | number | boolean | null {
   if (v === undefined) return '';
   if (v === null) return '';
   if (typeof v === 'number' || typeof v === 'boolean') return v;
-  if (typeof v === 'string') return v;
-  return JSON.stringify(v);
+  if (typeof v === 'string' || typeof v === 'bigint') return String(v);
+  return stringifyLosslessJson(v) ?? String(v);
 }

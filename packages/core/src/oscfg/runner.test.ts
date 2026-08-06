@@ -85,4 +85,13 @@ describe('runner spawn concurrency gate (PR21)', () => {
     expect(_internals.MAX_CONCURRENT_SPAWNS).toBeGreaterThan(0);
     expect(_internals.MAX_CONCURRENT_SPAWNS).toBeLessThanOrEqual(16);
   });
+
+  it('parses unsafe CLI JSON integers without rounding', () => {
+    const parsed = _internals.parseOscfgOutput(
+      '{"value":18446744073709551615,"adjacent":18446744073709551614}',
+    ) as { value: unknown; adjacent: unknown };
+
+    expect(parsed.value).toBe(18446744073709551615n);
+    expect(parsed.adjacent).toBe(18446744073709551614n);
+  });
 });

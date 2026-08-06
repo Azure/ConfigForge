@@ -57,6 +57,8 @@ const mocks = vi.hoisted(() => ({
   setDeployMenuOpen: vi.fn(),
   handleDeploy: vi.fn(),
   handleRevert: vi.fn(),
+  deployed: true,
+  revertAvailable: undefined as boolean | undefined,
   deployNamespace: true,
   deployCapability: true,
   revertNamespace: true,
@@ -160,7 +162,8 @@ vi.mock("./state/useManifestEditorState", () => ({
       DisplayName: "Sample Baseline",
       Source: "Local",
       Platform: "windows",
-      Deployed: true,
+      Deployed: mocks.deployed,
+      RevertAvailable: mocks.revertAvailable,
       Resources: [
         {
           name: "PasswordPolicy",
@@ -316,6 +319,8 @@ describe("ManifestDetailPage Loop viewer", () => {
     mocks.formatCache.current = { yaml: sampleYaml };
     mocks.error = null;
     mocks.deployMenuOpen = false;
+    mocks.deployed = true;
+    mocks.revertAvailable = undefined;
     mocks.deployNamespace = true;
     mocks.deployCapability = true;
     mocks.revertNamespace = true;
@@ -763,6 +768,24 @@ describe("ManifestDetailPage Loop viewer", () => {
 
     await user.click(screen.getByRole("button", { name: "Revert" }));
     expect(mocks.handleRevert).toHaveBeenCalledTimes(1);
+  });
+
+  it("keeps Revert enabled for a deployed baseline without a snapshot", () => {
+    mocks.deployed = true;
+    mocks.revertAvailable = false;
+
+    renderEditor();
+
+    expect(screen.getByRole("button", { name: "Revert" })).toBeEnabled();
+  });
+
+  it("enables Revert for a partial apply with a pre-deploy snapshot", () => {
+    mocks.deployed = false;
+    mocks.revertAvailable = true;
+
+    renderEditor();
+
+    expect(screen.getByRole("button", { name: "Revert" })).toBeEnabled();
   });
 
   it("does not report Undo success when the canonical source cannot be reloaded", async () => {

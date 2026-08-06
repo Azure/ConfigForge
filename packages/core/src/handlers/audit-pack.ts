@@ -23,7 +23,6 @@
  */
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import yaml from 'js-yaml';
 import {
   getRegistration,
   getRegistrationSource,
@@ -45,6 +44,7 @@ import {
   readAuditResultForRegistration,
   type PersistedAuditResult,
 } from '../manifest/audit-results-store';
+import { parseLosslessYaml } from '../manifest/lossless';
 import { _getBaselineCatalog } from './library';
 import { HandlerError } from './errors';
 
@@ -119,8 +119,8 @@ async function tryLoadCompliance(
     const userYaml = await getRegistrationSource(namespace);
     if (!userYaml) return undefined;
     const cisYaml = await readFile(requested, 'utf-8');
-    const userDoc = yaml.load(userYaml) as { resources?: unknown };
-    const cisDoc = yaml.load(cisYaml) as { resources?: unknown };
+    const userDoc = parseLosslessYaml(userYaml) as { resources?: unknown };
+    const cisDoc = parseLosslessYaml(cisYaml) as { resources?: unknown };
     return await computeCompliance(userDoc, cisDoc);
   } catch (err) {
     // eslint-disable-next-line no-console

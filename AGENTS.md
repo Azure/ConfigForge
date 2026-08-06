@@ -368,13 +368,15 @@ Unknown types trigger a soft warning at register time. Never a 400.
 
 ### Registry resource requirements
 
-`Microsoft.Windows/Registry` resources must declare **all three** of `keyPath`, `valueName`, and `valueType` (see `apps/desktop/src/data/osc-manifest-schema.json`). `valueType` ties to the allowed `value` shape via `oneOf`:
+`Microsoft.Windows/Registry` resources must declare **all three** of `keyPath`, `valueName`, and `valueType` (see `apps/desktop/src/data/osc-manifest-schema.json`). The current upstream microsoft/osconfig `schema/.document.json` and published Registry examples use canonical `REG_*` names:
 
-- `String` / `ExpandString` / `Binary` / `REG_SZ` / `REG_EXPAND_SZ` / `REG_BINARY` → string value
-- `Dword` / `QWord` / `REG_DWORD` / `REG_QWORD` → integer value
-- `MultiString` / `REG_MULTI_SZ` → string-array value
+- `REG_SZ` / `REG_EXPAND_SZ` / `REG_BINARY` → string value
+- `REG_DWORD` / `REG_QWORD` → integer value
+- `REG_MULTI_SZ` → string-array value
 
-The CSV / security-definition import (`packages/core/src/handlers/import.ts`) infers `valueType` from `expectedValue` via `inferRegistryValueType()` — integer-shaped strings/numbers → `Dword`, everything else → `String`. Adding new import sources? Re-use that helper.
+The CSV / security-definition import (`packages/core/src/handlers/import.ts`) infers `valueType` from `expectedValue` via `inferRegistryValueType()` — DWORD-range integers → `REG_DWORD`, larger exact integers → `REG_QWORD`, everything else → `REG_SZ`. Compatibility aliases such as `Dword`, `QWord`, `String`, and `MultiString` are accepted as input but normalized to the upstream `REG_*` provider forms before direct execution or apply. Adding new import sources? Re-use that helper.
+
+Repository-wide baseline guards should import `canonicalizeRegistryValueType()` and `normalizeRegistryKeyPath()` from `@configforge/core/oscfg`. Compare each source value with the helper result to detect legacy aliases or colon-less recognized hives without rewriting baseline files.
 
 ---
 

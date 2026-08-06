@@ -22,7 +22,7 @@ import {
   getRegistrationSource,
   sanitizeNamespace,
   resourcesToYaml,
-  parseYamlDocument,
+  parseYamlDocumentLossless,
 } from '../oscfg';
 import {
   exportToYaml,
@@ -31,6 +31,7 @@ import {
   exportToExcel,
   exportToAzurePolicy,
 } from '../import-export';
+import { stringifyLosslessJson } from '../manifest/lossless';
 import { HandlerError } from './errors';
 
 export type ExportFormat = 'yaml' | 'json' | 'mof' | 'excel' | 'azurepolicy';
@@ -330,7 +331,9 @@ function flattenResourcesToRows(resources: unknown): Array<{
                 ? 'object'
                 : typeof val;
         const valueStr =
-          typeof val === 'object' && val !== null ? JSON.stringify(val) : String(val);
+          typeof val === 'object' && val !== null
+            ? (stringifyLosslessJson(val) ?? String(val))
+            : String(val);
         rows.push({
           Name: `${path}.${key}`,
           Description: `${type} — ${key}`,
@@ -369,7 +372,7 @@ export async function exportManifest(req: ExportRequest): Promise<ExportArtifact
   let parsedManifest: Record<string, unknown> | null = null;
   if (sourceYaml) {
     try {
-      const doc = parseYamlDocument(sourceYaml);
+      const doc = parseYamlDocumentLossless(sourceYaml);
       if (doc && typeof doc === 'object' && !Array.isArray(doc)) {
         parsedManifest = doc as Record<string, unknown>;
       }

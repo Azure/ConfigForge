@@ -15,8 +15,8 @@
  */
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import yaml from 'js-yaml';
 import { resolvePublicAsset } from '../runtime/paths';
+import { parseLosslessYaml } from '../manifest/lossless';
 import {
   getRegistrationSource,
   sanitizeNamespace,
@@ -83,7 +83,7 @@ async function computeReport(
   let myDoc: unknown;
   let cisDoc: unknown;
   try {
-    myDoc = yaml.load(source);
+    myDoc = parseLosslessYaml(source);
   } catch (err) {
     throw new HandlerError(
       422,
@@ -91,7 +91,7 @@ async function computeReport(
     );
   }
   try {
-    cisDoc = yaml.load(baseline.content);
+    cisDoc = parseLosslessYaml(baseline.content);
   } catch (err) {
     throw new HandlerError(
       500,

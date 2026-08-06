@@ -14,6 +14,14 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
+vi.mock('node:fs/promises', () => ({
+  access: vi.fn(),
+}));
+
+vi.mock('../runtime/paths', () => ({
+  resolveUserDataDir: vi.fn(() => 'C:\\configforge-test'),
+}));
+
 vi.mock('../oscfg', () => ({
   deleteNamespace: vi.fn(),
   deleteRegistration: vi.fn(),
@@ -89,6 +97,7 @@ import * as history from '../history';
 import * as historyAuthor from '../history/author';
 import * as rationaleStore from '../manifest/rationale-store';
 import * as auditResultsStore from '../manifest/audit-results-store';
+import { access } from 'node:fs/promises';
 
 const listRegistrationsMock = vi.mocked(oscfg.listRegistrations);
 const getNamespacesMock = vi.mocked(oscfg.getNamespaces);
@@ -103,6 +112,7 @@ const createSnapshotMock = vi.mocked(history.createSnapshot);
 const resolveAuthorMock = vi.mocked(historyAuthor.resolveAuthor);
 const deleteRationaleMock = vi.mocked(rationaleStore.deleteRationale);
 const readAuditResultMock = vi.mocked(auditResultsStore.readAuditResultForRegistration);
+const accessMock = vi.mocked(access);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -122,6 +132,7 @@ beforeEach(() => {
   });
   deleteRationaleMock.mockResolvedValue({ removed: true });
   readAuditResultMock.mockResolvedValue(null);
+  accessMock.mockRejectedValue(Object.assign(new Error('not found'), { code: 'ENOENT' }));
 });
 
 afterEach(() => {
@@ -156,6 +167,17 @@ describe('normalizeManifestContent', () => {
     expect(result.ok).toBe(true);
     expect(result.yaml).toContain('resources:');
     expect(result.yaml).toContain('a');
+  });
+
+  it('preserves unsafe QWords while normalizing manifest JSON to YAML', () => {
+    const result = normalizeManifestContent(
+      '{"resources":[{"name":"qword","type":"Microsoft.Windows/Registry",' +
+        '"properties":{"valueType":"REG_QWORD","value":18446744073709551615}}]}',
+    );
+
+    expect(result.ok).toBe(true);
+    expect(result.yaml).toContain('18446744073709551615');
+    expect(result.yaml).not.toContain('18446744073709552000');
   });
 
   it('converts security-definition JSON with Settings array', () => {
@@ -238,6 +260,23 @@ describe('listManifests', () => {
     // called once (only on the live path).
     expect(listRegistrationsMock).toHaveBeenCalledTimes(2);
     expect(getNamespacesMock).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps Revert available for a live CLI namespace without a snapshot', async () => {
+    getNamespacesMock.mockResolvedValue({
+      success: true,
+      data: ['cli-only-ns'],
+      error: null,
+      exitCode: 0,
+    });
+
+    const result = await listManifests({ live: true });
+
+    expect(result.data[0]).toMatchObject({
+      Name: 'cli-only-ns',
+      Deployed: true,
+      RevertAvailable: true,
+    });
   });
 
   it('strips Resources[] when includeResources=false', async () => {
@@ -609,7 +648,38 @@ describe('getManifest (perf W2 / C5)', () => {
 
     const result = await getManifest('deployed');
     expect(result.data?.Deployed).toBe(true);
+    expect(result.data?.RevertAvailable).toBe(true);
     expect(result.data?.LastAppliedAt).toBe('2026-02-01T12:00:00Z');
+  });
+
+  it('reports RevertAvailable when a pre-deploy snapshot exists', async () => {
+    listRegistrationsMock.mockResolvedValue([
+      {
+        namespace: 'partial',
+        displayName: 'Partial',
+        source: 'user',
+        sourceId: null,
+        registeredAt: '2026-02-01T00:00:00Z',
+        modifiedAt: '2026-02-01T00:00:00Z',
+        revision: 'revision-partial',
+        resourceSummary: [],
+        validationSummary: {
+          hasSchema: false,
+          hasEnforcementValues: false,
+          hasComplianceCriteria: false,
+          issues: [],
+        },
+      } as never,
+    ]);
+    accessMock.mockResolvedValueOnce(undefined);
+
+    const result = await getManifest('partial');
+
+    expect(result.data?.Deployed).toBe(false);
+    expect(result.data?.RevertAvailable).toBe(true);
+    expect(accessMock).toHaveBeenCalledWith(
+      expect.stringMatching(/[\\/]snapshots[\\/]partial\.pre-deploy\.json$/),
+    );
   });
 
   it('ignores a pre-edit legacy audit and shows a post-edit audit', async () => {
@@ -711,6 +781,20 @@ describe('registerManifest', () => {
     expect(result.data.namespace).toBe('mybase');
     expect(saveRegistrationMock).toHaveBeenCalledTimes(1);
     expect(saveRegistrationMock.mock.calls[0][0].source).toBe('user');
+  });
+
+  it('persists exact QWord YAML when registering manifest JSON', async () => {
+    await registerManifest({
+      name: 'qword',
+      content:
+        '{"resources":[{"name":"qword","type":"Microsoft.Windows/Registry",' +
+        '"properties":{"keyPath":"HKLM:\\\\Software\\\\QWord","valueName":"Exact",' +
+        '"valueType":"REG_QWORD","value":18446744073709551615}}]}',
+    });
+
+    const persistedYaml = saveRegistrationMock.mock.calls[0][1];
+    expect(persistedYaml).toContain('18446744073709551615');
+    expect(persistedYaml).not.toContain('18446744073709552000');
   });
 
   it('waits for the history snapshot so consecutive saves preserve order', async () => {

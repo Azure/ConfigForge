@@ -67,8 +67,8 @@ a newline for structured values.
 > JSON path also dropped `valueName`), so the schema validator flagged
 > every imported row as invalid the moment the editor opened it. The
 > importer now infers `valueType` from `expectedValue` via
-> `inferRegistryValueType()`: integer-shaped values → `Dword`,
-> everything else → `String`.
+> `inferRegistryValueType()`: DWORD-range integers → `REG_DWORD`, larger
+> exact integers → `REG_QWORD`, and other values → `REG_SZ`.
 
 ## Resource wrappers
 

@@ -117,7 +117,7 @@ Single source of truth for business logic. Each handler is a pure function calle
 | `exec.ts` | `oscfg exec resource --mode ...` wrapper for direct provider reads. |
 | `manage.ts` | Namespace/resource deletion helpers. |
 | `registered-types.ts` | Whitelist of resource types accepted by the targeted CLI version (`OSCFG_CLI_VERSION = '1.3.9-preview11'`). Types missing from the list trigger a soft warning at register time; the manifest still registers. |
-| `registry-types.ts` | Registry `valueType` mapping (`Dword`, `String`, …). |
+| `registry-types.ts` | Maps compatibility Registry `valueType` inputs to the canonical upstream `REG_*` forms. |
 | `registry.ts` | Registry resource specifics. |
 | `compliance.ts` | Decides `compliant` / `non-compliant` / `indeterminate` from CLI output. |
 | `naming.ts` | `isValidNamespace`: refuses path-traversal, control chars. |

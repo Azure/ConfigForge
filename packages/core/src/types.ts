@@ -37,6 +37,8 @@ export interface OscManifest {
   Revision?: string | null;
   /** True when the registration has a recorded successful deployment. */
   Deployed?: boolean;
+  /** True when a deployed namespace or pre-deploy snapshot can be reverted. */
+  RevertAvailable?: boolean;
   /** ISO timestamp of the most recent successful deployment. */
   LastAppliedAt?: string | null;
   /** ISO timestamp of the most recent audit, when one exists. */

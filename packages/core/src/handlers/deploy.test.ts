@@ -107,6 +107,7 @@ const SAMPLE_RESOURCE = {
   properties: { foo: 'bar' },
 };
 const SAMPLE_YAML = `name: sample\nresources:\n  - type: ${SAMPLE_RESOURCE.type}\n    name: r1\n    properties:\n      foo: bar\n`;
+const extractResourcesFullActual = platform.extractResourcesFull;
 
 // ── Helpers ───────────────────────────────────────────────────────
 
@@ -348,6 +349,27 @@ describe('runDeploy — audit mode', () => {
       { expectedRevision: null },
     );
   });
+
+  it('returns a successful observational result when resources are noncompliant', async () => {
+    setHappyPath();
+    mocked.getResources.mockResolvedValue({
+      success: true,
+      data: [
+        {
+          name: 'r1',
+          type: SAMPLE_RESOURCE.type,
+          properties: { foo: 'different' },
+        },
+      ],
+    });
+
+    const result = await runDeploy({ name: 'sample', mode: 'audit' });
+
+    expect(result.message).toMatch(/^Audited /);
+    expect(result.data.DeployMode).toBe('audit');
+    expect(result.data.NonCompliant).toBe(1);
+    expect(result.data.Resources[0].status).toBe('noncompliant');
+  });
 });
 
 // ── Enforce mode happy path ───────────────────────────────────────
@@ -359,6 +381,193 @@ describe('runDeploy — enforce mode', () => {
     expect(r.data.Deployed).toBe(true);
     expect(r.data.DeployMode).toBe('enforce');
     expect(r.data.DeployError).toBeNull();
+  });
+
+  it('reports enforcement failure when apply exits 0 but verification remains noncompliant', async () => {
+    setHappyPath();
+    mocked.getResources.mockResolvedValue({
+      success: true,
+      data: [
+        {
+          name: 'r1',
+          type: SAMPLE_RESOURCE.type,
+          properties: { foo: 'different' },
+        },
+      ],
+    });
+
+    const result = await runDeploy({ name: 'sample', mode: 'enforce' });
+
+    expect(result.data.Deployed).toBe(false);
+    expect(result.data.NonCompliant).toBe(1);
+    expect(result.data.DeployError).toMatch(
+      /OSConfig accepted the apply command, but 1 resource remains noncompliant after verification/i,
+    );
+    expect(result.message).toMatch(/enforcement incomplete/i);
+    expect(result.message).not.toMatch(/\benforced\b/i);
+    expect(result.warning).toMatch(/inspect the noncompliant resource results/i);
+    expect(result.warning).toMatch(/OSConfig provider, installed version, and logs/i);
+
+    expect(mocked.updateRegistration).toHaveBeenCalledTimes(1);
+    const registrationPatch = mocked.updateRegistration.mock.calls[0][1] as Record<
+      string,
+      unknown
+    >;
+    expect(registrationPatch.lastAuditedAt).toEqual(expect.any(String));
+    expect(registrationPatch).not.toHaveProperty('lastAppliedAt');
+    expect(mockedAuditResults.writeAuditResult).toHaveBeenCalledWith(
+      'sample',
+      'enforce',
+      expect.objectContaining({
+        Deployed: false,
+        NonCompliant: 1,
+        Resources: [
+          expect.objectContaining({
+            name: 'r1',
+            status: 'noncompliant',
+          }),
+        ],
+      }),
+      undefined,
+    );
+  });
+
+  it('keeps an accepted deployment with a warning when verification is indeterminate only', async () => {
+    setHappyPath();
+    mocked.getResources.mockResolvedValue({ success: true, data: [] });
+    mocked.execResource.mockResolvedValue({
+      success: false,
+      data: null,
+      error: 'Registry provider read failed',
+    });
+
+    const result = await runDeploy({ name: 'sample', mode: 'enforce' });
+
+    expect(result.data.Deployed).toBe(true);
+    expect(result.data.DeployError).toBeNull();
+    expect(result.data.NonCompliant).toBe(0);
+    expect(result.data.Indeterminate).toBe(1);
+    expect(result.data.AuditIncomplete).toBe(true);
+    expect(result.warning).toMatch(/could not be verified/i);
+    expect(result.message).toMatch(/applied.*verification is incomplete/i);
+    const registrationPatch = mocked.updateRegistration.mock.calls[0][1] as Record<
+      string,
+      unknown
+    >;
+    expect(registrationPatch.lastAuditedAt).toEqual(expect.any(String));
+    expect(registrationPatch).not.toHaveProperty('lastAppliedAt');
+  });
+
+  it('warns when a successful Test read has no compliance verdict', async () => {
+    setHappyPath();
+    vi.mocked(platform.extractResourcesFull).mockReturnValue([
+      {
+        name: 'test-no-verdict',
+        type: 'Microsoft.OSConfig/Test',
+        properties: {
+          resource: {
+            type: 'Microsoft.Windows/Registry',
+            properties: {
+              keyPath: 'HKLM:\\Software\\Test',
+              valueName: 'Enabled',
+              valueType: 'Dword',
+              value: 1,
+            },
+          },
+          expression: 'value == 1',
+        },
+      },
+    ]);
+    mocked.getResources.mockResolvedValue({
+      success: true,
+      data: [
+        {
+          name: 'test-no-verdict',
+          type: 'Microsoft.OSConfig/Test',
+          properties: {
+            resource: {
+              type: 'Microsoft.Windows/Registry',
+              properties: { value: 1 },
+            },
+          },
+        },
+      ],
+    });
+
+    const result = await runDeploy({ name: 'sample', mode: 'enforce' });
+
+    expect(result.data.Deployed).toBe(true);
+    expect(result.data.NonCompliant).toBe(0);
+    expect(result.data.Indeterminate).toBe(1);
+    expect(result.data.AuditIncomplete).toBe(true);
+    expect(result.warning).toMatch(/verification is incomplete/i);
+    expect(result.warning).toMatch(/1 of 1 resources could not be verified/i);
+    const registrationPatch = mocked.updateRegistration.mock.calls[0][1] as Record<
+      string,
+      unknown
+    >;
+    expect(registrationPatch.lastAuditedAt).toEqual(expect.any(String));
+    expect(registrationPatch).not.toHaveProperty('lastAppliedAt');
+  });
+
+  it('keeps adjacent unsafe QWords noncompliant after apply verification', async () => {
+    const desiredQword = '18446744073709551615';
+    const actualQword = '18446744073709551614';
+    const qwordYaml = `resources:
+  - name: qword
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM:\\Software\\QWord
+      valueName: ExactValue
+      valueType: QWord
+      value: ${desiredQword}
+`;
+    setHappyPath();
+    mocked.getRegistrationSource.mockResolvedValue(qwordYaml);
+    vi.mocked(platform.extractResourcesFull).mockImplementation(extractResourcesFullActual);
+    mocked.getResources.mockResolvedValue({
+      success: true,
+      data: [
+        {
+          name: 'qword',
+          type: 'Microsoft.Windows/Registry',
+          properties: {
+            keyPath: 'HKLM:\\Software\\QWord',
+            valueName: 'ExactValue',
+            valueType: 'QWord',
+            value: actualQword,
+          },
+        },
+      ],
+    });
+
+    const result = await runDeploy({ name: 'sample', mode: 'enforce' });
+
+    expect(result.data.Deployed).toBe(false);
+    expect(result.data.NonCompliant).toBe(1);
+    expect(result.data.Resources[0]).toMatchObject({
+      name: 'qword',
+      status: 'noncompliant',
+    });
+    expect(result.data.Resources[0].reason).toContain(actualQword);
+    expect(result.data.Resources[0].reason).toContain(desiredQword);
+    const registrationPatch = mocked.updateRegistration.mock.calls[0][1] as Record<
+      string,
+      unknown
+    >;
+    expect(registrationPatch).toHaveProperty('lastAuditedAt');
+    expect(registrationPatch).not.toHaveProperty('lastAppliedAt');
+  });
+
+  it('rejects an enforce manifest with no addressable resources before apply', async () => {
+    setHappyPath();
+    vi.spyOn(platform, 'extractResourcesFull').mockReturnValue([]);
+
+    await expect(runDeploy({ name: 'sample', mode: 'enforce' })).rejects.toMatchObject({
+      status: 400,
+      message: expect.stringMatching(/no resources to enforce/i),
+    });
+    expect(mocked.applyManifest).not.toHaveBeenCalled();
   });
 
   describe('runDeploy — registration revision persistence', () => {
@@ -432,13 +641,14 @@ describe('runDeploy — enforce mode', () => {
     setHappyPath();
     mocked.applyManifest.mockResolvedValue({ success: false, error: 'CLI exited 1' });
     mocked.getResources.mockResolvedValue({ success: true, data: [] });
+    mocked.execResource.mockResolvedValue({ success: false, error: 'resource not found' });
     const r = await runDeploy({ name: 'sample', mode: 'enforce' });
     expect(r.data.Deployed).toBe(false);
     expect(r.data.DeployError).toBe('CLI exited 1');
     expect(r.message).toMatch(/Deployment failed/);
   });
 
-  it('returns Deployed=true with DeployError when apply errors but CLI sees state', async () => {
+  it('does not mark a failed apply as enforced when matching namespace values already exist', async () => {
     setHappyPath();
     mocked.applyManifest.mockResolvedValue({ success: false, error: 'partial-apply panic' });
     mocked.getResources.mockResolvedValue({
@@ -446,9 +656,102 @@ describe('runDeploy — enforce mode', () => {
       data: [{ name: 'r1', type: SAMPLE_RESOURCE.type, properties: { foo: 'bar' } }],
     });
     const r = await runDeploy({ name: 'sample', mode: 'enforce' });
-    expect(r.data.Deployed).toBe(true);
+    expect(r.data.Deployed).toBe(false);
     expect(r.data.DeployError).toBe('partial-apply panic');
-    expect(r.message).toMatch(/with warnings/);
+    expect(r.message).toMatch(/Deployment failed/);
+    expect(r.warning).toMatch(/cannot confirm that enforcement was installed/i);
+    const registrationPatch = mocked.updateRegistration.mock.calls[0][1] as Record<
+      string,
+      unknown
+    >;
+    expect(registrationPatch).toHaveProperty('lastAuditedAt');
+    expect(registrationPatch).not.toHaveProperty('lastAppliedAt');
+  });
+
+  it('does not infer enforcement from matching fallback reads when the namespace is empty', async () => {
+    setHappyPath();
+    mocked.applyManifest.mockResolvedValue({ success: false, error: 'CLI exited 1' });
+    mocked.getResources.mockResolvedValue({ success: true, data: [] });
+    mocked.execResource.mockResolvedValue({
+      success: true,
+      data: { name: 'r1', type: SAMPLE_RESOURCE.type, properties: { foo: 'bar' } },
+    });
+
+    const result = await runDeploy({ name: 'sample', mode: 'enforce' });
+
+    expect(result.data.Deployed).toBe(false);
+    expect(result.data.Compliant).toBe(1);
+    expect(result.data.DeployError).toBe('CLI exited 1');
+    expect(result.warning).toMatch(/cannot confirm that enforcement was installed/i);
+    const registrationPatch = mocked.updateRegistration.mock.calls[0][1] as Record<
+      string,
+      unknown
+    >;
+    expect(registrationPatch).not.toHaveProperty('lastAppliedAt');
+  });
+
+  it('does not treat stale namespace resources as a successful failed apply', async () => {
+    setHappyPath();
+    mocked.applyManifest.mockResolvedValue({ success: false, error: 'CLI exited 1' });
+    mocked.getResources.mockResolvedValue({
+      success: true,
+      data: [
+        {
+          name: 'stale',
+          type: SAMPLE_RESOURCE.type,
+          properties: { foo: 'bar' },
+        },
+      ],
+    });
+    mocked.execResource.mockResolvedValue({
+      success: false,
+      error: 'requested resource not found',
+    });
+
+    const result = await runDeploy({ name: 'sample', mode: 'enforce' });
+
+    expect(result.data.Deployed).toBe(false);
+    expect(result.data.DeployError).toBe('CLI exited 1');
+    expect(result.data.Indeterminate).toBe(1);
+    expect(result.data.Errors).toBe(0);
+    expect(result.message).toMatch(/verification is incomplete/i);
+    const registrationPatch = mocked.updateRegistration.mock.calls[0][1] as Record<
+      string,
+      unknown
+    >;
+    expect(registrationPatch).toHaveProperty('lastAuditedAt');
+    expect(registrationPatch).not.toHaveProperty('lastAppliedAt');
+  });
+
+  it('makes partial-apply detection subordinate to known post-audit noncompliance', async () => {
+    setHappyPath();
+    mocked.applyManifest.mockResolvedValue({
+      success: false,
+      error: 'partial-apply panic',
+    });
+    mocked.getResources.mockResolvedValue({
+      success: true,
+      data: [
+        {
+          name: 'r1',
+          type: SAMPLE_RESOURCE.type,
+          properties: { foo: 'different' },
+        },
+      ],
+    });
+
+    const result = await runDeploy({ name: 'sample', mode: 'enforce' });
+
+    expect(result.data.Deployed).toBe(false);
+    expect(result.data.DeployError).toMatch(/partial-apply panic/);
+    expect(result.data.DeployError).toMatch(/post-apply verification/i);
+    expect(result.message).toMatch(/enforcement incomplete/i);
+    const registrationPatch = mocked.updateRegistration.mock.calls[0][1] as Record<
+      string,
+      unknown
+    >;
+    expect(registrationPatch).toHaveProperty('lastAuditedAt');
+    expect(registrationPatch).not.toHaveProperty('lastAppliedAt');
   });
 
   it('refreshes registration with lastAppliedAt + resourceSummary on success', async () => {

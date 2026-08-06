@@ -5,6 +5,7 @@ import { useEffect, useState, useCallback, useRef, useMemo } from "react";
 import { WarningRegular, ArrowSyncRegular } from "@fluentui/react-icons";
 import { Button, MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components";
 import { detectConflicts, type Conflict } from "@configforge/core/ai/analyzer";
+import { stringifyLosslessJson } from "@configforge/core/manifest/lossless";
 import { cfs } from "../lib/cfs";
 import { useTranslation } from "react-i18next";
 
@@ -160,7 +161,8 @@ export function ConflictDetector({ manifestNames }: ConflictDetectorProps) {
                     >
                       <span className="shrink-0 break-words font-medium">{manifest}:</span>
                       <code className="min-w-0 flex-1 break-all rounded bg-white/60 px-1.5 py-0.5 text-xs dark:bg-slate-800/60">
-                        {JSON.stringify(conflict.values[mIdx])}
+                        {stringifyLosslessJson(conflict.values[mIdx]) ??
+                          String(conflict.values[mIdx])}
                       </code>
                     </div>
                   ))}

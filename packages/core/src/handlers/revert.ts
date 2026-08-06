@@ -15,13 +15,14 @@
  * Snapshot files live under `<userDataDir>/snapshots/<namespace>.pre-deploy.json`
  * (host-injected via the runtime/paths strategy).
  */
-import { readFile, unlink, writeFile, mkdir } from 'node:fs/promises';
+import { randomBytes } from 'node:crypto';
+import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import path from 'node:path';
-import os from 'node:os';
 import {
   applyManifest,
   deleteNamespace,
   deleteRegistration,
+  normalizeManifestRegistryTypesInYaml,
   parseYamlDocument,
   sanitizeNamespace,
 } from '../oscfg';
@@ -31,7 +32,7 @@ import {
   validateManifestSchema,
   type Platform,
 } from '../platform';
-import { resolveUserDataDir, resolveTempDir } from '../runtime/paths';
+import { resolveTempDir, resolveUserDataDir } from '../runtime/paths';
 import { HandlerError, cliRequiredError, isCliMissingMessage } from './errors';
 
 export interface RevertRequest {
@@ -86,16 +87,7 @@ export async function revertManifest(req: RevertRequest): Promise<RevertResult> 
       );
     }
 
-    await mkdir(snapshotDir, { recursive: true });
-    const tempFile = path.join(
-      resolveTempDir(),
-      `configforge-revert-${namespace}-${Date.now()}.osc.yaml`,
-    );
-    await writeFile(tempFile, snapshot.manifestYaml, 'utf-8');
-    const result = await applyManifest({ file: tempFile, namespace });
-    await unlink(tempFile).catch(() => {
-      // best-effort temp cleanup
-    });
+    const result = await applySnapshotFromTempCopy(snapshot.manifestYaml, namespace);
     if (!result.success) {
       if (isCliMissingMessage(result.error)) throw cliRequiredError('Revert needs the CLI to re-apply the prior manifest.');
       throw new HandlerError(500, result.error ?? 'apply failed');
@@ -136,8 +128,34 @@ export async function revertManifest(req: RevertRequest): Promise<RevertResult> 
   };
 }
 
-// Suppress lint-warning unused import (os/tmpdir kept for parity reference).
-void os;
+/**
+ * Revert must not rewrite the durable pre-deploy snapshot while adapting it
+ * to the current provider syntax. Normalize a process-unique temporary copy,
+ * let applyManifest prepare its own CLI-facing copy, and clean this source
+ * copy on every path.
+ */
+async function applySnapshotFromTempCopy(
+  sourceYaml: string,
+  namespace: string,
+): ReturnType<typeof applyManifest> {
+  const tempDir = path.join(resolveTempDir(), 'configforge-revert');
+  await mkdir(tempDir, { recursive: true });
+  const tempFile = path.join(
+    tempDir,
+    `revert-${namespace}-${process.pid}-${randomBytes(4).toString('hex')}.osc.yaml`,
+  );
+
+  try {
+    const normalizedContent = normalizeManifestRegistryTypesInYaml(sourceYaml);
+    await writeFile(tempFile, normalizedContent, 'utf8');
+    return await applyManifest({ file: tempFile, namespace });
+  } finally {
+    await unlink(tempFile).catch(() => {
+      // Best-effort cleanup; the randomized temp file is harmless if a
+      // process termination prevents deletion.
+    });
+  }
+}
 
 // ── H6: pre-revert validation ───────────────────────────────────────
 //

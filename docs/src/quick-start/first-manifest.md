@@ -16,9 +16,9 @@ resources:
   - name: hello-cfs-registry
     type: Microsoft.Windows/Registry
     properties:
-      keyPath: HKLM\Software\ConfigForge
+      keyPath: HKLM:\Software\ConfigForge
       valueName: HelloFromCFS
-      valueType: String
+      valueType: REG_SZ
       value: "1"
 ```
 

@@ -13,12 +13,18 @@
  * applyManifest / deleteNamespace calls.
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import yaml from 'js-yaml';
 
-vi.mock('../oscfg', () => ({
-  applyManifest: vi.fn(),
-  deleteNamespace: vi.fn(),
-  deleteRegistration: vi.fn(),
-  parseYamlDocument: vi.fn((s: string) => {
+vi.mock('../oscfg', async () => {
+  const registryTypes =
+    await vi.importActual<typeof import('../oscfg/registry-types')>('../oscfg/registry-types');
+  return {
+    applyManifest: vi.fn(),
+    deleteNamespace: vi.fn(),
+    deleteRegistration: vi.fn(),
+    normalizeManifestRegistryTypesInYaml:
+      registryTypes.normalizeManifestRegistryTypesInYaml,
+    parseYamlDocument: vi.fn((s: string) => {
     // Lightweight YAML stub: only handles the shapes the tests use.
     // Tests pass either 'resources: []' (valid empty) or
     // 'resources: invalid' (schema-invalid scalar).
@@ -37,8 +43,9 @@ vi.mock('../oscfg', () => ({
     }
     return null;
   }),
-  sanitizeNamespace: vi.fn((s: string) => s.toLowerCase().replace(/[^a-z0-9-]/g, '-')),
-}));
+    sanitizeNamespace: vi.fn((s: string) => s.toLowerCase().replace(/[^a-z0-9-]/g, '-')),
+  };
+});
 
 vi.mock('../platform', () => ({
   validateManifestSchema: vi.fn((parsed: unknown) => {
@@ -56,15 +63,15 @@ vi.mock('../platform', () => ({
 }));
 
 vi.mock('node:fs/promises', () => ({
-  readFile: vi.fn(),
-  writeFile: vi.fn(),
-  unlink: vi.fn(),
   mkdir: vi.fn(),
+  readFile: vi.fn(),
+  unlink: vi.fn(),
+  writeFile: vi.fn(),
 }));
 
 vi.mock('../runtime/paths', () => ({
+  resolveTempDir: vi.fn(() => '/tmp'),
   resolveUserDataDir: vi.fn(() => '/tmp/cfs-test-userdata'),
-  resolveTempDir: vi.fn(() => '/tmp/cfs-test-temp'),
 }));
 
 import { revertManifest } from './revert';
@@ -78,10 +85,10 @@ const deleteRegistrationMock = vi.mocked(oscfg.deleteRegistration);
 const validateSchemaMock = vi.mocked(platform.validateManifestSchema);
 const hasMixedMock = vi.mocked(platform.hasMixedPlatformResources);
 const validatePlatformMock = vi.mocked(platform.validateManifestPlatform);
-const readFileMock = vi.mocked(fs.readFile);
-const writeFileMock = vi.mocked(fs.writeFile);
-const unlinkMock = vi.mocked(fs.unlink);
 const mkdirMock = vi.mocked(fs.mkdir);
+const readFileMock = vi.mocked(fs.readFile);
+const unlinkMock = vi.mocked(fs.unlink);
+const writeFileMock = vi.mocked(fs.writeFile);
 
 beforeEach(() => {
   vi.clearAllMocks();
@@ -89,9 +96,9 @@ beforeEach(() => {
   applyManifestMock.mockResolvedValue({ success: true, error: null, exitCode: 0, data: null });
   deleteNamespaceMock.mockResolvedValue({ success: true, error: null, exitCode: 0, data: null });
   deleteRegistrationMock.mockResolvedValue();
-  writeFileMock.mockResolvedValue();
-  unlinkMock.mockResolvedValue();
   mkdirMock.mockResolvedValue(undefined);
+  unlinkMock.mockResolvedValue();
+  writeFileMock.mockResolvedValue();
   // Default: snapshot YAML is valid.
   validateSchemaMock.mockReturnValue([]);
   hasMixedMock.mockReturnValue(false);
@@ -130,12 +137,51 @@ describe('revertManifest', () => {
     expect(result.data.Method).toBe('reapply-manifest');
     expect(result.data.preDeployTimestamp).toBe('2026-01-01T00:00:00Z');
     expect(applyManifestMock).toHaveBeenCalledTimes(1);
+    expect(applyManifestMock).toHaveBeenCalledWith({
+      file: expect.stringContaining('configforge-revert'),
+      namespace: 'mybase',
+    });
+    expect(writeFileMock).toHaveBeenCalledWith(
+      expect.stringContaining('configforge-revert'),
+      'resources: []',
+      'utf8',
+    );
     // Should NOT fall through to deleteNamespace.
     expect(deleteNamespaceMock).not.toHaveBeenCalled();
-    // Temp file should be written then cleaned up.
-    expect(writeFileMock).toHaveBeenCalled();
-    // Snapshot file + temp file = 2 unlinks.
     expect(unlinkMock).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps REG_DWORD canonical in the temporary revert copy', async () => {
+    const snapshotYaml = `resources:
+  - name: registry
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKEY_LOCAL_MACHINE\\Software\\Revert
+      valueName: Enabled
+      valueType: REG_DWORD
+      value: 1
+`;
+    readFileMock.mockResolvedValueOnce(
+      JSON.stringify({
+        name: 'registry',
+        manifestYaml: snapshotYaml,
+      }),
+    );
+
+    await revertManifest({ name: 'registry' });
+
+    const content = writeFileMock.mock.calls[0][1];
+    if (typeof content !== 'string') throw new Error('Expected normalized temp content');
+    const parsed = yaml.load(content) as {
+      resources: Array<{ properties: { keyPath: string; valueType: string } }>;
+    };
+    expect(parsed.resources[0].properties.keyPath).toBe(
+      'HKEY_LOCAL_MACHINE:\\Software\\Revert',
+    );
+    expect(parsed.resources[0].properties.valueType).toBe('REG_DWORD');
+    expect(content).toContain('REG_DWORD');
+    expect(snapshotYaml).toContain('HKEY_LOCAL_MACHINE\\Software\\Revert');
+    expect(writeFileMock.mock.calls[0][0]).not.toContain('pre-deploy.json');
   });
 
   it('falls back to delete-namespace when snapshot missing entirely', async () => {
@@ -176,6 +222,8 @@ describe('revertManifest', () => {
       status: 500,
       message: 'oscfg crashed',
     });
+    expect(unlinkMock).toHaveBeenCalledTimes(1);
+    expect(String(unlinkMock.mock.calls[0][0])).toContain('configforge-revert');
   });
 
   it('surfaces deleteNamespace failure as 500', async () => {

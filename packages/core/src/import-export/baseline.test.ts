@@ -2,7 +2,12 @@
 // Licensed under the MIT License.
 
 import { describe, expect, it } from 'vitest';
-import { buildBaselineManifest, parseComplianceExpression, parseExcelBaseline } from './baseline';
+import {
+  buildBaselineManifest,
+  inferRegistryValueType,
+  parseComplianceExpression,
+  parseExcelBaseline,
+} from './baseline';
 
 describe('parseExcelBaseline', () => {
   it('parses BOM-prefixed quoted records with embedded commas and newlines', () => {
@@ -112,6 +117,24 @@ describe('parseComplianceExpression', () => {
     expect(() => parseComplianceExpression('UnknownRule(1)')).toThrow(
       /Unsupported compliance expression/,
     );
+  });
+
+  it('preserves unsafe integer literals exactly', () => {
+    expect(parseComplianceExpression('Equals(18446744073709551615)')).toEqual({
+      const: 18446744073709551615n,
+    });
+  });
+});
+
+describe('inferRegistryValueType', () => {
+  it.each([
+    [1, 'REG_DWORD'],
+    ['4294967295', 'REG_DWORD'],
+    ['4294967296', 'REG_QWORD'],
+    [18446744073709551615n, 'REG_QWORD'],
+    ['text', 'REG_SZ'],
+  ])('infers %s as %s', (value, expected) => {
+    expect(inferRegistryValueType(value)).toBe(expected);
   });
 });
 
@@ -258,5 +281,62 @@ describe('buildBaselineManifest', () => {
         compliance: { equals: 1 },
       }),
     );
+  });
+
+  it('uses QWord when either generic default or expected value exceeds DWORD', () => {
+    const csv = [
+      'Setting Name,Registry Path,Default Value,Expected Value',
+      'WideExpected,HKLM:\\SOFTWARE\\Example,0,18446744073709551615',
+    ].join('\n');
+
+    const built = buildBaselineManifest(parseExcelBaseline(csv));
+
+    expect(built.manifest.resources[0]).toEqual(
+      expect.objectContaining({
+        properties: expect.objectContaining({
+          valueType: 'REG_QWORD',
+          value: 0,
+        }),
+        compliance: { equals: 18446744073709551615n },
+      }),
+    );
+  });
+
+  it('keeps inferred generic QWord values exact', () => {
+    const csv = [
+      'Setting Name,Registry Path,Default Value,Expected Value',
+      'ExactQword,HKLM:\\SOFTWARE\\Example,18446744073709551615,18446744073709551614',
+    ].join('\n');
+
+    const built = buildBaselineManifest(parseExcelBaseline(csv));
+
+    expect(built.manifest.resources[0]).toEqual(
+      expect.objectContaining({
+        properties: expect.objectContaining({
+          valueType: 'REG_QWORD',
+          value: 18446744073709551615n,
+        }),
+        compliance: { equals: 18446744073709551614n },
+      }),
+    );
+  });
+
+  it('keeps explicit QWord defaults and compliance literals exact', () => {
+    const csv = [
+      'Name,Registry Key,Registry Value,Registry Value Type,Default Value,Expected Value',
+      'ExactQword,HKLM:\\SOFTWARE\\Example,Exact,REG_QWORD,18446744073709551615,Equals(18446744073709551614)',
+    ].join('\n');
+
+    const built = buildBaselineManifest(parseExcelBaseline(csv));
+    const resource = built.manifest.resources[0] as {
+      properties: {
+        resource: { properties: Record<string, unknown> };
+        schema: Record<string, unknown>;
+      };
+    };
+
+    expect(resource.properties.resource.properties.valueType).toBe('REG_QWORD');
+    expect(resource.properties.resource.properties.value).toBe(18446744073709551615n);
+    expect(resource.properties.schema).toEqual({ const: 18446744073709551614n });
   });
 });

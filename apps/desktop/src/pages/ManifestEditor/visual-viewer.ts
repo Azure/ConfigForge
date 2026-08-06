@@ -1,7 +1,15 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import yaml from "js-yaml";
+import {
+  LOSSLESS_MANIFEST_SCHEMA,
+  dumpLosslessYaml,
+  parseLosslessJson as parseSharedLosslessJson,
+  parseLosslessYaml,
+  stringifyLosslessJson as stringifySharedLosslessJson,
+} from "@configforge/core/manifest/lossless";
+
+export { LOSSLESS_MANIFEST_SCHEMA };
 
 const GROUP_RESOURCE_TYPE = "Microsoft.OSConfig/Group";
 const TEST_RESOURCE_TYPE = "Microsoft.OSConfig/Test";
@@ -137,30 +145,6 @@ export const VISUAL_RESOURCE_TEMPLATES: readonly VisualResourceTemplate[] = [
     requiredProperties: ["path", "find"],
   },
 ];
-
-const YAML_INTEGER_PATTERN = /^[+-]?(?:[0-9]+|0b[01]+|0o[0-7]+|0x[0-9a-fA-F]+)$/;
-
-function constructLosslessInteger(source: string): number | bigint {
-  const negative = source.startsWith("-");
-  const unsigned = source.startsWith("-") || source.startsWith("+") ? source.slice(1) : source;
-  const integer = BigInt(unsigned) * (negative ? -1n : 1n);
-  return integer >= BigInt(Number.MIN_SAFE_INTEGER) && integer <= BigInt(Number.MAX_SAFE_INTEGER)
-    ? Number(integer)
-    : integer;
-}
-
-const LOSSLESS_INTEGER_TYPE = new yaml.Type("tag:yaml.org,2002:int", {
-  kind: "scalar",
-  resolve: (value: unknown) => typeof value === "string" && YAML_INTEGER_PATTERN.test(value),
-  construct: (value: string) => constructLosslessInteger(value),
-  predicate: (value: unknown) =>
-    typeof value === "bigint" || (typeof value === "number" && Number.isInteger(value)),
-  represent: (value: bigint | number) => value.toString(),
-});
-
-export const LOSSLESS_MANIFEST_SCHEMA = yaml.DEFAULT_SCHEMA.extend({
-  implicit: [LOSSLESS_INTEGER_TYPE],
-});
 
 function asRecord(value: unknown): Record<string, unknown> | null {
   return value !== null && typeof value === "object" && !Array.isArray(value)
@@ -1063,96 +1047,19 @@ export function sortVisualSettings(
 }
 
 export function parseVisualManifest(source: string): unknown {
-  return yaml.load(source, { schema: LOSSLESS_MANIFEST_SCHEMA });
+  return parseLosslessYaml(source);
 }
-
-const BIGINT_JSON_MARKER = "\u0000CONFIGFORGE_BIGINT_";
-const JSON_NUMBER_PATTERN = /^-?(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?/;
 
 export function stringifyLosslessJson(value: unknown, space = 2): string | undefined {
-  const bigintValues: string[] = [];
-  const seen = new WeakSet<object>();
-  let serialized = JSON.stringify(
-    value,
-    (_key, nestedValue: unknown) => {
-      if (typeof nestedValue === "bigint") {
-        const index = bigintValues.push(nestedValue.toString()) - 1;
-        return `${BIGINT_JSON_MARKER}${index}`;
-      }
-      if (nestedValue !== null && typeof nestedValue === "object") {
-        if (seen.has(nestedValue)) return "[Circular]";
-        seen.add(nestedValue);
-      }
-      return nestedValue;
-    },
-    space,
-  );
-  if (serialized === undefined) return undefined;
-
-  bigintValues.forEach((integer, index) => {
-    serialized = serialized.replaceAll(JSON.stringify(`${BIGINT_JSON_MARKER}${index}`), integer);
-  });
-  return serialized;
-}
-
-function maskUnsafeJsonIntegers(source: string): string {
-  let masked = "";
-  let inString = false;
-  let escaped = false;
-
-  for (let index = 0; index < source.length; index += 1) {
-    const character = source[index];
-    if (inString) {
-      masked += character;
-      if (escaped) escaped = false;
-      else if (character === "\\") escaped = true;
-      else if (character === '"') inString = false;
-      continue;
-    }
-    if (character === '"') {
-      inString = true;
-      masked += character;
-      continue;
-    }
-
-    if (character === "-" || (character >= "0" && character <= "9")) {
-      const match = source.slice(index).match(JSON_NUMBER_PATTERN)?.[0];
-      if (match) {
-        const isInteger = !/[.eE]/.test(match);
-        if (isInteger) {
-          const integer = BigInt(match);
-          if (
-            integer < BigInt(Number.MIN_SAFE_INTEGER) ||
-            integer > BigInt(Number.MAX_SAFE_INTEGER)
-          ) {
-            masked += JSON.stringify(`${BIGINT_JSON_MARKER}${match}`);
-            index += match.length - 1;
-            continue;
-          }
-        }
-        masked += match;
-        index += match.length - 1;
-        continue;
-      }
-    }
-    masked += character;
-  }
-  return masked;
+  return stringifySharedLosslessJson(value, space);
 }
 
 export function parseLosslessJson(source: string): unknown {
-  return JSON.parse(maskUnsafeJsonIntegers(source), (_key, value: unknown) => {
-    if (typeof value === "string" && value.startsWith(BIGINT_JSON_MARKER)) {
-      const integer = value.slice(BIGINT_JSON_MARKER.length);
-      if (YAML_INTEGER_PATTERN.test(integer)) return BigInt(integer);
-    }
-    return value;
-  });
+  return parseSharedLosslessJson(source);
 }
 
 export function dumpVisualManifest(document: unknown): string {
-  return yaml.dump(document, {
-    schema: LOSSLESS_MANIFEST_SCHEMA,
+  return dumpLosslessYaml(document, {
     indent: 2,
     lineWidth: 120,
     noRefs: false,
