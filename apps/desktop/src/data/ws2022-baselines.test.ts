@@ -153,15 +153,62 @@ const EXPECTED = [
   },
 ] as const;
 
+interface EnumSchema<T> {
+  enum: T[];
+}
+
+interface NamedProviderSchema {
+  properties: {
+    properties: {
+      properties: {
+        name: EnumSchema<string>;
+      };
+    };
+  };
+}
+
+interface AuditPolicySchema {
+  properties: {
+    properties: {
+      properties: {
+        value: EnumSchema<number>;
+      };
+    };
+  };
+}
+
+interface RegistrySchema {
+  properties: {
+    properties: {
+      allOf: Array<{
+        oneOf?: Array<{
+          properties?: {
+            valueType?: EnumSchema<string>;
+          };
+        }>;
+      }>;
+    };
+  };
+}
+
+interface ManifestSchema {
+  $defs: {
+    userrights: NamedProviderSchema;
+    accpol: NamedProviderSchema;
+    auditpol: AuditPolicySchema;
+    registry: RegistrySchema;
+  };
+}
+
 // Enum/pattern sources of truth, read straight out of the manifest schema so
 // the assertions track the schema rather than a hand-copied list.
-const schemaDefs = (manifestSchema as unknown as { $defs: Record<string, any> }).$defs;
+const schemaDefs = (manifestSchema as unknown as ManifestSchema).$defs;
 const URA_NAMES: string[] = schemaDefs.userrights.properties.properties.properties.name.enum;
 const ACCOUNT_POLICY_NAMES: string[] = schemaDefs.accpol.properties.properties.properties.name.enum;
 const AUDIT_VALUES: number[] = schemaDefs.auditpol.properties.properties.properties.value.enum;
 const REGISTRY_VALUE_TYPES: string[] = schemaDefs.registry.properties.properties.allOf
-  .flatMap((clause: any) => clause.oneOf ?? [])
-  .flatMap((variant: any) => variant.properties?.valueType?.enum ?? []);
+  .flatMap((clause) => clause.oneOf ?? [])
+  .flatMap((variant) => variant.properties?.valueType?.enum ?? []);
 const AUDIT_SUBCATEGORY_PATTERN = /^\{0CCE[0-9A-F]{4}-69AE-11D9-BED3-505054503030\}$/;
 const HIVE_PATTERN = /^(?:HKLM|HKCU|HKCR|HKU|HKCC|HKEY_[A-Z_]+):\\/;
 

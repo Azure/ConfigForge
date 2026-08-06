@@ -35,7 +35,7 @@
       "evidence": [
         "EnabledNTPClient",
         "ClearVirtualMemoryPageFile",
-        "EnabledNTPClient"
+        "SystemEnableSoftwareRestrictionPolicies"
       ]
     },
     {
@@ -64,8 +64,6 @@
       "expression": "([0,1,2,99,100].exists(item, value == item))",
       "template": "The value {value} must be one of [0,1,2,99,100].",
       "evidence": [
-        "DODownloadMode",
-        "DODownloadMode",
         "DODownloadMode"
       ]
     },
@@ -80,8 +78,6 @@
       "expression": "([0,1].exists(item, value == item))",
       "template": "The value {value} must be one of [0,1].",
       "evidence": [
-        "DmaGuardDeviceEnumerationPolicy",
-        "DmaGuardDeviceEnumerationPolicy",
         "DmaGuardDeviceEnumerationPolicy"
       ]
     },
@@ -129,8 +125,6 @@
       "expression": "([2147483624,2147483632,2147483640].exists(item, value == item))",
       "template": "The value {value} must be one of [2147483624,2147483632,2147483640].",
       "evidence": [
-        "CryptographyAllowedKerberosEncryptionTypes",
-        "CryptographyAllowedKerberosEncryptionTypes",
         "CryptographyAllowedKerberosEncryptionTypes"
       ]
     },
@@ -147,8 +141,7 @@
       "template": "The value {value} must be one of [768,770,785].",
       "evidence": [
         "MinimumSMBClientVersion",
-        "MinimumSMBServerVersion",
-        "MinimumSMBClientVersion"
+        "MinimumSMBServerVersion"
       ]
     },
     {
@@ -197,8 +190,6 @@
       "expression": "(value != null && value >= 1 && value <= 15)",
       "template": "The value {value} must be between 1 and 15.",
       "evidence": [
-        "AmountOfIdleTimeRequiredBeforeSuspendingSession",
-        "AmountOfIdleTimeRequiredBeforeSuspendingSession",
         "AmountOfIdleTimeRequiredBeforeSuspendingSession"
       ]
     },
@@ -225,7 +216,6 @@
       "expression": "(value != null && value >= 1 && value <= 60)",
       "template": "The value {value} must be between 1 and 60.",
       "evidence": [
-        "DeviceLockMaximumPasswordAge",
         "DeviceLockMaximumPasswordAge"
       ]
     },
@@ -250,8 +240,6 @@
       "expression": "(value != null && value >= 1 && value <= 900)",
       "template": "The value {value} must be between 1 and 900.",
       "evidence": [
-        "MachineInactivityLimit",
-        "MachineInactivityLimit",
         "MachineInactivityLimit"
       ]
     },
@@ -263,8 +251,6 @@
       "expression": "(value != null && value >= 1)",
       "template": "The value {value} must be greater than or equal to 1.",
       "evidence": [
-        "DeviceLockMinimumPasswordAge",
-        "DeviceLockMinimumPasswordAge",
         "DeviceLockMinimumPasswordAge"
       ]
     },
@@ -276,7 +262,6 @@
       "expression": "(value != null && value >= 14)",
       "template": "The value {value} must be greater than or equal to 14.",
       "evidence": [
-        "DeviceLockMinimumPasswordLength",
         "DeviceLockMinimumPasswordLength"
       ]
     },
@@ -301,8 +286,6 @@
       "expression": "(value != null && value >= 196608)",
       "template": "The value {value} must be greater than or equal to 196608.",
       "evidence": [
-        "EventLogServiceSpecifyMaximumFileSizeSecurityLog",
-        "EventLogServiceSpecifyMaximumFileSizeSecurityLog",
         "EventLogServiceSpecifyMaximumFileSizeSecurityLog"
       ]
     },
@@ -315,8 +298,6 @@
       "expression": "(value != null && value >= 2000 && value <= 5000)",
       "template": "The value {value} must be between 2000 and 5000.",
       "evidence": [
-        "EnableAuthRateLimiterTimeout",
-        "EnableAuthRateLimiterTimeout",
         "EnableAuthRateLimiterTimeout"
       ]
     },
@@ -329,8 +310,6 @@
       "expression": "(value != null && value >= 3 && value <= 4)",
       "template": "The value {value} must be between 3 and 4.",
       "evidence": [
-        "RemoteDesktopServicesClientConnectionEncryptionLevel",
-        "RemoteDesktopServicesClientConnectionEncryptionLevel",
         "RemoteDesktopServicesClientConnectionEncryptionLevel"
       ]
     },
@@ -356,8 +335,6 @@
       "expression": "(value != null && value >= 5 && value <= 14)",
       "template": "The value {value} must be between 5 and 14.",
       "evidence": [
-        "PromptUserToChangePasswordBeforeExpiration",
-        "PromptUserToChangePasswordBeforeExpiration",
         "PromptUserToChangePasswordBeforeExpiration"
       ]
     },
@@ -370,8 +347,6 @@
       "expression": "(value != null && value >= 50 && value <= 90)",
       "template": "The value {value} must be between 50 and 90.",
       "evidence": [
-        "EventLogPercentageThresholdSecurityEventLogMaximumSizeReached",
-        "EventLogPercentageThresholdSecurityEventLogMaximumSizeReached",
         "EventLogPercentageThresholdSecurityEventLogMaximumSizeReached"
       ]
     },
@@ -391,8 +366,7 @@
       "template": "The value {value} must be one of \"*\", (not set).",
       "evidence": [
         "RemoteManagementAllowRemoteServerManagement_IPv4Filter",
-        "RemoteManagementAllowRemoteServerManagement_IPv6Filter",
-        "RemoteManagementAllowRemoteServerManagement_IPv4Filter"
+        "RemoteManagementAllowRemoteServerManagement_IPv6Filter"
       ]
     },
     {
@@ -411,8 +385,7 @@
       "template": "The value {value} must be one of \"1.2\", (not set).",
       "evidence": [
         "OverrideMinimumEnabledDTLSVersionClient",
-        "OverrideMinimumEnabledDTLSVersionServer",
-        "OverrideMinimumEnabledDTLSVersionClient"
+        "OverrideMinimumEnabledDTLSVersionServer"
       ]
     },
     {
@@ -430,8 +403,6 @@
       "expression": "((((value == \"1000000000000\")) || ((value == null))))",
       "template": "The value {value} must be one of \"1000000000000\", (not set).",
       "evidence": [
-        "MitigationOptionsFontBlocking",
-        "MitigationOptionsFontBlocking",
         "MitigationOptionsFontBlocking"
       ]
     },
@@ -450,8 +421,6 @@
       "expression": "((((value == \"Block\")) || ((value == null))))",
       "template": "The value {value} must be one of \"Block\", (not set).",
       "evidence": [
-        "SmartScreenPreventOverrideForFilesInShell",
-        "SmartScreenPreventOverrideForFilesInShell",
         "SmartScreenPreventOverrideForFilesInShell"
       ]
     },
@@ -470,8 +439,6 @@
       "expression": "[\"MDA=\",\"AA==\"].exists(item, value == item)",
       "template": "The value {value} must represent disabled backup and restore privilege auditing.",
       "evidence": [
-        "AuditBackupAndRestorePrivilege",
-        "AuditBackupAndRestorePrivilege",
         "AuditBackupAndRestorePrivilege"
       ]
     },
@@ -550,8 +517,6 @@
       "expression": "((((value == 24)) || ((value == null))))",
       "template": "The value {value} must be one of 24, (not set).",
       "evidence": [
-        "DeviceLockPasswordHistorySize",
-        "DeviceLockPasswordHistorySize",
         "DeviceLockPasswordHistorySize"
       ]
     },
@@ -570,8 +535,6 @@
       "expression": "((((value == 255)) || ((value == null))))",
       "template": "The value {value} must be one of 255, (not set).",
       "evidence": [
-        "AutoplayTurnOffAutoPlay",
-        "AutoplayTurnOffAutoPlay",
         "AutoplayTurnOffAutoPlay"
       ]
     },
@@ -610,7 +573,6 @@
       "expression": "((((value == 30)) || ((value == null))))",
       "template": "The value {value} must be one of 30, (not set).",
       "evidence": [
-        "MaximumMachineAccountPasswordAge",
         "MaximumMachineAccountPasswordAge"
       ]
     },
@@ -629,8 +591,6 @@
       "expression": "((((value == 3389)) || ((value == null))))",
       "template": "The value {value} must be one of 3389, (not set).",
       "evidence": [
-        "RDPPortNumber",
-        "RDPPortNumber",
         "RDPPortNumber"
       ]
     },
@@ -650,8 +610,7 @@
       "template": "The value {value} must be one of 4, (not set).",
       "evidence": [
         "ConfigureSMBV1ClientDriver",
-        "SystemWindowsSearchService",
-        "ConfigureSMBV1ClientDriver"
+        "SystemWindowsSearchService"
       ]
     },
     {
@@ -669,8 +628,6 @@
       "expression": "((((value == 5)) || ((value == null))))",
       "template": "The value {value} must be one of 5, (not set).",
       "evidence": [
-        "LANManagerAuthenticationLevel",
-        "LANManagerAuthenticationLevel",
         "LANManagerAuthenticationLevel"
       ]
     },
@@ -690,8 +647,7 @@
       "template": "The value {value} must be one of 537395200, (not set).",
       "evidence": [
         "MinimumSessionSecurityForNTLMSSPBasedClients",
-        "MinimumSessionSecurityForNTLMSSPBasedServers",
-        "MinimumSessionSecurityForNTLMSSPBasedClients"
+        "MinimumSessionSecurityForNTLMSSPBasedServers"
       ]
     },
     {
@@ -729,8 +685,6 @@
       "expression": "((((value == true)) || ((value == null))))",
       "template": "The value {value} must be one of true, (not set).",
       "evidence": [
-        "DeviceLockPasswordComplexity",
-        "DeviceLockPasswordComplexity",
         "DeviceLockPasswordComplexity"
       ]
     },
@@ -754,8 +708,7 @@
       "template": "The value {value} is informational for this control.",
       "evidence": [
         "RenameAdministratorAccount",
-        "RenameGuestAccount",
-        "RenameAdministratorAccount"
+        "RenameGuestAccount"
       ]
     },
     {

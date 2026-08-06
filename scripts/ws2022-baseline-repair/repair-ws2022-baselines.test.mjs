@@ -329,6 +329,7 @@ describe('schema-expression-map.json', () => {
       expect(entry.expression.length).toBeGreaterThan(0);
       expect(entry.template).toContain('{value}');
       expect(entry.evidence.length).toBeGreaterThan(0);
+      expect(new Set(entry.evidence).size).toBe(entry.evidence.length);
     }
     expect(schemaMap.entries.length).toBe(49);
   });
