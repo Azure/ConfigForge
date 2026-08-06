@@ -18,12 +18,13 @@ configuration.
 | Package or policy mode                               | Purpose                                        | Current guidance                                                            |
 | ---------------------------------------------------- | ---------------------------------------------- | --------------------------------------------------------------------------- |
 | `Audit`                                              | Report compliance without changing the machine | Recommended default                                                         |
-| `AuditAndSet` package + `ApplyAndMonitor` policy     | Apply once during remediation, then monitor    | Use only with a Microsoft.OSConfig version whose `Set()` path you validated |
-| `AuditAndSet` package + `ApplyAndAutoCorrect` policy | Reapply whenever drift is detected             | Use only with a validated Microsoft.OSConfig remediation path               |
+| `AuditAndSet` package + `ApplyAndMonitor` policy     | Apply once during remediation, then monitor    | Build with ConfigForge's package helper and validate on a disposable machine |
+| `AuditAndSet` package + `ApplyAndAutoCorrect` policy | Reapply whenever drift is detected             | Build with ConfigForge's package helper and validate on a disposable machine |
 
-Microsoft.OSConfig 1.3.11 audits ConfigForge packages successfully, but its
-PowerShell DSC resource has an upstream `Set()` serialization defect. The
-examples below therefore use `Audit`.
+Microsoft.OSConfig 1.4.3 audits ConfigForge packages successfully, but its
+PowerShell DSC resource has an upstream `Set()` serialization defect.
+ConfigForge's package helper applies a compatibility patch to the package copy
+for `AuditAndSet`; the globally installed module remains unchanged.
 
 ## Prerequisites
 
@@ -128,21 +129,30 @@ Do not replace `ModuleName = "Microsoft.OSConfig"`.
 
 ## 3. Create the package
 
-Create an Audit package:
+Create packages through ConfigForge's package helper:
 
 ```powershell
-Import-Module GuestConfiguration
-
-$Package = New-GuestConfigurationPackage `
+$Package = & .\scripts\new-machine-configuration-package.ps1 `
   -Name $PackageName `
   -Configuration $ResolvedMofPath `
   -Type Audit `
   -Path $WorkingDirectory `
-  -Force
+  -Version 1.0.0
 
 $PackagePath = $Package.Path
 Get-Item $PackagePath
 ```
+
+For enforcement, use `-Type AuditAndSet`. The helper patches the package copy
+of Microsoft.OSConfig's DSC `Set()` boundary so Registry properties are passed
+to `oscfg` as compressed JSON. Microsoft.OSConfig 1.4.3 otherwise converts the
+property object to a PowerShell hashtable string such as `@{keyPath=...}`,
+which the Registry provider rejects as missing `keyPath`.
+
+The helper does not modify the globally installed PowerShell module. It fails
+closed if either expected wrapper copy is missing or no longer matches the
+known vulnerable/fixed implementation. Remove this compatibility patch after
+an upstream Microsoft.OSConfig release includes the JSON serialization fix.
 
 The ZIP contains:
 
@@ -168,9 +178,7 @@ baseline.
 For example, the ConfigForge Windows Server 2025 Workgroup Member baseline
 produces 296 resource results.
 
-If you use a newer Microsoft.OSConfig version with a validated remediation
-path, recreate the package as `AuditAndSet`, then test remediation only on a
-disposable machine:
+For an `AuditAndSet` package, test remediation only on a disposable machine:
 
 ```powershell
 Start-GuestConfigurationPackageRemediation `
@@ -369,7 +377,7 @@ show NonCompliant while the guest assignment is still Pending.
 | `Microsoft.OSConfig` cannot be found                                               | Install it in the PowerShell 7 module path and recreate the ZIP.                                                      |
 | More than one Microsoft.OSConfig version is installed                              | The resolution step selects the newest version. Remove older copies if you require a different deterministic version. |
 | Runtime says module version `0.0.0` does not exist                                 | Package the resolved MOF, not the portable exported MOF.                                                              |
-| Package audits but remediation does not change values on Microsoft.OSConfig 1.3.11 | Use Audit or package with a newer version whose `Set()` path you validated.                                           |
+| Deployment reports `missing field keyPath` with properties like `{"@{keyPath": ...}` | Recreate the `AuditAndSet` ZIP with `scripts/new-machine-configuration-package.ps1`; vanilla Microsoft.OSConfig 1.4.3 packages retain the upstream DSC serialization defect. |
 | Local compliance fails with access errors                                          | Run PowerShell 7 elevated or through `sudo`.                                                                          |
 | Package download returns HTTP 403                                                  | Renew the SAS URI or correct Storage Blob Data Reader access.                                                         |
 | The extension rejects the package hash                                             | Upload a new ZIP and regenerate the policy. Do not alter the existing ZIP.                                            |
