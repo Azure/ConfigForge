@@ -15,17 +15,17 @@ The renderer is built with Vite and routes through a typed IPC bridge (`window.c
 
 ### Current repository snapshot
 
-The following release references were verified on 2026-07-28:
+The following release references were verified on 2026-08-06:
 
 | Line | Reference | State |
 |---|---|---|
-| `main` | `v0.3.98` | Current Windows/Linux tagged source. The matching GitHub release is a draft and unpublished. It adds the public Machine Configuration deployment guide and removes stale/internal documentation. |
+| `main` | `v0.3.99` | Current Windows/Linux release. It verifies Enforce results, preserves exact QWords, keeps Revert safe, repairs WS2022 readability, and adds Machine Configuration Set compatibility. |
 | `mac-author-build` | `mac-v0.3.98-author.1` | Current author-only macOS tagged source. The matching GitHub release is a draft and unpublished with the same public documentation corrections. |
 
 On `mac-author-build`, the root package, desktop package, and lockfile records
 use `0.3.98-author.1`. The current macOS Author tagged source is
 `mac-v0.3.98-author.1`, and its matching GitHub release remains a draft and
-unpublished. The Full-edition package versions are `0.3.98`; do not copy
+unpublished. The Full-edition package versions are `0.3.99`; do not copy
 macOS package metadata to `main`.
 
 ### Current feature inventory

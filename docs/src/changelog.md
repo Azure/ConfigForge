@@ -6,6 +6,20 @@ foundational work by theme.
 
 ## Unreleased
 
+## v0.3.99 — 2026-08-06
+
+- **Trustworthy Enforce results:** Canonical Registry types and hive paths now
+  reach OSConfig, every apply is audited afterward, and remaining
+  noncompliance or unread settings are surfaced instead of being reported as
+  success.
+- **Exact 64-bit values:** QWord integers remain exact across import, editing,
+  Diff, compliance, export, and Machine Configuration MOFs.
+- **Safe recovery:** Revert remains available after verified deployments and
+  after partial applies that created a pre-deploy snapshot.
+- **Machine Configuration remediation:** A fail-closed package helper patches
+  the packaged Microsoft.OSConfig 1.4.3 Set boundary to send compressed JSON.
+- **Stable authoring history:** Concurrent rationale writes and retention
+  cleanup no longer race.
 - **Windows Server 2022 standalone baselines:** Convert every
   `Policy/Result` CSP rule in the three WS2022 role baselines to dedicated
   Audit Policy, User Rights, and Account Policy providers, normalize registry
@@ -21,8 +35,7 @@ foundational work by theme.
 
 ## v0.3.98 — 2026-07-28
 
-`v0.3.98` is the current Windows/Linux tagged source. Its matching GitHub
-release remains a draft and unpublished.
+`v0.3.98` is the prior Windows/Linux release.
 
 - **Machine Configuration documentation:** Add a standalone README workflow
   and a complete mdBook guide for MOF resolution, packaging, testing, Storage,

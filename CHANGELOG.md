@@ -2,8 +2,30 @@
 
 ## [Unreleased]
 
+## [0.3.99] - 2026-08-06
+
+### Added
+
+- Add a fail-closed Azure Machine Configuration package helper for
+  `AuditAndSet` packages. It patches both packaged Microsoft.OSConfig 1.4.3
+  wrapper copies to pass Set properties as compressed JSON without modifying
+  the globally installed module.
+
 ### Fixed
 
+- Send canonical writable `REG_*` Registry value types and colon-qualified
+  hive paths to OSConfig across direct execution, manifest apply, revert, and
+  MOF export.
+- Verify every Enforce operation after apply. ConfigForge now reports remaining
+  noncompliance or unread settings instead of treating an accepted command as
+  confirmed remediation, and never infers enforcement from values that already
+  matched before a failed apply.
+- Preserve exact QWord values through YAML/JSON import, editing, diff,
+  compliance comparison, export, and Machine Configuration MOF generation.
+- Keep Revert available for verified deployments and for partial applies with
+  a durable pre-deploy snapshot.
+- Serialize concurrent rationale writes and await history-retention cleanup so
+  heavy authoring sessions do not lose entries or leave cleanup races.
 - Repair the three bundled Windows Server 2022 role baselines so a standalone
   (non-MDM-enrolled) server can read every setting. All 71–73 `Policy/Result`
   CSP rules per profile now use dedicated `AuditPolicy`,
@@ -23,8 +45,7 @@
 
 ## [0.3.98] - 2026-07-28
 
-> `v0.3.98` is the current Windows/Linux tagged source. Its matching GitHub
-> release remains a draft and unpublished.
+> `v0.3.98` is the prior Windows/Linux release.
 
 ### Documentation
 

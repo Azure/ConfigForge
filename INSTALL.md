@@ -8,10 +8,9 @@ ConfigForge has two editions:
   and Audit Pack export are available. Device Deploy, Audit, and Revert are
   intentionally omitted.
 
-The current Windows/Linux tagged source is `v0.3.98`, and its matching GitHub
-release is a draft and unpublished. The current macOS Author tagged source is
+The current Windows/Linux release is `v0.3.99`. The current macOS Author tagged source is
 `mac-v0.3.98-author.1`, and its matching GitHub release is also a draft and
-unpublished. The package versions are `0.3.98` for the Full edition and
+unpublished. The package versions are `0.3.99` for the Full edition and
 `0.3.98-author.1` for the macOS Author edition.
 
 ConfigForge does **not** bundle the OSConfig CLI. To use the Full edition's Deploy, Audit, or Revert features against a real Windows or Linux machine, install `oscfg` separately from its upstream source.
