@@ -33,7 +33,7 @@ export interface DeployResult {
   data?: {
     Name: string;
     Deployed: boolean;
-    DeployError: string | null;
+    DeployError?: string | null;
     Hostname: string;
     Timestamp: string;
     TotalResources: number;
@@ -203,7 +203,7 @@ export function useDeployFlow(params: UseDeployFlowParams): DeployFlow {
 
         const json = await cfs.deploy.run(payload, (event) => setDeployProgress(event));
         setDeployResult({
-          success: true,
+          success: mode === "audit" || json.data?.Deployed === true,
           message: json.message,
           warning: json.warning,
           data: json.data,
@@ -258,6 +258,9 @@ export function useDeployFlow(params: UseDeployFlowParams): DeployFlow {
             }
           }
         }
+        if (mode === "enforce") {
+          await fetchData();
+        }
       } catch (err) {
         setDeployResult({
           success: false,
@@ -269,7 +272,16 @@ export function useDeployFlow(params: UseDeployFlowParams): DeployFlow {
         deployJobIdRef.current = null;
       }
     },
-    [manifestName, presenceInstalled, detectedPlatform, setStatus, setError, t],
+    [
+      manifestName,
+      presenceInstalled,
+      detectedPlatform,
+      registrationRevision,
+      setStatus,
+      setError,
+      fetchData,
+      t,
+    ],
   );
 
   const handleRevert = useCallback(async () => {

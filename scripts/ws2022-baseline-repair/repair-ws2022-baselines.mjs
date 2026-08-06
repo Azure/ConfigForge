@@ -674,6 +674,10 @@ function main() {
   // `* text=auto` + core.autocrlf checks the YAML out with CRLF on Windows, so
   // --check compares content, not line endings.
   const sameContent = (a, b) => a.replace(/\r\n/g, '\n') === b.replace(/\r\n/g, '\n');
+  const preserveLineEndings = (destination, text) => {
+    const current = readFileSync(destination, 'utf8');
+    return current.includes('\r\n') ? text.replace(/\r?\n/g, '\r\n') : text;
+  };
 
   for (const filename of PROFILES) {
     const { text, report } = repairProfile(filename);
@@ -689,7 +693,7 @@ function main() {
       continue;
     }
     if (!write) continue;
-    writeFileSync(dest, text, 'utf8');
+    writeFileSync(dest, preserveLineEndings(dest, text), 'utf8');
     console.log(`wrote: ${filename}`);
   }
 
@@ -734,7 +738,11 @@ function main() {
       console.log('ok: conversion-report.json');
     }
   } else if (write) {
-    writeFileSync(reportPath, conversionReport, 'utf8');
+    writeFileSync(
+      reportPath,
+      preserveLineEndings(reportPath, conversionReport),
+      'utf8',
+    );
     console.log('wrote: conversion-report.json');
   }
 

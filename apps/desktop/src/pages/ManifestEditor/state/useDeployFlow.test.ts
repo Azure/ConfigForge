@@ -238,6 +238,178 @@ describe('useDeployFlow — happy-path deploy', () => {
 
     expect(result.current.deployJobIdRef.current).toBeNull();
   });
+
+  it('uses the latest registration revision after rerender', async () => {
+    installDeployStubs();
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const setStatus = vi.fn();
+    const stableParams = makeParams({
+      registrationRevision: 'revision-a',
+      setStatus,
+    });
+    const { result, rerender } = renderHook(
+      ({ revision }: { revision: string }) =>
+        useDeployFlow({
+          ...stableParams,
+          registrationRevision: revision,
+        }),
+      { initialProps: { revision: 'revision-a' } },
+    );
+
+    rerender({ revision: 'revision-b' });
+    await act(async () => {
+      await result.current.handleDeploy('audit');
+    });
+
+    expect(setStatus).toHaveBeenCalledWith(
+      expect.objectContaining({ revision: 'revision-b' }),
+    );
+    expect(JSON.parse(sessionStorage.getItem('configforge-compliance-sample') ?? '{}')).toMatchObject(
+      { revision: 'revision-b' },
+    );
+  });
+});
+
+// ── Verified enforcement result ───────────────────────────────────
+
+describe('useDeployFlow — verified enforcement result', () => {
+  it('renders enforce verification failure while retaining resources and the status cache', async () => {
+    const deployRun = vi.fn().mockResolvedValue({
+      message: 'Enforcement incomplete for "sample"',
+      warning:
+        'Inspect the noncompliant resource results and the OSConfig provider, installed version, and logs.',
+      data: {
+        Name: 'sample',
+        Deployed: false,
+        DeployError:
+          'OSConfig accepted the apply command, but 1 resource remains noncompliant after verification.',
+        Hostname: 'host',
+        Timestamp: '2026-08-05T00:00:00Z',
+        TotalResources: 1,
+        Compliant: 0,
+        NonCompliant: 1,
+        Indeterminate: 0,
+        Errors: 0,
+        Resources: [
+          {
+            name: 'FailedRule',
+            type: 'Microsoft.Windows/Registry',
+            status: 'noncompliant',
+            reason: 'Expected 1, found 0',
+          },
+        ],
+      },
+    });
+    installDeployStubs({ deployRun });
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const setStatus = vi.fn();
+    const fetchData = vi.fn().mockResolvedValue(undefined);
+    const { result } = renderHook(() =>
+      useDeployFlow(
+        makeParams({
+          registrationRevision: 'revision-1',
+          setStatus,
+          fetchData,
+        }),
+      ),
+    );
+
+    await act(async () => {
+      await result.current.handleDeploy('enforce');
+    });
+
+    expect(result.current.deployResult).toMatchObject({
+      success: false,
+      message: expect.stringMatching(/enforcement incomplete/i),
+      data: {
+        Deployed: false,
+        NonCompliant: 1,
+        Resources: [
+          expect.objectContaining({
+            name: 'FailedRule',
+            status: 'noncompliant',
+          }),
+        ],
+      },
+    });
+    expect(setStatus).toHaveBeenCalledWith({
+      name: 'sample',
+      revision: 'revision-1',
+      resources: [
+        expect.objectContaining({
+          name: 'FailedRule',
+          compliance: {
+            status: 'noncompliant',
+            reason: 'Expected 1, found 0',
+          },
+        }),
+      ],
+    });
+    expect(JSON.parse(sessionStorage.getItem('configforge-compliance-sample') ?? '{}')).toMatchObject({
+      name: 'sample',
+      revision: 'revision-1',
+      resources: [
+        expect.objectContaining({
+          name: 'FailedRule',
+          compliance: expect.objectContaining({ status: 'noncompliant' }),
+        }),
+      ],
+    });
+    expect(fetchData).toHaveBeenCalledTimes(1);
+  });
+
+  it('keeps audit observationally successful when resources are noncompliant', async () => {
+    const deployRun = vi.fn().mockResolvedValue({
+      message: 'Audited "sample" on host',
+      data: {
+        Name: 'sample',
+        Deployed: false,
+        DeployError: null,
+        Hostname: 'host',
+        Timestamp: '2026-08-05T00:00:00Z',
+        TotalResources: 1,
+        Compliant: 0,
+        NonCompliant: 1,
+        Indeterminate: 0,
+        Errors: 0,
+        Resources: [
+          {
+            name: 'ObservedRule',
+            type: 'Microsoft.Windows/Registry',
+            status: 'noncompliant',
+            reason: 'Expected 1, found 0',
+          },
+        ],
+      },
+    });
+    installDeployStubs({ deployRun });
+    vi.spyOn(window, 'confirm').mockReturnValue(true);
+    const setStatus = vi.fn();
+    const { result } = renderHook(() =>
+      useDeployFlow(makeParams({ setStatus })),
+    );
+
+    await act(async () => {
+      await result.current.handleDeploy('audit');
+    });
+
+    expect(result.current.deployResult).toMatchObject({
+      success: true,
+      data: {
+        NonCompliant: 1,
+      },
+    });
+    expect(setStatus).toHaveBeenCalledWith(
+      expect.objectContaining({
+        resources: [
+          expect.objectContaining({
+            name: 'ObservedRule',
+            compliance: expect.objectContaining({ status: 'noncompliant' }),
+          }),
+        ],
+      }),
+    );
+  });
 });
 
 // ── jobId cancel-on-unmount (v0.1.14) — the regression-prone case ─

@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 import { spawn } from 'child_process';
+import { parseLosslessJson } from '../manifest/lossless';
 import { resolveOscfgBinary } from './binary';
 import type { OscfgResult } from './types';
 
@@ -20,8 +21,12 @@ const DEFAULT_TIMEOUT_MS = 60_000;
  */
 const MAX_CONCURRENT_SPAWNS = 4;
 
+function parseOscfgOutput(stdout: string): unknown {
+  return parseLosslessJson(stdout);
+}
+
 /** @internal exported for tests */
-export const _internals = { MAX_CONCURRENT_SPAWNS };
+export const _internals = { MAX_CONCURRENT_SPAWNS, parseOscfgOutput };
 
 let activeSpawns = 0;
 const waitQueue: Array<() => void> = [];
@@ -148,7 +153,7 @@ export async function runOscfg<T>(
       }
 
       try {
-        const parsed = JSON.parse(stdout) as T;
+        const parsed = parseOscfgOutput(stdout) as T;
         settle({ success: true, data: parsed, error: null, exitCode: 0, stdout, stderr });
       } catch {
         // CLI didn't emit JSON (maybe YAML or plain text). Hand back as-is.

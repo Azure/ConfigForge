@@ -3,7 +3,10 @@
 
 import { lazy, Suspense, useEffect, useLayoutEffect, useMemo, useRef, useState, useCallback } from "react";
 import type { OnChange, Monaco } from "@monaco-editor/react";
-import yaml from "js-yaml";
+import {
+  parseLosslessJson,
+  parseLosslessYaml,
+} from "@configforge/core/manifest/lossless";
 import oscSchema from "../data/osc-manifest-schema.json";
 import {
   WarningRegular,
@@ -207,12 +210,12 @@ export function ConfigEditor({
     let doc: Record<string, unknown> | null = null;
     try {
       // Try YAML first (superset of JSON), then JSON as fallback
-      const parsed = yaml.load(content);
+      const parsed = parseLosslessYaml(content);
       if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
         doc = parsed as Record<string, unknown>;
       } else {
         try {
-          const jsonParsed = JSON.parse(content);
+          const jsonParsed = parseLosslessJson(content);
           if (jsonParsed && typeof jsonParsed === 'object' && !Array.isArray(jsonParsed)) {
             doc = jsonParsed as Record<string, unknown>;
           }
@@ -227,7 +230,7 @@ export function ConfigEditor({
       // parser error in a "YAML syntax error:" prefix — that produces
       // "YAML syntax error: ... is not valid JSON" which is contradictory.
       try {
-        const jsonParsed = JSON.parse(content);
+        const jsonParsed = parseLosslessJson(content);
         if (jsonParsed && typeof jsonParsed === 'object' && !Array.isArray(jsonParsed)) {
           doc = jsonParsed as Record<string, unknown>;
         } else {

@@ -15,6 +15,7 @@
 import type { TFunction } from "i18next";
 import { useTranslation } from "react-i18next";
 import type { OscResource } from "@configforge/core/types";
+import { stringifyLosslessJson } from "@configforge/core/manifest/lossless";
 
 // ── Shared types ────────────────────────────────────────────────────
 
@@ -104,6 +105,16 @@ export function extractPropertyPath(properties: Record<string, unknown>): string
   return null;
 }
 
+function formatResourceValue(value: unknown): string {
+  if (value === null || value === undefined) return "-";
+  if (typeof value !== "object") return String(value);
+  try {
+    return stringifyLosslessJson(value) ?? String(value);
+  } catch {
+    return String(value);
+  }
+}
+
 // ── ResourceDetailPanel ─────────────────────────────────────────────
 
 export function ResourceDetailPanel({ resource }: { resource: OscResource }) {
@@ -150,7 +161,7 @@ export function ResourceDetailPanel({ resource }: { resource: OscResource }) {
         <p className="text-xs text-slate-600 dark:text-slate-400 mb-3">
           <span className="font-medium">{t("resourceDetails.desiredValue")}:</span>{" "}
           <code className="rounded bg-slate-100 px-1.5 py-0.5 dark:bg-slate-700">
-            {typeof resource.value === "object" ? JSON.stringify(resource.value) : String(resource.value)}
+            {formatResourceValue(resource.value)}
           </code>
         </p>
       )}
@@ -181,7 +192,7 @@ export function ResourceDetailPanel({ resource }: { resource: OscResource }) {
                   </td>
                   <td className="px-3 py-1.5 text-slate-600 dark:text-slate-400 break-all">
                     <code className="text-xs">
-                      {typeof val === "object" && val !== null ? JSON.stringify(val) : String(val ?? "-")}
+                      {formatResourceValue(val)}
                     </code>
                   </td>
                 </tr>

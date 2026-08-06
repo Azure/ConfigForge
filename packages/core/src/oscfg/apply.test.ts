@@ -15,22 +15,71 @@
  * `-f` instead. This file unit-tests `planApply` (the pure dispatch
  * decision) directly so we don't need to spawn anything.
  */
-import { describe, expect, it } from 'vitest';
-import { INLINE_CONTENT_BYTE_LIMIT, planApply } from './apply';
+import { access, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
+import { tmpdir } from 'node:os';
+import path from 'node:path';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
+import yaml from 'js-yaml';
+import { applyManifest, INLINE_CONTENT_BYTE_LIMIT, planApply } from './apply';
+import { runOscfg } from './runner';
+
+vi.mock('./runner', () => ({
+  runOscfg: vi.fn(),
+}));
+
+const runOscfgMock = vi.mocked(runOscfg);
+
+beforeEach(() => {
+  vi.clearAllMocks();
+  runOscfgMock.mockResolvedValue({
+    success: true,
+    data: '',
+    error: null,
+    exitCode: 0,
+    stdout: '',
+    stderr: '',
+  });
+});
 
 describe('planApply — content/file dispatch', () => {
-  it('uses --content for small payloads (no temp file)', () => {
-    const tinyYaml = '$schema: x\nresources: []\n';
+  it('generates apply content with canonical REG_DWORD for Dword input', () => {
+    const tinyYaml = `resources:
+  - name: registry
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKEY_LOCAL_MACHINE\\Software\\Inline
+      valueName: Enabled
+      valueType: Dword
+      value: 1
+`;
     const p = planApply({ content: tinyYaml, namespace: 'ns1' });
     expect(p.mode).toBe('inline');
     if (p.mode === 'inline') {
-      expect(p.args).toEqual(['apply', '--content', tinyYaml, '-n', 'ns1']);
+      expect(p.args.slice(0, 2)).toEqual(['apply', '--content']);
+      expect(p.args.slice(-2)).toEqual(['-n', 'ns1']);
+      const normalized = yaml.load(p.args[2]) as {
+        resources: Array<{ properties: { keyPath: string; valueType: string } }>;
+      };
+      expect(normalized.resources[0].properties.keyPath).toBe(
+        'HKEY_LOCAL_MACHINE:\\Software\\Inline',
+      );
+      expect(normalized.resources[0].properties.valueType).toBe('REG_DWORD');
+      expect(p.args[2]).toContain('REG_DWORD');
     }
   });
 
-  it('falls back to file mode when content exceeds the byte threshold (regression for ENAMETOOLONG)', () => {
+  it('falls back to file mode with normalized content when the payload exceeds the byte threshold', () => {
     // 12 KB > 8 KB threshold
-    const bigYaml = '$schema: x\nresources:\n' + '  - { name: r, type: T }\n'.repeat(500);
+    const bigYaml =
+      `resources:
+  - name: registry
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM\\Software\\FileFallback
+      valueName: Enabled
+      valueType: REG_DWORD
+      value: 1
+` + '  - { name: r, type: T }\n'.repeat(500);
     expect(Buffer.byteLength(bigYaml, 'utf8')).toBeGreaterThan(INLINE_CONTENT_BYTE_LIMIT);
     const p = planApply({ content: bigYaml, namespace: 'ns2' });
     expect(p.mode).toBe('file');
@@ -39,18 +88,26 @@ describe('planApply — content/file dispatch', () => {
       expect(p.args).not.toContain('--content');
       expect(p.args).toContain('-f');
       expect(p.args[p.args.indexOf('-f') + 1]).toBe(p.tempFilePlaceholder);
-      expect(p.content).toBe(bigYaml);
+      const normalized = yaml.load(p.content) as {
+        resources: Array<{ properties?: { keyPath: string; valueType: string } }>;
+      };
+      expect(normalized.resources[0].properties?.keyPath).toBe(
+        'HKLM:\\Software\\FileFallback',
+      );
+      expect(normalized.resources[0].properties?.valueType).toBe('REG_DWORD');
       expect(p.args).toContain('-n');
       expect(p.args[p.args.indexOf('-n') + 1]).toBe('ns2');
     }
   });
 
-  it('honors a caller-supplied file path directly (no temp file, even if large)', () => {
+  it('plans a caller-supplied file through a normalized temporary copy', () => {
     const userFile = '/path/to/manifest.osc.yaml';
     const p = planApply({ file: userFile, namespace: 'ns3' });
-    expect(p.mode).toBe('inline');
-    if (p.mode === 'inline') {
-      expect(p.args).toEqual(['apply', '-f', userFile, '-n', 'ns3']);
+    expect(p.mode).toBe('source-file');
+    if (p.mode === 'source-file') {
+      expect(p.sourceFile).toBe(userFile);
+      expect(p.args).toEqual(['apply', '-f', p.tempFilePlaceholder, '-n', 'ns3']);
+      expect(p.args).not.toContain(userFile);
     }
   });
 
@@ -116,3 +173,51 @@ describe('planApply — content/file dispatch', () => {
   });
 });
 
+describe('applyManifest — caller file normalization', () => {
+  it('normalizes a temporary copy without overwriting the source file and cleans it up', async () => {
+    const testDir = await mkdtemp(path.join(tmpdir(), 'configforge-apply-test-'));
+    const sourceFile = path.join(testDir, 'source.osc.yaml');
+    const source = `resources:
+  - name: registry
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKEY_LOCAL_MACHINE\\Software\\FileInput
+      valueName: Enabled
+      valueType: REG_DWORD
+      value: 1
+`;
+    await writeFile(sourceFile, source, 'utf8');
+    let appliedFile = '';
+    let appliedContent = '';
+    runOscfgMock.mockImplementation(async (args) => {
+      appliedFile = args[args.indexOf('-f') + 1];
+      appliedContent = await readFile(appliedFile, 'utf8');
+      return {
+        success: true,
+        data: '',
+        error: null,
+        exitCode: 0,
+        stdout: '',
+        stderr: '',
+      };
+    });
+
+    try {
+      const result = await applyManifest({ file: sourceFile, namespace: 'file-input' });
+
+      expect(result.success).toBe(true);
+      expect(appliedFile).not.toBe(sourceFile);
+      const parsed = yaml.load(appliedContent) as {
+        resources: Array<{ properties: { keyPath: string; valueType: string } }>;
+      };
+      expect(parsed.resources[0].properties.keyPath).toBe(
+        'HKEY_LOCAL_MACHINE:\\Software\\FileInput',
+      );
+      expect(parsed.resources[0].properties.valueType).toBe('REG_DWORD');
+      expect(await readFile(sourceFile, 'utf8')).toBe(source);
+      await expect(access(appliedFile)).rejects.toMatchObject({ code: 'ENOENT' });
+    } finally {
+      await rm(testDir, { recursive: true, force: true });
+    }
+  });
+});

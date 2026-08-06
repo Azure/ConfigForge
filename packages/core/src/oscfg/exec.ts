@@ -2,7 +2,8 @@
 // Licensed under the MIT License.
 
 import { runOscfg } from './runner';
-import { normalizeRegistryValueType } from './registry-types';
+import { stringifyLosslessJson } from '../manifest/lossless';
+import { normalizeManifestRegistryTypes } from './registry-types';
 import type { OscfgExecOptions, OscfgResource, OscfgResult } from './types';
 
 /**
@@ -23,10 +24,11 @@ import type { OscfgExecOptions, OscfgResource, OscfgResult } from './types';
  * `exec resource` does NOT take `-n/--namespace` — it targets a provider
  * directly, not a namespace.
  *
- * PR19: when calling the `Microsoft.Windows/Registry` provider, normalize
- * any Win32-style `valueType` (REG_DWORD/REG_SZ/...) to the DSC-style
- * names oscfg accepts (Dword/String/...). Without this, audit/get/set on
- * a Defender-baseline-shaped resource fails with "os error 87".
+ * Registry aliases are normalized to the `REG_*` forms used by the current
+ * upstream schema, `docs/resources/windows/Registry.md`,
+ * `examples/registry.osc.yaml`, and Microsoft Learn set/test/quickstart
+ * files. Verified provider versions can accept `Dword` with exit code 0 while
+ * leaving the registry unchanged.
  */
 export async function execResource(
   opts: OscfgExecOptions,
@@ -53,41 +55,16 @@ export async function execResource(
 }
 
 /**
- * If the resource is `Microsoft.Windows/Registry` (or a Test wrapper that
- * targets it), translate Win32 REG_* `valueType` values to DSC-style
- * names. Walks recursively so a Test wrapper's `properties.resource.
- * properties.valueType` is also normalized.
+ * Normalize Registry resources recursively so direct calls plus Test and
+ * Group wrappers all receive canonical valueType and keyPath syntax.
  */
 function maybeNormalizeRegistryProps(
   type: string,
   props: Record<string, unknown> | undefined,
 ): Record<string, unknown> | undefined {
   if (!props) return props;
-  // Inline-shaped registry resource: {keyPath, valueName, valueType, value}
-  if (type === 'Microsoft.Windows/Registry' && 'valueType' in props) {
-    return { ...props, valueType: normalizeRegistryValueType(props.valueType) };
-  }
-  // Test wrapper: nested `resource.properties.valueType`. Cheap deep
-  // walk — props are tiny per-resource.
-  if (type === 'Microsoft.OSConfig/Test') {
-    return walkAndNormalize(props) as Record<string, unknown>;
-  }
-  return props;
-}
-
-function walkAndNormalize(node: unknown): unknown {
-  if (Array.isArray(node)) return node.map(walkAndNormalize);
-  if (!node || typeof node !== 'object') return node;
-  const obj = node as Record<string, unknown>;
-  const out: Record<string, unknown> = {};
-  for (const [k, v] of Object.entries(obj)) {
-    if (k === 'valueType') {
-      out[k] = normalizeRegistryValueType(v);
-    } else {
-      out[k] = walkAndNormalize(v);
-    }
-  }
-  return out;
+  const normalized = normalizeManifestRegistryTypes({ type, properties: props });
+  return normalized.properties;
 }
 
 /**
@@ -102,5 +79,5 @@ export function serializeProperties(
   props: Record<string, unknown> | undefined,
 ): string {
   if (!props || Object.keys(props).length === 0) return '';
-  return JSON.stringify(props);
+  return stringifyLosslessJson(props) ?? '';
 }

@@ -1,9 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import yaml from 'js-yaml';
 import { getPlatformForType } from './platform';
 import { escMdInline, escMdCell, escInlineCode } from './markdown/escape';
+import {
+  parseLosslessJson,
+  parseLosslessYaml,
+  stringifyLosslessJson,
+} from './manifest/lossless';
 
 interface Resource {
   name?: string;
@@ -14,6 +18,11 @@ interface Resource {
   properties?: Record<string, unknown>;
   compliance?: Record<string, unknown>;
   dependsOn?: string | string[];
+}
+
+function formatManifestValue(value: unknown): string {
+  if (typeof value !== 'object' || value === null) return String(value);
+  return stringifyLosslessJson(value) ?? String(value);
 }
 
 function renderResources(resources: Resource[], lines: string[], startIndex: number, indent = ''): number {
@@ -46,7 +55,7 @@ function renderResources(resources: Resource[], lines: string[], startIndex: num
         if (otherProps.length > 0) {
           lines.push(`${indent}- **Properties:**`);
           for (const [k, v] of otherProps) {
-            const val = typeof v === 'object' ? JSON.stringify(v) : String(v);
+            const val = formatManifestValue(v);
             lines.push(`${indent}  - \`${escInlineCode(k)}\`: ${escMdInline(val)}`);
           }
         }
@@ -62,13 +71,13 @@ function renderResources(resources: Resource[], lines: string[], startIndex: num
 
       lines.push(`${indent}- **Properties:**`);
       for (const [k, v] of Object.entries(props)) {
-        const val = typeof v === 'object' ? JSON.stringify(v) : String(v);
+        const val = formatManifestValue(v);
         lines.push(`${indent}  - \`${escInlineCode(k)}\`: ${escMdInline(val)}`);
       }
     }
 
     if (hasValue) {
-      const val = typeof r.value === 'object' ? JSON.stringify(r.value) : String(r.value);
+      const val = formatManifestValue(r.value);
       lines.push(`${indent}- **Desired Value:** \`${escInlineCode(val)}\``);
     }
 
@@ -92,7 +101,9 @@ function renderResources(resources: Resource[], lines: string[], startIndex: num
 export function generateManifestDoc(content: string, manifestName: string): string {
   let doc: Record<string, unknown>;
   try {
-    doc = (content.trimStart().startsWith('{') ? JSON.parse(content) : yaml.load(content)) as Record<string, unknown>;
+    doc = (content.trimStart().startsWith('{')
+      ? parseLosslessJson(content)
+      : parseLosslessYaml(content)) as Record<string, unknown>;
   } catch {
     return `# ${escMdInline(manifestName)}\n\nError: Could not parse manifest content.`;
   }

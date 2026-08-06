@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import yaml from 'js-yaml';
+import { dumpLosslessYaml, parseLosslessYaml } from './manifest/lossless';
 
 /**
  * Canonical normalization for manifests so the diff viewer can compare two
@@ -46,7 +46,7 @@ function parseManifest(text: string): Record<string, unknown> | null {
   const trimmed = text.trim();
   if (!trimmed) return null;
   try {
-    const parsed = yaml.load(trimmed);
+    const parsed = parseLosslessYaml(trimmed);
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return null;
     return parsed as Record<string, unknown>;
   } catch {
@@ -190,7 +190,7 @@ export function normalizeManifestForDiff(text: string): string {
   doc.resources = canon.resources.map(orderResourceKeys);
 
   try {
-    return yaml.dump(doc, {
+    return dumpLosslessYaml(doc, {
       lineWidth: 120,
       noRefs: true,
       quotingType: '"',

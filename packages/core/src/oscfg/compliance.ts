@@ -14,7 +14,16 @@
  *   - Any future "test" flow
  */
 
-import { normalizeRegistryValueType } from './registry-types';
+import {
+  normalizeRegistryKeyPath,
+  normalizeRegistryValueType,
+} from './registry-types';
+import {
+  stringifyLosslessJson,
+  YAML_INTEGER_PATTERN,
+} from '../manifest/lossless';
+
+export { normalizeRegistryKeyPath } from './registry-types';
 
 export type ComplianceStatus =
   | 'compliant'
@@ -50,43 +59,6 @@ export interface ComplianceResult {
   desired: Record<string, unknown>;
   /** The actual property values reported by the device, when available. */
   actual: Record<string, unknown> | null;
-}
-
-/**
- * Hive normalization for Microsoft.Windows/Registry.
- *
- * The CLI requires a colon after the hive token (`HKLM:\Software\...`). If
- * the source YAML omits the colon (as the Defender baseline does —
- * `HKEY_LOCAL_MACHINE\SOFTWARE\...`), the CLI silently returns a null value
- * and we'd incorrectly mark every resource as non-compliant due to "value
- * missing" when really we never actually read the registry.
- *
- * We normalize once here and pass the colon form to the CLI.
- */
-const HIVE_PREFIXES = [
-  'HKEY_LOCAL_MACHINE',
-  'HKEY_CURRENT_USER',
-  'HKEY_USERS',
-  'HKEY_CLASSES_ROOT',
-  'HKEY_CURRENT_CONFIG',
-  'HKLM',
-  'HKCU',
-  'HKU',
-  'HKCR',
-  'HKCC',
-];
-
-export function normalizeRegistryKeyPath(keyPath: string): string {
-  if (typeof keyPath !== 'string' || keyPath.length === 0) return keyPath;
-  // Already colon-prefixed → leave alone.
-  const firstSegmentEnd = keyPath.indexOf('\\');
-  const head = firstSegmentEnd === -1 ? keyPath : keyPath.slice(0, firstSegmentEnd);
-  if (head.endsWith(':')) return keyPath;
-
-  const upper = head.toUpperCase();
-  if (!HIVE_PREFIXES.includes(upper)) return keyPath;
-  const rest = firstSegmentEnd === -1 ? '' : keyPath.slice(firstSegmentEnd);
-  return `${head}:${rest}`;
 }
 
 /**
@@ -322,10 +294,10 @@ export function compareDesiredActual(
   // REG_DWORD `1` would silently pass via the loose `valuesEqual('1', 1)`
   // path. That's wrong — types are part of the rule.
   //
-  // Canonicalize both sides via normalizeRegistryValueType so REG_SZ vs
-  // String, REG_DWORD vs Dword, REG_DWORD_LITTLE_ENDIAN vs Dword all
-  // compare equal (the spelling differences are CLI-flavor variance,
-  // not real type differences).
+  // Canonicalize both sides via normalizeRegistryValueType so compatibility
+  // inputs such as String, Dword, and REG_DWORD_LITTLE_ENDIAN compare through
+  // the REG_* spellings used by the current upstream schema and examples.
+  // These are spelling aliases, not real type differences.
   //
   // NB: this check intentionally does NOT increment `comparedCount` —
   // valueType is necessary-but-not-sufficient. A real registry audit
@@ -431,6 +403,24 @@ export function compareDesiredActual(
 /** @internal Exported for unit testing only. */
 export function valuesEqual(a: unknown, b: unknown): boolean {
   if (a === b) return true;
+
+  const exactIntegerComparison =
+    typeof a === 'bigint' ||
+    typeof b === 'bigint' ||
+    (typeof a === 'number' &&
+      Number.isInteger(a) &&
+      typeof b === 'string' &&
+      YAML_INTEGER_PATTERN.test(b.trim())) ||
+    (typeof b === 'number' &&
+      Number.isInteger(b) &&
+      typeof a === 'string' &&
+      YAML_INTEGER_PATTERN.test(a.trim()));
+  if (exactIntegerComparison) {
+    const left = toExactInteger(a);
+    const right = toExactInteger(b);
+    return left !== null && right !== null && left === right;
+  }
+
   // Numeric coercion: YAML `value: 1` vs CLI "1". Guard against
   // `Number("999999999999999999999")` collapsing to Infinity, which
   // would silently say two huge but-different strings are equal.
@@ -451,7 +441,7 @@ export function valuesEqual(a: unknown, b: unknown): boolean {
   // Structural compare for nested objects/arrays
   if (typeof a === 'object' && typeof b === 'object' && a !== null && b !== null) {
     try {
-      return JSON.stringify(a) === JSON.stringify(b);
+      return stringifyLosslessJson(a) === stringifyLosslessJson(b);
     } catch {
       return false;
     }
@@ -459,11 +449,27 @@ export function valuesEqual(a: unknown, b: unknown): boolean {
   return false;
 }
 
+function toExactInteger(value: unknown): bigint | null {
+  if (typeof value === 'bigint') return value;
+  if (typeof value === 'number') {
+    return Number.isSafeInteger(value) ? BigInt(value) : null;
+  }
+  if (typeof value === 'string' && YAML_INTEGER_PATTERN.test(value.trim())) {
+    try {
+      return BigInt(value.trim());
+    } catch {
+      return null;
+    }
+  }
+  return null;
+}
+
 function formatVal(v: unknown): string {
   if (v === null || v === undefined) return 'null';
   if (typeof v === 'string') return `"${v}"`;
+  if (typeof v === 'bigint') return v.toString();
   try {
-    return JSON.stringify(v);
+    return stringifyLosslessJson(v) ?? String(v);
   } catch {
     return String(v);
   }
@@ -619,7 +625,7 @@ function evaluateSchemaLocally(
             : 'Value is not set on the device',
       };
     }
-    if (constBranch && actualValue === expected) {
+    if (constBranch && valuesEqual(actualValue, expected)) {
       return { status: 'compliant', reason: `${av} is equal to ${expected}` };
     }
     return {
@@ -640,7 +646,7 @@ function evaluateSchemaLocally(
         reason: `Value is not set on the device (expected ${expected})`,
       };
     }
-    if (actualValue === expected) {
+    if (valuesEqual(actualValue, expected)) {
       return { status: 'compliant', reason: `${av} is equal to ${expected}` };
     }
     return {
@@ -659,7 +665,7 @@ function evaluateSchemaLocally(
         reason: `Value is not set on the device (allowed values: [${allowedStr}])`,
       };
     }
-    if (allowed.includes(actualValue)) {
+    if (allowed.some((value) => valuesEqual(actualValue, value))) {
       return {
         status: 'compliant',
         reason: `${av} is one of the allowed values: [${allowedStr}]`,
@@ -673,8 +679,8 @@ function evaluateSchemaLocally(
 
   // minimum / maximum (covers PasswordLength etc.).
   if (schema.minimum !== undefined || schema.maximum !== undefined) {
-    const min = schema.minimum as number | undefined;
-    const max = schema.maximum as number | undefined;
+    const min = schema.minimum;
+    const max = schema.maximum;
     const rangeStr =
       min !== undefined && max !== undefined
         ? `${min} to ${max}`
@@ -687,11 +693,10 @@ function evaluateSchemaLocally(
         reason: `Value is not set on the device (allowed range: ${rangeStr})`,
       };
     }
-    const n = typeof actualValue === 'number' ? actualValue : Number(actualValue);
-    if (Number.isNaN(n)) {
-      return null;
-    }
-    if ((min !== undefined && n < min) || (max !== undefined && n > max)) {
+    const comparedToMin = min !== undefined ? compareNumericValues(actualValue, min) : 0;
+    const comparedToMax = max !== undefined ? compareNumericValues(actualValue, max) : 0;
+    if (comparedToMin === null || comparedToMax === null) return null;
+    if (comparedToMin < 0 || comparedToMax > 0) {
       return {
         status: 'noncompliant',
         reason: `${av} is outside the allowed range: ${rangeStr}`,
@@ -727,6 +732,19 @@ function evaluateSchemaLocally(
   }
 
   return null;
+}
+
+function compareNumericValues(left: unknown, right: unknown): number | null {
+  const leftInteger = toExactInteger(left);
+  const rightInteger = toExactInteger(right);
+  if (leftInteger !== null && rightInteger !== null) {
+    return leftInteger < rightInteger ? -1 : leftInteger > rightInteger ? 1 : 0;
+  }
+
+  const leftNumber = typeof left === 'number' ? left : Number(left);
+  const rightNumber = typeof right === 'number' ? right : Number(right);
+  if (!Number.isFinite(leftNumber) || !Number.isFinite(rightNumber)) return null;
+  return leftNumber < rightNumber ? -1 : leftNumber > rightNumber ? 1 : 0;
 }
 
 /**

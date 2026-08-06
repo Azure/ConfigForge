@@ -28,6 +28,7 @@
 import { mkdir, readFile, rename, rm, writeFile } from 'fs/promises';
 import path from 'path';
 import os from 'os';
+import { parseLosslessJson, stringifyLosslessJson } from './lossless';
 
 const ENV_OVERRIDE = 'CONFIGFORGE_HOME';
 const auditResultLocks = new Map<string, Promise<void>>();
@@ -134,7 +135,11 @@ export async function writeAuditResult(
       // half-written file. The per-file lock also serializes registration
       // cleanup with a completing audit so cleanup cannot unlink a newer run.
       const tmp = `${file}.tmp-${process.pid}-${Date.now()}`;
-      await writeFile(tmp, JSON.stringify(envelope, null, 2), 'utf-8');
+      const serialized = stringifyLosslessJson(envelope, 2);
+      if (serialized === undefined) {
+        throw new Error('Audit result could not be serialized');
+      }
+      await writeFile(tmp, serialized, 'utf-8');
       // fs.rename on Win replaces the target atomically when both are
       // on the same volume (which they always are — both live in
       // `~/.configforge/audit-results/`).
@@ -175,7 +180,7 @@ export async function readAuditResult(ns: string): Promise<PersistedAuditResult 
     return null;
   }
   try {
-    const parsed = JSON.parse(raw) as Partial<PersistedAuditResult>;
+    const parsed = parseLosslessJson(raw) as Partial<PersistedAuditResult>;
     if (
       !parsed ||
       parsed.version !== 1 ||

@@ -12,12 +12,16 @@ export { applyManifest } from './apply';
 export { getNamespaces, getResources, getResourceByName } from './get';
 export { createNamespace, deleteNamespace, deleteResource } from './manage';
 export { execResource, serializeProperties } from './exec';
-export { resourcesToYaml, parseYamlDocument } from './format';
+export { resourcesToYaml, parseYamlDocument, parseYamlDocumentLossless } from './format';
+export {
+  canonicalizeRegistryValueType,
+  normalizeManifestRegistryTypesInYaml,
+  normalizeRegistryKeyPath,
+} from './registry-types';
 export { sanitizeNamespace, isValidNamespace } from './naming';
 export {
   compareDesiredActual,
   normalizePropertiesForCli,
-  normalizeRegistryKeyPath,
   summarizeCompliance,
 } from './compliance';
 export type { ComplianceResult, ComplianceStatus, DesiredResource } from './compliance';

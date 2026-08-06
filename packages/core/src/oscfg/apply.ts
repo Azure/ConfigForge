@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { writeFile, unlink, mkdir } from 'fs/promises';
+import { readFile, writeFile, unlink, mkdir } from 'fs/promises';
 import { join } from 'path';
 import { tmpdir } from 'os';
 import { randomBytes } from 'crypto';
@@ -36,23 +36,38 @@ export const INLINE_CONTENT_BYTE_LIMIT = 8 * 1024;
 export type ApplyPlan =
   | { mode: 'inline'; args: string[] }
   | { mode: 'file'; args: string[]; content: string; tempFilePlaceholder: string }
+  | {
+      mode: 'source-file';
+      args: string[];
+      sourceFile: string;
+      tempFilePlaceholder: string;
+    }
   | { mode: 'error'; error: string };
 
 /** @internal */
 export function planApply(opts: OscfgApplyOptions): ApplyPlan {
   if (opts.file) {
-    const args = ['apply', '-f', opts.file];
+    const placeholder = '<TEMP_FILE>';
+    const args = ['apply', '-f', placeholder];
     if (opts.namespace) args.push('-n', opts.namespace);
     if (opts.dryRun) args.push('--dry-run');
-    return { mode: 'inline', args };
+    return {
+      mode: 'source-file',
+      args,
+      sourceFile: opts.file,
+      tempFilePlaceholder: placeholder,
+    };
   }
   if (opts.content === undefined) {
     return { mode: 'error', error: 'Either file or content must be provided' };
   }
-  // PR19: Normalize Win32-style REG_* valueTypes (REG_DWORD, REG_SZ, ...)
-  // to the DSC-style names oscfg's Registry provider accepts (Dword,
-  // String, ...). Without this, every Defender / WS / LAPS baseline that
-  // ships REG_* fails on enforce with "os error 87".
+  // Normalize Registry provider syntax at the apply boundary. The current
+  // upstream schema, docs/resources/windows/Registry.md,
+  // examples/registry.osc.yaml, and Microsoft Learn set/test/quickstart files
+  // use REG_* names. Compatibility aliases such as Dword become those
+  // canonical forms, and recognized hive tokens gain the colon OSConfig
+  // requires. Verified provider versions can otherwise report success without
+  // changing the registry value.
   const content = normalizeManifestRegistryTypesInYaml(opts.content);
   const bytes = Buffer.byteLength(content, 'utf8');
   if (bytes <= INLINE_CONTENT_BYTE_LIMIT) {
@@ -92,12 +107,22 @@ export async function applyManifest(
 
   let tempFile: string | null = null;
   let args = plan.args;
-  if (plan.mode === 'file') {
-    tempFile = await writeContentToTempFile(plan.content);
-    args = plan.args.map((a) => (a === plan.tempFilePlaceholder ? tempFile! : a));
-  }
 
   try {
+    if (plan.mode === 'file' || plan.mode === 'source-file') {
+      const sourceContent =
+        plan.mode === 'file' ? plan.content : await readFile(plan.sourceFile, 'utf8');
+      const normalizedContent =
+        plan.mode === 'file'
+          ? sourceContent
+          : normalizeManifestRegistryTypesInYaml(sourceContent);
+      const preparedFile = await writeContentToTempFile(normalizedContent);
+      tempFile = preparedFile;
+      args = plan.args.map((arg) =>
+        arg === plan.tempFilePlaceholder ? preparedFile : arg,
+      );
+    }
+
     const result = await runOscfg<string>(args, {
       timeoutMs: opts.timeoutMs ?? 120_000,
       parseJson: false,
@@ -122,6 +147,13 @@ export async function applyManifest(
       stdout,
       stderr,
     };
+  } catch (err) {
+    return {
+      success: false,
+      data: null,
+      error: err instanceof Error ? err.message : String(err),
+      exitCode: -1,
+    };
   } finally {
     if (tempFile) {
       // Best-effort: temp files are namespaced + random so leftovers from
@@ -143,6 +175,14 @@ async function writeContentToTempFile(content: string): Promise<string> {
   await mkdir(dir, { recursive: true });
   const filename = `apply-${process.pid}-${randomBytes(4).toString('hex')}.osc.yaml`;
   const path = join(dir, filename);
-  await writeFile(path, content, 'utf8');
-  return path;
+  try {
+    await writeFile(path, content, 'utf8');
+    return path;
+  } catch (error) {
+    // writeFile can leave a partial file behind when the write fails after
+    // creation. The caller never receives the path in that case, so cleanup
+    // must happen here rather than in applyManifest's finally block.
+    await unlink(path).catch(() => {});
+    throw error;
+  }
 }

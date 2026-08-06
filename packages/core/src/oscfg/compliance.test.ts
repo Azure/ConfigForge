@@ -370,6 +370,15 @@ describe('valuesEqual: numeric overflow guard (PR17)', () => {
     expect(valuesEqual(0, '0')).toBe(true);
     expect(valuesEqual(42, '42')).toBe(true);
   });
+
+  it('compares unsafe bigint and numeric-string values exactly', () => {
+    expect(valuesEqual(18446744073709551615n, '18446744073709551615')).toBe(true);
+    expect(valuesEqual(18446744073709551615n, '18446744073709551614')).toBe(false);
+  });
+
+  it('does not accept an already-rounded unsafe number as proof of equality', () => {
+    expect(valuesEqual(18446744073709551615n, 18446744073709552000)).toBe(false);
+  });
 });
 
 // ── Registry valueType mismatch (cis-ws2022-ms regression) ───────────────
@@ -406,7 +415,7 @@ describe('compareDesiredActual — Microsoft.Windows/Registry valueType', () => 
     expect(r.reason).toMatch(/valueType/);
   });
 
-  it('treats REG_SZ desired as equivalent to String actual (DSC-flavor variance)', () => {
+  it('treats REG_SZ desired as equivalent to legacy String actual', () => {
     const desired: DesiredResource = {
       name: 'foo',
       type: 'Microsoft.Windows/Registry',
@@ -429,7 +438,7 @@ describe('compareDesiredActual — Microsoft.Windows/Registry valueType', () => 
     expect(r.status).toBe('compliant');
   });
 
-  it('treats REG_DWORD_LITTLE_ENDIAN as equivalent to Dword (canonicalization)', () => {
+  it('treats REG_DWORD_LITTLE_ENDIAN as equivalent to REG_DWORD', () => {
     const desired: DesiredResource = {
       name: 'foo',
       type: 'Microsoft.Windows/Registry',

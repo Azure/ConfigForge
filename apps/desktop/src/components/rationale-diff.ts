@@ -9,7 +9,10 @@
  * or React testing harness. Any logic in the hook that doesn't *need* a
  * React lifecycle should live here.
  */
-import yaml from 'js-yaml';
+import {
+  parseLosslessYaml,
+  stringifyLosslessJson,
+} from '@configforge/core/manifest/lossless';
 
 export interface ResourceDiff {
   /** The `name` field of the resource. Used as the rationale entry's resourceName. */
@@ -23,7 +26,7 @@ export interface ResourceDiff {
 }
 
 /**
- * Cheap structural compare using JSON serialization. We don't need to
+ * Cheap structural compare using lossless JSON serialization. We don't need to
  * pretty-print, just hash by canonical form. `JSON.stringify` is
  * NON-deterministic for object-key order — but here both sides come
  * from `js-yaml` which preserves insertion order, so equal documents
@@ -33,7 +36,7 @@ export interface ResourceDiff {
  * purpose since manifest YAML doesn't admit them anyway.
  */
 function structuralEqual(a: unknown, b: unknown): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
+  return stringifyLosslessJson(a) === stringifyLosslessJson(b);
 }
 
 /**
@@ -48,7 +51,7 @@ export function extractResources(content: string): Array<Record<string, unknown>
   if (typeof content !== 'string' || content.trim() === '') return [];
   let parsed: unknown;
   try {
-    parsed = yaml.load(content);
+    parsed = parseLosslessYaml(content);
   } catch {
     return [];
   }

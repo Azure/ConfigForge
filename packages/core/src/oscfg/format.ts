@@ -2,6 +2,7 @@
 // Licensed under the MIT License.
 
 import yaml from 'js-yaml';
+import { dumpLosslessYaml, parseLosslessYaml } from '../manifest/lossless';
 import type { OscfgResource } from './types';
 
 /**
@@ -34,12 +35,18 @@ export function resourcesToYaml(
   };
   return (
     '# Reconstructed by ConfigForge from oscfg JSON output\n' +
-    yaml.dump(doc, { lineWidth: 120, noRefs: true, quotingType: '"' })
+    dumpLosslessYaml(doc, { lineWidth: 120, noRefs: true, quotingType: '"' })
   );
 }
 
 export function parseYamlDocument(text: string): Record<string, unknown> {
   const parsed = yaml.load(text);
+  if (!parsed || typeof parsed !== 'object') return {};
+  return parsed as Record<string, unknown>;
+}
+
+export function parseYamlDocumentLossless(text: string): Record<string, unknown> {
+  const parsed = parseLosslessYaml(text);
   if (!parsed || typeof parsed !== 'object') return {};
   return parsed as Record<string, unknown>;
 }
