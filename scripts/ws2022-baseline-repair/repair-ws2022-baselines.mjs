@@ -367,7 +367,7 @@ function toUserRightsList(value, ruleName, report) {
 
 function toAccountPolicyValue(value, sampleKind, ruleName, report) {
   if (sampleKind === 'boolean' && typeof value !== 'boolean') {
-    const next = value === 1 || value === '1' || value === true;
+    const next = value === 1 || value === '1';
     report.reshaped.push(
       `${ruleName}: ${JSON.stringify(value)} -> ${next} (AccountPolicy returns booleans)`,
     );

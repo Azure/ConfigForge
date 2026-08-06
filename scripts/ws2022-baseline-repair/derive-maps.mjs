@@ -72,12 +72,6 @@ export const WS2022 = [
 
 const CSP_TYPE = 'Microsoft.Windows/CSP';
 
-const git = (args) => execFileSync('git', args, {
-  cwd: REPO,
-  encoding: 'utf8',
-  maxBuffer: 64 * 1024 * 1024,
-}).trim();
-
 /** Fail loudly if any pinned SHA is not a full SHA reachable from origin/main. */
 export function assertPinnedAndReachable(evidence = EVIDENCE, cwd = REPO) {
   for (const [label, sha] of Object.entries(evidence)) {
@@ -219,7 +213,9 @@ export function deriveSchemaExpressionMap() {
           + `${existing.expression} vs ${out.expression} (${name})`,
         );
       }
-      if (existing.evidence.length < 3) existing.evidence.push(name);
+      if (existing.evidence.length < 3 && !existing.evidence.includes(name)) {
+        existing.evidence.push(name);
+      }
     }
   }
   const entries = [...table.values()].sort(
