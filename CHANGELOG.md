@@ -1,5 +1,26 @@
 # Changelog
 
+## [Unreleased]
+
+### Fixed
+
+- Repair the three bundled Windows Server 2022 role baselines so a standalone
+  (non-MDM-enrolled) server can read every setting. All 71–73 `Policy/Result`
+  CSP rules per profile now use dedicated `AuditPolicy`,
+  `UserRightsAssignment`, and `AccountPolicy` providers, registry hive
+  prefixes are colon-qualified, value types use the canonical `REG_*` names,
+  and ambiguous compliance schemas become explicit CEL expressions with
+  `{value}` templates. Member Server is now 259 resources, Domain Controller
+  244, and Workgroup Member 202; the delta is the composite lockout CSP
+  expanding into three separate account policies. Residual `Policy/Result` CSP
+  rules: zero. OSConfig security baseline support remains officially Windows
+  Server 2025 only, so these profiles are still best-effort — see
+  `scripts/ws2022-baseline-repair/README.md` for the conversion evidence and
+  known limitations. User rights that must be granted to nobody keep a real
+  assertion (`value == null || value.size() == 0`) rather than being downgraded
+  to informational: 7 controls on each member profile and 6 on the domain
+  controller. No assertion downgrades remain in any profile.
+
 ## [0.3.98] - 2026-07-28
 
 > `v0.3.98` is the current Windows/Linux tagged source. Its matching GitHub

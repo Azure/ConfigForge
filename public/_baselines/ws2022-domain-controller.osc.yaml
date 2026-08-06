@@ -4,2811 +4,2624 @@ resources:
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/AccountLockoutPolicy
-          type: string
-          value: ResetAccountLockoutCounterAfter:15, AccountLockoutDuration:15, AccountLockoutThreshold:3
-      schema: {}
+          name: LockoutDuration
+          value: 15
+      expression: 'true'
+      template: The value {value} is informational for this control.
+  - name: AccountLockoutPolicy_LockoutThreshold
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: LockoutThreshold
+          value: 3
+      expression: 'true'
+      template: The value {value} is informational for this control.
+  - name: AccountLockoutPolicy_LockoutReset
+    type: Microsoft.OSConfig/Test
+    properties:
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: LockoutReset
+          value: 15
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: AllowAnonymousSIDOrNameTranslation
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/NetworkAccess_AllowAnonymousSIDOrNameTranslation
-          type: integer
-          value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+          name: EnableAnonymousNameTranslation
+          value: false
+      expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: AllowedToFormatAndEjectRemovableMedia
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
           valueName: AllocateDASD
-          valueType: String
+          valueType: REG_SZ
           value: '0'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: AllowICMPRedirectsToOverrideOSPFGeneratedRoutes
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\Tcpip\Parameters
           valueName: EnableICMPRedirect
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: AllowLocalSystemNULLSessionFallback
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
           valueName: AllowNullSessionFallback
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: AllowLocalSystemToUseComputerIdentityForNTLM
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa
           valueName: UseMachineId
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AllowSystemToBeShutDownWithoutHavingToLogOn
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: ShutdownWithoutLogon
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: AllowTheComputerToIgnoreNetBIOSNameReleaseRequestsExceptFromWINSServers
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Netbt\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\System\CurrentControlSet\Services\Netbt\Parameters
           valueName: NoNameReleaseOnDemand
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AllowUIAccessApplicationsToPromptForElevation
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: EnableUIADesktopToggle
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: AmountOfIdleTimeRequiredBeforeSuspendingSession
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
           valueName: AutoDisconnect
-          valueType: Dword
+          valueType: REG_DWORD
           value: 15
-      schema:
-        minimum: 1
-        maximum: 15
+      expression: (value != null && value >= 1 && value <= 15)
+      template: The value {value} must be between 1 and 15.
   - name: ApplicationManagementMSIAllowUserControlOverInstall
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Installer
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Installer
           valueName: EnableUserControl
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: AppRuntimeAllowMicrosoftAccountsToBeOptional
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: MSAOptional
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditAccountLockout
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditAccountLockout
-          type: integer
+          subcategory: '{0CCE9217-69AE-11D9-BED3-505054503030}'
           value: 2
-      schema:
-        minimum: 2
+      expression: (value != null && value >= 2)
+      template: The value {value} must be greater than or equal to 2.
   - name: AuditAuthenticationPolicyChange
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditAuthenticationPolicyChange
-          type: integer
+          subcategory: '{0CCE9230-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditAuthorizationPolicyChange
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditAuthorizationPolicyChange
-          type: integer
+          subcategory: '{0CCE9231-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditChangeCategoryOther
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditOtherPolicyChangeEvents
-          type: integer
+          subcategory: '{0CCE9234-69AE-11D9-BED3-505054503030}'
           value: 2
-      schema:
-        minimum: 2
+      expression: (value != null && value >= 2)
+      template: The value {value} must be greater than or equal to 2.
   - name: AuditComputerAccountManagement
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditComputerAccountManagement
-          type: integer
+          subcategory: '{0CCE9236-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditDetailedFileShare
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditDetailedFileShare
-          type: integer
+          subcategory: '{0CCE9244-69AE-11D9-BED3-505054503030}'
           value: 2
-      schema:
-        minimum: 2
+      expression: (value != null && value >= 2)
+      template: The value {value} must be greater than or equal to 2.
   - name: AuditDirectoryServiceAccess
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceAccess
-          type: integer
+          subcategory: '{0CCE923B-69AE-11D9-BED3-505054503030}'
           value: 2
-      schema:
-        minimum: 2
+      expression: (value != null && value >= 2)
+      template: The value {value} must be greater than or equal to 2.
   - name: AuditDirectoryServiceChanges
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceChanges
-          type: integer
+          subcategory: '{0CCE923C-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditDirectoryServiceReplication
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/DSAccess_AuditDirectoryServiceReplication
-          type: integer
+          subcategory: '{0CCE923D-69AE-11D9-BED3-505054503030}'
           value: 0
-      schema:
-        minimum: 0
+      expression: (value != null && value >= 0)
+      template: The value {value} must be greater than or equal to 0.
   - name: AuditDistributionGroupManagement
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditDistributionGroupManagement
-          type: integer
+          subcategory: '{0CCE9238-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditFileShare
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditFileShare
-          type: integer
+          subcategory: '{0CCE9224-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        oneOf:
-          - const: 3
-          - type: 'null'
+      expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditGroupMembership
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditGroupMembership
-          type: integer
+          subcategory: '{0CCE9249-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditIPsecDriver
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditIPsecDriver
-          type: integer
+          subcategory: '{0CCE9213-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        minimum: 3
+      expression: (value != null && value >= 3)
+      template: The value {value} must be greater than or equal to 3.
   - name: AuditKerberosAuthenticationService
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogon_AuditKerberosAuthenticationService
-          type: integer
+          subcategory: '{0CCE9242-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        minimum: 3
+      expression: (value != null && value >= 3)
+      template: The value {value} must be greater than or equal to 3.
   - name: AuditLogoff
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditLogoff
-          type: integer
+          subcategory: '{0CCE9216-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditLogon
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditLogon
-          type: integer
+          subcategory: '{0CCE9215-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        oneOf:
-          - const: 3
-          - type: 'null'
+      expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditMPSSVCRuleLevelPolicyChange
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditMPSSVCRuleLevelPolicyChange
-          type: integer
+          subcategory: '{0CCE9232-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        oneOf:
-          - const: 3
-          - type: 'null'
+      expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditOtherAccountManagementEvents
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditOtherAccountManagementEvents
-          type: integer
+          subcategory: '{0CCE923A-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditOtherLogonLogoffEvents
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditOtherLogonLogoffEvents
-          type: integer
+          subcategory: '{0CCE921C-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        oneOf:
-          - const: 3
-          - type: 'null'
+      expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditOtherObjectAccessEvents
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditOtherObjectAccessEvents
-          type: integer
+          subcategory: '{0CCE9227-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        oneOf:
-          - const: 3
-          - type: 'null'
+      expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditOtherSystemEvents
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditOtherSystemEvents
-          type: integer
+          subcategory: '{0CCE9214-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        oneOf:
-          - const: 3
-          - type: 'null'
+      expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditPnPExternalDevice
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/DetailedTracking_AuditPNPActivity
-          type: integer
+          subcategory: '{0CCE9248-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditPolicyChange
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PolicyChange_AuditPolicyChange
-          type: integer
+          subcategory: '{0CCE922F-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditProcessCreatedOrStarted
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/DetailedTracking_AuditProcessCreation
-          type: integer
+          subcategory: '{0CCE922B-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditRemovableStorage
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/ObjectAccess_AuditRemovableStorage
-          type: integer
+          subcategory: '{0CCE9245-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        oneOf:
-          - const: 3
-          - type: 'null'
+      expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditSecurityGroupManagement
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditSecurityGroupManagement
-          type: integer
+          subcategory: '{0CCE9237-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditSecurityStateChange
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditSecurityStateChange
-          type: integer
+          subcategory: '{0CCE9210-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditSecuritySystemExtension
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditSecuritySystemExtension
-          type: integer
+          subcategory: '{0CCE9211-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditSensitivePrivilegeUse
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/PrivilegeUse_AuditSensitivePrivilegeUse
-          type: integer
+          subcategory: '{0CCE9228-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        oneOf:
-          - const: 3
-          - type: 'null'
+      expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditSettingsIncludeCmdLine
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Audit
           valueName: ProcessCreationIncludeCmdLine_Enabled
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AuditSpecialLogon
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountLogonLogoff_AuditSpecialLogon
-          type: integer
+          subcategory: '{0CCE921B-69AE-11D9-BED3-505054503030}'
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: AuditSystemIntegrity
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/System_AuditSystemIntegrity
-          type: integer
+          subcategory: '{0CCE9212-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        oneOf:
-          - const: 3
-          - type: 'null'
+      expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AuditUserAccountManagement
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AuditPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/Audit/AccountManagement_AuditUserAccountManagement
-          type: integer
+          subcategory: '{0CCE9235-69AE-11D9-BED3-505054503030}'
           value: 3
-      schema:
-        oneOf:
-          - const: 3
-          - type: 'null'
+      expression: ((((value == 3)) || ((value == null))))
+      template: The value {value} must be one of 3, (not set).
   - name: AutoplayDisallowAutoplayForNonVolumeDevices
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Explorer
           valueName: NoAutoplayfornonVolume
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AutoplaySetDefaultAutoRunBehavior
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
           valueName: NoAutorun
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: AutoplayTurnOffAutoPlay
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
           valueName: NoDriveTypeAutoRun
-          valueType: Dword
+          valueType: REG_DWORD
           value: 255
-      schema:
-        oneOf:
-          - const: 255
-          - type: 'null'
+      expression: ((((value == 255)) || ((value == null))))
+      template: The value {value} must be one of 255, (not set).
   - name: BehaviorOfTheElevationPromptForAdministrators
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: ConsentPromptBehaviorAdmin
-          valueType: Dword
+          valueType: REG_DWORD
           value: 2
-      schema:
-        minimum: 1
-        maximum: 2
+      expression: (value != null && value >= 1 && value <= 2)
+      template: The value {value} must be between 1 and 2.
   - name: BehaviorOfTheElevationPromptForStandardUsers
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: ConsentPromptBehaviorUser
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: ConfigureSMBV1Server
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters
           valueName: SMB1
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ConnectivityDisableDownloadingOfPrintDriversOverHTTP
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Printers
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Printers
           valueName: DisableWebPnPDownload
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: ConnectivityProhibitInstallationAndConfigurationOfNetworkBridge
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Network Connections
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Network Connections
           valueName: NC_AllowNetBridge_NLA
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: CredentialProvidersAllowPINLogon
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\System
           valueName: AllowDomainPINLogon
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: CredentialsUIDisablePasswordReveal
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CredUI
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\CredUI
           valueName: DisablePasswordReveal
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: CredentialsUIEnumerateAdministrators
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\CredUI
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\CredUI
           valueName: EnumerateAdministrators
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: CryptographyAllowedKerberosEncryptionTypes
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System\Kerberos\Parameters
           valueName: SupportedEncryptionTypes
-          valueType: Dword
+          valueType: REG_DWORD
           value: 2147483640
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: CryptographyForceStrongKeyProtection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Cryptography
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Cryptography
           valueName: ForceKeyProtection
-          valueType: Dword
+          valueType: REG_DWORD
           value: 2
-      schema:
-        oneOf:
-          - const: 2
-          - type: 'null'
+      expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: DetectApplicationInstallationsAndPromptForElevation
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: EnableInstallerDetection
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DeviceInstallationPreventDeviceMetadataFromNetwork
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Device Metadata
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Device Metadata
           valueName: PreventDeviceMetadataFromNetwork
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DeviceLockClearTextPassword
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/ClearTextPassword
-          type: integer
-          value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+          name: EnablePasswordReversibleEncryption
+          value: false
+      expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: DeviceLockMaximumPasswordAge
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/MaximumPasswordAge
-          type: integer
+          name: MaximumPasswordAge
           value: 42
-      schema:
-        minimum: 1
-        maximum: 70
+      expression: (value != null && value >= 1 && value <= 70)
+      template: The value {value} must be between 1 and 70.
   - name: DeviceLockMinDevicePasswordLength
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/MinimumPasswordLength
-          type: integer
+          name: MinimumPasswordLength
           value: 14
-      schema:
-        minimum: 14
+      expression: (value != null && value >= 14)
+      template: The value {value} must be greater than or equal to 14.
   - name: DeviceLockMinimumPasswordAge
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/MinimumPasswordAge
-          type: integer
+          name: MinimumPasswordAge
           value: 1
-      schema:
-        minimum: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: DeviceLockPasswordComplexity
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/PasswordComplexity
-          type: integer
-          value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+          name: EnforcePasswordComplexity
+          value: true
+      expression: ((((value == true)) || ((value == null))))
+      template: The value {value} must be one of true, (not set).
   - name: DeviceLockPasswordHistorySize
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/DeviceLock/PasswordHistorySize
-          type: integer
+          name: PasswordHistoryLength
           value: 24
-      schema:
-        minimum: 24
+      expression: (value != null && value >= 24)
+      template: The value {value} must be greater than or equal to 24.
   - name: DigitallyEncryptOrSignSecureChannelDataAlways
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
           valueName: RequireSignOrSeal
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DigitallyEncryptSecureChannelDataWhenPossible
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
           valueName: SealSecureChannel
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DigitallySignCommunicationsAlwaysClient
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
           valueName: RequireSecuritySignature
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DigitallySignCommunicationsAlwaysServer
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
           valueName: RequireSecuritySignature
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DigitallySignCommunicationsIfClientAgrees
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
           valueName: EnableSecuritySignature
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        minimum: 0
-        maximum: 1
+      expression: (value != null && value >= 0 && value <= 1)
+      template: The value {value} must be between 0 and 1.
   - name: DigitallySignCommunicationsIfServerAgrees
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
           valueName: EnableSecuritySignature
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DigitallySignSecureChannelDataWhenPossible
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
           valueName: SignSecureChannel
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DisableLocalAccountPasswordChanges
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
           valueName: DisablePasswordChange
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DisconnectClientsWhenLogonHoursExpire
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
           valueName: EnableForcedLogoff
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: DoNotDisplayLastSignedIn
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: DontDisplayLastUserName
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: DoNotRequireCTRLALTDEL
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: DisableCAD
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EnableGuestAccountStatus
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_EnableGuestAccountStatus
-          type: integer
-          value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+          name: EnableGuestAccount
+          value: false
+      expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: EnableStructuredExceptionHandlingOverwriteProtection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager\kernel
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Session Manager\kernel
           valueName: DisableExceptionChainValidation
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: EventLogChannelSecurityLogRetention
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Security
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Security
           valueName: Retention
-          valueType: String
+          valueType: REG_SZ
           value: '0'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EventLogChannelSetupLogMaxSize
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Setup
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Setup
           valueName: MaxSize
-          valueType: Dword
+          valueType: REG_DWORD
           value: 32768
-      schema:
-        minimum: 32768
+      expression: (value != null && value >= 32768)
+      template: The value {value} must be greater than or equal to 32768.
   - name: EventLogChannelSetupLogRetention
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Setup
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Setup
           valueName: Retention
-          valueType: String
+          valueType: REG_SZ
           value: '0'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EventLogChannelSystemLogRetention
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\EventLog\System
           valueName: Retention
-          valueType: String
+          valueType: REG_SZ
           value: '0'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EventLogPercentageThresholdSecurityEventLogMaximumSizeReached
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Eventlog\Security
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\Eventlog\Security
           valueName: WarningLevel
-          valueType: Dword
+          valueType: REG_DWORD
           value: 90
-      schema:
-        maximum: 90
+      expression: (value != null && value <= 90)
+      template: The value {value} must be less than or equal to 90.
   - name: EventLogServiceControlEventLogBehavior
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Application
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Application
           valueName: Retention
-          valueType: String
+          valueType: REG_SZ
           value: '0'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EventLogServiceSpecifyMaximumFileSizeApplicationLog
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Application
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Application
           valueName: MaxSize
-          valueType: Dword
+          valueType: REG_DWORD
           value: 32768
-      schema:
-        minimum: 32768
+      expression: (value != null && value >= 32768)
+      template: The value {value} must be greater than or equal to 32768.
   - name: EventLogServiceSpecifyMaximumFileSizeSecurityLog
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\Security
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\EventLog\Security
           valueName: MaxSize
-          valueType: Dword
+          valueType: REG_DWORD
           value: 196608
-      schema:
-        minimum: 196608
+      expression: (value != null && value >= 196608)
+      template: The value {value} must be greater than or equal to 196608.
   - name: EventLogServiceSpecifyMaximumFileSizeSystemLog
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\EventLog\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\EventLog\System
           valueName: MaxSize
-          valueType: Dword
+          valueType: REG_DWORD
           value: 32768
-      schema:
-        minimum: 32768
+      expression: (value != null && value >= 32768)
+      template: The value {value} must be greater than or equal to 32768.
   - name: ExperienceAllowWindowsConsumerFeatures
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\CloudContent
           valueName: DisableWindowsConsumerFeatures
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ExperienceDisableConsumerAccountStateContent
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\CloudContent
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\CloudContent
           valueName: DisableConsumerAccountStateContent
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: ExperienceDoNotShowFeedbackNotifications
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DataCollection
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\DataCollection
           valueName: DoNotShowFeedbackNotifications
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FileExplorerTurnOffHeapTerminationOnCorruption
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Explorer
           valueName: NoHeapTerminationOnCorruption
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: FirewallDomainProfileApplyLocalConnectionSecurityRules
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
           valueName: AllowLocalIPsecPolicyMerge
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileApplyLocalFirewallRules
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
           valueName: AllowLocalPolicyMerge
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: FirewallDomainProfileDisplayNotification
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
           valueName: DisableNotifications
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileInboundConnection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
           valueName: DefaultInboundAction
-          valueType: Dword
-      schema:
-        const: 1
+          valueType: REG_DWORD
+      expression: (value == 1)
+      template: The value {value} must be 1.
   - name: FirewallDomainProfileLogDroppedPackets
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
           valueName: LogDroppedPackets
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileLogFileMaxSize
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
           valueName: LogFileSize
-          valueType: Dword
+          valueType: REG_DWORD
           value: 16384
-      schema:
-        minimum: 16384
+      expression: (value != null && value >= 16384)
+      template: The value {value} must be greater than or equal to 16384.
   - name: FirewallDomainProfileLogFileName
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
           valueName: LogFilePath
-          valueType: String
+          valueType: REG_SZ
           value: '%SystemRoot%\System32\logfiles\firewall\domainfw.log'
-      schema:
-        oneOf:
-          - const: '%SystemRoot%\System32\logfiles\firewall\domainfw.log'
-          - type: 'null'
+      expression: ((((value == "%SystemRoot%\\System32\\logfiles\\firewall\\domainfw.log")) || ((value == null))))
+      template: The value {value} must be one of "%SystemRoot%\\System32\\logfiles\\firewall\\domainfw.log", (not set).
   - name: FirewallDomainProfileLogSuccessfulConnections
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile\Logging
           valueName: LogSuccessfulConnections
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileOutboundConnection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
           valueName: DefaultOutboundAction
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: FirewallDomainProfileState
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
           valueName: EnableFirewall
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileUnicastResponse
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\WindowsFirewall\DomainProfile
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Policies\Microsoft\WindowsFirewall\DomainProfile
           valueName: DisableUnicastResponsesToMulticastBroadcast
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: FirewallPrivateProfileApplyLocalConnectionSecurityRules
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
           valueName: AllowLocalIPsecPolicyMerge
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileApplyLocalFirewallRules
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
           valueName: AllowLocalPolicyMerge
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: FirewallPrivateProfileDisplayNotification
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
           valueName: DisableNotifications
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileInboundConnection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
           valueName: DefaultInboundAction
-          valueType: Dword
-      schema:
-        const: 1
+          valueType: REG_DWORD
+      expression: (value == 1)
+      template: The value {value} must be 1.
   - name: FirewallPrivateProfileLogDroppedPackets
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
           valueName: LogDroppedPackets
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileLogFileMaxSize
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
           valueName: LogFileSize
-          valueType: Dword
+          valueType: REG_DWORD
           value: 16384
-      schema:
-        minimum: 16384
+      expression: (value != null && value >= 16384)
+      template: The value {value} must be greater than or equal to 16384.
   - name: FirewallPrivateProfileLogFileName
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
           valueName: LogFilePath
-          valueType: String
+          valueType: REG_SZ
           value: '%SystemRoot%\System32\logfiles\firewall\privatefw.log'
-      schema:
-        oneOf:
-          - const: '%SystemRoot%\System32\logfiles\firewall\privatefw.log'
-          - type: 'null'
+      expression: ((((value == "%SystemRoot%\\System32\\logfiles\\firewall\\privatefw.log")) || ((value == null))))
+      template: The value {value} must be one of "%SystemRoot%\\System32\\logfiles\\firewall\\privatefw.log", (not set).
   - name: FirewallPrivateProfileLogSuccessfulConnections
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile\Logging
           valueName: LogSuccessfulConnections
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileOutboundConnection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
           valueName: DefaultOutboundAction
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: FirewallPrivateProfileState
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
           valueName: EnableFirewall
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileUnicastResponse
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Policies\Microsoft\WindowsFirewall\PrivateProfile
           valueName: DisableUnicastResponsesToMulticastBroadcast
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: FirewallPublicProfileApplyLocalConnectionSecurityRules
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
           valueName: AllowLocalIPsecPolicyMerge
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileApplyLocalFirewallRules
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
           valueName: AllowLocalPolicyMerge
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: FirewallPublicProfileDisplayNotification
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
           valueName: DisableNotifications
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileInboundConnection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
           valueName: DefaultInboundAction
-          valueType: Dword
-      schema:
-        const: 1
+          valueType: REG_DWORD
+      expression: (value == 1)
+      template: The value {value} must be 1.
   - name: FirewallPublicProfileLogDroppedPackets
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
           valueName: LogDroppedPackets
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileLogFileMaxSize
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
           valueName: LogFileSize
-          valueType: Dword
+          valueType: REG_DWORD
           value: 16384
-      schema:
-        minimum: 16384
+      expression: (value != null && value >= 16384)
+      template: The value {value} must be greater than or equal to 16384.
   - name: FirewallPublicProfileLogFileName
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
           valueName: LogFilePath
-          valueType: String
+          valueType: REG_SZ
           value: '%SystemRoot%\System32\logfiles\firewall\publicfw.log'
-      schema:
-        oneOf:
-          - const: '%SystemRoot%\System32\logfiles\firewall\publicfw.log'
-          - type: 'null'
+      expression: ((((value == "%SystemRoot%\\System32\\logfiles\\firewall\\publicfw.log")) || ((value == null))))
+      template: The value {value} must be one of "%SystemRoot%\\System32\\logfiles\\firewall\\publicfw.log", (not set).
   - name: FirewallPublicProfileLogSuccessfulConnections
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile\Logging
           valueName: LogSuccessfulConnections
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileOutboundConnection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
           valueName: DefaultOutboundAction
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: FirewallPublicProfileState
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
           valueName: EnableFirewall
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileUnicastResponse
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\WindowsFirewall\PublicProfile
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Policies\Microsoft\WindowsFirewall\PublicProfile
           valueName: DisableUnicastResponsesToMulticastBroadcast
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: ForceAuditPolicySubcategorySettingsToOverrideAuditPolicyCategorySettings
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa
           valueName: SCENoApplyLegacyAuditPolicy
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: GroupPolicyDisableBackgroundPolicy
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: DisableBkGndGroupPolicy
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: GroupPolicyEnableCDP
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\System
           valueName: EnableCdp
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: GroupPolicyNoBackgroundPolicy
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2}
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2}
           valueName: NoBackgroundPolicy
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: GroupPolicyNoGPOListChanges
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2}
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Group Policy\{35378EAC-683F-11D2-A89A-00C04FBBCFA2}
           valueName: NoGPOListChanges
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: ICMNC_ExitOnISP
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Internet Connection Wizard
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Internet Connection Wizard
           valueName: ExitOnMSICW
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: IPSourceRoutingProtectionLevel
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Tcpip\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\System\CurrentControlSet\Services\Tcpip\Parameters
           valueName: DisableIPSourceRouting
-          valueType: Dword
+          valueType: REG_DWORD
           value: 2
-      schema:
-        oneOf:
-          - const: 2
-          - type: 'null'
+      expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: IPv6SourceRoutingProtectionLevel
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Tcpip6\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\System\CurrentControlSet\Services\Tcpip6\Parameters
           valueName: DisableIPSourceRouting
-          valueType: Dword
+          valueType: REG_DWORD
           value: 2
-      schema:
-        oneOf:
-          - const: 2
-          - type: 'null'
+      expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: LANManagerAuthenticationLevel
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa
           valueName: LmCompatibilityLevel
-          valueType: Dword
+          valueType: REG_DWORD
           value: 5
-      schema:
-        oneOf:
-          - const: 5
-          - type: 'null'
+      expression: ((((value == 5)) || ((value == null))))
+      template: The value {value} must be one of 5, (not set).
   - name: LDAPClientSigningRequirements
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LDAP
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LDAP
           valueName: LDAPClientIntegrity
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        minimum: 1
-        maximum: 2
+      expression: (value != null && value >= 1 && value <= 2)
+      template: The value {value} must be between 1 and 2.
   - name: LetEveryonePermissionsApplyToAnonymousUsers
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa
           valueName: EveryoneIncludesAnonymous
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: LimitLocalAccountUseOfBlankPasswordsToConsoleLogonOnly
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa
           valueName: LimitBlankPasswordUse
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: LogonBlockUserFromShowingAccountDetailsOnSignin
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Policies\Microsoft\Windows\System
           valueName: BlockUserFromShowingAccountDetailsOnSignin
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: LogonDontEnumerateConnectedUsers
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows\System
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Policies\Microsoft\Windows\System
           valueName: DontEnumerateConnectedUsers
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: LsaNoLMHash
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa
           valueName: NoLMHash
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: MachineInactivityLimit
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: InactivityTimeoutSecs
-          valueType: Dword
+          valueType: REG_DWORD
           value: 900
-      schema:
-        minimum: 1
-        maximum: 900
+      expression: (value != null && value >= 1 && value <= 900)
+      template: The value {value} must be between 1 and 900.
   - name: MaximumMachineAccountPasswordAge
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Netlogon\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\System\CurrentControlSet\Services\Netlogon\Parameters
           valueName: MaximumPasswordAge
-          valueType: Dword
+          valueType: REG_DWORD
           value: 30
-      schema:
-        minimum: 1
-        maximum: 30
+      expression: (value != null && value >= 1 && value <= 30)
+      template: The value {value} must be between 1 and 30.
   - name: MessageTextUserLogon
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: LegalNoticeText
-          valueType: String
-      schema: {}
+          valueType: REG_SZ
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: MessageTextUserLogonTitle
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: LegalNoticeCaption
-          valueType: String
-      schema: {}
+          valueType: REG_SZ
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: MinimumSessionSecurityForNTLMSSPBasedClients
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
           valueName: NTLMMinClientSec
-          valueType: Dword
+          valueType: REG_DWORD
           value: 537395200
-      schema:
-        oneOf:
-          - const: 537395200
-          - type: 'null'
+      expression: ((((value == 537395200)) || ((value == null))))
+      template: The value {value} must be one of 537395200, (not set).
   - name: MinimumSessionSecurityForNTLMSSPBasedServers
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
           valueName: NTLMMinServerSec
-          valueType: Dword
+          valueType: REG_DWORD
           value: 537395200
-      schema:
-        oneOf:
-          - const: 537395200
-          - type: 'null'
+      expression: ((((value == 537395200)) || ((value == null))))
+      template: The value {value} must be one of 537395200, (not set).
   - name: NetBTNodeTypeConfiguration
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\NetBT\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\NetBT\Parameters
           valueName: NodeType
-          valueType: Dword
+          valueType: REG_DWORD
           value: 2
-      schema:
-        oneOf:
-          - const: 2
-          - type: 'null'
+      expression: ((((value == 2)) || ((value == null))))
+      template: The value {value} must be one of 2, (not set).
   - name: NetworkConnectionsNC_ShowSharedAccessUI
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Network Connections
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Network Connections
           valueName: NC_ShowSharedAccessUI
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: NetworkProviderHardenedPathsNETLOGON
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths
           valueName: \\*\NETLOGON
-          valueType: Dword
-          value:
-            - RequireMutualAuthentication=1
-            - RequireIntegrity=1
-      schema: {}
+          valueType: REG_SZ
+          value: RequireMutualAuthentication=1, RequireIntegrity=1
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: NetworkProviderHardenedPathsSYSVOL
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\NetworkProvider\HardenedPaths
           valueName: \\*\SYSVOL
-          valueType: Dword
-          value:
-            - RequireMutualAuthentication=1
-            - RequireIntegrity=1
-      schema: {}
+          valueType: REG_SZ
+          value: RequireMutualAuthentication=1, RequireIntegrity=1
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: OnlyElevateUIAccessApplicationsThatAreInstalledInSecureLocations
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: EnableSecureUIAPaths
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: PowerShellExecutionPolicyEnableTranscripting
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\Transcription
           valueName: EnableTranscripting
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: PreventUsersFromInstallingPrinterDriversWhenConnectingToSharedPrinters
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers
           valueName: AddPrinterDrivers
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: PrintersRestrictDriverInstallationToAdministrators
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows NT\Printers\PointAndPrint
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Policies\Microsoft\Windows NT\Printers\PointAndPrint
           valueName: RestrictDriverInstallationToAdministrators
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: PrivacyAllowInputPersonalization
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\InputPersonalization
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\InputPersonalization
           valueName: AllowInputPersonalization
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: PromptUserToChangePasswordBeforeExpiration
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Microsoft\Windows NT\CurrentVersion\Winlogon
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Microsoft\Windows NT\CurrentVersion\Winlogon
           valueName: PasswordExpiryWarning
-          valueType: Dword
+          valueType: REG_DWORD
           value: 14
-      schema:
-        minimum: 5
-        maximum: 14
+      expression: (value != null && value >= 5 && value <= 14)
+      template: The value {value} must be between 5 and 14.
   - name: RDPPortNumber
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp
+          keyPath: HKEY_LOCAL_MACHINE:\System\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp
           valueName: PortNumber
-          valueType: Dword
+          valueType: REG_DWORD
           value: 3389
-      schema:
-        oneOf:
-          - const: 3389
-          - type: 'null'
+      expression: ((((value == 3389)) || ((value == null))))
+      template: The value {value} must be one of 3389, (not set).
   - name: RemoteAssistanceSolicitedRemoteAssistance
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
           valueName: fAllowToGetHelp
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: RemoteAssistanceUnsolicitedRemoteAssistance
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
           valueName: fAllowUnsolicited
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RemoteDesktopServicesClientConnectionEncryptionLevel
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
           valueName: MinEncryptionLevel
-          valueType: Dword
+          valueType: REG_DWORD
           value: 3
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RemoteDesktopServicesDoNotAllowDriveRedirection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
           valueName: fDisableCdm
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RemoteDesktopServicesDoNotAllowPasswordSaving
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
           valueName: DisablePasswordSaving
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RemoteDesktopServicesPromptForPasswordUponConnection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
           valueName: fPromptForPassword
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RemoteDesktopServicesRequireSecureRPCCommunication
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
           valueName: fEncryptRPCTraffic
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RemotelyAccessibleRegistryPaths
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedExactPaths
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\SecurePipeServers\Winreg\AllowedExactPaths
           valueName: Machine
-          valueType: Dword
+          valueType: REG_MULTI_SZ
           value:
             - System\CurrentControlSet\Control\ProductOptions
             - System\CurrentControlSet\Control\Server Applications
             - Software\Microsoft\Windows NT\CurrentVersion
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RemoteManagementAllowBasicAuthentication_Client
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client
           valueName: AllowBasic
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RemoteManagementAllowUnencryptedTraffic_Client
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client
           valueName: AllowUnencryptedTraffic
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RemoteManagementDisallowDigestAuthentication
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Client
           valueName: AllowDigest
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: RemoteManagementDisallowStoringOfRunAsCredentials
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\WinRM\Service
           valueName: DisableRunAs
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RenameAdministratorAccount
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_RenameAdministratorAccount
-          type: string
-      schema: {}
+          name: AdministratorAccountName
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RenameGuestAccount
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/AccountPolicy
         properties:
-          path: ./Vendor/MSFT/Policy/Result/LocalPoliciesSecurityOptions/Accounts_RenameGuestAccount
-          type: string
-      schema: {}
+          name: GuestAccountName
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RequireCaseInsensitivityForNonWindowsSubsystems
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Control\Session Manager\Kernel
+          keyPath: HKEY_LOCAL_MACHINE:\System\CurrentControlSet\Control\Session Manager\Kernel
           valueName: ObCaseInsensitive
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RequireStrongSessionKey
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\Netlogon\Parameters
           valueName: RequireStrongKey
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RestrictAnonymousAccessToNamedPipesAndShares
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
           valueName: RestrictNullSessAccess
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: RSSDisableEnclosureDownload
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Internet Explorer\Feeds
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Internet Explorer\Feeds
           valueName: DisableEnclosureDownload
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: RunAllAdministratorsInAdminApprovalMode
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: EnableLUA
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: SafeDllSearchMode
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Session Manager
           valueName: SafeDllSearchMode
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: SearchAllowIndexingEncryptedStoresOrItems
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Windows Search
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Windows Search
           valueName: AllowIndexingEncryptedStoresOrItems
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: SendUnencryptedPasswordToThirdPartySMBServers
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LanmanWorkstation\Parameters
           valueName: EnablePlainTextPassword
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: SharesThatCanBeAccessedAnonymously
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\LanManServer\Parameters
           valueName: NullSessionShares
-          valueType: Dword
+          valueType: REG_MULTI_SZ
           value: []
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: SharingAndSecurityModelForLocalAccounts
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa
           valueName: ForceGuest
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ShellDataExecutionPrevention
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\Explorer
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\Explorer
           valueName: NoDataExecutionPrevention
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: ShutdownSystemImmediatelyIfUnableToLogSecurityAudits
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Lsa
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Lsa
           valueName: CrashOnAuditFail
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: SmartScreenEnableSmartScreenInShell
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\System
           valueName: EnableSmartScreen
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: StrengthenDefaultPermissionsOfInternalSystemObjects
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Control\Session Manager
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Control\Session Manager
           valueName: ProtectionMode
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: SwitchToTheSecureDesktopWhenPromptingForElevation
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: PromptOnSecureDesktop
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: SystemAllowTelemetry
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\DataCollection
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\DataCollection
           valueName: AllowTelemetry
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        minimum: 0
-        maximum: 1
+      expression: (value != null && value >= 0 && value <= 1)
+      template: The value {value} must be between 0 and 1.
   - name: SystemBootStartDriverInitialization
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Policies\EarlyLaunch
+          keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Policies\EarlyLaunch
           valueName: DriverLoadPolicy
-          valueType: Dword
+          valueType: REG_DWORD
           value: 3
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: SystemLogonCacheSize
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon
           valueName: CachedLogonsCount
-          valueType: String
+          valueType: REG_SZ
           value: '4'
-      schema:
-        minimum: 0
-        maximum: 4
+      expression: (value != null && value.matches("^-?[0-9]+$") && int(value) >= 0 && int(value) <= 4)
+      template: The value {value} must be between 0 and 4.
   - name: SystemMinimizeInternetConnections
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\WcmSvc\GroupPolicy
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\WcmSvc\GroupPolicy
           valueName: fMinimizeConnections
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: SystemWindowsSearchService
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\System\CurrentControlSet\Services\Wsearch
+          keyPath: HKEY_LOCAL_MACHINE:\System\CurrentControlSet\Services\Wsearch
           valueName: Start
-          valueType: Dword
+          valueType: REG_DWORD
           value: 4
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: TerminalServerTS_TEMP_DELETE
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
           valueName: DeleteTempDirsOnExit
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: TerminalServerTS_TEMP_PER_SESSION
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
           valueName: PerSessionTempDir
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: TerminalServerTS_USER_AUTHENTICATION_POLICY
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows NT\Terminal Services
           valueName: UserAuthentication
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UseAdminApprovalMode
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: FilterAdministratorToken
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: UserRightsAccessCredentialManagerAsTrustedCaller
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/AccessCredentialManagerAsTrustedCaller
-          type: string
-          value: ''
-      schema:
-        oneOf:
-          - const: ''
-          - type: 'null'
+          name: SeTrustedCredManAccessPrivilege
+          value: []
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsActAsPartOfTheOperatingSystem
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ActAsPartOfTheOperatingSystem
-          type: string
-          value: ''
-      schema:
-        oneOf:
-          - const: ''
-          - type: 'null'
+          name: SeTcbPrivilege
+          value: []
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsAdjustMemoryQuotasForProcess
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/AdjustMemoryQuotasForProcess
-          type: array
+          name: SeIncreaseQuotaPrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-19'
             - '*S-1-5-20'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsAllowLogOnThroughRemoteDesktop
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/AllowLogOnThroughRemoteDesktop
-          type: array
+          name: SeRemoteInteractiveLogonRight
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-32-555'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsChangeTimeZone
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ChangeTimeZone
-          type: array
+          name: SeTimeZonePrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-19'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsCreateGlobalObjects
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/CreateGlobalObjects
-          type: array
+          name: SeCreateGlobalPrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-6'
             - '*S-1-5-19'
             - '*S-1-5-20'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsCreatePageFile
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/CreatePageFile
-          type: array
+          name: SeCreatePagefilePrivilege
           value:
             - '*S-1-5-32-544'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsCreatePermanentSharedObjects
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/CreatePermanentSharedObjects
-          type: string
-          value: ''
-      schema:
-        oneOf:
-          - const: ''
-          - type: 'null'
+          name: SeCreatePermanentPrivilege
+          value: []
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsCreateSymbolicLinks
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/CreateSymbolicLinks
-          type: array
+          name: SeCreateSymbolicLinkPrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-83-0'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsCreateToken
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/CreateToken
-          type: string
-          value: ''
-      schema:
-        oneOf:
-          - const: ''
-          - type: 'null'
+          name: SeCreateTokenPrivilege
+          value: []
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsDenyAccessFromNetwork
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyAccessFromNetwork
-          type: array
+          name: SeDenyNetworkLogonRight
           value:
             - '*S-1-5-32-546'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsDenyLocalLogOn
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyLocalLogOn
-          type: array
+          name: SeDenyInteractiveLogonRight
           value:
             - '*S-1-5-32-546'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsDenyLogOnAsBatchJob
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyLogOnAsBatchJob
-          type: array
+          name: SeDenyBatchLogonRight
           value:
             - '*S-1-5-32-546'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsDenyLogOnAsService
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/DenyLogOnAsService
-          type: array
+          name: SeDenyServiceLogonRight
           value:
             - '*S-1-5-32-546'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsGenerateSecurityAudits
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/GenerateSecurityAudits
-          type: array
+          name: SeAuditPrivilege
           value:
             - '*S-1-5-19'
             - '*S-1-5-20'
             - '*S-1-5-82-3006700770-424185619-1745488364-794895919-4004696415'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsIncreaseSchedulingPriority
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/IncreaseSchedulingPriority
-          type: array
+          name: SeIncreaseBasePriorityPrivilege
           value:
             - '*S-1-5-32-544'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsLoadUnloadDeviceDrivers
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/LoadUnloadDeviceDrivers
-          type: array
+          name: SeLoadDriverPrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-32-550'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsLockMemory
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/LockMemory
-          type: string
-          value: ''
-      schema:
-        oneOf:
-          - const: ''
-          - type: 'null'
+          name: SeLockMemoryPrivilege
+          value: []
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsManageAuditingAndSecurityLog
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ManageAuditingAndSecurityLog
-          type: array
+          name: SeSecurityPrivilege
           value:
             - '*S-1-5-32-544'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsManageVolume
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ManageVolume
-          type: array
+          name: SeManageVolumePrivilege
           value:
             - '*S-1-5-32-544'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsModifyFirmwareEnvironment
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ModifyFirmwareEnvironment
-          type: array
+          name: SeSystemEnvironmentPrivilege
           value:
             - '*S-1-5-32-544'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsModifyObjectLabel
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ModifyObjectLabel
-          type: string
-          value: ''
-      schema:
-        oneOf:
-          - const: ''
-          - type: 'null'
+          name: SeRelabelPrivilege
+          value: []
+      expression: value == null || value.size() == 0
+      template: The value {value} must be unassigned (no principals).
   - name: UserRightsProfileSingleProcess
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ProfileSingleProcess
-          type: array
+          name: SeProfileSingleProcessPrivilege
           value:
             - '*S-1-5-32-544'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsProfileSystemPerformance
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ProfileSystemPerformance
-          type: array
+          name: SeSystemProfilePrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-80-3139157870-2983391045-3678747466-658725712-1809340420'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsRemoteShutdown
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/RemoteShutdown
-          type: array
+          name: SeRemoteShutdownPrivilege
           value:
             - '*S-1-5-32-544'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsReplaceProcessLevelToken
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ReplaceProcessLevelToken
-          type: array
+          name: SeAssignPrimaryTokenPrivilege
           value:
             - '*S-1-5-19'
             - '*S-1-5-20'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsShutDownTheSystem
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/ShutDownTheSystem
-          type: array
+          name: SeShutdownPrivilege
           value:
             - '*S-1-5-32-544'
             - '*S-1-5-32-551'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: UserRightsTakeOwnership
     type: Microsoft.OSConfig/Test
     properties:
       resource:
-        type: Microsoft.Windows/CSP
+        type: Microsoft.Windows/UserRightsAssignment
         properties:
-          path: ./Vendor/MSFT/Policy/Result/UserRights/TakeOwnership
-          type: array
+          name: SeTakeOwnershipPrivilege
           value:
             - '*S-1-5-32-544'
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: VirtualizeFileAndRegistryWriteFailuresToPerUserLocations
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: EnableVirtualization
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsDefenderDisableAntiSpyware
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows Defender
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Policies\Microsoft\Windows Defender
           valueName: DisableAntiSpyware
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: WindowsDefenderExploitGuardASRExploitGuard_ASR_Rules
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows Defender\Windows Defender Exploit Guard\ASR
           valueName: ExploitGuard_ASR_Rules
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsDefenderExploitGuardNetworkProtectionEnableNetworkProtection
     type: Microsoft.OSConfig/Test
     properties:
@@ -2816,213 +2629,190 @@ resources:
         type: Microsoft.Windows/Registry
         properties:
           keyPath: >-
-            HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Windows Defender Exploit Guard\Network
+            HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows Defender\Windows Defender Exploit Guard\Network
             Protection
           valueName: EnableNetworkProtection
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsDefenderPUAProtection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows Defender
           valueName: PUAProtection
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsDefenderRealTimeProtectionDisableBehaviorMonitoring
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows Defender\Real-Time Protection
           valueName: DisableBehaviorMonitoring
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: WindowsDefenderRealTimeProtectionDisableIOAVProtection
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows Defender\Real-Time Protection
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection
           valueName: DisableIOAVProtection
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: WindowsDefenderRealTimeProtectionDisableRealtimeMonitoring
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows Defender\Real-Time Protection
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection
           valueName: DisableRealtimeMonitoring
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: WindowsDefenderRealTimeProtectionDisableScriptScanning
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\Software\Policies\Microsoft\Windows Defender\Real-Time Protection
+          keyPath: HKEY_LOCAL_MACHINE:\Software\Policies\Microsoft\Windows Defender\Real-Time Protection
           valueName: DisableScriptScanning
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: WindowsDefenderScanDisableEmailScanning
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Scan
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows Defender\Scan
           valueName: DisableEmailScanning
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: WindowsDefenderScanDisableRemovableDriveScanning
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\Scan
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows Defender\Scan
           valueName: DisableRemovableDriveScanning
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema:
-        oneOf:
-          - const: 0
-          - type: 'null'
+      expression: ((((value == 0)) || ((value == null))))
+      template: The value {value} must be one of 0, (not set).
   - name: WindowsDefenderSecurityCenterAppBrowserProtectionDisallowExploitProtectionOverride
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\App and Browser protection
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows Defender Security Center\App and Browser protection
           valueName: DisallowExploitProtectionOverride
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsDefenderSpyNetLocalSettingOverrideSpynetReporting
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\SpyNet
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows Defender\SpyNet
           valueName: LocalSettingOverrideSpynetReporting
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: WindowsDefenderSpyNetSubmitSamplesConsent
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows Defender\SpyNet
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows Defender\SpyNet
           valueName: SubmitSamplesConsent
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsExplorerShellProtocolProtectedModeTitle_2
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer
           valueName: PreXPSP2ShellProtocolBehavior
-          valueType: Dword
+          valueType: REG_DWORD
           value: 0
-      schema: {}
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: WindowsLogonAllowAutomaticRestartSignOn
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
           valueName: DisableAutomaticRestartSignOn
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsLogonDisableLockScreenAppNotifications
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\System
           valueName: DisableLockScreenAppNotifications
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsLogonDontDisplayNetworkSelectionUI
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\System
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\System
           valueName: DontDisplayNetworkSelectionUI
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: WindowsPowerShellTurnOnPowerShellScriptBlockLogging
     type: Microsoft.OSConfig/Test
     properties:
       resource:
         type: Microsoft.Windows/Registry
         properties:
-          keyPath: HKEY_LOCAL_MACHINE\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging
+          keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging
           valueName: EnableScriptBlockLogging
-          valueType: Dword
+          valueType: REG_DWORD
           value: 1
-      schema:
-        oneOf:
-          - const: 1
-          - type: 'null'
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
