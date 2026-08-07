@@ -11,7 +11,7 @@ name: Release (macOS author)
 #
 # Trigger: workflow_dispatch only. Run the workflow definition from protected `main`;
 # the checkout step below switches to and verifies the supplied immutable mac tag.
-# CLI: `gh workflow run "Release (macOS author)" --ref main -f release_tag=mac-v0.3.98-author.1`
+# CLI: `gh workflow run "Release (macOS author)" --ref main -f release_tag=mac-v0.3.101-author.1`
 # The protected main copy of the public packaging guard checks the tagged tree
 # before npm install or electron-builder runs.
 #
@@ -143,7 +143,7 @@ jobs:
           ) > SHA256SUMS-macos-author.txt
           cat SHA256SUMS-macos-author.txt
 
-      # Attach to the existing draft release (e.g. mac-v0.3.98-author.1).
+      # Attach to the existing draft release (e.g. mac-v0.3.101-author.1).
       # `--clobber` overwrites if a re-run uploads the same filename.
       - name: Upload artifacts to draft release
         env:

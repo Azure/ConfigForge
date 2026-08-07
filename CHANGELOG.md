@@ -1,9 +1,41 @@
 # Changelog
 
+## [0.3.101-author.1] - 2026-08-07
+
+> `mac-v0.3.101-author.1` is the current macOS Author release and is
+> published as a prerelease. The author-only capability boundary is unchanged:
+> device deploy, audit, enforce, revert, elevation, health, and audit-results
+> storage remain excluded.
+
+### Added
+
+- Add a fail-closed Azure Machine Configuration package helper for
+  `AuditAndSet` packages. It patches both packaged Microsoft.OSConfig 1.4.3
+  wrapper copies so Set properties cross the DSC boundary as compressed JSON.
+
+### Fixed
+
+- Repair the Windows Server 2022 Member Server, Domain Controller, and
+  Workgroup Member baselines for standalone authoring and Machine
+  Configuration export while preserving explicit empty user-rights
+  assertions and deterministic repair provenance.
+- Preserve exact QWord values across YAML, JSON, spreadsheets, visual
+  editing, Diff, reports, registration, and MOF export. Registry aliases and
+  recognized hive paths normalize to canonical upstream `REG_*` contracts.
+- Serialize concurrent history retention and rationale writes so authoring
+  metadata is not lost when saves overlap.
+- Support source builds on Node 22.12 and Node 24 without the Vite optimizer
+  compatibility failure.
+
+### Security
+
+- Upgrade js-yaml to 4.3.1, DOMPurify to 3.4.13, fast-uri to 3.1.5,
+  ip-address to 10.4.0, React Router to 7.18.2, Undici 6.x to 6.28.0, and
+  Undici 7.x to 7.29.0 to clear the current dependency advisories.
+
 ## [0.3.98-author.1] - 2026-07-28
 
-> `mac-v0.3.98-author.1` is the current macOS Author tagged source. Its
-> matching GitHub release remains an unpublished draft.
+> `mac-v0.3.98-author.1` is the prior macOS Author prerelease.
 
 ### Documentation
 

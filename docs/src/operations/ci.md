@@ -13,12 +13,12 @@ ConfigForge uses GitHub Actions from `.github/workflows/`. The product is an Ele
 
 The Win/Linux Release workflow intentionally ignores hyphen-suffix tags
 (`!v*-*`). macOS Author releases use separate tags such as
-`mac-v0.3.98-author.1`; dispatch the protected `main` workflow definition
+`mac-v0.3.101-author.1`; dispatch the protected `main` workflow definition
 manually and let its checkout step select the immutable macOS tag.
 
 ## What `pr-check.yml` runs
 
-Three jobs run in parallel:
+Four jobs run in parallel:
 
 1. **Lint** (`ubuntu-latest`) - run the dependency-free public-asset and
    package-lock registry guard with its Node tests, then `npm ci` and
@@ -28,6 +28,9 @@ Three jobs run in parallel:
    `npm test`, `npm run desktop:build`, then smoke-checks the built
    renderer/main/preload files.
 3. **Playwright Electron smoke** (`windows-latest`) - installs, builds the desktop app, generates icons, then runs `npx playwright test --config apps/desktop/playwright.config.ts`.
+4. **Node 24 source-build compatibility** (`ubuntu-latest`) - installs with
+   Node 24, builds core and the desktop app, and verifies the Vite config can
+   load without optimizer compatibility failures.
 
 Test counts change as features land. Use the current `npm test` summary as the
 authority. For reference, macOS parity PR #75 passed 1,584 Vitest tests in 117
@@ -36,10 +39,9 @@ tests. Mac port PR #77 passed 79 focused tests and two isolated Playwright
 scenarios. The prior `mac-v0.3.94-author.1` draft release remains unpublished;
 workflow run
 [#30233283418](https://github.com/Azure/ConfigForge/actions/runs/30233283418)
-verified its five assets. The current macOS Author tagged source is
-`mac-v0.3.98-author.1`; its matching GitHub release remains an unpublished
-draft. Use current GitHub checks and release metadata as the authority for
-build and asset status.
+verified its five assets. The current macOS Author release is
+`mac-v0.3.101-author.1`, published as a prerelease. Use current GitHub checks
+and release metadata as the authority for build and asset status.
 
 Caching covers npm, Electron binaries, electron-builder, and Playwright browser downloads. Concurrency cancels stale PR runs on the same branch.
 
@@ -73,7 +75,7 @@ the immutable macOS tag:
 gh workflow run "Release (macOS author)" \
   --repo Azure/ConfigForge \
   --ref main \
-  -f release_tag=mac-v0.3.98-author.1
+  -f release_tag=mac-v0.3.101-author.1
 ```
 
 The target draft release and tag must already exist. The workflow loads its
@@ -81,22 +83,17 @@ definition from `main`, checks out `release_tag`, verifies that
 `HEAD` resolves to the tag, checks that tagged tree with the dependency-free
 public-asset guard from protected `main`, then builds with
 `electron-builder.author.yml`.
-For `mac-v0.3.98-author.1`, it uses exactly these expected asset names:
+For `mac-v0.3.101-author.1`, it uses exactly these expected asset names:
 
-1. `ConfigForge-Author-0.3.98-author.1-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.98-author.1-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.101-author.1-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.101-author.1-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`
 
 The workflow refuses a published release and never publishes automatically.
-For the prior `mac-v0.3.94-author.1` release, workflow run
-[#30233283418](https://github.com/Azure/ConfigForge/actions/runs/30233283418)
-passed every gate and verified these five assets. The matching GitHub release
-exists but remains a draft and is unpublished. The current
-`mac-v0.3.98-author.1` tagged source has a matching GitHub release that
-remains an unpublished draft; this documentation does not assert asset
-availability or publication.
+The current `mac-v0.3.101-author.1` release is published only after the five
+uploaded assets and their metadata pass validation.
 
 ## Linux runner notes
 

@@ -1,6 +1,6 @@
 {
   "name": "configforge",
-  "version": "0.3.98-author.1",
+  "version": "0.3.101-author.1",
   "private": true,
   "license": "MIT",
   "description": "ConfigForge \u2014 Cross-platform Electron desktop app for OSConfig security baseline authoring",

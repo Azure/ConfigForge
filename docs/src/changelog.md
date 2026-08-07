@@ -3,10 +3,28 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## macOS Author v0.3.101-author.1 - 2026-08-07
+
+`mac-v0.3.101-author.1` is the current macOS Author release and is published
+as a prerelease. The author-only capability boundary remains unchanged.
+
+- **Windows Server 2022 baselines:** Repair the Member Server, Domain
+  Controller, and Workgroup Member profiles for standalone authoring and
+  Machine Configuration export while preserving empty user-rights
+  assertions.
+- **Lossless authoring:** Preserve exact QWord values and canonical Registry
+  contracts across YAML, JSON, spreadsheets, Visual mode, Diff, reports,
+  registration, and MOF export.
+- **Machine Configuration packaging:** Add the fail-closed helper that patches
+  both Microsoft.OSConfig 1.4.3 Set wrappers to pass compressed JSON.
+- **Authoring stability:** Serialize overlapping history retention and
+  rationale writes, and support source builds on Node 22.12 and Node 24.
+- **Security:** Update js-yaml, DOMPurify, fast-uri, ip-address, React Router,
+  and both affected Undici dependency lines to their patched releases.
+
 ## macOS Author v0.3.98-author.1 — 2026-07-28
 
-`mac-v0.3.98-author.1` is the current macOS Author tagged source. Its matching
-GitHub release remains an unpublished draft.
+`mac-v0.3.98-author.1` is the prior macOS Author prerelease.
 
 - **Machine Configuration documentation:** Add standalone README guidance and
   a complete mdBook deployment workflow.

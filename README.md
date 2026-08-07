@@ -6,16 +6,15 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The current Windows/Linux Full-edition tagged source is `v0.3.98`. The
-current macOS Author tagged source is `mac-v0.3.98-author.1`. Both matching
-GitHub releases remain unpublished drafts. The Full-edition package version
-on `main` is `0.3.98`; the macOS Author package version is `0.3.98-author.1`.
+The current Windows/Linux Full-edition release is `v0.3.101`. The current
+macOS Author release is `mac-v0.3.101-author.1`. Both are published as
+prereleases. The Full-edition package version on `main` is `0.3.101`; the
+macOS Author package version is `0.3.101-author.1`.
 
-The macOS Author release ports applicable documentation-accuracy corrections
-from `main` PR [#97](https://github.com/Azure/ConfigForge/pull/97) via PR
-[#99](https://github.com/Azure/ConfigForge/pull/99), and replaces unreliable
-native HTML hover titles with FluentUI tooltips on the My Baselines status
-cells via PR [#101](https://github.com/Azure/ConfigForge/pull/101).
+The macOS Author release includes the compatible Windows Server 2022 baseline
+repairs, exact QWord and canonical Registry handling, Machine Configuration
+package compatibility, Node 24 source-build support, and dependency-security
+updates while preserving the author-only capability boundary.
 
 ## Export to Azure Machine Configuration
 
@@ -221,8 +220,7 @@ is not a universal binary.
 - **[`SUPPORT.md`](./SUPPORT.md)** and **[`SECURITY.md`](./SECURITY.md)**: best-effort support boundaries and private vulnerability reporting.
 - **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
 - **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current macOS
-  Author line is tagged as `mac-v0.3.97-author.1`; its release is an
-  unpublished draft.
+  Author release is `mac-v0.3.101-author.1`.
 - **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
   Quick Start, User Guide, Architecture, API Reference, and Operations. The
   `docs` workflow builds this into an mdBook site and deploys it to the
@@ -248,8 +246,10 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **0.3.98-author.1** (current macOS tagged source; draft unpublished) | Adds complete Machine Configuration documentation and removes stale/internal public-doc guidance. |
-| **0.3.98** (current Windows/Linux tagged source; draft unpublished) | Adds the same public Machine Configuration guide and documentation cleanup to the Full edition. |
+| **0.3.101-author.1** (current macOS prerelease) | Ports the author-safe WS2022 baseline repairs, lossless QWord and Registry handling, Machine Configuration packaging compatibility, Node 24 build support, and dependency-security fixes. |
+| **0.3.101** (current Windows/Linux prerelease) | Clears the remaining dependency alerts after the verified OSConfig enforcement and Machine Configuration fixes. |
+| **0.3.98-author.1** (prior macOS prerelease) | Adds complete Machine Configuration documentation and removes stale/internal public-doc guidance. |
+| **0.3.98** (prior Windows/Linux source) | Adds the same public Machine Configuration guide and documentation cleanup to the Full edition. |
 | **0.3.97-author.1** (prior macOS draft) | Preserves authoritative CLI reasons and adds detailed templates to every WS2025 control. |
 | **0.3.97** (prior Windows/Linux draft) | Preserves authoritative CLI reasons for expression-backed Test resources and adds detailed WS2025 reason templates. |
 | **0.3.96-author.1** (prior macOS draft) | Ports the full 320/321/296 WS2025 control-preservation work and global Machine Configuration MOF export fixes from main PR #104 through PR #105. |
