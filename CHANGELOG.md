@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## [0.3.100] - 2026-08-07
+
 ### Security
 
 - Upgrade `js-yaml` from 4.3.0 to 4.3.1 to address

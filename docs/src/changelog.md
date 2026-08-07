@@ -6,6 +6,12 @@ foundational work by theme.
 
 ## Unreleased
 
+## v0.3.100 — 2026-08-07
+
+- **YAML parser security:** Upgrade js-yaml to 4.3.1 to resolve
+  `GHSA-5p4m-2wfm-xmqj`, a high-severity quadratic CPU denial-of-service
+  issue in `!!omap` parsing.
+
 ## v0.3.99 — 2026-08-06
 
 - **Trustworthy Enforce results:** Canonical Registry types and hive paths now
