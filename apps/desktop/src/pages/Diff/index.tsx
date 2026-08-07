@@ -6,7 +6,10 @@
 import { useState, useEffect, useCallback, useMemo, useRef } from "react";
 import { Trans, useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
-import yaml from "js-yaml";
+import {
+  parseLosslessYaml,
+  stringifyLosslessJson,
+} from "@configforge/core/manifest/lossless";
 import { ManifestEditor } from "../../components/manifest-editor";
 import { DiffViewer } from "../../components/diff-viewer";
 import { AiAnalysisPanel } from "../../components/ai-analysis-panel";
@@ -356,7 +359,10 @@ export function DiffPage() {
         return;
       }
       if (json.data) {
-        const content = typeof json.data === "string" ? json.data : JSON.stringify(json.data, null, 2);
+        const content =
+          typeof json.data === "string"
+            ? json.data
+            : (stringifyLosslessJson(json.data, 2) ?? String(json.data));
         setText(content);
       } else {
         setText(`# No reported configuration found for: ${name}\n# The manifest may not have been deployed yet.\n`);
@@ -382,8 +388,8 @@ export function DiffPage() {
   const matrixStats = useMemo(() => {
     if (!showDiff) return null;
     try {
-      const lDoc = yaml.load(leftText);
-      const rDoc = yaml.load(rightText);
+      const lDoc = parseLosslessYaml(leftText);
+      const rDoc = parseLosslessYaml(rightText);
       if (!lDoc || !rDoc) return null;
       const rows = buildMatrix([
         { name: 'left', doc: lDoc },
@@ -918,7 +924,7 @@ function valuePreview(v: unknown): string {
   if (v == null) return '';
   if (typeof v === 'string') return v.length > 60 ? v.slice(0, 57) + '…' : v;
   try {
-    const s = JSON.stringify(v);
+    const s = stringifyLosslessJson(v) ?? String(v);
     return s.length > 60 ? s.slice(0, 57) + '…' : s;
   } catch { return String(v); }
 }
@@ -1259,6 +1265,8 @@ function MatrixTab({
 function formatMatrixValue(v: unknown): string {
   if (v === undefined || v === null) return "";
   if (typeof v === "string") return v;
-  if (typeof v === "number" || typeof v === "boolean") return String(v);
-  return JSON.stringify(v);
+  if (typeof v === "number" || typeof v === "boolean" || typeof v === "bigint") {
+    return String(v);
+  }
+  return stringifyLosslessJson(v) ?? String(v);
 }

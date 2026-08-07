@@ -9,6 +9,7 @@ import { ManifestEditor } from "../components/manifest-editor";
 import { Breadcrumb } from "../components/Breadcrumb";
 import { DiffViewer } from "../components/diff-viewer";
 import { safeRestore } from "@configforge/core/history/restore";
+import { stringifyLosslessJson } from "@configforge/core/manifest/lossless";
 import { electronRestoreClient } from "../lib/electron-restore-client";
 import { cfs } from "../lib/cfs";
 import {
@@ -134,7 +135,11 @@ export function ManifestHistoryPage() {
           const currentRes = results[1] as { data?: unknown };
           if (currentRes?.data != null) {
             const data = currentRes.data;
-            setCurrentYaml(typeof data === "string" ? data : JSON.stringify(data, null, 2));
+            setCurrentYaml(
+              typeof data === "string"
+                ? data
+                : (stringifyLosslessJson(data, 2) ?? String(data)),
+            );
           }
         }
         return snapshotRes.data;
@@ -205,7 +210,12 @@ export function ManifestHistoryPage() {
       setRestoreCandidate(entry);
       setRestorePreview({
         snapshotYaml: snapData.data.content as string,
-        currentYaml: typeof cur === "string" ? cur : cur ? JSON.stringify(cur, null, 2) : "",
+        currentYaml:
+          typeof cur === "string"
+            ? cur
+            : cur
+              ? (stringifyLosslessJson(cur, 2) ?? String(cur))
+              : "",
       });
     } catch (err) {
       setError(err instanceof Error ? err.message : t("errors.restorePreviewLoadFailed"));

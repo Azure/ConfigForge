@@ -9,8 +9,11 @@ import { Link } from "react-router-dom";
 import { useRationalePrompt, RationalePromptModal } from "../../components/use-rationale-prompt";
 import { useCisAvailable } from "../../components/use-cis-available";
 import { useBaselineWorkspace } from "../../components/BaselineWorkspace";
-import yaml from "js-yaml";
-import { ArrowLeftRegular, WarningRegular } from "@fluentui/react-icons";
+import {
+  parseLosslessYaml,
+  stringifyLosslessJson,
+} from "@configforge/core/manifest/lossless";
+import { ArrowLeftRegular, DismissRegular, WarningRegular } from "@fluentui/react-icons";
 import {
   Button,
   Dialog,
@@ -223,7 +226,7 @@ export function ManifestDetailPage() {
     detectedPlatform = storedPlatform;
   } else if (currentDisplayContent) {
     try {
-      const parsed = yaml.load(currentDisplayContent) as Record<string, unknown> | null;
+      const parsed = parseLosslessYaml(currentDisplayContent) as Record<string, unknown> | null;
       if (parsed && Array.isArray(parsed.resources)) {
         detectedPlatform = detectManifestPlatform(parsed.resources);
       }
@@ -527,7 +530,8 @@ export function ManifestDetailPage() {
       if (!yamlContent) {
         const status = await cfs.manifests.status(manifestName);
         const data = (status as { data?: unknown }).data;
-        const content = typeof data === "string" ? data : JSON.stringify(data, null, 2);
+        const content =
+          typeof data === "string" ? data : (stringifyLosslessJson(data, 2) ?? String(data));
         sessionStorage.setItem("baseline-template-content", content);
       } else {
         sessionStorage.setItem("baseline-template-content", yamlContent);

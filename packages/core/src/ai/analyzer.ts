@@ -1,7 +1,10 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import yaml from "js-yaml";
+import {
+  parseLosslessYaml,
+  stringifyLosslessJson,
+} from "../manifest/lossless";
 import {
   type AiSource,
   type Provenance,
@@ -165,7 +168,7 @@ function isComplianceOnlyField(field: string): boolean {
 function parseManifest(content: string, label: string): ParsedResource[] {
   let doc: Record<string, unknown> | null;
   try {
-    doc = yaml.load(content) as Record<string, unknown> | null;
+    doc = parseLosslessYaml(content) as Record<string, unknown> | null;
   } catch (err) {
     const message = err instanceof Error ? err.message : 'unknown YAML parse error';
     throw new Error(`Invalid ${label} manifest YAML: ${message}`);
@@ -564,7 +567,7 @@ export function analyzeDiff(before: string, after: string): DiffAnalysis {
     if (isCrossType) {
       const bVal = extractEnforcementValue(beforeRes);
       const aVal = extractEnforcementValue(afterRes);
-      if (JSON.stringify(bVal) !== JSON.stringify(aVal)) {
+      if (stringifyLosslessJson(bVal) !== stringifyLosslessJson(aVal)) {
         changedResources.push({ name: resourceLabel, field: "value", from: bVal, to: aVal });
         changeResourceRefs.push(afterRes);
       }
@@ -586,7 +589,7 @@ export function analyzeDiff(before: string, after: string): DiffAnalysis {
     for (const field of Array.from(allFields)) {
       const bVal = beforeFlat[field];
       const aVal = afterFlat[field];
-      if (JSON.stringify(bVal) !== JSON.stringify(aVal)) {
+      if (stringifyLosslessJson(bVal) !== stringifyLosslessJson(aVal)) {
         changedResources.push({ name: resourceLabel, field, from: bVal, to: aVal });
         changeResourceRefs.push(afterRes);
       }
@@ -777,9 +780,9 @@ export function detectConflicts(
     // ship the same set in different order should not show as
     // conflicting, so sort string-array elements before serializing.
     if (Array.isArray(v) && v.every((x) => typeof x === 'string')) {
-      return JSON.stringify([...(v as string[])].sort());
+      return stringifyLosslessJson([...(v as string[])].sort()) ?? '';
     }
-    return JSON.stringify(v);
+    return stringifyLosslessJson(v) ?? '';
   };
 
   const isConflictBucket = (entries: Entry[]): boolean => {
@@ -903,7 +906,7 @@ export function explainDelta(
   const bLabel = formatValue(valueB);
 
   // Same value → no delta to explain.
-  if (JSON.stringify(valueA) === JSON.stringify(valueB)) {
+  if (stringifyLosslessJson(valueA) === stringifyLosslessJson(valueB)) {
     return {
       explanation: `${aName} and ${bName} both set ${rule.name} to ${aLabel}; no delta.`,
       confidence: 1,
@@ -1017,7 +1020,7 @@ function formatValue(v: unknown): string {
   if (v === null) return 'null';
   if (typeof v === 'string') return v;
   if (typeof v === 'number' || typeof v === 'boolean') return String(v);
-  return JSON.stringify(v);
+  return stringifyLosslessJson(v) ?? String(v);
 }
 
 /**

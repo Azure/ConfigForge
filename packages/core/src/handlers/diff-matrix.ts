@@ -10,7 +10,7 @@
  */
 import {
   getRegistrationSource,
-  parseYamlDocument,
+  parseYamlDocumentLossless,
   sanitizeNamespace,
 } from '../oscfg';
 import { buildMatrix, type MatrixRow } from '../diff/matrix';
@@ -66,7 +66,7 @@ export async function getDiffMatrix(rawNames: string): Promise<DiffMatrixResult>
       if (!yamlText) {
         return { name, doc: null, missing: true } as const;
       }
-      const doc = parseYamlDocument(yamlText) as Record<string, unknown>;
+      const doc = parseYamlDocumentLossless(yamlText) as Record<string, unknown>;
       return { name, doc, missing: false } as const;
     }),
   );

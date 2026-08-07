@@ -25,7 +25,6 @@
 // field that allowed arbitrary host-file reads via a compromised
 // renderer is no longer honored. Manifests come from `content`
 // (inline YAML) or `uri` (fetched + SSRF-guarded) only.
-import yaml from 'js-yaml';
 import { lookup as dnsLookup } from 'node:dns/promises';
 import { isIP } from 'node:net';
 import {
@@ -35,7 +34,6 @@ import {
   getRegistration,
   getRegistrationSource,
   listRegistrations,
-  parseYamlDocument,
   REGISTERED_LINUX_TYPES,
   REGISTERED_WINDOWS_TYPES,
   sanitizeNamespace,
@@ -61,6 +59,11 @@ import {
   deleteAuditResult,
   readAuditResultForRegistration,
 } from '../manifest/audit-results-store';
+import {
+  dumpLosslessYaml,
+  parseLosslessJson,
+  parseLosslessYaml,
+} from '../manifest/lossless';
 import { deleteHistoryForManifest } from '../history';
 import type { OscComplianceSummary } from '../types';
 import { HandlerError } from './errors';
@@ -98,6 +101,12 @@ interface NormalizeResult {
   error?: string;
 }
 
+function parseManifestYaml(content: string): Record<string, unknown> {
+  const parsed = parseLosslessYaml(content);
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+  return parsed as Record<string, unknown>;
+}
+
 /**
  * Accept YAML, manifest-shaped JSON, or legacy security-definition JSON
  * and return canonical oscfg manifest YAML. Exported so other handlers
@@ -112,7 +121,7 @@ export function normalizeManifestContent(content: string): NormalizeResult {
 
   let parsed: unknown;
   try {
-    parsed = JSON.parse(content);
+    parsed = parseLosslessJson(content);
   } catch (err) {
     const m = err instanceof Error ? err.message : 'invalid JSON';
     return { ok: false, error: `Content looks like JSON but failed to parse: ${m}` };
@@ -122,7 +131,7 @@ export function normalizeManifestContent(content: string): NormalizeResult {
   if (Array.isArray(parsed)) {
     return {
       ok: true,
-      yaml: yaml.dump(
+      yaml: dumpLosslessYaml(
         { $schema: 'https://aka.ms/osc/schemas/prerelease/document.json', resources: parsed },
         { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false },
       ),
@@ -139,7 +148,12 @@ export function normalizeManifestContent(content: string): NormalizeResult {
   if (Array.isArray(obj.resources)) {
     return {
       ok: true,
-      yaml: yaml.dump(obj, { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false }),
+      yaml: dumpLosslessYaml(obj, {
+        indent: 2,
+        lineWidth: 120,
+        noRefs: true,
+        sortKeys: false,
+      }),
     };
   }
 
@@ -186,7 +200,7 @@ export function normalizeManifestContent(content: string): NormalizeResult {
 
     return {
       ok: true,
-      yaml: yaml.dump(
+      yaml: dumpLosslessYaml(
         { $schema: 'https://aka.ms/osc/schemas/prerelease/document.json', resources },
         { indent: 2, lineWidth: 120, noRefs: true, sortKeys: false },
       ),
@@ -337,7 +351,7 @@ async function buildManifestList(
           try {
             const sourceYaml = await readSourceYaml(name);
             if (sourceYaml) {
-              const doc = parseYamlDocument(sourceYaml) as Record<string, unknown>;
+              const doc = parseManifestYaml(sourceYaml);
               const resources = Array.isArray(doc?.resources) ? doc.resources : [];
               if (!summary) summary = extractResourceSummary(resources);
               if (!validation) validation = extractValidationSummary(doc);
@@ -518,7 +532,7 @@ export async function getManifest(
     try {
       const sourceYaml = await readSourceYaml(namespace);
       if (sourceYaml) {
-        const doc = parseYamlDocument(sourceYaml) as Record<string, unknown>;
+        const doc = parseManifestYaml(sourceYaml);
         const resources = Array.isArray(doc?.resources) ? doc.resources : [];
         if (!summary) summary = extractResourceSummary(resources);
         if (!validation) validation = extractValidationSummary(doc);
@@ -539,13 +553,14 @@ export async function getManifest(
 
   const resources = (summary ?? []).map((r) => ({ name: r.name, type: r.type }));
   const compliance = await readComplianceSummary(reg);
+  const deployed = Boolean(reg.lastAppliedAt);
   const data = {
     Name: namespace,
     DisplayName: reg.displayName ?? namespace,
     Source: (reg.source === 'library' ? 'library' : 'oscfg') as 'library' | 'oscfg',
     RegistrationSource: reg.source,
     RegistrationSourceId: reg.sourceId ?? null,
-    Deployed: Boolean(reg.lastAppliedAt),
+    Deployed: deployed,
     LastAppliedAt: reg.lastAppliedAt ?? null,
     LastAuditedAt: reg.lastAuditedAt ?? null,
     Platform: reg.platform ?? null,
@@ -797,7 +812,7 @@ export async function registerManifest(
   yamlContent = normalized.yaml;
 
   // Hard schema validation.
-  const parsed = parseYamlDocument(yamlContent) as { resources?: unknown[] };
+  const parsed = parseManifestYaml(yamlContent) as { resources?: unknown[] };
   const schemaErrors = validateManifestSchema(parsed);
   if (schemaErrors.length) {
     throw new HandlerError(400, `Invalid manifest schema:\n${schemaErrors.join('\n')}`);
@@ -980,7 +995,7 @@ export async function restoreManifest(req: RestoreManifestRequest): Promise<Rest
   if (!normalized.ok || !normalized.yaml) {
     throw new HandlerError(400, normalized.error ?? 'normalize failed');
   }
-  const parsed = parseYamlDocument(normalized.yaml) as { resources?: unknown[] };
+  const parsed = parseManifestYaml(normalized.yaml) as { resources?: unknown[] };
   const schemaErrors = validateManifestSchema(parsed);
   if (schemaErrors.length) {
     throw new HandlerError(400, `Invalid manifest schema:\n${schemaErrors.join('\n')}`);

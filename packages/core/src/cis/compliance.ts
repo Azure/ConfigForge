@@ -20,6 +20,7 @@
  *   score       — round(matched / cisRules * 100); 0 if cisRules == 0
  */
 import { extractResourcesFull } from '../platform';
+import { stringifyLosslessJson } from '../manifest/lossless';
 import { findCisRulesForResources, type CrossRefMatch } from './crossref';
 
 export type ComplianceStatus = 'matched' | 'mismatched' | 'missing';
@@ -293,8 +294,10 @@ export function reportToMarkdown(
   out.push('| Status | Severity | Rule | GPO Path | My Value | Expected |');
   out.push('| --- | --- | --- | --- | --- | --- |');
   for (const r of report.perRule) {
-    const my = r.myValue === undefined ? '' : '`' + JSON.stringify(r.myValue) + '`';
-    const exp = r.expected === undefined ? '' : '`' + JSON.stringify(r.expected) + '`';
+    const my =
+      r.myValue === undefined ? '' : '`' + (stringifyLosslessJson(r.myValue) ?? '') + '`';
+    const exp =
+      r.expected === undefined ? '' : '`' + (stringifyLosslessJson(r.expected) ?? '') + '`';
     const gpo = r.gpoPath ? r.gpoPath.replace(/\\/g, '\\\\').replace(/\|/g, '\\|') : '';
     const name = r.ruleName.replace(/\\/g, '\\\\').replace(/\|/g, '\\|');
     out.push(`| ${r.status} | ${r.severity} | ${name} | ${gpo} | ${my} | ${exp} |`);

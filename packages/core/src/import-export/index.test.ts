@@ -11,7 +11,60 @@
  * of a generic 500.
  */
 import { describe, expect, it } from 'vitest';
-import { parseSecurityDefinition } from './index';
+import { readFile, readdir } from 'node:fs/promises';
+import path from 'node:path';
+import { parseLosslessJson, parseLosslessYaml } from '../manifest/lossless';
+import {
+  exportToJson,
+  exportToMof,
+  exportToYaml,
+  parseOscYaml,
+  parseSecurityDefinition,
+} from './index';
+
+describe('exportToJson', () => {
+  it('serializes unsafe QWord values without rounding', () => {
+    const manifest = {
+      resources: [
+        {
+          type: 'Microsoft.Windows/Registry',
+          properties: { valueType: 'QWord', value: 18446744073709551615n },
+        },
+      ],
+    };
+
+    const exported = exportToJson(manifest);
+
+    expect(exported).toContain('"value": 18446744073709551615');
+    expect(parseLosslessJson(exported)).toEqual(manifest);
+  });
+});
+
+describe('lossless manifest import and export', () => {
+  it('preserves adjacent unsafe QWords through JSON and YAML exports', () => {
+    const manifest = {
+      resources: [
+        {
+          name: 'maximum',
+          type: 'Microsoft.Windows/Registry',
+          properties: { valueType: 'QWord', value: 18446744073709551615n },
+        },
+        {
+          name: 'adjacent',
+          type: 'Microsoft.Windows/Registry',
+          properties: { valueType: 'QWord', value: 18446744073709551614n },
+        },
+      ],
+    };
+
+    const yaml = exportToYaml(manifest);
+    const reparsed = parseLosslessYaml(yaml) as typeof manifest;
+
+    expect(reparsed).toEqual(manifest);
+    expect(parseOscYaml(yaml).resources[0].properties.value).toBe(18446744073709551615n);
+    expect(parseOscYaml(yaml).resources[1].properties.value).toBe(18446744073709551614n);
+  });
+});
 
 describe('parseSecurityDefinition (PR17 hardening)', () => {
   it('throws a descriptive Error on malformed JSON', () => {
@@ -330,8 +383,6 @@ describe('exportToAzurePolicy structural shape', () => {
 // `0.0.0` Machine Configuration placeholder. The packaging workflow resolves
 // it to the customer's newest installed Microsoft.OSConfig version immediately
 // before New-GuestConfigurationPackage runs.
-import { exportToMof } from './index';
-
 describe('exportToMof — Machine Configuration module binding', () => {
   const resources = [
     {
@@ -442,6 +493,88 @@ describe('exportToMof — Machine Configuration module binding', () => {
     expect(mof).toContain('    Value = "0";\n    ValueName = "value";\n    ValueType = "boolean";');
     expect(mof).toContain('    Value = null;\n    ValueName = "value";\n    ValueType = "string";');
     expect(mof).toContain('    Value = "";\n    ValueName = "value";\n    ValueType = "string";');
+  });
+
+  it('normalizes legacy Registry syntax before serializing the Machine Configuration package', () => {
+    const mof = exportToMof('LegacyRegistryBaseline', [
+      {
+        name: 'LegacyRegistry',
+        type: 'Microsoft.OSConfig/Test',
+        properties: {
+          resource: {
+            type: 'Microsoft.Windows/Registry',
+            properties: {
+              keyPath: 'HKLM\\SOFTWARE\\ConfigForge',
+              valueName: 'Enabled',
+              valueType: 'Dword',
+              value: 1,
+            },
+          },
+          schema: { const: 1 },
+        },
+      },
+    ]);
+
+    expect(mof).toContain(
+      'Properties = "{\\"keyPath\\":\\"HKLM:\\\\\\\\SOFTWARE\\\\\\\\ConfigForge\\",\\"valueName\\":\\"Enabled\\",\\"valueType\\":\\"REG_DWORD\\"}";',
+    );
+    expect(mof).not.toContain('\\"valueType\\":\\"Dword\\"');
+  });
+
+  it('exports every shipped Windows baseline with canonical writable Registry properties', async () => {
+    const baselineDirectory = path.join(
+      __dirname,
+      '..',
+      '..',
+      '..',
+      '..',
+      'public',
+      '_baselines',
+    );
+    const baselineFiles = (await readdir(baselineDirectory))
+      .filter((name) => /^ws20(?:16|19|22|25)-.*\.osc\.yaml$/i.test(name))
+      .sort();
+
+    expect(baselineFiles).toHaveLength(12);
+
+    for (const filename of baselineFiles) {
+      const source = await readFile(path.join(baselineDirectory, filename), 'utf8');
+      const manifest = parseOscYaml(source);
+      const mof = exportToMof(filename, manifest.resources);
+      const blocks = mof.match(/instance of OSConfig[\s\S]*?\n};/g) ?? [];
+
+      expect(blocks, filename).toHaveLength(manifest.resources.length);
+
+      for (const block of blocks) {
+        if (!block.includes('Type = "Microsoft.Windows/Registry";')) continue;
+        const propertiesLine = block.match(/^\s*Properties = "(.*)";$/m)?.[1];
+        expect(propertiesLine, filename).toBeDefined();
+        const propertiesJson = JSON.parse(`"${propertiesLine}"`) as string;
+        const properties = parseLosslessJson(propertiesJson) as Record<string, unknown>;
+
+        expect(
+          [
+            'REG_NONE',
+            'REG_SZ',
+            'REG_EXPAND_SZ',
+            'REG_BINARY',
+            'REG_DWORD',
+            'REG_MULTI_SZ',
+            'REG_QWORD',
+          ],
+          `${filename}: ${String(properties.valueName ?? '')}`,
+        ).toContain(properties.valueType);
+
+        if (typeof properties.keyPath === 'string') {
+          expect(
+            properties.keyPath,
+            `${filename}: ${String(properties.valueName ?? '')}`,
+          ).not.toMatch(
+            /^(?:HKEY_LOCAL_MACHINE|HKEY_CURRENT_USER|HKEY_USERS|HKEY_CLASSES_ROOT|HKEY_CURRENT_CONFIG|HKLM|HKCU|HKU|HKCR|HKCC)\\/i,
+          );
+        }
+      }
+    }
   });
 
   it('still emits the OSConfig DSC resource class and the configuration footer', () => {

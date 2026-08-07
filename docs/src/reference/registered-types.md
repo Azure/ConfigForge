@@ -21,7 +21,7 @@ order).
 | Type | Notes |
 | --- | --- |
 | `Microsoft.Windows/CSP` | Configuration Service Provider - the OMA-DM-style policy surface. |
-| `Microsoft.Windows/Registry` | Registry value - `keyPath` + `valueName` + `valueType` (use `Dword` / `String` / … or the legacy `REG_*` names) + `value`. All three of `keyPath`, `valueName`, `valueType` are schema-required. |
+| `Microsoft.Windows/Registry` | Registry value - `keyPath` + `valueName` + `valueType` + `value`. Use the `REG_*` forms defined by the current upstream `schema/.document.json`, `docs/resources/windows/Registry.md`, `examples/registry.osc.yaml`, and Microsoft Learn set/test/quickstart files. Compatibility aliases are normalized before execution. All three of `keyPath`, `valueName`, and `valueType` are schema-required. |
 | `Microsoft.Windows/AccountPolicy` | Password / lockout policies. |
 | `Microsoft.Windows/AuditPolicy` | Audit subcategories. |
 | `Microsoft.Windows/UserRightsAssignment` | `Se*Privilege` / `Se*Right` user rights. |

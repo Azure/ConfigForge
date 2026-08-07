@@ -77,22 +77,51 @@ resources:
   - name: NTLMOutgoingHardening
     type: Microsoft.Windows/Registry
     properties:
-      keyPath: HKLM\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
+      keyPath: HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
       valueName: NtlmMinClientSec
-      valueType: Dword
+      valueType: REG_DWORD
       value: 537395200
 ```
 
-### Legal `valueType` values and matching `value` shapes
+### Canonical `valueType` values and matching `value` shapes
 
-The shipped schema accepts **both** the modern OSConfig names and
-the legacy `REG_*` names. The pairing rules are:
+Registry `valueType` behavior:
+
+- **Upstream contract:** The current microsoft/osconfig `schema/.document.json`
+  defines only `REG_DWORD` and `REG_QWORD` in its integer enum and
+  `REG_MULTI_SZ` in its array enum.
+- **Published examples:** Upstream `docs/resources/windows/Registry.md`,
+  `examples/registry.osc.yaml`, and Microsoft Learn set/test/quickstart files
+  use `REG_*` names.
+- **Compatibility inputs:** The editor accepts aliases such as `Dword` and
+  `String` when opening older content.
+- **Execution boundary:** ConfigForge normalizes every known alias to `REG_*`.
+- **Provider behavior:** Observed provider versions can return success for a
+  compatibility alias without applying the registry value.
+
+The canonical pairing rules are:
 
 | `valueType` | `value` JSON type |
 | --- | --- |
-| `String`, `ExpandString`, `Binary`, `REG_SZ`, `REG_EXPAND_SZ`, `REG_BINARY` | `string` |
-| `Dword`, `QWord`, `REG_DWORD`, `REG_QWORD` | `integer` |
-| `MultiString`, `REG_MULTI_SZ` | `array` of `string` |
+| `REG_SZ`, `REG_EXPAND_SZ`, `REG_BINARY` | `string` |
+| `REG_DWORD`, `REG_QWORD` | `integer` |
+| `REG_MULTI_SZ` | `array` of `string` |
+
+ConfigForge maps compatibility aliases before execution:
+
+| Compatibility input | Canonical output |
+| --- | --- |
+| `String` | `REG_SZ` |
+| `ExpandString` | `REG_EXPAND_SZ` |
+| `Binary` | `REG_BINARY` |
+| `Dword`, `REG_DWORD_LITTLE_ENDIAN` | `REG_DWORD` |
+| `QWord`, `REG_QWORD_LITTLE_ENDIAN` | `REG_QWORD` |
+| `MultiString` | `REG_MULTI_SZ` |
+| `None` | `REG_NONE` |
+
+`REG_DWORD_BIG_ENDIAN` is not rewritten because changing its byte order would
+change the requested Registry semantics. It remains unchanged so the installed
+OSConfig provider can reject it explicitly if unsupported.
 
 A `value` whose type doesn't match the `valueType` category will
 fail the editor JSON-Schema `oneOf` constraint. The core register
@@ -100,9 +129,9 @@ validator is intentionally lighter and only enforces manifest shape.
 
 > The CSV / security-definition import (`packages/core/src/handlers/import.ts`)
 > calls `inferRegistryValueType(expectedValue)` to satisfy the
-> `valueType` requirement automatically - integer-shaped strings or
-> numbers become `Dword`, everything else becomes `String`. Adding
-> new import sources? Re-use that helper.
+> `valueType` requirement automatically. Integers in the DWORD range become
+> `REG_DWORD`. Larger exact integers become `REG_QWORD`. Other values become
+> `REG_SZ`. New import sources should re-use that helper.
 
 ## `Microsoft.OSConfig/BaselineRule` placeholder (v0.2.2+)
 
