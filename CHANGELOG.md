@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### Security
+
+- Upgrade `js-yaml` from 4.3.0 to 4.3.1 to address
+  `GHSA-5p4m-2wfm-xmqj`, a high-severity quadratic CPU denial-of-service
+  issue in `!!omap` parsing.
+
 ## [0.3.99] - 2026-08-06
 
 ### Added
