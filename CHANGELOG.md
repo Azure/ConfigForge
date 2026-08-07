@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Security
+
+- Upgrade React Router from 7.18.0 to 7.18.2 for
+  `GHSA-qwww-vcr4-c8h2`. ConfigForge does not use the affected RSC server
+  APIs, but the patched 7.x release removes the advisory without a breaking
+  React 19 migration.
+- Upgrade build/test-only Undici from 6.27.0 to 6.28.0 and from 7.28.0 to
+  7.29.0 for the cookie-injection, CRLF-injection, retry-desynchronization,
+  and cache-directive advisories reported by Dependabot. Undici is not
+  bundled in the installed Electron app.
+
 ## [0.3.100] - 2026-08-07
 
 ### Security
