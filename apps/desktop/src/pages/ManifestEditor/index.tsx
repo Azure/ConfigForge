@@ -13,7 +13,7 @@ import {
   parseLosslessYaml,
   stringifyLosslessJson,
 } from "@configforge/core/manifest/lossless";
-import { ArrowLeftRegular, DismissRegular, WarningRegular } from "@fluentui/react-icons";
+import { ArrowLeftRegular, WarningRegular } from "@fluentui/react-icons";
 import {
   Button,
   Dialog,
