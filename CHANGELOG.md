@@ -2,8 +2,12 @@
 
 ## [Unreleased]
 
+## [0.3.101] - 2026-08-07
+
 ### Security
 
+- Upgrade DOMPurify to 3.4.13, fast-uri to 3.1.5, and ip-address to 10.4.0
+  to resolve their current Dependabot advisories.
 - Upgrade React Router from 7.18.0 to 7.18.2 for
   `GHSA-qwww-vcr4-c8h2`. ConfigForge does not use the affected RSC server
   APIs, but the patched 7.x release removes the advisory without a breaking

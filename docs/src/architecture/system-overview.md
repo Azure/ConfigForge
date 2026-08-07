@@ -1,6 +1,6 @@
 # System overview
 
-ConfigForge **0.3.100** is an Electron desktop app for authoring, validating, comparing, and deploying/auditing OSConfig manifests (`.osc.yaml`). The renderer uses Electron 42, React 18, Fluent UI v9, and Vite; shared business logic lives in the platform-neutral `@configforge/core` package.
+ConfigForge **0.3.101** is an Electron desktop app for authoring, validating, comparing, and deploying/auditing OSConfig manifests (`.osc.yaml`). The renderer uses Electron 42, React 18, Fluent UI v9, and Vite; shared business logic lives in the platform-neutral `@configforge/core` package.
 
 There is no HTTP server, database, queue, or microservice layer in the current app. Renderer code calls the Electron preload bridge (`window.cfs.*`), the main process validates IPC payloads, and pure handlers in `packages/core` own filesystem and CLI operations.
 

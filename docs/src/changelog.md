@@ -6,6 +6,13 @@ foundational work by theme.
 
 ## Unreleased
 
+## v0.3.101 — 2026-08-07
+
+- **Dependency security:** Update DOMPurify, fast-uri, ip-address, React
+  Router, and both build-only Undici lines to their patched releases. The
+  hosted production audit, tests, build, Electron smoke, lint, Node 24, and
+  CodeQL gates pass with no open GitHub security alerts.
+
 ## v0.3.100 — 2026-08-07
 
 - **YAML parser security:** Upgrade js-yaml to 4.3.1 to resolve

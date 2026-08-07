@@ -6,9 +6,9 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The current Windows/Linux release is `v0.3.100`. The current macOS Author tagged source is
+The current Windows/Linux release is `v0.3.101`. The current macOS Author tagged source is
 `mac-v0.3.98-author.1`, and its matching GitHub release is also a draft and
-unpublished. The package versions are `0.3.100` for the Full edition and
+unpublished. The package versions are `0.3.101` for the Full edition and
 `0.3.98-author.1` for the macOS Author edition.
 
 ## Export to Azure Machine Configuration
@@ -250,7 +250,8 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **0.3.100** (current Windows/Linux release) | Updates js-yaml to the patched 4.3.1 release for `GHSA-5p4m-2wfm-xmqj` |
+| **0.3.101** (current Windows/Linux release) | Clears the remaining GitHub security alerts with patched DOMPurify, fast-uri, ip-address, React Router, and Undici releases |
+| **0.3.100** (prior Windows/Linux release) | Updates js-yaml to the patched 4.3.1 release for `GHSA-5p4m-2wfm-xmqj` |
 | **0.3.99** (prior Windows/Linux release) | Verifies Enforce results, preserves exact QWords, keeps Revert safe, repairs WS2022 readability, and adds Machine Configuration Set compatibility |
 | **0.3.98** (prior Windows/Linux release) | Adds complete Machine Configuration deployment documentation and removes stale/internal public-doc guidance |
 | **0.3.98-author.1** (current macOS tagged source; draft unpublished) | Ports the same public documentation and Machine Configuration guidance to macOS Author |
