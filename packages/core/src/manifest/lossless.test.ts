@@ -64,6 +64,19 @@ describe('lossless manifest serialization', () => {
     });
   });
 
+  it('renders true cycles safely while preserving exact bigint values', () => {
+    const cyclic: { value: bigint; self?: unknown } = {
+      value: 18446744073709551615n,
+    };
+    cyclic.self = cyclic;
+
+    const serialized = stringifyLosslessJson(cyclic);
+
+    expect(serialized).toBe(
+      '{"value":18446744073709551615,"self":"[Circular]"}',
+    );
+  });
+
   it('preserves marker-like strings and keys alongside bigints', () => {
     const oldMarker = '\u0000CONFIGFORGE_BIGINT_0';
     const markerLikeKey = '\u0000CONFIGFORGE_BIGINT_1';

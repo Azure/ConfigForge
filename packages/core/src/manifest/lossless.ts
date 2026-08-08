@@ -196,15 +196,21 @@ export function stringifyLosslessJson(value: unknown, space?: string | number): 
     const marker = markerForIndex(markerIndex);
     const bigintValues: string[] = [];
     const observedStrings = new Set<string>();
+    const ancestors: object[] = [];
     const serialized = JSON.stringify(
       value,
-      (key, nestedValue: unknown) => {
+      function losslessReplacer(this: unknown, key, nestedValue: unknown) {
         if (key) observedStrings.add(key);
         if (typeof nestedValue === 'bigint') {
           const index = bigintValues.push(nestedValue.toString()) - 1;
           return `${marker}${index}`;
         }
         if (typeof nestedValue === 'string') observedStrings.add(nestedValue);
+        if (nestedValue !== null && typeof nestedValue === 'object') {
+          while (ancestors.length > 0 && ancestors.at(-1) !== this) ancestors.pop();
+          if (ancestors.includes(nestedValue)) return '[Circular]';
+          ancestors.push(nestedValue);
+        }
         return nestedValue;
       },
       space,
