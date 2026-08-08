@@ -71,7 +71,7 @@ the immutable macOS tag:
 gh workflow run "Release (macOS author)" \
   --repo Azure/ConfigForge \
   --ref main \
-  -f release_tag=mac-v0.3.98-author.1
+  -f release_tag=mac-v0.3.101-author.1
 ```
 
 The target draft release and tag must already exist. The workflow loads its
@@ -79,17 +79,17 @@ definition from `main`, checks out `release_tag`, verifies that
 `HEAD` resolves to the tag, checks that tagged tree with the dependency-free
 public-asset guard from protected `main`, then builds with
 `electron-builder.author.yml`.
-The `mac-v0.3.98-author.1` release contract expects exactly these assets:
+The `mac-v0.3.101-author.1` release contract expects exactly these assets:
 
-1. `ConfigForge-Author-0.3.98-author.1-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.98-author.1-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.101-author.1-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.101-author.1-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`
 
 The workflow refuses a published release and never publishes automatically.
-For `mac-v0.3.98-author.1`, use the current GitHub checks and draft release as
-the authority for actual build and asset status.
+For `mac-v0.3.101-author.1`, use the current GitHub checks and published
+prerelease as the authority for actual build and asset status.
 
 ## Linux runner notes
 

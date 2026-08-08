@@ -19,13 +19,12 @@ The following release references were verified on 2026-08-06:
 
 | Line | Reference | State |
 |---|---|---|
-| `main` | `v0.3.101` | Current Windows/Linux release. It clears the remaining GitHub security alerts after the v0.3.100 js-yaml hotfix. |
-| `mac-author-build` | `mac-v0.3.98-author.1` | Current author-only macOS tagged source. The matching GitHub release is a draft and unpublished with the same public documentation corrections. |
+| `main` | `v0.3.102` | Current Windows/Linux release. It fixes pre-deploy Audit compatibility with OSConfig 1.4.3 single-resource array responses. |
+| `mac-author-build` | `mac-v0.3.101-author.1` | Current author-only macOS release, published as a prerelease with the compatible baseline, authoring, packaging, and security fixes. |
 
 On `mac-author-build`, the root package, desktop package, and lockfile records
-use `0.3.98-author.1`. The current macOS Author tagged source is
-`mac-v0.3.98-author.1`, and its matching GitHub release remains a draft and
-unpublished. The Full-edition package versions are `0.3.101`; do not copy
+use `0.3.101-author.1`. The current macOS Author release is
+`mac-v0.3.101-author.1`. The Full-edition package versions are `0.3.102`; do not copy
 macOS package metadata to `main`.
 
 ### Current feature inventory
@@ -449,12 +448,11 @@ When touching IPC contracts or `packages/core/src/handlers/`, exercise the chann
   errors, the desktop build, and a production audit with 0 vulnerabilities.
 - Historical `0.3.93-author.1` and `0.3.93-author.2` validation records are
   superseded; their tags/releases no longer exist. Use the current
-  `mac-v0.3.98-author.1` unpublished draft release metadata and current GitHub
+  `mac-v0.3.101-author.1` prerelease metadata and current GitHub
   checks as the authority for macOS Author build and asset status.
-- The current macOS Author tagged source is `mac-v0.3.98-author.1`, with an
-  unpublished draft release. Use current GitHub checks and release metadata
-  as the authority for build and asset status rather than recording a merge
-  SHA or workflow run here.
+- The current macOS Author release is `mac-v0.3.101-author.1`. Use current
+  GitHub checks and release metadata as the authority for build and asset
+  status rather than recording a merge SHA or workflow run here.
 
 ---
 

@@ -8,10 +8,10 @@ Benchmark Mapping, history, rationale, and Audit Pack export while omitting
 device operations. The native `oscfg` CLI is **not bundled** and is **not
 required** for authoring in either edition.
 
-The current Windows/Linux release is `v0.3.101`. The current macOS Author tagged source is
-`mac-v0.3.98-author.1`, and its matching GitHub release is also a draft and
-unpublished. The package versions are `0.3.101` for the Full edition and
-`0.3.98-author.1` for the macOS Author edition.
+The current Windows/Linux release is `v0.3.102`. The current macOS Author
+release is `mac-v0.3.101-author.1`; both are published as prereleases. The
+package versions are `0.3.102` for the Full edition and `0.3.101-author.1`
+for the macOS Author edition.
 
 ## Prerequisites
 
