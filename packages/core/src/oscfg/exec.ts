@@ -4,6 +4,7 @@
 import { runOscfg } from './runner';
 import { stringifyLosslessJson } from '../manifest/lossless';
 import { normalizeManifestRegistryTypes } from './registry-types';
+import { normalizeOscfgArray } from './get';
 import type { OscfgExecOptions, OscfgResource, OscfgResult } from './types';
 
 /**
@@ -30,9 +31,18 @@ import type { OscfgExecOptions, OscfgResource, OscfgResult } from './types';
  * files. Verified provider versions can accept `Dword` with exit code 0 while
  * leaving the registry unchanged.
  */
+export function execResource(
+  opts: OscfgExecOptions & { mode: 'list' },
+): Promise<OscfgResult<OscfgResource[]>>;
+export function execResource(
+  opts: OscfgExecOptions & { mode: Exclude<OscfgExecOptions['mode'], 'list'> },
+): Promise<OscfgResult<OscfgResource>>;
+export function execResource(
+  opts: OscfgExecOptions,
+): Promise<OscfgResult<OscfgResource | OscfgResource[]>>;
 export async function execResource(
   opts: OscfgExecOptions,
-): Promise<OscfgResult<OscfgResource>> {
+): Promise<OscfgResult<OscfgResource | OscfgResource[]>> {
   const properties = maybeNormalizeRegistryProps(opts.type, opts.properties);
   const propString = serializeProperties(properties);
   const args = [
@@ -51,7 +61,24 @@ export async function execResource(
   }
   args.push('--output', 'json');
 
-  return runOscfg<OscfgResource>(args, { timeoutMs: opts.timeoutMs });
+  const result = await runOscfg<unknown>(args, { timeoutMs: opts.timeoutMs });
+  if (!result.success) return { ...result, data: null };
+
+  // oscfg 1.3.x emits one object for direct exec calls, while 1.4.3 emits a
+  // single-item array. Normalize both shapes before the audit fallback reads
+  // compliance or provider values.
+  const resources = normalizeOscfgArray<OscfgResource>(result.data);
+  if (opts.mode === 'list') return { ...result, data: resources };
+  if (resources.length === 0) return { ...result, data: null };
+  if (resources.length > 1) {
+    return {
+      ...result,
+      success: false,
+      data: null,
+      error: `oscfg exec resource returned ${resources.length} resources; expected exactly one`,
+    };
+  }
+  return { ...result, data: resources[0] };
 }
 
 /**
