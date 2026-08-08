@@ -6,6 +6,13 @@ foundational work by theme.
 
 ## Unreleased
 
+## v0.3.102 - 2026-08-08
+
+- **OSConfig 1.4.3 audit compatibility:** Pre-deploy Audit now unwraps the
+  CLI's single-resource array response so CSP, Registry, Test, and User Rights
+  resources produce real compliance results instead of false "could not read"
+  outcomes.
+
 ## v0.3.101 — 2026-08-07
 
 - **Dependency security:** Update DOMPurify, fast-uri, ip-address, React

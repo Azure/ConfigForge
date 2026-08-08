@@ -72,6 +72,147 @@ describe('serializeProperties', () => {
   });
 });
 
+describe('execResource response normalization', () => {
+  it('preserves the object returned by oscfg 1.3.x', async () => {
+    const resource = {
+      name: 'registry',
+      type: 'Microsoft.Windows/Registry',
+      properties: { value: 1 },
+    };
+    runOscfgMock.mockResolvedValueOnce({
+      success: true,
+      data: resource,
+      error: null,
+      exitCode: 0,
+    });
+
+    const result = await execResource({
+      mode: 'get',
+      type: resource.type,
+      properties: {
+        keyPath: 'HKLM:\\Software\\ConfigForge',
+        valueName: 'Enabled',
+        valueType: 'REG_DWORD',
+        value: 1,
+      },
+    });
+
+    expect(result.data).toEqual(resource);
+  });
+
+  it('unwraps the single-item array returned by oscfg 1.4.3', async () => {
+    const resource = {
+      name: 'csp',
+      type: 'Microsoft.Windows/CSP',
+      properties: { value: 1 },
+    };
+    runOscfgMock.mockResolvedValueOnce({
+      success: true,
+      data: [resource],
+      error: null,
+      exitCode: 0,
+    });
+
+    const result = await execResource({
+      mode: 'get',
+      type: resource.type,
+      properties: {
+        path: './Vendor/MSFT/Policy/Config/Test/Setting',
+        type: 'integer',
+        value: 1,
+      },
+    });
+
+    expect(result).toMatchObject({
+      success: true,
+      data: resource,
+      error: null,
+      exitCode: 0,
+    });
+  });
+
+  it('returns null data for an empty direct exec response', async () => {
+    runOscfgMock.mockResolvedValueOnce({
+      success: true,
+      data: [],
+      error: null,
+      exitCode: 0,
+    });
+
+    const result = await execResource({
+      mode: 'get',
+      type: 'Microsoft.Windows/CSP',
+      properties: {
+        path: './Vendor/MSFT/Policy/Config/Test/Setting',
+        type: 'integer',
+        value: 1,
+      },
+    });
+
+    expect(result).toMatchObject({
+      success: true,
+      data: null,
+      error: null,
+      exitCode: 0,
+    });
+  });
+
+  it('rejects ambiguous multi-resource exec responses', async () => {
+    runOscfgMock.mockResolvedValueOnce({
+      success: true,
+      data: [
+        { name: 'first', type: 'Microsoft.Windows/CSP', properties: {} },
+        { name: 'second', type: 'Microsoft.Windows/CSP', properties: {} },
+      ],
+      error: null,
+      exitCode: 0,
+    });
+
+    const result = await execResource({
+      mode: 'get',
+      type: 'Microsoft.Windows/CSP',
+      properties: {
+        path: './Vendor/MSFT/Policy/Config/Test/Setting',
+        type: 'integer',
+        value: 1,
+      },
+    });
+
+    expect(result).toMatchObject({
+      success: false,
+      data: null,
+      error: 'oscfg exec resource returned 2 resources; expected exactly one',
+      exitCode: 0,
+    });
+  });
+
+  it('preserves multi-resource responses for list mode', async () => {
+    const resources = [
+      { name: 'first', type: 'Microsoft.Windows/Firmware', properties: {} },
+      { name: 'second', type: 'Microsoft.Windows/Firmware', properties: {} },
+    ];
+    runOscfgMock.mockResolvedValueOnce({
+      success: true,
+      data: resources,
+      error: null,
+      exitCode: 0,
+    });
+
+    const result = await execResource({
+      mode: 'list',
+      type: 'Microsoft.Windows/Firmware',
+      properties: {},
+    });
+
+    expect(result).toMatchObject({
+      success: true,
+      data: resources,
+      error: null,
+      exitCode: 0,
+    });
+  });
+});
+
 describe('execResource Registry normalization', () => {
   it('sends canonical REG_DWORD for direct Dword input', async () => {
     await execResource({

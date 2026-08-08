@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.3.102] - 2026-08-08
+
+### Fixed
+
+- Normalize single-resource array responses from OSConfig 1.4.3 direct
+  `exec resource` calls. Pre-deploy Audit now evaluates CSP, Registry, Test,
+  and User Rights resources instead of reporting them as indeterminate or
+  "could not read" solely because the CLI returned `[resource]` rather than
+  `resource`.
+
 ## [Unreleased]
 
 ## [0.3.101] - 2026-08-07

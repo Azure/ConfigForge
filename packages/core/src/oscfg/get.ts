@@ -27,7 +27,7 @@ export async function getNamespaces(
   );
   if (!result.success) return { ...result, data: null };
 
-  const raw = normalizeArray<unknown>(result.data);
+  const raw = normalizeOscfgArray<unknown>(result.data);
   const namespaces: OscfgNamespace[] = raw.map((entry) => {
     if (typeof entry === 'string') return { name: entry };
     if (entry && typeof entry === 'object') {
@@ -76,7 +76,7 @@ export async function getResources(
     };
   }
 
-  return { ...result, data: normalizeArray<OscfgResource>(result.data) };
+  return { ...result, data: normalizeOscfgArray<OscfgResource>(result.data) };
 }
 
 /**
@@ -95,8 +95,10 @@ export async function getResourceByName(
 /**
  * Helper: the CLI may return a single object or an array depending on args.
  * Always coerce to array for consistent handling.
+ *
+ * @internal
  */
-function normalizeArray<T>(raw: unknown): T[] {
+export function normalizeOscfgArray<T>(raw: unknown): T[] {
   if (raw === null || raw === undefined) return [];
   if (Array.isArray(raw)) return raw as T[];
   if (typeof raw === 'object') {

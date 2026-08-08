@@ -6,10 +6,10 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The current Windows/Linux release is `v0.3.101`. The current macOS Author tagged source is
-`mac-v0.3.98-author.1`, and its matching GitHub release is also a draft and
-unpublished. The package versions are `0.3.101` for the Full edition and
-`0.3.98-author.1` for the macOS Author edition.
+The current Windows/Linux release is `v0.3.102`. The current macOS Author
+release is `mac-v0.3.101-author.1`; both are published as prereleases. The
+package versions are `0.3.102` for the Full edition and `0.3.101-author.1`
+for the macOS Author edition.
 
 ## Export to Azure Machine Configuration
 
@@ -250,11 +250,13 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **0.3.101** (current Windows/Linux release) | Clears the remaining GitHub security alerts with patched DOMPurify, fast-uri, ip-address, React Router, and Undici releases |
+| **0.3.102** (current Windows/Linux release) | Fixes pre-deploy Audit with OSConfig 1.4.3 so single-resource CSP, Registry, Test, and User Rights reads are evaluated instead of reported as indeterminate |
+| **0.3.101** (prior Windows/Linux release) | Clears the remaining GitHub security alerts with patched DOMPurify, fast-uri, ip-address, React Router, and Undici releases |
 | **0.3.100** (prior Windows/Linux release) | Updates js-yaml to the patched 4.3.1 release for `GHSA-5p4m-2wfm-xmqj` |
 | **0.3.99** (prior Windows/Linux release) | Verifies Enforce results, preserves exact QWords, keeps Revert safe, repairs WS2022 readability, and adds Machine Configuration Set compatibility |
 | **0.3.98** (prior Windows/Linux release) | Adds complete Machine Configuration deployment documentation and removes stale/internal public-doc guidance |
-| **0.3.98-author.1** (current macOS tagged source; draft unpublished) | Ports the same public documentation and Machine Configuration guidance to macOS Author |
+| **0.3.101-author.1** (current macOS prerelease) | Ports the author-safe baseline, lossless data, Machine Configuration packaging, build, and security fixes |
+| **0.3.98-author.1** (prior macOS prerelease) | Ports the public documentation and Machine Configuration guidance to macOS Author |
 | **0.3.97** (prior Windows/Linux draft) | Preserves authoritative CLI reasons for expression-backed Test resources and adds detailed templates to all WS2025 controls |
 | **0.3.97-author.1** (prior macOS draft) | Ports the same detailed audit-reason behavior to the author-only macOS line |
 | **0.3.96** (prior Windows/Linux draft) | Preserves all 320/321/296 WS2025 controls while fixing Registry/CSP contracts and CEL compliance, and hardens Machine Configuration MOF export in PR #104 |
@@ -262,8 +264,8 @@ is not a universal binary.
 | **0.3.95** (prior Windows/Linux draft) | Replaces unreliable native hover titles with FluentUI tooltips on My Baselines status cells (keyboard accessible, ARIA-exposed multiline details) in PR #100; corrects documentation architecture and release-state drift in PR #97 |
 | **0.3.94** (prior Full edition) | Excludes CIS benchmark source data from public installers, publishes the public licensing/privacy/support/security policy surface, patches dev-only `brace-expansion` 5.x, and refreshes nine README screenshots with synthetic benchmark content in PR #89 |
 | **0.3.94-author.1** (prior macOS draft) | Carries the public-source packaging, policy, privacy, security, and nine synthetic screenshot updates into the author-only Apple Silicon edition without adding device operations |
-| **0.3.93-author.2** (historical macOS source milestone; no current tag or release) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83/#84. Historical workflow evidence is superseded by the current `mac-v0.3.98-author.1` draft release metadata. |
-| **0.3.93-author.1** (historical macOS source milestone; no current tag or release) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77. Historical workflow evidence is superseded by the current `mac-v0.3.98-author.1` draft release metadata. |
+| **0.3.93-author.2** (historical macOS source milestone; no current tag or release) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83/#84. Historical workflow evidence is superseded by the current `mac-v0.3.101-author.1` prerelease metadata. |
+| **0.3.93-author.1** (historical macOS source milestone; no current tag or release) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77. Historical workflow evidence is superseded by the current `mac-v0.3.101-author.1` prerelease metadata. |
 | **0.3.93** (prior Full edition) | Adds nested Enter/Tab editing and repairs standalone Windows Server 2025 audits, CIS mapping, and Matrix Diff policy identity handling |
 | **0.3.92** | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
 | **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
