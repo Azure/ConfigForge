@@ -31,6 +31,7 @@ import {
   type ParsedSDSetting,
   type ParsedSecurityDefinition,
 } from '../import-export';
+import { parseLosslessJson } from '../manifest/lossless';
 import { HandlerError } from './errors';
 import { xlsxToDelimitedText } from './xlsx-import';
 
@@ -401,7 +402,7 @@ export function importFile(req: ImportRequest): ImportResult {
     case 'json': {
       let parsedJson: unknown;
       try {
-        parsedJson = JSON.parse(content);
+        parsedJson = parseLosslessJson(content);
       } catch {
         throw new HandlerError(400, 'File is not valid JSON');
       }

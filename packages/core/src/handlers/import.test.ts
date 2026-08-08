@@ -33,13 +33,21 @@ vi.mock('../import-export', () => ({
     },
   ]),
   inferRegistryValueType: vi.fn((expectedValue: unknown) => {
-    if (
-      (typeof expectedValue === 'number' && Number.isInteger(expectedValue)) ||
-      (typeof expectedValue === 'string' && /^-?\d+$/.test(expectedValue.trim()))
+    let integer: bigint | null = null;
+    if (typeof expectedValue === 'bigint') integer = expectedValue;
+    else if (typeof expectedValue === 'number' && Number.isInteger(expectedValue)) {
+      if (!Number.isSafeInteger(expectedValue)) return 'REG_QWORD';
+      integer = BigInt(expectedValue);
+    } else if (
+      typeof expectedValue === 'string' &&
+      /^-?\d+$/.test(expectedValue.trim())
     ) {
-      return 'Dword';
+      integer = BigInt(expectedValue.trim());
     }
-    return 'String';
+    if (integer === null) return 'REG_SZ';
+    return integer >= -2147483648n && integer <= 4294967295n
+      ? 'REG_DWORD'
+      : 'REG_QWORD';
   }),
   buildBaselineManifest: vi.fn((settings: Array<Record<string, unknown>>) => ({
     manifest: {
@@ -50,7 +58,7 @@ vi.mock('../import-export', () => ({
         properties: {
           keyPath: setting.registryPath,
           valueName: setting.settingName,
-          valueType: 'Dword',
+          valueType: 'REG_DWORD',
           value: 24,
         },
         compliance: { equals: 24 },
@@ -165,6 +173,23 @@ describe('importFile', () => {
     expect(result.data.resourceCount).toBe(2);
   });
 
+  it('preserves unsafe QWords at the JSON import boundary', () => {
+    const result = importFile({
+      filename: 'qword.json',
+      content:
+        '{"resources":[{"name":"qword","type":"Microsoft.Windows/Registry",' +
+        '"properties":{"valueType":"REG_QWORD","value":18446744073709551615}}]}',
+    });
+
+    expect(result.type).toBe('manifest');
+    const exportedManifest = vi.mocked(exportToYaml).mock.calls[0][0] as {
+      resources: Array<{ properties: { value: unknown } }>;
+    };
+    expect(exportedManifest.resources[0].properties.value).toBe(
+      18446744073709551615n,
+    );
+  });
+
   it('parses .json with Settings array as security-definition', () => {
     const json = JSON.stringify({
       Name: 'w10',
@@ -232,8 +257,8 @@ describe('importFile', () => {
     expect(r.type).toBe('Microsoft.Windows/Registry');
     expect(r.properties.keyPath).toBe('HKLM\\Soft');
     expect(r.properties.valueName).toBe('PasswordHistory');
-    // mocked expectedValue is 24 (integer) → Dword
-    expect(r.properties.valueType).toBe('Dword');
+    // mocked expectedValue is 24 (integer) → REG_DWORD
+    expect(r.properties.valueType).toBe('REG_DWORD');
     expect(r.compliance).toEqual({ equals: 24 });
   });
 
@@ -261,39 +286,44 @@ describe('importFile', () => {
     // valueName falls back to the setting name when not present in the
     // security-definition row.
     expect(r.properties.valueName).toBe('s1');
-    // mocked expectedValue is 1 (integer) → Dword
-    expect(r.properties.valueType).toBe('Dword');
+    // mocked expectedValue is 1 (integer) → REG_DWORD
+    expect(r.properties.valueType).toBe('REG_DWORD');
   });
 });
 
 describe('inferRegistryValueType', () => {
-  it('returns Dword for integer numbers', () => {
-    expect(inferRegistryValueType(0)).toBe('Dword');
-    expect(inferRegistryValueType(1)).toBe('Dword');
-    expect(inferRegistryValueType(-1)).toBe('Dword');
-    expect(inferRegistryValueType(24)).toBe('Dword');
+  it('returns REG_DWORD for integer numbers', () => {
+    expect(inferRegistryValueType(0)).toBe('REG_DWORD');
+    expect(inferRegistryValueType(1)).toBe('REG_DWORD');
+    expect(inferRegistryValueType(-1)).toBe('REG_DWORD');
+    expect(inferRegistryValueType(24)).toBe('REG_DWORD');
   });
 
-  it('returns Dword for integer-shaped strings', () => {
-    expect(inferRegistryValueType('0')).toBe('Dword');
-    expect(inferRegistryValueType('  42  ')).toBe('Dword');
-    expect(inferRegistryValueType('-7')).toBe('Dword');
+  it('returns REG_DWORD for integer-shaped strings', () => {
+    expect(inferRegistryValueType('0')).toBe('REG_DWORD');
+    expect(inferRegistryValueType('  42  ')).toBe('REG_DWORD');
+    expect(inferRegistryValueType('-7')).toBe('REG_DWORD');
   });
 
-  it('returns String for non-integer values', () => {
-    expect(inferRegistryValueType('Enabled')).toBe('String');
-    expect(inferRegistryValueType('true')).toBe('String'); // boolean-as-string is not Dword
-    expect(inferRegistryValueType('1.5')).toBe('String'); // non-integer numeric string
-    expect(inferRegistryValueType('')).toBe('String');
-    expect(inferRegistryValueType('   ')).toBe('String');
-    expect(inferRegistryValueType('1e3')).toBe('String'); // scientific notation
+  it('returns REG_QWORD for integers outside the DWORD range', () => {
+    expect(inferRegistryValueType('4294967296')).toBe('REG_QWORD');
+    expect(inferRegistryValueType(18446744073709551615n)).toBe('REG_QWORD');
   });
 
-  it('returns String for undefined / null / non-integer JS numbers / other types', () => {
-    expect(inferRegistryValueType(undefined)).toBe('String');
-    expect(inferRegistryValueType(null)).toBe('String');
-    expect(inferRegistryValueType(1.5)).toBe('String'); // floats are not Dword
-    expect(inferRegistryValueType(true)).toBe('String');
-    expect(inferRegistryValueType({})).toBe('String');
+  it('returns REG_SZ for non-integer values', () => {
+    expect(inferRegistryValueType('Enabled')).toBe('REG_SZ');
+    expect(inferRegistryValueType('true')).toBe('REG_SZ'); // boolean-as-string is not a DWORD
+    expect(inferRegistryValueType('1.5')).toBe('REG_SZ'); // non-integer numeric string
+    expect(inferRegistryValueType('')).toBe('REG_SZ');
+    expect(inferRegistryValueType('   ')).toBe('REG_SZ');
+    expect(inferRegistryValueType('1e3')).toBe('REG_SZ'); // scientific notation
+  });
+
+  it('returns REG_SZ for undefined / null / non-integer JS numbers / other types', () => {
+    expect(inferRegistryValueType(undefined)).toBe('REG_SZ');
+    expect(inferRegistryValueType(null)).toBe('REG_SZ');
+    expect(inferRegistryValueType(1.5)).toBe('REG_SZ'); // floats are not DWORDs
+    expect(inferRegistryValueType(true)).toBe('REG_SZ');
+    expect(inferRegistryValueType({})).toBe('REG_SZ');
   });
 });

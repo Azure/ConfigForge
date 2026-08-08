@@ -1,6 +1,6 @@
 {
   "name": "@configforge/desktop",
-  "version": "0.3.98-author.1",
+  "version": "0.3.101-author.1",
   "private": true,
   "description": "ConfigForge \u2014 OSConfig Baseline Editing tool",
   "main": "./dist/electron/main.js",
@@ -40,7 +40,7 @@
     "electron-updater": "6.8.9",
     "i18next": "^25.0.0",
     "i18next-browser-languagedetector": "^8.0.0",
-    "js-yaml": "^4.3.0",
+    "js-yaml": "^4.3.1",
     "react-i18next": "^15.0.0",
     "monaco-editor": "^0.55.1",
     "pdfkit": "^0.18.0"
@@ -66,7 +66,7 @@
     "postcss": "^8.5.23",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^7.18.0",
+    "react-router-dom": "^7.18.2",
     "sharp": "0.35.0",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.7.3",

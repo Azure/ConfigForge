@@ -376,7 +376,7 @@ export async function saveSnapshot(
     await rename(metaTmp, metaFile);
   }
 
-  // 3) Retention sweep — best-effort, never blocks the save success.
+  // 3) Retention sweep — best-effort and completed before save resolves.
   //
   // v0.3.1 (#23): retention is now persisted in the settings store
   // (`packages/core/src/handlers/settings.ts`) so the user can
@@ -385,26 +385,24 @@ export async function saveSnapshot(
   // `maxRetention()` as a synchronous fallback for callers that
   // haven't yet been migrated to async, but the actual prune below
   // resolves through the settings store.
-  void (async () => {
-    // Env-var override wins (including 0/-1 to disable pruning) — preserves
-    // legacy behavior and existing test contracts. When the env var is
-    // unset, defer to the persisted settings store for the user's choice.
-    let n: number = maxRetention();
-    if (process.env[ENV_MAX_COUNT] === undefined) {
-      try {
-        // Lazy import to avoid a circular dep between history and the
-        // settings handler.
-        const { resolveHistoryRetention } = await import('../handlers/settings');
-        n = await resolveHistoryRetention();
-      } catch {
-        /* fall back to default already in `n` */
-      }
+  // Env-var override wins (including 0/-1 to disable pruning) — preserves
+  // legacy behavior and existing test contracts. When the env var is
+  // unset, defer to the persisted settings store for the user's choice.
+  let n: number = maxRetention();
+  if (process.env[ENV_MAX_COUNT] === undefined) {
+    try {
+      // Lazy import to avoid a circular dep between history and the
+      // settings handler.
+      const { resolveHistoryRetention } = await import('../handlers/settings');
+      n = await resolveHistoryRetention();
+    } catch {
+      /* fall back to default already in `n` */
     }
-    await pruneToRetention(dir, n).catch((err) => {
-      // eslint-disable-next-line no-console
-      console.warn(`[history] retention sweep failed: ${err instanceof Error ? err.message : err}`);
-    });
-  })();
+  }
+  await pruneToRetention(dir, n).catch((err) => {
+    // eslint-disable-next-line no-console
+    console.warn(`[history] retention sweep failed: ${err instanceof Error ? err.message : err}`);
+  });
 
   return {
     id,

@@ -7,7 +7,7 @@ import { MessageBar, MessageBarBody, Spinner } from "@fluentui/react-components"
 import { CodeRegular, TableRegular } from "@fluentui/react-icons";
 import { ManifestEditor } from "../../../components/manifest-editor";
 import { FORMAT_TABS, EDITOR_LANGUAGE } from "../helpers";
-import { dumpVisualManifest } from "../visual-viewer";
+import { dumpVisualManifest, parseLosslessJson } from "../visual-viewer";
 import type { ManifestEditorState } from "../state/useManifestEditorState";
 import { VisualManifestViewer } from "./VisualManifestViewer";
 
@@ -117,7 +117,7 @@ export const ManifestContent = React.memo(function ManifestContent({
     if (activeFormat === "json") {
       try {
         const previousYaml = formatCache.current.yaml ?? savedContent;
-        const yamlSource = dumpVisualManifest(JSON.parse(editedContent));
+        const yamlSource = dumpVisualManifest(parseLosslessJson(editedContent));
         formatCache.current.yaml = yamlSource;
         contentRef.current = yamlSource;
         const nextStack = previousYaml && previousYaml !== yamlSource ? [previousYaml] : [];

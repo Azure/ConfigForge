@@ -27,6 +27,8 @@
  * `fast-xml-parser` which break the browser/Electron-renderer bundle.
  * The function is a pure string transform; keep a local copy.
  */
+import { stringifyLosslessJson } from '../manifest/lossless';
+
 function splitPascalCase(s: string): string[] {
   return s
     .replace(/([A-Z]+)([A-Z][a-z])/g, '$1 $2') // ABBR+Word boundary
@@ -38,6 +40,7 @@ function splitPascalCase(s: string): string[] {
 }
 
 const MAX_DEPTH = 50;
+const DECIMAL_INTEGER_PATTERN = /^[+-]?[0-9]+$/;
 
 export type CellStatus =
   | 'identical' // value matches the first non-empty baseline value
@@ -727,7 +730,16 @@ function canonicalize(v: unknown): unknown {
   // try numeric coercion so '24' equals 24.
   if (typeof v === 'string') {
     const trimmed = v.trim();
-    if (/^-?\d+(\.\d+)?$/.test(trimmed)) return Number(trimmed);
+    // Quoted hexadecimal/binary/octal values are strings, not numeric
+    // literals. Only coerce decimal text so "0x10" does not equal 16.
+    if (DECIMAL_INTEGER_PATTERN.test(trimmed)) {
+      const integer = BigInt(trimmed);
+      return integer >= BigInt(Number.MIN_SAFE_INTEGER) &&
+        integer <= BigInt(Number.MAX_SAFE_INTEGER)
+        ? Number(integer)
+        : integer;
+    }
+    if (/^-?\d+\.\d+$/.test(trimmed)) return Number(trimmed);
     // Path-like strings (containing backslashes) collapse doubled
     // backslashes and strip trailing ones so "Foo\\Bar\\" == "Foo\Bar".
     // Catches Windows Firewall logging-name paths that come from CSP
@@ -757,7 +769,7 @@ function canonicalize(v: unknown): unknown {
 }
 
 function serialize(value: unknown): string {
-  return JSON.stringify(canonicalize(value));
+  return stringifyLosslessJson(canonicalize(value)) ?? '';
 }
 
 /**

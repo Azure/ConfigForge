@@ -391,7 +391,10 @@ function parseLiteral(token: string): unknown {
   if (/^null$/i.test(normalized)) return null;
   if (/^true$/i.test(normalized)) return true;
   if (/^false$/i.test(normalized)) return false;
-  if (/^-?\d+(?:\.\d+)?$/.test(normalized)) return Number(normalized);
+  if (/^-?\d+$/.test(normalized)) {
+    return parseExactInteger(normalized, 'Compliance integer');
+  }
+  if (/^-?\d+\.\d+$/.test(normalized)) return Number(normalized);
   return normalized;
 }
 
@@ -480,16 +483,25 @@ function deriveDesiredValue(node: ComplianceNode): unknown {
 }
 
 export function inferRegistryValueType(expectedValue: unknown): string {
-  if (typeof expectedValue === 'number' && Number.isInteger(expectedValue)) {
-    return 'Dword';
-  }
-  if (typeof expectedValue === 'string') {
+  let integer: bigint | null = null;
+  if (typeof expectedValue === 'bigint') {
+    integer = expectedValue;
+  } else if (typeof expectedValue === 'number' && Number.isInteger(expectedValue)) {
+    if (!Number.isSafeInteger(expectedValue)) return 'REG_QWORD';
+    integer = BigInt(expectedValue);
+  } else if (typeof expectedValue === 'string') {
     const trimmed = expectedValue.trim();
-    if (trimmed !== '' && /^-?\d+$/.test(trimmed)) {
-      return 'Dword';
-    }
+    if (trimmed !== '' && /^-?\d+$/.test(trimmed)) integer = BigInt(trimmed);
   }
-  return 'String';
+
+  if (integer !== null) {
+    // DWORD accepts the signed policy values commonly authored as negatives
+    // and the full unsigned 32-bit range. Larger exact integers require QWORD.
+    return integer >= -2147483648n && integer <= 4294967295n
+      ? 'REG_DWORD'
+      : 'REG_QWORD';
+  }
+  return 'REG_SZ';
 }
 
 function normalizeRegistryValueType(raw: string | undefined, value: unknown): string {
@@ -521,8 +533,7 @@ function normalizeRegistryValueType(raw: string | undefined, value: unknown): st
       return 'REG_SZ';
     default:
       if (Array.isArray(value)) return 'REG_MULTI_SZ';
-      if (typeof value === 'number' && Number.isInteger(value)) return 'REG_DWORD';
-      return 'REG_SZ';
+      return inferRegistryValueType(value);
   }
 }
 
@@ -539,6 +550,36 @@ function parseSafeInteger(value: unknown, label: string): number {
     throw new Error(`${label} is outside JavaScript's safe integer range`);
   }
   return parsed;
+}
+
+function parseExactInteger(value: unknown, label: string): number | bigint {
+  if (typeof value === 'bigint') {
+    return value >= BigInt(Number.MIN_SAFE_INTEGER) &&
+      value <= BigInt(Number.MAX_SAFE_INTEGER)
+      ? Number(value)
+      : value;
+  }
+  if (typeof value === 'number') {
+    if (!Number.isInteger(value)) {
+      throw new Error(`${label} must be an integer, found "${value}"`);
+    }
+    if (!Number.isSafeInteger(value)) {
+      throw new Error(
+        `${label} cannot preserve an unsafe JavaScript number; provide the value as decimal text`,
+      );
+    }
+    return value;
+  }
+
+  const text = String(value).trim();
+  if (!/^-?\d+$/.test(text)) {
+    throw new Error(`${label} must be an integer, found "${text}"`);
+  }
+  const integer = BigInt(text);
+  return integer >= BigInt(Number.MIN_SAFE_INTEGER) &&
+    integer <= BigInt(Number.MAX_SAFE_INTEGER)
+    ? Number(integer)
+    : integer;
 }
 
 function splitListValue(value: unknown): string[] {
@@ -572,8 +613,9 @@ function coerceRegistryValue(value: unknown, valueType: string): unknown {
   const normalized = normalizeEmptyMarker(value);
   switch (valueType) {
     case 'REG_DWORD':
-    case 'REG_QWORD':
       return parseSafeInteger(normalized, valueType);
+    case 'REG_QWORD':
+      return parseExactInteger(normalized, valueType);
     case 'REG_MULTI_SZ':
       return splitListValue(normalized);
     default:
@@ -735,19 +777,22 @@ function buildGenericResource(setting: ParsedBaselineSetting): Record<string, un
   }
 
   const rawValue = setting.defaultValue ?? setting.expectedValue;
-  const valueType = inferRegistryValueType(rawValue);
+  const inferredTypes = [setting.defaultValue, setting.expectedValue]
+    .filter((value) => value !== undefined)
+    .map((value) => inferRegistryValueType(value));
+  const valueType = inferredTypes.includes('REG_SZ')
+    ? 'REG_SZ'
+    : inferredTypes.includes('REG_QWORD')
+      ? 'REG_QWORD'
+      : 'REG_DWORD';
   const typedValue =
     rawValue === undefined
       ? undefined
-      : valueType === 'Dword'
-        ? parseSafeInteger(rawValue, 'Dword')
-        : String(normalizeEmptyMarker(rawValue));
+      : coerceRegistryValue(rawValue, valueType);
   const expectedValue =
     setting.expectedValue === undefined
       ? undefined
-      : valueType === 'Dword'
-        ? parseSafeInteger(setting.expectedValue, 'Dword')
-        : String(normalizeEmptyMarker(setting.expectedValue));
+      : coerceRegistryValue(setting.expectedValue, valueType);
   return {
     name: safeResourceName(setting.settingName),
     type: 'Microsoft.Windows/Registry',

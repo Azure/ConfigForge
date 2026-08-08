@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { describe, it, expect } from 'vitest';
-import { resourcesToYaml, parseYamlDocument } from './format';
+import { resourcesToYaml, parseYamlDocument, parseYamlDocumentLossless } from './format';
 
 describe('resourcesToYaml', () => {
   it('produces valid YAML with schema, name, and resources', () => {
@@ -71,5 +71,13 @@ describe('parseYamlDocument', () => {
     const result = parseYamlDocument('{"name": "test", "count": 3}');
     expect(result.name).toBe('test');
     expect(result.count).toBe(3);
+  });
+});
+
+describe('parseYamlDocumentLossless', () => {
+  it('preserves QWord integers outside the JavaScript safe range', () => {
+    const result = parseYamlDocumentLossless('value: 18446744073709551615');
+
+    expect(result.value).toBe(18446744073709551615n);
   });
 });

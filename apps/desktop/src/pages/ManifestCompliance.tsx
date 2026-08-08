@@ -16,6 +16,7 @@ import {
 } from "@fluentui/react-icons";
 import { MessageBar, MessageBarBody, MessageBarTitle, Spinner } from "@fluentui/react-components";
 import { useCisAvailable } from "../components/use-cis-available";
+import { stringifyLosslessJson } from "@configforge/core/manifest/lossless";
 import { cfs } from "../lib/cfs";
 import { useTranslation } from "react-i18next";
 
@@ -41,6 +42,10 @@ interface ComplianceReport {
   severityBreakdown: Record<string, { matched: number; mismatched: number; missing: number }>;
   perRule: PerRule[];
   extras: Array<{ ruleName: string; type?: string }>;
+}
+
+function formatComplianceValue(value: unknown): string {
+  return stringifyLosslessJson(value) ?? String(value);
 }
 
 interface ComplianceResponse {
@@ -537,11 +542,11 @@ function RulesTable({ rows, status }: { rows: PerRule[]; status: ComplianceStatu
               </td>
               {status !== "missing" && (
                 <td className="px-3 py-2 font-mono text-[11px] text-slate-600 dark:text-slate-300">
-                  {r.myValue === undefined ? "-" : JSON.stringify(r.myValue)}
+                  {r.myValue === undefined ? "-" : formatComplianceValue(r.myValue)}
                 </td>
               )}
               <td className="px-3 py-2 font-mono text-[11px] text-slate-600 dark:text-slate-300">
-                {r.expected === undefined ? "-" : JSON.stringify(r.expected)}
+                {r.expected === undefined ? "-" : formatComplianceValue(r.expected)}
               </td>
               <td className="px-3 py-2 text-slate-500 dark:text-slate-400">{r.gpoPath ?? "-"}</td>
             </tr>
@@ -601,8 +606,10 @@ function renderMarkdown(data: ComplianceResponse): string {
   out.push("| Status | Severity | Rule | GPO Path | My Value | Expected |");
   out.push("| --- | --- | --- | --- | --- | --- |");
   for (const row of r.perRule) {
-    const my = row.myValue === undefined ? "" : "`" + JSON.stringify(row.myValue) + "`";
-    const exp = row.expected === undefined ? "" : "`" + JSON.stringify(row.expected) + "`";
+    const my =
+      row.myValue === undefined ? "" : "`" + stringifyLosslessJson(row.myValue) + "`";
+    const exp =
+      row.expected === undefined ? "" : "`" + stringifyLosslessJson(row.expected) + "`";
     const gpo = row.gpoPath ? row.gpoPath.replace(/\\/g, "\\\\").replace(/\|/g, "\\|") : "";
     const name = row.ruleName.replace(/\\/g, "\\\\").replace(/\|/g, "\\|");
     out.push(`| ${row.status} | ${row.severity} | ${name} | ${gpo} | ${my} | ${exp} |`);

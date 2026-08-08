@@ -1,7 +1,13 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import yaml from 'js-yaml';
+import {
+  dumpLosslessYaml,
+  parseLosslessJson,
+  parseLosslessYaml,
+  stringifyLosslessJson,
+} from '../manifest/lossless';
+import { normalizeManifestRegistryTypes } from '../oscfg/registry-types';
 import type { SettingConfiguration } from '../types';
 
 export {
@@ -82,7 +88,7 @@ export interface ParsedSDSetting {
  * Parse .osc.yaml content, validate basic schema, return structured manifest.
  */
 export function parseOscYaml(content: string): ParsedManifest {
-  const doc = yaml.load(content);
+  const doc = parseLosslessYaml(content);
   if (!doc || typeof doc !== 'object') {
     throw new Error('Invalid YAML: document must be an object');
   }
@@ -151,7 +157,7 @@ function stripSettingNameSuffix(raw: string): string {
 export function parseSecurityDefinition(jsonStr: string): ParsedSecurityDefinition {
   let doc: unknown;
   try {
-    doc = JSON.parse(jsonStr);
+    doc = parseLosslessJson(jsonStr);
   } catch (err) {
     const m = err instanceof Error ? err.message : 'parse failed';
     throw new Error(`Invalid JSON in security definition: ${m}`);
@@ -250,7 +256,7 @@ export function parseSecurityDefinition(jsonStr: string): ParsedSecurityDefiniti
  * Serialize a manifest object to .osc.yaml string.
  */
 export function exportToYaml(manifest: object): string {
-  return yaml.dump(manifest, {
+  return dumpLosslessYaml(manifest, {
     indent: 2,
     lineWidth: 120,
     noRefs: true,
@@ -262,7 +268,15 @@ export function exportToYaml(manifest: object): string {
  * Serialize a manifest object to pretty JSON.
  */
 export function exportToJson(manifest: object): string {
-  return JSON.stringify(manifest, null, 2);
+  return serializeJson(manifest, 2);
+}
+
+function serializeJson(value: unknown, space?: string | number): string {
+  const serialized = stringifyLosslessJson(value, space);
+  if (serialized === undefined) {
+    throw new TypeError('Value could not be serialized to JSON.');
+  }
+  return serialized;
 }
 
 /**
@@ -353,8 +367,9 @@ export function exportToMof(
   const instances: string[] = [];
   const configurationName = newUuid();
   const correlationGroup = `{${newUuid()}}`;
+  const normalizedResources = normalizeManifestRegistryTypes(resources);
 
-  for (const raw of Array.isArray(resources) ? resources : []) {
+  for (const raw of Array.isArray(normalizedResources) ? normalizedResources : []) {
     if (!raw || typeof raw !== 'object') continue;
     const r = raw as Record<string, unknown>;
 
@@ -400,7 +415,7 @@ export function exportToMof(
       }
     }
 
-    const propsJson = JSON.stringify(props);
+    const propsJson = serializeJson(props);
 
     const lines: string[] = [];
     lines.push(`instance of OSConfig as $OSConfig${instances.length}ref`);
@@ -437,7 +452,7 @@ export function exportToMof(
       lines.push(`    Expression = "${mofEscape(expression)}";`);
     }
     if (schema !== undefined) {
-      lines.push(`    Schema = "${mofEscape(JSON.stringify(schema))}";`);
+      lines.push(`    Schema = "${mofEscape(serializeJson(schema))}";`);
     }
     if (template) {
       lines.push(`    Template = "${mofEscape(template)}";`);
@@ -470,7 +485,7 @@ export function exportToExcel(settings: SettingConfiguration[]): string {
 
   const escapeCSV = (val: unknown): string => {
     if (val === null || val === undefined) return '';
-    const str = typeof val === 'object' ? JSON.stringify(val) : String(val);
+    const str = typeof val === 'object' ? serializeJson(val) : String(val);
     if (str.includes(',') || str.includes('"') || str.includes('\n')) {
       return `"${str.replace(/"/g, '""')}"`;
     }
@@ -646,7 +661,7 @@ function extractPolicySettingParams(resources: unknown): PolicySettingParam[] {
         : typeof defaultValue === 'string'
           ? defaultValue
           : typeof defaultValue === 'object'
-            ? JSON.stringify(defaultValue)
+            ? serializeJson(defaultValue)
             : String(defaultValue);
 
     // Build a description. Registry/CSP get keyPath+valueName context;
@@ -969,5 +984,5 @@ export function exportToAzurePolicy(
     },
   };
 
-  return JSON.stringify(policyDefinition, null, 2);
+  return serializeJson(policyDefinition, 2);
 }

@@ -9,18 +9,22 @@
  */
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-vi.mock('../oscfg', () => ({
-  getRegistration: vi.fn(),
-  getRegistrationSource: vi.fn(),
-  getResources: vi.fn(),
-  resourcesToYaml: vi.fn(),
-  parseYamlDocument: vi.fn((s: string) => {
+vi.mock('../oscfg', () => {
+  const parseYamlDocument = vi.fn((s: string) => {
     if (!s) return {};
     if (s.includes('resources:')) return { resources: [] };
     return {};
-  }),
-  sanitizeNamespace: vi.fn((s: string) => s.toLowerCase().replace(/[^a-z0-9-]/g, '-')),
-}));
+  });
+  return {
+    getRegistration: vi.fn(),
+    getRegistrationSource: vi.fn(),
+    getResources: vi.fn(),
+    resourcesToYaml: vi.fn(),
+    parseYamlDocument,
+    parseYamlDocumentLossless: parseYamlDocument,
+    sanitizeNamespace: vi.fn((s: string) => s.toLowerCase().replace(/[^a-z0-9-]/g, '-')),
+  };
+});
 
 vi.mock('../history', () => ({
   getHistory: vi.fn().mockResolvedValue([]),

@@ -1,6 +1,6 @@
 {
   "name": "configforge",
-  "version": "0.3.98-author.1",
+  "version": "0.3.101-author.1",
   "private": true,
   "license": "MIT",
   "description": "ConfigForge \u2014 Cross-platform Electron desktop app for OSConfig security baseline authoring",
@@ -46,7 +46,7 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.10.5",
-    "dompurify": "^3.4.12",
+    "dompurify": "^3.4.13",
     "eslint-config-prettier": "10.1.8",
     "jsdom": "^29.1.1",
     "prettier": "3.8.3",
@@ -61,8 +61,8 @@
     "brace-expansion@2": "2.1.2",
     "brace-expansion@5": "5.0.8",
     "esbuild": "^0.28.1",
-    "js-yaml": "^4.3.0",
-    "undici@7": "^7.28.0",
-    "undici@6": "^6.27.0"
+    "js-yaml": "^4.3.1",
+    "undici@7": "^7.29.0",
+    "undici@6": "^6.28.0"
   }
 }

@@ -1,0 +1,748 @@
+{
+  "_provenance": {
+    "description": "Legacy JSON-Schema compliance shape -> CEL expression + human template, extracted from the reviewed WS2025 schema translation. Keyed by schema shape AND the kind of the desired value, because string-typed values use an int() coercion form.",
+    "schemaBeforeCommit": "50d469c3cf5e16729f1359538b10ef4bc0b6de78",
+    "schemaAfterCommit": "37ab26a74bd7a6aa7f6df9a6ecc0fba3a7521821",
+    "paths": [
+      "public/_baselines/ws2025-workgroup-member.osc.yaml",
+      "public/_baselines/ws2025-member-server.osc.yaml",
+      "public/_baselines/ws2025-domain-controller.osc.yaml"
+    ],
+    "reachableFromOriginMain": true,
+    "regenerate": "node scripts/ws2022-baseline-repair/derive-maps.mjs"
+  },
+  "entries": [
+    {
+      "schema": {
+        "const": "1"
+      },
+      "valueKind": "string",
+      "expression": "(value == \"1\")",
+      "template": "The value {value} must be \"1\".",
+      "evidence": [
+        "SmartCardRemovalBehavior",
+        "WinVerityTrustSignatureValidationVulnerabilityMitigation1",
+        "WinVerityTrustSignatureValidationVulnerabilityMitigation2"
+      ]
+    },
+    {
+      "schema": {
+        "const": 0
+      },
+      "valueKind": "absent",
+      "expression": "(value == 0)",
+      "template": "The value {value} must be 0.",
+      "evidence": [
+        "EnabledNTPClient",
+        "ClearVirtualMemoryPageFile",
+        "SystemEnableSoftwareRestrictionPolicies"
+      ]
+    },
+    {
+      "schema": {
+        "const": 0
+      },
+      "valueKind": "number",
+      "expression": "(value == 0)",
+      "template": "The value {value} must be 0.",
+      "evidence": [
+        "NetBTNodeTypeConfiguration",
+        "ServerSPNTargetNameValidationLevel"
+      ]
+    },
+    {
+      "schema": {
+        "enum": [
+          0,
+          1,
+          2,
+          99,
+          100
+        ]
+      },
+      "valueKind": "number",
+      "expression": "([0,1,2,99,100].exists(item, value == item))",
+      "template": "The value {value} must be one of [0,1,2,99,100].",
+      "evidence": [
+        "DODownloadMode"
+      ]
+    },
+    {
+      "schema": {
+        "enum": [
+          0,
+          1
+        ]
+      },
+      "valueKind": "number",
+      "expression": "([0,1].exists(item, value == item))",
+      "template": "The value {value} must be one of [0,1].",
+      "evidence": [
+        "DmaGuardDeviceEnumerationPolicy"
+      ]
+    },
+    {
+      "schema": {
+        "enum": [
+          1,
+          3
+        ]
+      },
+      "valueKind": "number",
+      "expression": "([1,3].exists(item, value == item))",
+      "template": "The value {value} must be one of [1,3].",
+      "evidence": [
+        "AuditAuthenticationPolicyChange",
+        "AuditAuthorizationPolicyChange",
+        "AuditGroupMembership"
+      ]
+    },
+    {
+      "schema": {
+        "enum": [
+          2,
+          3
+        ]
+      },
+      "valueKind": "number",
+      "expression": "([2,3].exists(item, value == item))",
+      "template": "The value {value} must be one of [2,3].",
+      "evidence": [
+        "AuditAccountLockout",
+        "AuditDetailedFileShare",
+        "AuditOtherPolicyChangeEvents"
+      ]
+    },
+    {
+      "schema": {
+        "enum": [
+          2147483624,
+          2147483632,
+          2147483640
+        ]
+      },
+      "valueKind": "number",
+      "expression": "([2147483624,2147483632,2147483640].exists(item, value == item))",
+      "template": "The value {value} must be one of [2147483624,2147483632,2147483640].",
+      "evidence": [
+        "CryptographyAllowedKerberosEncryptionTypes"
+      ]
+    },
+    {
+      "schema": {
+        "enum": [
+          768,
+          770,
+          785
+        ]
+      },
+      "valueKind": "number",
+      "expression": "([768,770,785].exists(item, value == item))",
+      "template": "The value {value} must be one of [768,770,785].",
+      "evidence": [
+        "MinimumSMBClientVersion",
+        "MinimumSMBServerVersion"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 0,
+        "maximum": 1
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 0 && value <= 1)",
+      "template": "The value {value} must be between 0 and 1.",
+      "evidence": [
+        "BlockNTLM",
+        "RequireEncryption",
+        "SystemAllowTelemetry"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 0,
+        "maximum": 4
+      },
+      "valueKind": "string",
+      "expression": "(value != null && value.matches(\"^-?[0-9]+$\") && int(value) >= 0 && int(value) <= 4)",
+      "template": "The value {value} must be between 0 and 4.",
+      "evidence": [
+        "SystemLogonCacheSize"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 0
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 0)",
+      "template": "The value {value} must be greater than or equal to 0.",
+      "evidence": [
+        "AuditDirectoryServiceReplication"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 1,
+        "maximum": 15
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 1 && value <= 15)",
+      "template": "The value {value} must be between 1 and 15.",
+      "evidence": [
+        "AmountOfIdleTimeRequiredBeforeSuspendingSession"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 1,
+        "maximum": 2
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 1 && value <= 2)",
+      "template": "The value {value} must be between 1 and 2.",
+      "evidence": [
+        "BehaviorOfTheElevationPromptForAdministrators",
+        "ConfigureKernelShadowStacksLaunch",
+        "DeviceGuardLsaCfgFlags"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 1,
+        "maximum": 60
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 1 && value <= 60)",
+      "template": "The value {value} must be between 1 and 60.",
+      "evidence": [
+        "DeviceLockMaximumPasswordAge"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 1,
+        "maximum": 70
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 1 && value <= 70)",
+      "template": "The value {value} must be between 1 and 70.",
+      "evidence": [
+        "DeviceLockMaximumPasswordAge"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 1,
+        "maximum": 900
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 1 && value <= 900)",
+      "template": "The value {value} must be between 1 and 900.",
+      "evidence": [
+        "MachineInactivityLimit"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 1
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 1)",
+      "template": "The value {value} must be greater than or equal to 1.",
+      "evidence": [
+        "DeviceLockMinimumPasswordAge"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 14
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 14)",
+      "template": "The value {value} must be greater than or equal to 14.",
+      "evidence": [
+        "DeviceLockMinimumPasswordLength"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 16384
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 16384)",
+      "template": "The value {value} must be greater than or equal to 16384.",
+      "evidence": [
+        "FirewallPrivateProfileLogFileMaxSize",
+        "FirewallPublicProfileLogFileMaxSize",
+        "FirewallDomainProfileLogFileMaxSize"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 196608
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 196608)",
+      "template": "The value {value} must be greater than or equal to 196608.",
+      "evidence": [
+        "EventLogServiceSpecifyMaximumFileSizeSecurityLog"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 2000,
+        "maximum": 5000
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 2000 && value <= 5000)",
+      "template": "The value {value} must be between 2000 and 5000.",
+      "evidence": [
+        "EnableAuthRateLimiterTimeout"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 3,
+        "maximum": 4
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 3 && value <= 4)",
+      "template": "The value {value} must be between 3 and 4.",
+      "evidence": [
+        "RemoteDesktopServicesClientConnectionEncryptionLevel"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 32768
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 32768)",
+      "template": "The value {value} must be greater than or equal to 32768.",
+      "evidence": [
+        "EventLogChannelSetupLogMaxSize",
+        "EventLogServiceSpecifyMaximumFileSizeApplicationLog",
+        "EventLogServiceSpecifyMaximumFileSizeSystemLog"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 5,
+        "maximum": 14
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 5 && value <= 14)",
+      "template": "The value {value} must be between 5 and 14.",
+      "evidence": [
+        "PromptUserToChangePasswordBeforeExpiration"
+      ]
+    },
+    {
+      "schema": {
+        "minimum": 50,
+        "maximum": 90
+      },
+      "valueKind": "number",
+      "expression": "(value != null && value >= 50 && value <= 90)",
+      "template": "The value {value} must be between 50 and 90.",
+      "evidence": [
+        "EventLogPercentageThresholdSecurityEventLogMaximumSizeReached"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": "*"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "string",
+      "expression": "((((value == \"*\")) || ((value == null))))",
+      "template": "The value {value} must be one of \"*\", (not set).",
+      "evidence": [
+        "RemoteManagementAllowRemoteServerManagement_IPv4Filter",
+        "RemoteManagementAllowRemoteServerManagement_IPv6Filter"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": "1.2"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "string",
+      "expression": "((((value == \"1.2\")) || ((value == null))))",
+      "template": "The value {value} must be one of \"1.2\", (not set).",
+      "evidence": [
+        "OverrideMinimumEnabledDTLSVersionClient",
+        "OverrideMinimumEnabledDTLSVersionServer"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": "1000000000000"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "string",
+      "expression": "((((value == \"1000000000000\")) || ((value == null))))",
+      "template": "The value {value} must be one of \"1000000000000\", (not set).",
+      "evidence": [
+        "MitigationOptionsFontBlocking"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": "Block"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "string",
+      "expression": "((((value == \"Block\")) || ((value == null))))",
+      "template": "The value {value} must be one of \"Block\", (not set).",
+      "evidence": [
+        "SmartScreenPreventOverrideForFilesInShell"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": "MDA="
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "string",
+      "expression": "[\"MDA=\",\"AA==\"].exists(item, value == item)",
+      "template": "The value {value} must represent disabled backup and restore privilege auditing.",
+      "evidence": [
+        "AuditBackupAndRestorePrivilege"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 0
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 0)) || ((value == null))))",
+      "template": "The value {value} must be one of 0, (not set).",
+      "evidence": [
+        "AllowICMPRedirectsToOverrideOSPFGeneratedRoutes",
+        "AllowUIAccessApplicationsToPromptForElevation",
+        "BehaviorOfTheElevationPromptForStandardUsers"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 1
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 1)) || ((value == null))))",
+      "template": "The value {value} must be one of 1, (not set).",
+      "evidence": [
+        "AfdDisableAddressSharing",
+        "AllowCustomSSPAPIntoLSASS",
+        "AllowLocalSystemToUseComputerIdentityForNTLM"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 2
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 2)) || ((value == null))))",
+      "template": "The value {value} must be one of 2, (not set).",
+      "evidence": [
+        "ApplicationIdentityStartupType",
+        "CryptographyForceStrongKeyProtection",
+        "IPSourceRoutingProtectionLevel"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 24
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 24)) || ((value == null))))",
+      "template": "The value {value} must be one of 24, (not set).",
+      "evidence": [
+        "DeviceLockPasswordHistorySize"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 255
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 255)) || ((value == null))))",
+      "template": "The value {value} must be one of 255, (not set).",
+      "evidence": [
+        "AutoplayTurnOffAutoPlay"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 3
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 3)) || ((value == null))))",
+      "template": "The value {value} must be one of 3, (not set).",
+      "evidence": [
+        "AuditCredentialValidation",
+        "AuditFileShare",
+        "AuditIPsecDriver"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 30
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 30)) || ((value == null))))",
+      "template": "The value {value} must be one of 30, (not set).",
+      "evidence": [
+        "MaximumMachineAccountPasswordAge"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 3389
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 3389)) || ((value == null))))",
+      "template": "The value {value} must be one of 3389, (not set).",
+      "evidence": [
+        "RDPPortNumber"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 4
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 4)) || ((value == null))))",
+      "template": "The value {value} must be one of 4, (not set).",
+      "evidence": [
+        "ConfigureSMBV1ClientDriver",
+        "SystemWindowsSearchService"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 5
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 5)) || ((value == null))))",
+      "template": "The value {value} must be one of 5, (not set).",
+      "evidence": [
+        "LANManagerAuthenticationLevel"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": 537395200
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "number",
+      "expression": "((((value == 537395200)) || ((value == null))))",
+      "template": "The value {value} must be one of 537395200, (not set).",
+      "evidence": [
+        "MinimumSessionSecurityForNTLMSSPBasedClients",
+        "MinimumSessionSecurityForNTLMSSPBasedServers"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": false
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "boolean",
+      "expression": "((((value == false)) || ((value == null))))",
+      "template": "The value {value} must be one of false, (not set).",
+      "evidence": [
+        "AllowAnonymousSIDOrNameTranslation",
+        "DeviceLockClearTextPassword",
+        "EnableGuestAccountStatus"
+      ]
+    },
+    {
+      "schema": {
+        "oneOf": [
+          {
+            "const": true
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "valueKind": "boolean",
+      "expression": "((((value == true)) || ((value == null))))",
+      "template": "The value {value} must be one of true, (not set).",
+      "evidence": [
+        "DeviceLockPasswordComplexity"
+      ]
+    },
+    {
+      "schema": {
+        "pattern": ".log"
+      },
+      "valueKind": "string",
+      "expression": "(value != null && value.matches(\".log\"))",
+      "template": "The value {value} must match the pattern \".log\".",
+      "evidence": [
+        "FirewallPrivateProfileLogFileName",
+        "FirewallPublicProfileLogFileName",
+        "FirewallDomainProfileLogFileName"
+      ]
+    },
+    {
+      "schema": {},
+      "valueKind": "absent",
+      "expression": "true",
+      "template": "The value {value} is informational for this control.",
+      "evidence": [
+        "RenameAdministratorAccount",
+        "RenameGuestAccount"
+      ]
+    },
+    {
+      "schema": {},
+      "valueKind": "array",
+      "expression": "true",
+      "template": "The value {value} is informational for this control.",
+      "evidence": [
+        "BlockNTLMServerExceptionList",
+        "CryptographyEccCurve",
+        "DisableSMBv1Client"
+      ]
+    },
+    {
+      "schema": {},
+      "valueKind": "number",
+      "expression": "true",
+      "template": "The value {value} is informational for this control.",
+      "evidence": [
+        "AllowLocalSystemNULLSessionFallback",
+        "AllowSystemToBeShutDownWithoutHavingToLogOn",
+        "ApplicationManagementMSIAllowUserControlOverInstall"
+      ]
+    },
+    {
+      "schema": {},
+      "valueKind": "string",
+      "expression": "true",
+      "template": "The value {value} is informational for this control.",
+      "evidence": [
+        "AllowedToFormatAndEjectRemovableMedia",
+        "CryptographySSLCipherSuites",
+        "EventLogChannelSecurityLogRetention"
+      ]
+    }
+  ]
+}

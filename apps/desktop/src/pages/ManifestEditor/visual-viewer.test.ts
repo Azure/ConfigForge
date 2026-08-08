@@ -421,6 +421,9 @@ describe("visual viewer helpers", () => {
     const formattedObject = formatVisualValue(objectValue);
     expect(formattedObject).toBe(JSON.stringify(objectValue, null, 2));
     expect(formattedObject).toContain(longValue);
+    expect(
+      formatVisualValue({ nested: { qword: 18446744073709551615n } }),
+    ).toContain('"qword": 18446744073709551615');
   });
 
   it("cycles ascending, descending, and unsorted while keeping equal values stable", () => {

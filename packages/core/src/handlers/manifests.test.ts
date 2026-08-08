@@ -158,6 +158,17 @@ describe('normalizeManifestContent', () => {
     expect(result.yaml).toContain('a');
   });
 
+  it('preserves unsafe QWords while normalizing manifest JSON to YAML', () => {
+    const result = normalizeManifestContent(
+      '{"resources":[{"name":"qword","type":"Microsoft.Windows/Registry",' +
+        '"properties":{"valueType":"REG_QWORD","value":18446744073709551615}}]}',
+    );
+
+    expect(result.ok).toBe(true);
+    expect(result.yaml).toContain('18446744073709551615');
+    expect(result.yaml).not.toContain('18446744073709552000');
+  });
+
   it('converts security-definition JSON with Settings array', () => {
     const json = JSON.stringify({
       Name: 'win10-baseline',
@@ -711,6 +722,20 @@ describe('registerManifest', () => {
     expect(result.data.namespace).toBe('mybase');
     expect(saveRegistrationMock).toHaveBeenCalledTimes(1);
     expect(saveRegistrationMock.mock.calls[0][0].source).toBe('user');
+  });
+
+  it('persists exact QWord YAML when registering manifest JSON', async () => {
+    await registerManifest({
+      name: 'qword',
+      content:
+        '{"resources":[{"name":"qword","type":"Microsoft.Windows/Registry",' +
+        '"properties":{"keyPath":"HKLM:\\\\Software\\\\QWord","valueName":"Exact",' +
+        '"valueType":"REG_QWORD","value":18446744073709551615}}]}',
+    });
+
+    const persistedYaml = saveRegistrationMock.mock.calls[0][1];
+    expect(persistedYaml).toContain('18446744073709551615');
+    expect(persistedYaml).not.toContain('18446744073709552000');
   });
 
   it('waits for the history snapshot so consecutive saves preserve order', async () => {

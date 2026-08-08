@@ -20,10 +20,10 @@ application** with two editions:
   and elevation methods under `system`) are intentionally omitted. Authors
   deploy later from the Full edition on Windows or Linux.
 
-The current Windows/Linux Full-edition tagged source is `v0.3.98`. The
-current macOS Author tagged source is `mac-v0.3.98-author.1`. Both matching
-GitHub releases remain unpublished drafts. The package version on `main` is
-`0.3.98`; the macOS Author package version is `0.3.98-author.1`.
+The current Windows/Linux Full-edition release is `v0.3.101`. The current
+macOS Author release is `mac-v0.3.101-author.1`. Both are published as
+prereleases. The package version on `main` is `0.3.101`; the macOS Author
+package version is `0.3.101-author.1`.
 
 If you've ever maintained a security baseline by editing GPO templates, exporting Defender for Endpoint settings to a spreadsheet, or copy-pasting between half a dozen runbooks - this app is for you.
 

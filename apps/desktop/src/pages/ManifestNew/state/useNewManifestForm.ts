@@ -2,7 +2,7 @@
 // Licensed under the MIT License.
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import yaml from "js-yaml";
+import { parseLosslessYaml } from "@configforge/core/manifest/lossless";
 import { type Platform, getValidTypesForPlatform } from "@configforge/core/platform";
 import { cfs } from "../../../lib/cfs";
 import {
@@ -117,7 +117,7 @@ export function useNewManifestForm(options: UseNewManifestFormOptions = {}) {
       if (newPlatform === platform) return;
 
       try {
-        const parsed = yaml.load(yamlContent) as Record<string, unknown> | null;
+        const parsed = parseLosslessYaml(yamlContent) as Record<string, unknown> | null;
         if (parsed && Array.isArray(parsed.resources)) {
           const validTypes = getValidTypesForPlatform(newPlatform);
           const incompatible = (parsed.resources as { type?: string }[]).filter(

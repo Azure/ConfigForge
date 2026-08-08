@@ -23,6 +23,7 @@ import { createReadStream } from 'fs';
 import readline from 'readline';
 import path from 'path';
 import os from 'os';
+import { parseLosslessJson, stringifyLosslessJson } from './lossless';
 
 // ── Types ───────────────────────────────────────────────────────────────────
 
@@ -98,9 +99,27 @@ function fileFor(ns: string): { dir: string; file: string; lock: string } {
  */
 const LOCK_MAX_RETRIES = 100;
 const LOCK_RETRY_DELAY_MS = 20;
+const appendQueues = new Map<string, Promise<void>>();
 
 async function sleep(ms: number): Promise<void> {
   await new Promise((r) => setTimeout(r, ms));
+}
+
+async function serializeInProcess(lock: string, operation: () => Promise<void>): Promise<void> {
+  const previous = appendQueues.get(lock) ?? Promise.resolve();
+  const current = previous.catch(() => undefined).then(operation);
+  const settled = current.then(
+    () => undefined,
+    () => undefined,
+  );
+  appendQueues.set(lock, settled);
+  try {
+    await current;
+  } finally {
+    if (appendQueues.get(lock) === settled) {
+      appendQueues.delete(lock);
+    }
+  }
 }
 
 /**
@@ -118,55 +137,59 @@ export async function appendRationale(ns: string, entry: RationaleEntry): Promis
   const { dir, file, lock } = fileFor(ns);
   await mkdir(dir, { recursive: true });
 
-  const line = JSON.stringify(entry) + '\n';
+  const serialized = stringifyLosslessJson(entry);
+  if (serialized === undefined) throw new Error('Rationale entry could not be serialized');
+  const line = serialized + '\n';
 
-  let acquired = false;
-  for (let attempt = 0; attempt <= LOCK_MAX_RETRIES; attempt++) {
-    try {
-      // 'wx' = O_WRONLY | O_CREAT | O_EXCL — atomic-create; throws if exists.
-      const handle = await open(lock, 'wx');
-      await handle.close();
-      acquired = true;
-      break;
-    } catch (err) {
-      const code = (err as NodeJS.ErrnoException).code;
-      // EEXIST = lock held. EPERM/EBUSY/EACCES happen on Windows when
-      // the lock file is mid-deletion by another writer — same intent
-      // ("contention"), so retry under the same budget.
-      const retriable =
-        code === 'EEXIST' || code === 'EPERM' || code === 'EBUSY' || code === 'EACCES';
-      if (!retriable) {
-        // Permission errors at the directory level, ENOSPC, etc. — surface
-        // immediately. No point retrying since the failure mode isn't
-        // going to clear itself.
-        throw err;
+  await serializeInProcess(lock, async () => {
+    let acquired = false;
+    for (let attempt = 0; attempt <= LOCK_MAX_RETRIES; attempt++) {
+      try {
+        // 'wx' = O_WRONLY | O_CREAT | O_EXCL — atomic-create; throws if exists.
+        const handle = await open(lock, 'wx');
+        await handle.close();
+        acquired = true;
+        break;
+      } catch (err) {
+        const code = (err as NodeJS.ErrnoException).code;
+        // EEXIST = lock held. EPERM/EBUSY/EACCES happen on Windows when
+        // the lock file is mid-deletion by another writer — same intent
+        // ("contention"), so retry under the same budget.
+        const retriable =
+          code === 'EEXIST' || code === 'EPERM' || code === 'EBUSY' || code === 'EACCES';
+        if (!retriable) {
+          // Permission errors at the directory level, ENOSPC, etc. — surface
+          // immediately. No point retrying since the failure mode isn't
+          // going to clear itself.
+          throw err;
+        }
+        if (attempt === LOCK_MAX_RETRIES) break;
+        await sleep(LOCK_RETRY_DELAY_MS);
       }
-      if (attempt === LOCK_MAX_RETRIES) break;
-      await sleep(LOCK_RETRY_DELAY_MS);
     }
-  }
 
-  if (!acquired) {
-    throw new Error(
-      `Could not acquire rationale append lock at ${lock} after ${LOCK_MAX_RETRIES} retries (~${
-        LOCK_MAX_RETRIES * LOCK_RETRY_DELAY_MS
-      }ms). Another writer may be stuck.`,
-    );
-  }
+    if (!acquired) {
+      throw new Error(
+        `Could not acquire rationale append lock at ${lock} after ${LOCK_MAX_RETRIES} retries (~${
+          LOCK_MAX_RETRIES * LOCK_RETRY_DELAY_MS
+        }ms). Another writer may be stuck.`,
+      );
+    }
 
-  try {
-    // Append to the JSONL file. Open with 'a' (O_APPEND) so writes are
-    // append-atomic at the OS level even if multiple FDs were open.
-    const fh = await open(file, 'a');
     try {
-      await fh.appendFile(line, 'utf8');
+      // Append to the JSONL file. Open with 'a' (O_APPEND) so writes are
+      // append-atomic at the OS level even if multiple FDs were open.
+      const fh = await open(file, 'a');
+      try {
+        await fh.appendFile(line, 'utf8');
+      } finally {
+        await fh.close();
+      }
     } finally {
-      await fh.close();
+      // Always release the lock — even if the append throws.
+      await rm(lock, { force: true });
     }
-  } finally {
-    // Always release the lock — even if the append throws.
-    await rm(lock, { force: true });
-  }
+  });
 }
 
 // ── Delete (cleanup on manifest removal) ──────────────────────────────────
@@ -243,7 +266,8 @@ export async function readRationale(ns: string): Promise<RationaleEntry[]> {
       const line = raw.trim();
       if (!line) return;
       try {
-        const parsed = JSON.parse(line) as Partial<RationaleEntry> & Record<string, unknown>;
+        const parsed = parseLosslessJson(line) as Partial<RationaleEntry> &
+          Record<string, unknown>;
         if (!parsed || typeof parsed !== 'object') {
           // eslint-disable-next-line no-console
           console.warn(`[rationale] ${file}: line ${lineNumber} parsed to non-object, skipping`);

@@ -8,16 +8,16 @@ Benchmark Mapping, history, rationale, and Audit Pack export while omitting
 device operations. The native `oscfg` CLI is **not bundled** and is **not
 required** for authoring in either edition.
 
-The current Windows/Linux Full-edition tagged source is `v0.3.98`. The
-current macOS Author tagged source is `mac-v0.3.98-author.1`. Both matching
-GitHub releases remain unpublished drafts. The package version on `main` is
-`0.3.98`; the macOS Author package version is `0.3.98-author.1`.
+The current Windows/Linux Full-edition release is `v0.3.101`. The current
+macOS Author release is `mac-v0.3.101-author.1`. Both are published as
+prereleases. The package version on `main` is `0.3.101`; the macOS Author
+package version is `0.3.101-author.1`.
 
 ## Prerequisites
 
 | Requirement | Notes |
 | --- | --- |
-| **Node.js 22 LTS** | The repo pins Node 22 via `.nvmrc`. Run `nvm use` (or upgrade your Node) so `node --version` reports `v22`. |
+| **Node.js 22.12+ or 24** | The repo pins Node 22.12 via `.nvmrc` and also validates source builds on Node 24. |
 | **`oscfg` CLI binary** *(optional)* | Only needed for Deploy / Audit / Revert in the Full edition. Install separately from the [OSConfig CLI docs](https://github.com/microsoft/osconfig/tree/main/docs/cli). |
 | **Admin / root** *(optional)* | Required on Windows for *every* CLI operation (preview-CLI bug - see [Operations → Filing upstream bugs](../operations/upstream-bugs.md)). On Linux, only `oscfg apply` needs `sudo`. |
 
@@ -30,8 +30,7 @@ cd ConfigForge
 
 > **Note:** `main` is the active Windows/Linux Full-edition line. On an Apple
 > Silicon Mac (M1 or later), build the current
-> `mac-v0.3.98-author.1` tagged source. Its matching release remains an
-> unpublished draft. Intel Macs and universal binaries are not supported.
+> `mac-v0.3.101-author.1` release. Intel Macs and universal binaries are not supported.
 > macOS release builds are unsigned by design. Clear quarantine after
 > copying the app into Applications:
 >
