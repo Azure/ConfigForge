@@ -1,0 +1,934 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Changelog - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Quick Start</li><li class="chapter-item expanded "><a href="quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Install & run</a></li><li class="chapter-item expanded "><a href="quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first manifest</a></li><li class="chapter-item expanded "><a href="quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs deploying</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="user-guide/manifest-editor.html"><strong aria-hidden="true">4.</strong> Manifest editor</a></li><li class="chapter-item expanded "><a href="user-guide/machine-configuration.html"><strong aria-hidden="true">5.</strong> Azure Machine Configuration deployment</a></li><li class="chapter-item expanded "><a href="user-guide/matrix-diff.html"><strong aria-hidden="true">6.</strong> Diff: pairwise + master matrix</a></li><li class="chapter-item expanded "><a href="user-guide/cis-compliance.html"><strong aria-hidden="true">7.</strong> CIS cross-reference & compliance</a></li><li class="chapter-item expanded "><a href="user-guide/rationale.html"><strong aria-hidden="true">8.</strong> Rationale & change-author capture</a></li><li class="chapter-item expanded "><a href="user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Audit-pack (PDF + Markdown)</a></li><li class="chapter-item expanded "><a href="user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Analysis provenance</a></li><li class="chapter-item expanded "><a href="user-guide/history-snapshots.html"><strong aria-hidden="true">11.</strong> History, snapshots, retention</a></li><li class="chapter-item expanded affix "><li class="part-title">Architecture</li><li class="chapter-item expanded "><a href="architecture/system-overview.html"><strong aria-hidden="true">12.</strong> System overview</a></li><li class="chapter-item expanded "><a href="architecture/module-map.html"><strong aria-hidden="true">13.</strong> Module map</a></li><li class="chapter-item expanded "><a href="architecture/registration-semantics.html"><strong aria-hidden="true">14.</strong> Registration semantics</a></li><li class="chapter-item expanded "><a href="architecture/mixed-platform.html"><strong aria-hidden="true">15.</strong> Mixed-platform classification</a></li><li class="chapter-item expanded "><a href="architecture/oscfg-cli.html"><strong aria-hidden="true">16.</strong> oscfg CLI contract</a></li><li class="chapter-item expanded "><a href="architecture/diagrams.html"><strong aria-hidden="true">17.</strong> Diagrams</a></li><li class="chapter-item expanded affix "><li class="part-title">API Reference</li><li class="chapter-item expanded "><a href="api-reference/manifests.html"><strong aria-hidden="true">18.</strong> Baselines</a></li><li class="chapter-item expanded "><a href="api-reference/deploy-health.html"><strong aria-hidden="true">19.</strong> Deploy & health</a></li><li class="chapter-item expanded "><a href="api-reference/diff.html"><strong aria-hidden="true">20.</strong> Diff</a></li><li class="chapter-item expanded "><a href="api-reference/compliance.html"><strong aria-hidden="true">21.</strong> Compliance</a></li><li class="chapter-item expanded "><a href="api-reference/history-import-export.html"><strong aria-hidden="true">22.</strong> History, import & export</a></li><li class="chapter-item expanded "><a href="api-reference/audit-pack.html"><strong aria-hidden="true">23.</strong> Audit pack</a></li><li class="chapter-item expanded "><a href="api-reference/rationale.html"><strong aria-hidden="true">24.</strong> Rationale</a></li><li class="chapter-item expanded affix "><li class="part-title">Operations</li><li class="chapter-item expanded "><a href="operations/ci.html"><strong aria-hidden="true">25.</strong> CI on Linux + Windows</a></li><li class="chapter-item expanded "><a href="operations/smoke-testing.html"><strong aria-hidden="true">26.</strong> Smoke testing on Windows</a></li><li class="chapter-item expanded "><a href="operations/upstream-bugs.html"><strong aria-hidden="true">27.</strong> Filing upstream bugs</a></li><li class="chapter-item expanded "><a href="operations/troubleshooting.html"><strong aria-hidden="true">28.</strong> Troubleshooting</a></li><li class="chapter-item expanded affix "><li class="part-title">Contributing</li><li class="chapter-item expanded "><a href="contributing/agents-md.html"><strong aria-hidden="true">29.</strong> AGENTS.md (canonical guide)</a></li><li class="chapter-item expanded "><a href="contributing/conventions.html"><strong aria-hidden="true">30.</strong> Coding conventions</a></li><li class="chapter-item expanded "><a href="contributing/testing.html"><strong aria-hidden="true">31.</strong> Testing expectations</a></li><li class="chapter-item expanded "><a href="contributing/adding-oscfg-types.html"><strong aria-hidden="true">32.</strong> Adding a new oscfg type</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="reference/manifest-schema.html"><strong aria-hidden="true">33.</strong> Manifest schema (oscfg 1.3.9-preview11)</a></li><li class="chapter-item expanded "><a href="reference/registered-types.html"><strong aria-hidden="true">34.</strong> Registered types</a></li><li class="chapter-item expanded "><a href="reference/glossary.html"><strong aria-hidden="true">35.</strong> Glossary</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="changelog.html" class="active">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/changelog.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="changelog"><a class="header" href="#changelog">Changelog</a></h1>
+<p>A concise release history for ConfigForge. Newer entries use their release
+tags and state publication status explicitly; older entries summarize the
+foundational work by theme.</p>
+<h2 id="unreleased"><a class="header" href="#unreleased">Unreleased</a></h2>
+<h2 id="v03102---2026-08-08"><a class="header" href="#v03102---2026-08-08">v0.3.102 - 2026-08-08</a></h2>
+<ul>
+<li><strong>OSConfig 1.4.3 audit compatibility:</strong> Pre-deploy Audit now unwraps the
+CLI's single-resource array response so CSP, Registry, Test, and User Rights
+resources produce real compliance results instead of false "could not read"
+outcomes.</li>
+</ul>
+<h2 id="v03101--2026-08-07"><a class="header" href="#v03101--2026-08-07">v0.3.101 — 2026-08-07</a></h2>
+<ul>
+<li><strong>Dependency security:</strong> Update DOMPurify, fast-uri, ip-address, React
+Router, and both build-only Undici lines to their patched releases. The
+hosted production audit, tests, build, Electron smoke, lint, Node 24, and
+CodeQL gates pass with no open GitHub security alerts.</li>
+</ul>
+<h2 id="v03100--2026-08-07"><a class="header" href="#v03100--2026-08-07">v0.3.100 — 2026-08-07</a></h2>
+<ul>
+<li><strong>YAML parser security:</strong> Upgrade js-yaml to 4.3.1 to resolve
+<code>GHSA-5p4m-2wfm-xmqj</code>, a high-severity quadratic CPU denial-of-service
+issue in <code>!!omap</code> parsing.</li>
+</ul>
+<h2 id="v0399--2026-08-06"><a class="header" href="#v0399--2026-08-06">v0.3.99 — 2026-08-06</a></h2>
+<ul>
+<li><strong>Trustworthy Enforce results:</strong> Canonical Registry types and hive paths now
+reach OSConfig, every apply is audited afterward, and remaining
+noncompliance or unread settings are surfaced instead of being reported as
+success.</li>
+<li><strong>Exact 64-bit values:</strong> QWord integers remain exact across import, editing,
+Diff, compliance, export, and Machine Configuration MOFs.</li>
+<li><strong>Safe recovery:</strong> Revert remains available after verified deployments and
+after partial applies that created a pre-deploy snapshot.</li>
+<li><strong>Machine Configuration remediation:</strong> A fail-closed package helper patches
+the packaged Microsoft.OSConfig 1.4.3 Set boundary to send compressed JSON.</li>
+<li><strong>Stable authoring history:</strong> Concurrent rationale writes and retention
+cleanup no longer race.</li>
+<li><strong>Windows Server 2022 standalone baselines:</strong> Convert every
+<code>Policy/Result</code> CSP rule in the three WS2022 role baselines to dedicated
+Audit Policy, User Rights, and Account Policy providers, normalize registry
+addressing and value types, and replace ambiguous compliance schemas with
+explicit CEL expressions. Standalone servers no longer report those settings
+as unread. Resource counts are now 259 (Member Server), 244 (Domain
+Controller), and 202 (Workgroup Member). User rights that must be granted to
+nobody keep a real assertion (<code>value == null || value.size() == 0</code>) instead of
+being downgraded to informational, so no assertion downgrades remain. WS2022
+remains best-effort — OSConfig security baseline support is officially
+Windows Server 2025 only, and the one live smoke run was executed on a
+Windows Server 2025 host, not a WS2022 host.</li>
+</ul>
+<h2 id="v0398--2026-07-28"><a class="header" href="#v0398--2026-07-28">v0.3.98 — 2026-07-28</a></h2>
+<p><code>v0.3.98</code> is the prior Windows/Linux release.</p>
+<ul>
+<li><strong>Machine Configuration documentation:</strong> Add a standalone README workflow
+and a complete mdBook guide for MOF resolution, packaging, testing, Storage,
+Azure Policy, assignment, verification, and troubleshooting.</li>
+<li><strong>Public documentation cleanup:</strong> Remove nonexistent Apply-button guidance,
+internal tracker details, obsolete private-repository wording, and unused
+AI-analysis terminology.</li>
+</ul>
+<h2 id="v0397--2026-07-28"><a class="header" href="#v0397--2026-07-28">v0.3.97 — 2026-07-28</a></h2>
+<p><code>v0.3.97</code> is the prior Windows/Linux tagged source. Its matching GitHub release
+was an unpublished draft.</p>
+<ul>
+<li><strong>Detailed compliance reasons:</strong> ConfigForge now preserves the reason
+returned by <code>oscfg</code> for expression-backed Test resources. All WS2025
+wrappers include templates that explain the actual value and requirement.</li>
+</ul>
+<h2 id="v0396--2026-07-28"><a class="header" href="#v0396--2026-07-28">v0.3.96 — 2026-07-28</a></h2>
+<p><code>v0.3.96</code> is the prior Windows/Linux tagged source. Its matching GitHub release
+was an unpublished draft.</p>
+<ul>
+<li><strong>Windows Server 2025 baselines:</strong> Rebuilt the full Member Server (320),
+Domain Controller (321), and Workgroup Member (296) profiles without losing
+controls or changing their order. Registry resources use canonical contracts,
+writable CSP paths replace read-only paths, and existing schema semantics are
+represented as CEL expressions.</li>
+<li><strong>Machine Configuration MOF export:</strong> Exported resources use a portable
+<code>Microsoft.OSConfig</code> <code>0.0.0</code> placeholder that is resolved at package time,
+plus the correlation and typed value fields required by the DSC resource.</li>
+</ul>
+<h2 id="v0395--2026-07-27"><a class="header" href="#v0395--2026-07-27">v0.3.95 — 2026-07-27</a></h2>
+<p><code>v0.3.95</code> is the prior Windows/Linux tagged source. Its matching GitHub release
+was an unpublished draft; this entry does not indicate publication.</p>
+<ul>
+<li><strong>Fixed:</strong> Replace unreliable native HTML hover titles with FluentUI
+tooltips on the My Baselines name, platform, validation,
+compliance/Not Audited, and modified-date cells, preserving multiline
+validation details. Tooltip triggers are keyboard accessible and expose
+non-interactive details through stable ARIA without adding excessive tab
+stops. (<a href="https://github.com/Azure/ConfigForge/pull/100">#100</a>)</li>
+<li><strong>Documentation:</strong> Correct architecture, CI, and release-state drift across
+the GitHub-facing documentation set.
+(<a href="https://github.com/Azure/ConfigForge/pull/97">#97</a>)</li>
+</ul>
+<h2 id="v0394--2026-07-26"><a class="header" href="#v0394--2026-07-26">v0.3.94 — 2026-07-26</a></h2>
+<p><code>v0.3.94</code> is a prior Windows/Linux tagged source. Its matching GitHub release
+was an unpublished draft; this entry does not indicate publication.</p>
+<ul>
+<li><strong>Public packaging:</strong> Exclude CIS benchmark source data from public
+installers while keeping Benchmark Mapping and CIS Diff available for
+user-supplied benchmark files.
+(<a href="https://github.com/Azure/ConfigForge/pull/88">#88</a>)</li>
+<li><strong>Privacy:</strong> Clarify that ConfigForge sends no product telemetry, update
+checks contact GitHub Releases, and separately installed <code>oscfg</code> may send
+required diagnostics under its own policy.
+(<a href="https://github.com/Azure/ConfigForge/pull/88">#88</a>)</li>
+<li><strong>Project policy:</strong> Publish canonical MIT licensing, community ownership,
+contribution, best-effort support, and private security-reporting guidance
+with structured issue and pull-request templates.
+(<a href="https://github.com/Azure/ConfigForge/pull/88">#88</a>,
+<a href="https://github.com/Azure/ConfigForge/pull/91">#91</a>)</li>
+<li><strong>Documentation:</strong> Refresh nine README screenshots with reviewed synthetic
+Industry Benchmark content while adding no licensed CIS benchmark data or
+screenshot tooling. (<a href="https://github.com/Azure/ConfigForge/pull/89">#89</a>)</li>
+<li><strong>Security:</strong> Update dev-only <code>brace-expansion</code> 5.x to 5.0.8 for
+GHSA-mh99-v99m-4gvg / CVE-2026-14257, resolving Dependabot alert #53; this
+dependency is not bundled with the desktop app.
+(<a href="https://github.com/Azure/ConfigForge/pull/86">#86</a>)</li>
+</ul>
+<h2 id="macos-author-mac-v0394-author1--2026-07-26-draft-unpublished"><a class="header" href="#macos-author-mac-v0394-author1--2026-07-26-draft-unpublished">macOS Author mac-v0.3.94-author.1 — 2026-07-26 (draft, unpublished)</a></h2>
+<blockquote>
+<p><code>mac-v0.3.94-author.1</code> is a prior macOS Author tagged source. Its
+matching GitHub release was an unpublished draft. The author-only
+capability boundary is unchanged.</p>
+</blockquote>
+<h3 id="changed"><a class="header" href="#changed">Changed</a></h3>
+<ul>
+<li>Align public licensing, privacy, security, support, contribution, packaging,
+and ownership guidance while preserving the author-only capability boundary.
+(<a href="https://github.com/Azure/ConfigForge/pull/90">#90</a>,
+<a href="https://github.com/Azure/ConfigForge/pull/92">#92</a>,
+<a href="https://github.com/Azure/ConfigForge/pull/93">#93</a>)</li>
+<li>Refresh the same nine synthetic-content documentation screenshots used by
+the Full edition without adding CIS data or screenshot tooling.
+(<a href="https://github.com/Azure/ConfigForge/pull/94">#94</a>)</li>
+</ul>
+<h3 id="security"><a class="header" href="#security">Security</a></h3>
+<ul>
+<li>Update dev-only <code>brace-expansion</code> 5.x to 5.0.8 with the reviewed public npm
+registry URL and integrity metadata. The dependency is not bundled with the
+macOS Author application.
+(<a href="https://github.com/Azure/ConfigForge/pull/86">#86</a>)</li>
+</ul>
+<h3 id="unchanged"><a class="header" href="#unchanged">Unchanged</a></h3>
+<ul>
+<li>Device deployment, audit, enforcement, revert, elevation, health, and
+audit-results storage remain excluded from the macOS Author edition.</li>
+</ul>
+<h2 id="v0393--2026-07-25"><a class="header" href="#v0393--2026-07-25">v0.3.93 — 2026-07-25</a></h2>
+<ul>
+<li>Add nested multi-value keyboard navigation: Enter saves and moves down,
+final Enter appends and focuses a value, Tab saves and moves right, empty
+arrays become focusable, invalid drafts retain focus, and Shift+Enter keeps
+its newline behavior. (<a href="https://github.com/Azure/ConfigForge/pull/76">#76</a>)</li>
+<li>Preserve nested edits and Undo state through focus changes and item
+appends, while keeping terminal Tab focus inside the editor.
+(<a href="https://github.com/Azure/ConfigForge/pull/76">#76</a>)</li>
+<li>Fix the three standalone Windows Server 2025 audit baselines by replacing
+failing array-valued Policy CSP resources with dedicated providers; the
+catalog now reports 320, 321, and 296 resources.
+(<a href="https://github.com/Azure/ConfigForge/pull/82">#82</a>)</li>
+<li>Fix CIS mapping for Increase scheduling priority, password complexity, and
+guest account status, and keep schema-valid UserRightsAssignment and
+AccountPolicy settings distinct in Matrix Diff and conflict detection.
+(<a href="https://github.com/Azure/ConfigForge/pull/82">#82</a>)</li>
+<li>Remove upstream Source links from the corrected Windows Server 2025
+baselines because the bundled manifests no longer match those files.
+(<a href="https://github.com/Azure/ConfigForge/pull/82">#82</a>)</li>
+</ul>
+<h2 id="macos-author-mac-v0393-author2--2026-07-25-draft-unpublished"><a class="header" href="#macos-author-mac-v0393-author2--2026-07-25-draft-unpublished">macOS Author mac-v0.3.93-author.2 — 2026-07-25 (draft, unpublished)</a></h2>
+<p>Annotated tag <code>mac-v0.3.93-author.2</code> resolved to the then-current
+<code>mac-author-build</code> head at <code>c4ce196574f1d3fdf878d4c5856f64539f6dec7a</code>. The matching GitHub
+release contains five verified assets but remains a draft and is unpublished.
+Workflow run
+<a href="https://github.com/Azure/ConfigForge/actions/runs/30186678580">#30186678580</a>
+completed successfully.</p>
+<ul>
+<li>Fix the standalone Windows Server 2025 Member Server, Domain Controller, and
+Workgroup Member audits by porting the reviewed provider corrections in PR
+<a href="https://github.com/Azure/ConfigForge/pull/83">#83</a>. Resource counts are
+320, 321, and 296.</li>
+<li>Remove Source links from the corrected WS2025 baselines because the local
+manifests now differ materially from their upstream files.</li>
+<li>Resolve Increase scheduling priority, password complexity, and guest account
+status in Benchmark Mapping without bundling licensed CIS data.</li>
+<li>Keep User Rights Assignment and Account Policy settings distinct in analysis
+and Matrix Diff by using <code>properties.name</code>, with legacy
+<code>properties.policy</code> support.</li>
+</ul>
+<h2 id="macos-author-mac-v0393-author1--2026-07-25-draft-unpublished"><a class="header" href="#macos-author-mac-v0393-author1--2026-07-25-draft-unpublished">macOS Author mac-v0.3.93-author.1 — 2026-07-25 (draft, unpublished)</a></h2>
+<p>Annotated tag <code>mac-v0.3.93-author.1</code> resolved to the then-current
+<code>mac-author-build</code> head,
+<code>099be065e895a2bb3fb62b2ab345cb6a46ba43a9</code>. The matching GitHub release
+exists with five verified assets but remains a draft and has not been
+published. At the time of that draft, package metadata on <code>main</code> remained at
+<code>0.3.92</code>.</p>
+<ul>
+<li>PR <a href="https://github.com/Azure/ConfigForge/pull/75">#75</a> at <code>3086ef0</code>
+restores macOS parity for the five-source New Baseline setup, binary XLSX
+import, localized My Baselines dates, selection-aware Pairwise/Matrix Diff,
+unsaved-close guards, per-baseline Code/Visual preferences, read-only Code
+guidance, and current Benchmark Mapping headings.</li>
+<li>PR <a href="https://github.com/Azure/ConfigForge/pull/76">#76</a> at <code>278dad6</code>
+completes nested Enter/Tab navigation on <code>main</code>: Enter moves down, final
+Enter appends and focuses, Tab moves right, empty arrays become focusable,
+and invalid drafts retain focus.</li>
+<li>PR <a href="https://github.com/Azure/ConfigForge/pull/77">#77</a> at <code>aec0775</code> ports
+the complete five-commit PR #76 series to <code>mac-author-build</code> without a
+package-version or public-baseline change.</li>
+<li>The macOS flavor remains author-only. Diff and Audit Pack PDF/Markdown
+export are included; device deploy, audit, enforce, revert, elevation,
+health, and audit-results storage are not.</li>
+<li>Thirty-one mirror-specific lockfile URLs are normalized to
+<code>registry.npmjs.org</code> without package-version or integrity changes so public
+restores do not depend on the optional Microsoft mirror.</li>
+<li>PR <a href="https://github.com/Azure/ConfigForge/pull/79">#79</a> at <code>3778319</code>
+refreshes the current documentation, pins the macOS build to the supplied
+immutable tag, and uses checksum commands available on macOS runners.</li>
+<li>PR <a href="https://github.com/Azure/ConfigForge/pull/80">#80</a> merged at <code>099be06</code>,
+and annotated tag <code>mac-v0.3.93-author.1</code> targets that merge. Tag-pinned
+workflow run
+<a href="https://github.com/Azure/ConfigForge/actions/runs/30176765724">#30176765724</a>
+passed and verified the five expected assets without publishing the release.</li>
+</ul>
+<h2 id="v0392--2026-07-24"><a class="header" href="#v0392--2026-07-24">v0.3.92 — 2026-07-24</a></h2>
+<ul>
+<li><strong>Patched the desktop update, packaging, CSS, and archive toolchains.</strong> The release closes the updater redirect, AppImage search-path, PostCSS source-map traversal, and <code>tar</code> recursion advisories.</li>
+</ul>
+<h2 id="v0391--2026-07-24"><a class="header" href="#v0391--2026-07-24">v0.3.91 — 2026-07-24</a></h2>
+<ul>
+<li><strong>Made Visual schema rules explicit and enforceable.</strong> Expected value cells now show stacked Test constraints, governed edits honor supported enum/range/type rules, malformed Registry/CSP values are repaired to their declared types, and unsupported regex patterns are clearly labeled reference-only.</li>
+</ul>
+<h2 id="v0390--2026-07-23"><a class="header" href="#v0390--2026-07-23">v0.3.90 — 2026-07-23</a></h2>
+<ul>
+<li><strong>Fixed Baseline Detail layout collisions.</strong> The sticky footer reflows before labeled actions overlap, and long multi-value Visual rows remain inside their Expected and Applied columns in both view and edit modes.</li>
+</ul>
+<h2 id="v0389--2026-07-23"><a class="header" href="#v0389--2026-07-23">v0.3.89 — 2026-07-23</a></h2>
+<ul>
+<li><strong>Completed the Baseline Detail authoring follow-up.</strong> Visual editing now has searchable batch setting selection, spreadsheet keyboard navigation, edit-session Undo, filtered-category search, nested multi-value rows, duplicate protection, and accessible modal focus.</li>
+<li><strong>Hardened history and typed editing edge cases.</strong> Same-millisecond snapshots dedupe deterministically, filtered additions remain visible, toolbar keyboard input is isolated from cell navigation, and new array entries preserve their scalar or structured type.</li>
+<li><strong>Resolved all current Dependabot alerts</strong> with DOMPurify 3.4.12, fast-uri 3.1.4, React Router 7.18.0, and an exact sharp 0.35.0 pin.</li>
+</ul>
+<h2 id="v0388--2026-07-22"><a class="header" href="#v0388--2026-07-22">v0.3.88 — 2026-07-22</a></h2>
+<ul>
+<li><strong>Completed the July Loop revision batch.</strong> Baseline tabs now use the specified pill states; My Baselines has reliable cell-wide status tooltips, fully left-aligned content, and three-state sorting; and Baseline Detail adds recovery-safe one-click Undo between Delete and Duplicate.</li>
+</ul>
+<h2 id="v0387--2026-07-21"><a class="header" href="#v0387--2026-07-21">v0.3.87 — 2026-07-21</a></h2>
+<ul>
+<li><strong>Removed the local Server 2025 <code>ImpersonateClient</code> manifest override.</strong> The three bundled baselines are restored to their source representation while the separate oscfg 1.3.9-or-newer status handling remains.</li>
+</ul>
+<h2 id="v0386--2026-07-21"><a class="header" href="#v0386--2026-07-21">v0.3.86 — 2026-07-21</a></h2>
+<ul>
+<li><strong>Fixed the Server 2025 <code>ImpersonateClient</code> CSP rule</strong> to use the current upstream string-backed UserRights representation and explicit SID schema.</li>
+<li><strong>Made oscfg 1.3.9 a minimum version.</strong> Newer CLI releases are accepted; the footer shows concise installed/admin-required states and keeps the exact version in its tooltip.</li>
+</ul>
+<h2 id="v0385--2026-07-20"><a class="header" href="#v0385--2026-07-20">v0.3.85 — 2026-07-20</a></h2>
+<ul>
+<li><strong>Fixed My Baselines sticky-header layering.</strong> Scrolled baseline rows no longer appear in the gap above the column header or paint through it.</li>
+</ul>
+<h2 id="v0384--2026-07-20"><a class="header" href="#v0384--2026-07-20">v0.3.84 — 2026-07-20</a></h2>
+<ul>
+<li><strong>Simplified exports to YAML, JSON, MOF, and CSV.</strong> Azure Policy definition JSON is no longer offered in Baseline Detail or Export Readiness.</li>
+<li><strong>Cleared the remaining high-severity development dependency advisories</strong> by updating <code>concurrently</code> to 9.2.4, <code>shell-quote</code> to 1.9.0, and each active <code>brace-expansion</code> major line to its patched release. This release contains no runtime feature changes.</li>
+</ul>
+<h2 id="v0383--2026-07-20"><a class="header" href="#v0383--2026-07-20">v0.3.83 — 2026-07-20</a></h2>
+<ul>
+<li><strong>Patched development dependency advisories</strong> by updating <code>tar</code> to 7.5.20 and <code>axios</code> to 1.18.1. This release contains no runtime feature changes.</li>
+</ul>
+<h2 id="v0382--2026-07-20"><a class="header" href="#v0382--2026-07-20">v0.3.82 — 2026-07-20</a></h2>
+<ul>
+<li><strong>Refined Baseline Detail document identity and view-only feedback.</strong> The title uses a document icon, and clicking a Visual table cell while viewing explains that editing requires Edit mode.</li>
+<li><strong>Improved Visual authoring reach.</strong> Add setting actions now appear above and below each table.</li>
+<li><strong>Added Matrix baseline search</strong> so large baseline lists can be filtered before selection.</li>
+<li><strong>Patched <code>js-yaml</code> to 4.3.0</strong> across direct and transitive dependencies to resolve a high-severity CPU-consumption advisory.</li>
+</ul>
+<h2 id="v0381--2026-07-19"><a class="header" href="#v0381--2026-07-19">v0.3.81 — 2026-07-19</a></h2>
+<ul>
+<li><strong>Corrected responsive Baseline Detail actions.</strong> Every footer action keeps its icon and label. Wide windows use one row; scaled and narrow Electron windows use balanced compact rows instead of icon-only controls, clipping, or horizontal scrolling.</li>
+</ul>
+<h2 id="v0380--2026-07-19"><a class="header" href="#v0380--2026-07-19">v0.3.80 — 2026-07-19</a></h2>
+<ul>
+<li><strong>Fixed official OSConfig CSV imports.</strong> LAPS, Defender Antivirus, and Windows Server baseline files now retain typed Registry/CSP resources, role-specific values, and Test compliance criteria; report-only CSVs receive a clear reconstruction error.</li>
+<li><strong>Made the Baseline Detail footer responsive without hiding actions.</strong> Controls compact to icons as space tightens instead of clipping or scrolling horizontally.</li>
+<li><strong>Fixed Save → Skip navigation.</strong> A consumed compliance deep link no longer reopens the report after saving an edited baseline.</li>
+</ul>
+<h2 id="v0379--2026-07-19"><a class="header" href="#v0379--2026-07-19">v0.3.79 — 2026-07-19</a></h2>
+<ul>
+<li><strong>Added compliance report search, filtering, and status sorting.</strong> Search covers setting names, types, and reasons; status filters isolate Compliant, Non-compliant, or Could not read entries; and the Status header cycles ascending, descending, and original ordering.</li>
+</ul>
+<h2 id="v0378--2026-07-19"><a class="header" href="#v0378--2026-07-19">v0.3.78 — 2026-07-19</a></h2>
+<ul>
+<li><strong>Corrected Create New Baseline, read-only editor, and compliance visuals.</strong> The custom baseline selector now uses ConfigForge's four-color Windows SVG and renders a single Linux penguin. The inline Monaco read-only warning again receives its explicit detached-host colors and opaque background. Baseline Detail now restores the last persisted audit across navigation/restarts and presents it in one large centered dialog instead of a bottom section plus side drawer.</li>
+</ul>
+<h2 id="v0377--2026-07-17"><a class="header" href="#v0377--2026-07-17">v0.3.77 — 2026-07-17</a></h2>
+<ul>
+<li><strong>Completed the Loop design pass.</strong> Register New Baseline now offers file, URL, Excel, Microsoft template, and custom-authoring methods before opening the shared editor; My Baselines shows Date Modified; each baseline remembers Code/Visual mode; edited baselines use Save/Discard/Cancel close protection; and real <code>.xlsx</code> workbooks import without a new runtime dependency.</li>
+</ul>
+<h2 id="v0376--2026-07-17"><a class="header" href="#v0376--2026-07-17">v0.3.76 — 2026-07-17</a></h2>
+<ul>
+<li><strong>Cognitive Walkthrough polish.</strong> Two selected baselines open Pairwise Diff; Code and Visual share visible read-only guidance and Undo; compliance opens in a drawer while remaining in-page; final-cell Enter appends a spreadsheet row; platform/status presentation is corrected; OSConfig recheck skips missing-path probes; stacked onboarding dialogs and redundant step prefixes are removed.</li>
+</ul>
+<h2 id="v0375--2026-07-17"><a class="header" href="#v0375--2026-07-17">v0.3.75 — 2026-07-17</a></h2>
+<ul>
+<li><strong>Fixed My Baselines search.</strong> Search now matches baseline namespace and display name only, so shared hidden setting names and <code>Microsoft.Windows/*</code> resource types cannot make short prefixes appear unresponsive.</li>
+</ul>
+<h2 id="v0374--2026-07-16"><a class="header" href="#v0374--2026-07-16">v0.3.74 — 2026-07-16</a></h2>
+<ul>
+<li><strong>Fixed overlapping Visual table columns.</strong> Large CIS baselines now use proportional fit-first columns with opaque alternating rows and controlled wrapping. Horizontal scrolling remains available on narrow windows without sticky cells painting over other values.</li>
+<li><strong>Clearer table vocabulary.</strong> Registry path, Value name, Value type, Expected value, and Applied value replace raw property keys.</li>
+</ul>
+<h2 id="v0373--2026-07-16"><a class="header" href="#v0373--2026-07-16">v0.3.73 — 2026-07-16</a></h2>
+<ul>
+<li><strong>Visual editing is now a spreadsheet.</strong> The old tile/form builder is gone. Baseline Detail and Register New Baseline share grouped tables with inline cell editing, direct row addition, selection, and deletion while preserving Test/Group structure, typed values, unknown fields, and exact QWord integers.</li>
+<li><strong>Editor actions stay anchored.</strong> Edit changes to Save in the persistent bottom footer; Cancel remains in the header.</li>
+<li><strong>Opened baseline tabs show their platform.</strong> Windows and Linux marks now appear beside persisted tab names.</li>
+<li><strong>Benchmark Mapping recognizes complete SCAP bundles.</strong> Valid CPE OVAL, CPE dictionary, and OCIL sidecars tied to a detected XCCDF no longer appear under Unrecognized files.</li>
+</ul>
+<h2 id="v0372--2026-06-19"><a class="header" href="#v0372--2026-06-19">v0.3.72 — 2026-06-19</a></h2>
+<ul>
+<li><strong>Security: completed the <code>undici</code> dependency update.</strong> A follow-up to v0.3.71 that also patches a deeper, build-time-only copy of <code>undici</code> used by the native-module build tooling. <code>npm audit</code> now reports zero vulnerabilities. As with v0.3.71, these are build/test dependencies only — none of them ship inside the installed app.</li>
+</ul>
+<h2 id="v0371--2026-06-19"><a class="header" href="#v0371--2026-06-19">v0.3.71 — 2026-06-19</a></h2>
+<ul>
+<li><strong>Security: patched the <code>undici</code> and <code>dompurify</code> build dependencies.</strong> Updated <code>undici</code> to 7.28.0 and <code>dompurify</code> to 3.4.11 to clear reported advisories. Both are development/build-time dependencies and are not bundled into the installed app.</li>
+</ul>
+<h2 id="v0370--2026-06-18"><a class="header" href="#v0370--2026-06-18">v0.3.70 — 2026-06-18</a></h2>
+<ul>
+<li><strong>Benchmark Mapping: the "Back to My Baselines" button now has a back arrow</strong>, matching the other back buttons throughout the app.</li>
+</ul>
+<h2 id="v0369--2026-06-18"><a class="header" href="#v0369--2026-06-18">v0.3.69 — 2026-06-18</a></h2>
+<ul>
+<li><strong>Refreshed navigation and vocabulary.</strong> The left rail now reads <strong>Dashboard, My Baselines, Microsoft Baselines, Export Readiness, Diff, Benchmark Mapping, Settings</strong> (formerly Manifests / Library / Validation / CIS Mapping), with Microsoft Baselines sitting directly under My Baselines. A baseline's items are now called <strong>settings</strong> rather than resources throughout the app, and the baseline-card action is <strong>Open</strong> (was "View").</li>
+<li><strong>Microsoft Windows logo.</strong> A four-color Windows logo replaces the previous window emoji / icon on baseline cards, the Microsoft Baselines catalog, the setting picker, and the editor header; Linux uses the penguin consistently.</li>
+<li><strong>Editor and Benchmark Mapping polish.</strong> The editor's format strip now puts the Editor / Visual Builder toggle on the left and the YAML / JSON / MOF tabs on the right; Benchmark Mapping's folder field is labeled <strong>Benchmark data folder</strong>; the redundant "Source" line and a duplicate "Docs" button were removed; and the Audit Pack PDF section headings are left-aligned.</li>
+<li><strong>Localization refresh.</strong> The French / German / Spanish catalogs were re-translated for the new terminology via Azure Translator (still pending native-speaker review).</li>
+</ul>
+<h2 id="v0368--2026-06-10"><a class="header" href="#v0368--2026-06-10">v0.3.68 — 2026-06-10</a></h2>
+<ul>
+<li><strong>Release builds are now unsigned.</strong> Ahead of the open-source migration, all code signing was removed from CI. The Windows/Linux/macOS installers are still built and published as drafts (with SBOM + SHA256SUMS) — just unsigned. Build from source for trust, or self-sign your own local build. Windows SmartScreen / macOS Gatekeeper will warn on unsigned builds.</li>
+<li><strong>Continuous dependency audit.</strong> The production-dependency security audit (<code>npm audit</code>, high/critical) now runs on every pull request, not only at release.</li>
+</ul>
+<h2 id="v0367--2026-06-10"><a class="header" href="#v0367--2026-06-10">v0.3.67 — 2026-06-10</a></h2>
+<ul>
+<li><strong>Fixed: exporting a baseline to MOF now produces a package the Azure Machine Configuration cmdlets accept.</strong> Previously the exported MOF referenced the wrong module identity, so <code>New-GuestConfigurationPackage</code> failed to build a package. The MOF now targets the <code>Microsoft.OSConfig</code> module (any version 1.2.0 or later), so the <strong>Export → MOF → package → Azure Policy</strong> flow works end-to-end. See the manifest editor guide for the one-time <code>Install-Module</code> prerequisites.</li>
+</ul>
+<h2 id="v0366--2026-06-10"><a class="header" href="#v0366--2026-06-10">v0.3.66 — 2026-06-10</a></h2>
+<ul>
+<li><strong>Cleaner app description.</strong> The installer and executable now describe the app simply as "ConfigForge — OSConfig Baseline Editing tool".</li>
+<li><strong>Tidier manifest card stats.</strong> The "Could not read" label on each manifest card now wraps cleanly instead of squeezing into three cramped lines.</li>
+</ul>
+<h2 id="v0365--2026-06-10"><a class="header" href="#v0365--2026-06-10">v0.3.65 — 2026-06-10</a></h2>
+<ul>
+<li><strong>Fixed: the Diff "Select manifest" dropdown could stop responding until restart.</strong> After rapid navigation between pages that open the YAML editor, an invisible leftover editor pop-up could settle over the dropdown and swallow clicks. The editor's pop-up widgets are now cleaned up reliably when you leave a page, so the dropdown stays responsive. (Completes the v0.3.53 mitigation with a root-cause fix.)</li>
+</ul>
+<h2 id="v0364--2026-06-09"><a class="header" href="#v0364--2026-06-09">v0.3.64 — 2026-06-09</a></h2>
+<ul>
+<li><strong>Fixed: the Manifests list card now shows a "Could not read" stat.</strong> Indeterminate / unreadable resources (provider not supported, transport error, or unsupported path) were left out of the card, so Compliant + Issues didn't add up to the resource total the way they do in the manifest detail view. The card now shows the amber <strong>Could not read</strong> bucket alongside Resources / Compliant / Issues.</li>
+<li><strong>Fixed: the welcome screen no longer shows a stale version number</strong> ("ConfigForge v0.2.0 works in two modes…" → "ConfigForge works in two modes…").</li>
+</ul>
+<h2 id="v0363--2026-06-08"><a class="header" href="#v0363--2026-06-08">v0.3.63 — 2026-06-08</a></h2>
+<ul>
+<li><strong>UI label "OSConfig vNext" → "OSConfig Gen 2".</strong> Renamed the product/version label shown in the sidebar footer, the Home page description, and the Settings docs-link + section description, across all four languages.</li>
+</ul>
+<h2 id="v0362--2026-06-08"><a class="header" href="#v0362--2026-06-08">v0.3.62 — 2026-06-08</a></h2>
+<ul>
+<li><strong>Rebrand: "ConfigForge Spark" → "ConfigForge".</strong> Dropped the "Spark" suffix across the app, build configuration, and documentation — new application id, executable name, installer artifact names, and macOS bundle identity. No functional change; existing manifests, history, and settings are unaffected.</li>
+</ul>
+<h2 id="v0354-through-v0361---full-ui-localization-english--français--deutsch--español"><a class="header" href="#v0354-through-v0361---full-ui-localization-english--français--deutsch--español">v0.3.54 through v0.3.61 - Full-UI localization (English / Français / Deutsch / Español)</a></h2>
+<p>Full user-interface localization via <code>react-i18next</code>: the app auto-detects the OS locale, with a <strong>Settings → Language</strong> override (<code>System / English / Français / Deutsch / Español</code>). 13 translation namespaces cover the sidebar, settings, editor, diff, history, compliance, audit-pack, and dialogs, and <code>Intl</code>-based formatters localize dates and numbers. English is the source language; French / German / Spanish catalogs are machine-translated and pending native-speaker review. Technical content — manifest YAML, OSConfig CLI output, CIS rule titles, baseline filenames, and audit-pack PDF exports — intentionally stays English so artifacts remain greppable and bug-filable.</p>
+<h2 id="v0353--2026-05-26"><a class="header" href="#v0353--2026-05-26">v0.3.53 — 2026-05-26</a></h2>
+<ul>
+<li><strong>Fixed: the Diff "Select manifest" dropdown could become unresponsive.</strong> Removed a stuck-loading guard on the Pairwise selects, added a 10-second timeout on the manifest-list IPC (a recoverable banner now replaces the silent hang), and tightened Monaco editor widget cleanup so a disposed editor can no longer intercept clicks elsewhere in the UI.</li>
+</ul>
+<h2 id="v0352--2026-05-26"><a class="header" href="#v0352--2026-05-26">v0.3.52 — 2026-05-26</a></h2>
+<ul>
+<li><strong>Removed Windows Secure Shell (SSH) baseline from the library.</strong> The bundled <code>ssh.osc.yaml</code> manifest has been retired.</li>
+</ul>
+<h2 id="v0351--2026-05-26"><a class="header" href="#v0351--2026-05-26">v0.3.51 — 2026-05-26</a></h2>
+<ul>
+<li><strong>CIS Diff per-row "CIS Rule" column now displays Linux matches.</strong> v0.3.50 wired the new Linux matcher into the compliance counter, but the per-resource display still used the legacy lookup. Rows now show the matched rule when the benchmark matcher succeeds.</li>
+<li><strong>Installer filenames now carry the correct version.</strong> <code>apps/desktop/package.json</code> was stale at 0.3.36, causing all prior installer artifacts to embed the wrong version.</li>
+</ul>
+<h2 id="v0350--2026-05-26"><a class="header" href="#v0350--2026-05-26">v0.3.50 — 2026-05-26</a></h2>
+<ul>
+<li><strong>Linux CIS Diff matcher rewrite.</strong> New Linux-aware fuzzy matcher (<code>linuxFuzzyMatch</code>) replaces the PascalCase token matcher when matching Linux resources against Linux Azure Policy or Linux XCCDF benchmarks. Handles nested <code>Linux/KernelModule</code> children, path-boundary-aware overlap (<code>/etc/cron.d</code> ≠ <code>/etc/cron.hourly</code>), Linux-specific stopwords, polarity guard (<code>disable</code> vs <code>enable</code>), light stemming (<code>users</code> → <code>user</code>), and best-vs-runner-up margin. Coverage on the bundled SFF Linux Baseline jumped from <strong>7.36% → 12.71% unique catalog coverage</strong> (81% of the theoretical 15.7% ceiling for 47 resources against a 299-rule catalog), with <strong>39/47 = 82.98%</strong> of baseline resources finding a CIS match. Windows matchers untouched — Member-Server 2022/2025 still at 75.10%–77.51% unique coverage.</li>
+</ul>
+<h2 id="v0348--2026-05-26"><a class="header" href="#v0348--2026-05-26">v0.3.48 — 2026-05-26</a></h2>
+<ul>
+<li>CIS Mapping page subtitle now mentions that a CIS tab is available in Diff for full-baseline coverage scoring.</li>
+</ul>
+<h2 id="v0347--2026-05-26"><a class="header" href="#v0347--2026-05-26">v0.3.47 — 2026-05-26</a></h2>
+<ul>
+<li>History panel records the actual diff summary instead of a generic "Manifest registered" label.</li>
+<li>Compare buttons in CIS Diff and manifest-vs-manifest comparisons auto-scroll to results.</li>
+</ul>
+<h2 id="v0346--2026-05-26"><a class="header" href="#v0346--2026-05-26">v0.3.46 — 2026-05-26</a></h2>
+<ul>
+<li>CIS fuzzy matching now uses exact-word overlap with a higher threshold to reduce over-matching in CIS Diff.</li>
+<li>CIS-licensed rule titles were removed from test fixtures and comments.</li>
+<li>Added <code>scripts/smoke-azure-policy-fuzzy.mjs</code> for targeted Azure Policy fuzzy-matcher smoke checks.</li>
+</ul>
+<h2 id="v0345--2026-05-22"><a class="header" href="#v0345--2026-05-22">v0.3.45 — 2026-05-22</a></h2>
+<ul>
+<li>Visual Builder expands <code>Microsoft.OSConfig/Group</code> resources inline so Linux baselines can be edited without the YAML fallback.</li>
+</ul>
+<h2 id="v0344--2026-05-22"><a class="header" href="#v0344--2026-05-22">v0.3.44 — 2026-05-22</a></h2>
+<ul>
+<li>Visual Builder Edit dialog no longer hits a temporal-dead-zone <code>ReferenceError</code> when opening YAML fallback paths.</li>
+</ul>
+<h2 id="v0343--2026-05-22"><a class="header" href="#v0343--2026-05-22">v0.3.43 — 2026-05-22</a></h2>
+<ul>
+<li>Azure Trusted Signing is wired into the Windows release workflow alongside the legacy <code>.pfx</code> signing path.</li>
+<li>CIS Azure Policy matching is CSP-aware, improving matches for CSP-keyed Windows resources.</li>
+</ul>
+<h2 id="v0342--2026-05-22"><a class="header" href="#v0342--2026-05-22">v0.3.42 — 2026-05-22</a></h2>
+<ul>
+<li>Visual Builder Edit handles <code>Microsoft.OSConfig/Test</code> wrappers and preserves wrapper schema on save.</li>
+<li>Diff value canonicalization treats common Windows path variants as equivalent.</li>
+<li>README screenshots were refreshed for CIS Diff, CIS Mapping, Visual Builder, and Compare.</li>
+</ul>
+<h2 id="v0341--2026-05-22"><a class="header" href="#v0341--2026-05-22">v0.3.41 — 2026-05-22</a></h2>
+<ul>
+<li>Visual Builder Edit now uses the same form-based UI as Add Resource and merges edits into the original resource.</li>
+<li>CIS Diff source badges no longer wrap onto multiple lines.</li>
+</ul>
+<h2 id="v0340--2026-05-22"><a class="header" href="#v0340--2026-05-22">v0.3.40 — 2026-05-22</a></h2>
+<ul>
+<li>Cross-manifest conflict lists are fixed-height, scrollable, and show a total count badge.</li>
+</ul>
+<h2 id="v0339--2026-05-22"><a class="header" href="#v0339--2026-05-22">v0.3.39 — 2026-05-22</a></h2>
+<ul>
+<li>Visual Builder can edit existing resources from resource cards.</li>
+<li>Rationale prompts now fire for visual-builder-only Add, Edit, and Remove changes.</li>
+</ul>
+<h2 id="v0338--2026-05-22"><a class="header" href="#v0338--2026-05-22">v0.3.38 — 2026-05-22</a></h2>
+<ul>
+<li>CIS Diff Status column is user-sortable and no longer auto-sorts by default.</li>
+</ul>
+<h2 id="v0337--2026-05-22"><a class="header" href="#v0337--2026-05-22">v0.3.37 — 2026-05-22</a></h2>
+<ul>
+<li>CIS Diff shows unmapped rows with a red filled X, mapped rows with a green check, and sorts unmapped rows first.</li>
+</ul>
+<h2 id="v0336--2026-05-22"><a class="header" href="#v0336--2026-05-22">v0.3.36 — 2026-05-22</a></h2>
+<ul>
+<li>Matrix diff canonicalizes boolean, <code>0</code>/<code>1</code>, quoted numeric, and empty-array variants to reduce false-positive changes.</li>
+</ul>
+<h2 id="v0335--2026-05-22"><a class="header" href="#v0335--2026-05-22">v0.3.35 — 2026-05-22</a></h2>
+<ul>
+<li>CIS Re-check invalidates the renderer availability cache so newly added CIS data appears without restarting the app.</li>
+</ul>
+<h2 id="v0334--2026-05-22"><a class="header" href="#v0334--2026-05-22">v0.3.34 — 2026-05-22</a></h2>
+<ul>
+<li>Expanding Resource Changes sections no longer scrolls the Diff page back to the top.</li>
+</ul>
+<h2 id="v0333--2026-05-22"><a class="header" href="#v0333--2026-05-22">v0.3.33 — 2026-05-22</a></h2>
+<ul>
+<li>Intelligent Diff Insights summary uses matrix-derived resource counts so it matches the Resource Changes panel.</li>
+</ul>
+<h2 id="v0332--2026-05-22"><a class="header" href="#v0332--2026-05-22">v0.3.32 — 2026-05-22</a></h2>
+<ul>
+<li>Diff page cleanup added empty-value equivalence and improved History rationale display.</li>
+</ul>
+<h2 id="v0331--2026-05-22"><a class="header" href="#v0331--2026-05-22">v0.3.31 — 2026-05-22</a></h2>
+<ul>
+<li>Diff page shows resource lists grouped by status instead of only aggregate counts.</li>
+</ul>
+<h2 id="v0330--2026-05-22"><a class="header" href="#v0330--2026-05-22">v0.3.30 — 2026-05-22</a></h2>
+<ul>
+<li>Diff page stats use <code>buildMatrix</code> resource-level comparisons instead of raw YAML line counts.</li>
+</ul>
+<h2 id="v0329--2026-05-22"><a class="header" href="#v0329--2026-05-22">v0.3.29 — 2026-05-22</a></h2>
+<ul>
+<li><code>matrix.ts</code> keeps <code>splitPascalCase</code> local to avoid pulling Node-only CIS parser dependencies into the renderer bundle.</li>
+</ul>
+<h2 id="v0328--2026-05-22"><a class="header" href="#v0328--2026-05-22">v0.3.28 — 2026-05-22</a></h2>
+<ul>
+<li>Baseline-to-baseline matrix diff uses CIS-matcher lessons for better cross-version row merging, including hive and CSP naming drift.</li>
+</ul>
+<h2 id="v0327--2026-05-22"><a class="header" href="#v0327--2026-05-22">v0.3.27 — 2026-05-22</a></h2>
+<ul>
+<li>CIS XCCDF/OVAL warmup is deferred by 3 seconds so manifest open is not blocked by XML parsing.</li>
+</ul>
+<h2 id="v034-through-v0314"><a class="header" href="#v034-through-v0314">v0.3.4 through v0.3.14</a></h2>
+<p>Releases v0.3.4 through v0.3.14 continued hardening the CIS pipeline, added the CIS Diff tab to the Diff page (<code>cfs:cis:bulk-lookup</code> IPC), improved macOS author-build parity, and shipped incremental reliability and UX fixes. See <a href="https://github.com/Azure/ConfigForge/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a> at the repo root for per-release detail.</p>
+<h2 id="v033---stable-width-audit-counter--cis-mapping-file-checklist"><a class="header" href="#v033---stable-width-audit-counter--cis-mapping-file-checklist">v0.3.3 - Stable-width audit counter + CIS Mapping file checklist</a></h2>
+<p>Audit counter layout jitter fixed with <code>AuditProgressCounter</code> (tabular-nums + fixed width). CIS Mapping page gained a per-file checklist with present/missing indicators. <code>cfs:cis:recheck</code> cache bug fixed (all CIS caches now cleared). 1172 unit tests.</p>
+<h2 id="v032---cis-mapping-resolved-path--open-folder"><a class="header" href="#v032---cis-mapping-resolved-path--open-folder">v0.3.2 - CIS Mapping: resolved path + Open folder</a></h2>
+<p>CIS Mapping page shows the resolved runtime data directory path with Copy, Open folder, and Re-check actions. New IPC endpoints: <code>cfs:cis:reveal-data-dir</code> and <code>cfs:cis:recheck</code>.</p>
+<h2 id="v031---settings-store--snapshot-rotation--deploy-recovery"><a class="header" href="#v031---settings-store--snapshot-rotation--deploy-recovery">v0.3.1 - Settings store + snapshot rotation + deploy recovery</a></h2>
+<p>userData settings store (<code>cfs:settings:get/:set</code>), pre-deploy snapshot rotation (dual write: latest + timestamped), mid-deploy interruption sentinel with dashboard recovery banner, breadcrumbs on nested manifest pages. 1167 unit + 59 e2e tests.</p>
+<h2 id="v030---private-preview-readiness-phases-1--2"><a class="header" href="#v030---private-preview-readiness-phases-1--2">v0.3.0 - Private-preview readiness (Phases 1 + 2)</a></h2>
+<p>17 audit-tracked features: main-process enforce confirmation gate (CF-SEC-019), runtime secret log redaction (CF-SEC-020), CLI version-mismatch banner (CF-SEC-021), namespace-collision warning on register (#20), audit-pack PII warning, uncaughtException handlers, stale rationale lock sweep, Dashboard first-run card, compare quick action, format-tab unsaved notice, revert-button disable, CIS Mapping sidebar page (#11), resource picker search, URL import error classification. 1167 unit + 59 e2e tests.</p>
+<h2 id="v0221---private-preview-audit-fixes"><a class="header" href="#v0221---private-preview-audit-fixes">v0.2.21 - Private-preview audit fixes</a></h2>
+<p>3-track safety/reliability/UX audit: SSRF blocked on fetch-uri (CF-SEC-016/017/018), <code>path</code> field removed from register, atomic history snapshots, deleteManifest cleans history directory, useCliPresence mac-flavor fix, format-tab race-guard, computed verdicts for LAPS/SSH rows, revert confirm copy accuracy, Monaco find-widget fix.</p>
+<h2 id="v0220---empty-value-equivalence--ai-copy-fix"><a class="header" href="#v0220---empty-value-equivalence--ai-copy-fix">v0.2.20 - Empty-value equivalence + AI copy fix</a></h2>
+<p>Empty-value equivalence (<code>""</code>, <code>[]</code>, <code>null</code>, absent) in conflict detection. String-array values compare order-independently. Diff insights panel copy fixed (removed contradictory "AI-Assisted" + "Deterministic" pair).</p>
+<h2 id="v0215-through-v0219---cross-manifest-conflict-detection"><a class="header" href="#v0215-through-v0219---cross-manifest-conflict-detection">v0.2.15 through v0.2.19 - Cross-manifest conflict detection</a></h2>
+<p>Cross-manifest conflict detection shipped across five releases: source-YAML reading (not live state), normalized-name bridging for cross-OS-version drift (WS2019/2022/2025), <code>differs</code> wins over <code>partial</code> classification, Playwright e2e coverage of official Microsoft baseline trios.</p>
+<h2 id="v0210-through-v0214---editor-layout--readable-diffs"><a class="header" href="#v0210-through-v0214---editor-layout--readable-diffs">v0.2.10 through v0.2.14 - Editor layout + readable diffs</a></h2>
+<p>Editor layout reworked: bottom drawer for CIS + Rationale, bigger working canvas, less-invasive drawer behavior, suppressed false-positive JSON schema warnings. Diff viewer switched to GitHub-style readable text rendering. Validation page fixes, URL import flow improvements, and compliance table density tuning.</p>
+<h2 id="v029---deploy-risk-ack--ux-polish--ms-legal-alignment"><a class="header" href="#v029---deploy-risk-ack--ux-polish--ms-legal-alignment">v0.2.9 - Deploy risk-ack + UX polish + MS legal alignment</a></h2>
+<p>Deploy risk-acknowledgment dialog, UX polish pass, and Microsoft legal alignment updates.</p>
+<h2 id="v025-through-v028---diff-cross-type-matching--edge-case-hardening"><a class="header" href="#v025-through-v028---diff-cross-type-matching--edge-case-hardening">v0.2.5 through v0.2.8 - Diff cross-type matching + edge case hardening</a></h2>
+<p>Diff gained two-pass cross-type matching so rules wrapped differently (bare CSP vs Test-wrapped CSP) compare correctly. Matrix-diff edge cases around cross-type merge, empty-value equivalence, and quiet-mode filtering hardened. See <a href="https://github.com/Azure/ConfigForge/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a> at the repo root for per-release detail.</p>
+<h2 id="v024---diff-name-normalization--schema-canonical-identity"><a class="header" href="#v024---diff-name-normalization--schema-canonical-identity">v0.2.4 - Diff name-normalization + schema-canonical identity</a></h2>
+<ul>
+<li><strong>Diff: same rule under different naming conventions now matches.</strong> v0.2.3 covered Registry; v0.2.4 closes the remaining gaps: <code>AuditPolicy.subcategory</code>, <code>UserRightsAssignment.policy</code>, <code>AccountPolicy.policy</code> matched by their enum-constrained schema fields; display-name normalization fallback (lowercase + strip non-alphanumeric) so <code>AuditLogon</code> / <code>Audit Logon</code> / <code>Audit-Logon</code> / <code>audit_logon</code> all collapse to the same rule. Negative controls preserve genuine add/remove cases (<code>AuditLogon</code> vs <code>AuditLogonEvents</code>; same name, different type).</li>
+</ul>
+<p>See <a href="https://github.com/Azure/ConfigForge/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a> at the repo root for the full v0.2.2 / 0.2.3 / 0.2.4 detail.</p>
+<h2 id="v023---azure-policy-structural-rewrite--diff-semantic-identity"><a class="header" href="#v023---azure-policy-structural-rewrite--diff-semantic-identity">v0.2.3 - Azure Policy structural rewrite + diff semantic identity</a></h2>
+<ul>
+<li><strong>Diff: rules renamed across baseline versions no longer appear as duplicate add+remove.</strong> <code>analyzeDiff</code> was keying by display name; switched to semantic identity (<code>type:keyPath\\valueName</code> for Registry; mirrors matrix-diff). Test-wrapper boundary changes (wrapped vs unwrapped) and <code>Microsoft.OSConfig/BaselineRule</code> placeholders (matched by stable <code>ruleId</code>) also handled.</li>
+<li><strong>Azure Policy export: structurally complete.</strong> Previous export was a stub Azure could ingest but couldn't deploy any settings. Compared against a real Microsoft-shipped GC baseline, 13 required fields were missing. Now produces a 25 KB LAPS-aligned policy from the manifest's resources: per-setting ARM parameters (one per resource, manifest's current value as default), <code>configurationParameter</code> map in metadata, parameter-hash existence-condition for drift detection, dual VM+Arc deployment-template resources, <code>IncludeArcMachines</code> toggle, <code>versions[]</code>, assignment name uses <code>uniqueString()</code>.</li>
+</ul>
+<h2 id="v022---azure-policy-import-shapes--matrix-diff-correctness"><a class="header" href="#v022---azure-policy-import-shapes--matrix-diff-correctness">v0.2.2 - Azure Policy import shapes + matrix-diff correctness</a></h2>
+<ul>
+<li><strong>Import: Azure Policy Guest Configuration JSON shapes.</strong> Drop in the catalogs Microsoft publishes (Ubuntu CIS, Linux Azure Security Baseline, Windows GC) - the <code>settingsReference[]</code> shape now imports as <code>Microsoft.OSConfig/BaselineRule</code> placeholders that preserve <code>ruleId</code>, <code>displayName</code>, <code>severity</code>, and the original setting name. Plus: embedded YAML in a top-level <code>source</code> field (e.g. <code>Microsoft-Defender-Antivirus.json</code>); friendly errors for Azure Policy Definition wrappers and rule-metadata reference files (each error names what the file actually is and what to import instead).</li>
+<li><strong>Matrix diff: now compares <code>compliance.equals</code>, not just <code>properties</code>.</strong> Two manifests targeting the same registry path with different desired compliance values (CSV-imported style: <code>equals: 10</code> vs <code>equals: 20</code>) used to report <code>status: identical</code>. Same root cause as the v0.2.1 analyzer fix, but in the matrix-builder code path.</li>
+<li><strong>Azure Policy export safety:</strong> drop image-publisher allowlist (silently excluded gold images / custom VHDs / smaller-publisher marketplace images), add Arc-server targeting, refuse to export placeholder-baseline manifests (would silently report Compliant for every VM), auto-detect Windows vs Linux from manifest resources.</li>
+<li><strong>CI workflow:</strong> signing gate eased to <code>continue-on-error: true</code> + <code>::warning::</code> so canonical <code>vX.Y.Z</code> tags can ship unsigned binaries until a Microsoft-managed signing pipeline is in place. Installer upload glob uses <code>find -maxdepth 3</code> to pick up electron-builder's version-named output subdirectory.</li>
+</ul>
+<h2 id="v021---page-split-refactor--security-audit-closure-current-dev-line"><a class="header" href="#v021---page-split-refactor--security-audit-closure-current-dev-line">v0.2.1 - Page-split refactor + security audit closure (current dev line)</a></h2>
+<p>Largest maintainer-facing release since the Electron migration:</p>
+<ul>
+<li><strong>Phase A→E renderer-page split.</strong> Five lighthouse pages refactored from monolithic <code>.tsx</code> files into <code>&lt;Page&gt;/{index.tsx,helpers.tsx,state/,components/}</code> directories with custom hooks + per-hook vitest coverage. <code>ManifestEditor</code> went from 1,585 to 451 lines (−72%); aggregate across all five pages: 4,933 → 3,374 (−32%). New hooks lock in regression coverage for race-guards (<code>fetchToken</code>, <code>deployJobIdRef</code>, <code>listTokenRef</code>, <code>matrixLoadTokenRef</code>), timer cleanup (<code>docsCopiedTimerRef</code>, flash-message Set), ghost-selection fix, and format sync.</li>
+<li><strong>CSV-import schema-validation fix</strong> (user-visible): CSV/TSV/XLSX imports and JSON security-definition imports now emit <code>valueName</code> + an inferred <code>valueType</code> so the editor's schema validator stops flagging every imported row.</li>
+<li><strong>All 15 security audit findings closed</strong> (CF-SEC-001 through CF-SEC-015): file:// navigation lockdown, typed IPC payload validators, import size cap, markdown HTML escape, AI-content spoof-resistant per-process hash registry (CF-SEC-007), production signing gate + SHA256SUMS, <code>npx --no-install</code> electron-builder pin, CycloneDX SBOM in the release pipeline, <code>npm audit --omit=dev --audit-level=high</code> release gate, electron + electron-builder tilde-pinned, <code>safeCfs(key)</code> / <code>hasCfsNamespace(key)</code> capability helpers for the mac-author flavor.</li>
+<li><strong>Typed main-process logger</strong> at <code>apps/desktop/electron/log.ts</code> (electron-log-backed, redacts common secret-key patterns). First migration: <code>elevate.ts</code>. Remaining ~30 console.* sites migrate incrementally.</li>
+<li><strong>Prettier</strong> added (config + scripts; not gated in CI).</li>
+<li><strong>Test count</strong> 882 → 1,093 on <code>main</code> / → 1,028 on <code>mac-author-build</code>.</li>
+</ul>
+<p>See <a href="https://github.com/Azure/ConfigForge/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a> at the repo root for the full v0.2.1 detail.</p>
+<h2 id="v020---bring-your-own-cli--oss-readiness"><a class="header" href="#v020---bring-your-own-cli--oss-readiness">v0.2.0 - Bring-your-own-CLI + OSS readiness</a></h2>
+<p>The biggest change since the Electron migration:</p>
+<ul>
+<li><strong>OSConfig CLI is no longer bundled.</strong> Users install OSConfig separately; the editor / library / diff / compare / audit-pack PDF features keep working without it, and Deploy / Audit / Revert degrade gracefully via a new typed <code>CLI_REQUIRED</code> IPC error envelope (status 412) instead of failing on a raw spawn error.</li>
+<li><strong>First-run Welcome dialog</strong>, <strong>CliRequiredModal</strong>, <strong>Editor-mode hero card</strong>, footer health pill rewrite, dedicated OSConfig section on the Settings page.</li>
+<li><strong>Binary resolver</strong> now probes well-known install locations on Windows (App Execution Alias, winget Links shim, Program Files) and Linux (<code>/usr/bin</code>, <code>/usr/local/bin</code>, <code>/opt/osconfig</code>, <code>~/.local/bin</code>), plus Windows MSIX fallback via <code>Get-AppxPackage</code>.</li>
+<li>Legal/OSS scaffolding: <code>LICENSE</code>, <code>NOTICE</code>, <code>THIRDPARTYNOTICES.md</code>, <code>SECURITY.md</code>, <code>CONTRIBUTING.md</code>. Test count 832 → 882.</li>
+</ul>
+<p>See <a href="https://github.com/Azure/ConfigForge/blob/main/CHANGELOG.md"><code>CHANGELOG.md</code></a> at the repo root for the full v0.2.0 detail.</p>
+<h2 id="wire-audit-pack-rationale-log-loader"><a class="header" href="#wire-audit-pack-rationale-log-loader">Wire audit-pack rationale-log loader</a></h2>
+<p>The audit-pack PDF + Markdown's <strong>Rationale log</strong> section now
+actually renders. Previously <code>tryLoadRationale</code> was a stub
+returning <code>undefined</code> - even though the rationale data sat at
+<code>~/.configforge/rationale/&lt;ns&gt;.jsonl</code> and was already reachable
+via <code>GET /api/manifests/[id]/rationale</code>. The adapter now maps
+the on-disk shape (<code>ts / author / resourceName / oldValue / newValue / reason / skipped?</code>) onto the audit-pack render shape
+and the renderers gained a <code>resourceName</code> annotation so an
+auditor can see <strong>which resource</strong> each rationale entry is
+about. Skipped entries (<code>skipped:true</code>) are kept with a
+<code>(rationale skipped)</code> sentinel so the explicit no-rationale
+events remain audit-visible.</p>
+<p>The analysis provenance / <strong>Citations</strong> section is still gated and
+omitted - that needs a per-manifest provenance store, which
+was intentionally not built. Documented as a known gap.</p>
+<h2 id="docs-hardening--factual-audit--identity-scrub"><a class="header" href="#docs-hardening--factual-audit--identity-scrub">Docs hardening + factual audit + identity scrub</a></h2>
+<p>Comprehensive audit of every doc page against actual source.
+Every API page had at least one wrong request/response shape
+(biggest: <code>/api/health</code> is flat, not nested; <code>/api/diff</code> doesn't
+exist, only <code>/api/diff/matrix</code>; <code>/api/audit</code> doesn't exist, audit
+is <code>/api/deploy?mode=audit</code>). Snapshot ID format corrected
+(it's a <code>randomBytes(4)</code> collision tiebreaker, not a sha256
+prefix). <code>OSCFG_BINARY</code> corrected to <code>OSCFG_BIN</code> everywhere.
+Last <code>L1</code> Level reference and <code>cis-ws2025-ms</code> worked-example
+baseline ID removed. Personal owner email + name scrubbed from
+public-facing surfaces; replaced with "Community-maintained" and
+GitHub Issues link. Changelog backfilled with the preceding entries.</p>
+<h2 id="gate-cis-ux-surfaces-on-data-availability"><a class="header" href="#gate-cis-ux-surfaces-on-data-availability">Gate CIS UX surfaces on data availability</a></h2>
+<p>Adds <code>GET /api/cis/status</code> and a <code>useCisAvailable()</code> React hook.
+When CIS data is absent, the editor sidebar, the compliance
+dropdown, and the audit-pack tip are <strong>hidden</strong> rather than
+rendering empty results. The rest of the app - editor, deploy,
+audit, history, rationale, audit-pack PDF, local analyzer, diff
+matrix - works exactly the same.</p>
+<h2 id="remove-bundled-cis-benchmark-data"><a class="header" href="#remove-bundled-cis-benchmark-data">Remove bundled CIS benchmark data</a></h2>
+<p>License-compliance cleanup. Removes every CIS-derived YAML/JSON
+artifact from <code>public/_baselines/cis/</code> and the <code>cis-benchmark</code>
+catalog entries from
+<a href="https://github.com/Azure/ConfigForge/blob/main/src/data/baseline-catalog.ts"><code>src/data/baseline-catalog.ts</code></a>.
+The CIS Benchmarks ship under terms incompatible with redistributing
+derived artifacts in a public repo; the user supplies their own
+legally licensed copies into <code>public/_baselines/cis/_data/</code>. Loaders
+return <code>null</code> on <code>ENOENT</code>; downstream features hide gracefully.</p>
+<h2 id="not-microsoft--not-for-prod-disclaimer"><a class="header" href="#not-microsoft--not-for-prod-disclaimer">Not-Microsoft / not-for-prod disclaimer</a></h2>
+<p>Adds the prominent "independent open-source project, not
+officially supported by Microsoft, not intended for production
+use" banner to <code>README.md</code> and the introduction page of this
+docs site. Sets reader expectation up-front.</p>
+<h2 id="edge-case-fixes-from-rubber-duck-audit"><a class="header" href="#edge-case-fixes-from-rubber-duck-audit">Edge-case fixes from rubber-duck audit</a></h2>
+<p>A grab-bag of fixes from a careful re-read of the
+codebase. Highlights:</p>
+<ul>
+<li><code>DELETE /api/manifests</code> now also drops the per-manifest rationale
+log via <code>deleteRationale()</code> so a deleted namespace doesn't leave
+an orphaned <code>&lt;ns&gt;.jsonl</code> that would mix with a re-registered
+manifest of the same name.</li>
+<li><code>GET /api/manifests/[id]/audit-pack</code> now emits an RFC 6266-compliant
+<code>Content-Disposition</code> header (ASCII fallback + <code>filename*=UTF-8''…</code>)
+so non-ASCII manifest names download with the right name across
+modern and legacy browsers.</li>
+<li>A handful of smaller fixes flushed during the audit (author
+coercion to <code>-</code> when both git config and OS user are unavailable,
+defensive author cell in the rationale CSV export, etc.).</li>
+</ul>
+<h2 id="full-rationale-log-page"><a class="header" href="#full-rationale-log-page">Full rationale log page</a></h2>
+<p><code>/manifests/[id]/rationale</code> became a real page instead of a 404 in the retired
+web app. Its current Electron implementation is
+<a href="https://github.com/Azure/ConfigForge/blob/main/apps/desktop/src/pages/ManifestRationale.tsx"><code>apps/desktop/src/pages/ManifestRationale.tsx</code></a>.
+It shows every rationale entry across all resources,
+with a search filter, a skipped-vs-captured toggle, per-row stats,
+and a CSV-injection-safe download button. The editor sidebar's
+"View all →" link finally goes somewhere.</p>
+<h2 id="cis-cross-reference-sidebar-on-manifestsnew"><a class="header" href="#cis-cross-reference-sidebar-on-manifestsnew">CIS cross-reference sidebar on <code>/manifests/new</code></a></h2>
+<p>The CIS rule sidebar that already lit up on <code>/manifests/[id]</code> is now
+also wired into the new-manifest page, so the cross-reference is
+visible while authoring (not just while editing an existing
+namespace). Hidden when CIS data is not present locally.</p>
+<h2 id="clearer-yaml-parse-errors"><a class="header" href="#clearer-yaml-parse-errors">Clearer YAML parse errors</a></h2>
+<p>YAML parse failures in the editor and <code>POST /api/manifests</code> now
+include the offending line/column when the parser surfaces them,
+and a single de-duplicated issue text replaces the old "issue
+appears twice" UI.</p>
+<h2 id="download-changelog-as-markdown"><a class="header" href="#download-changelog-as-markdown">Download changelog as Markdown</a></h2>
+<p>Adds a "Download as Markdown" button on the in-app changelog page
+that streams the markdown source directly. Removes the redundant
+in-page rendered changelog so this docs site is the single canonical
+copy.</p>
+<h2 id="documentation-site"><a class="header" href="#documentation-site">Documentation site</a></h2>
+<p>This site. mdBook-built, deployed via GitHub Actions to <code>gh-pages</code> on
+every push to <code>main</code>. Replaces the ad-hoc README-and-AGENTS.md
+sprawl. README is slimmed; <code>AGENTS.md</code> stays unchanged at the repo
+root for AI-agent tool discovery.</p>
+<h2 id="audit-pack-pdf-generator"><a class="header" href="#audit-pack-pdf-generator">Audit-pack PDF generator</a></h2>
+<p><code>src/lib/audit-pack/</code> builds a single self-contained PDF per
+manifest: header → compliance scorecard → version history with
+author/rationale (works without) → analysis provenance citations.
+New endpoint <code>GET /api/manifests/[id]/audit-pack?format=pdf|markdown</code>.</p>
+<h2 id="inline-rationale--change-author-capture"><a class="header" href="#inline-rationale--change-author-capture">Inline rationale + change-author capture</a></h2>
+<p><code>HistoryEntry</code> extended with optional <code>author</code>, <code>authorEmail</code>,
+<code>rationale</code>. <code>src/lib/history/author.ts</code> resolves the change author
+from <code>CONFIGFORGE_AUTHOR</code> → <code>git config user.{name,email}</code> → OS user
+→ <code>'unknown'</code>. Per-manifest rationale log at
+<code>~/.configforge/rationale/&lt;ns&gt;.jsonl</code>. Editor-side modal prompts
+once per save with a 1-500 char "Why?" textarea.</p>
+<h2 id="cis-cross-reference-fuzzy-fallback"><a class="header" href="#cis-cross-reference-fuzzy-fallback">CIS cross-reference fuzzy fallback</a></h2>
+<p>When a strict-name match returns nothing, the editor sidebar falls
+back to a fuzzy-match suggestion list (Levenshtein-bound) so the UX
+gap closes. Strict matches stay marked
+<code>high confidence</code>; fuzzy ones get <code>low confidence</code>.</p>
+<h2 id="analysis-provenance--bibliography--circular-reference-guard"><a class="header" href="#analysis-provenance--bibliography--circular-reference-guard">Analysis provenance + bibliography + circular-reference guard</a></h2>
+<p>Every analysis result now carries a <code>provenance</code> field listing sources
+(<code>CIS</code>, <code>NIST</code>, <code>MSDocs</code>, <code>GPO</code>, <code>manifest</code>, <code>user-input</code>) with
+confidence scores. The <code>circular-guard</code> labels content tagged
+<code>&lt;!-- ai-generated --&gt;</code>; low citation coverage is displayed as advisory
+provenance metadata.</p>
+<h2 id="microsoftcis-cross-reference--compliance--report"><a class="header" href="#microsoftcis-cross-reference--compliance--report">Microsoft↔CIS cross-reference + compliance % report</a></h2>
+<p><code>src/lib/cis/crossref.ts</code> plus <code>src/lib/cis/compliance.ts</code>. Given a
+user manifest and a CIS baseline, score it: <code>{matched, mismatched, missing, score}</code> plus per-rule breakdown. New
+<code>/api/compliance/report</code> endpoint and <code>/manifests/[id]/compliance</code>
+view. Markdown audit-pack export.</p>
+<h2 id="master-matrix-n-way-diff--ai-delta-explanation"><a class="header" href="#master-matrix-n-way-diff--ai-delta-explanation">Master-matrix N-way diff + AI delta explanation</a></h2>
+<p><code>/api/diff/matrix</code> plus the <code>/diff/matrix</code> UI page. Pick 2-10
+registered manifests; see a master-matrix table where each row is a
+setting and each column is a baseline, with <code>identical</code> / <code>differs</code> /
+<code>partial</code> colour-coding. Local semantic explanations of <em>why</em>
+values differ. Excel export with conditional formatting.</p>
+<h2 id="cis-windows-benchmarks"><a class="header" href="#cis-windows-benchmarks">CIS Windows benchmarks</a></h2>
+<p>CIS Windows Server 2016/2019/2022/2025 (Domain Controller and Member
+Server roles) benchmarks ingested as compact JSON catalogs at
+<code>public/_baselines/cis/</code>, plus rule-id mappings. Sets the foundation
+for the compliance scoring and UI cross-reference that follow.</p>
+<h2 id="inputs-atomicity-perf"><a class="header" href="#inputs-atomicity-perf">Inputs, atomicity, perf</a></h2>
+<ul>
+<li>Input hardening + recursion + numeric overflow guards</li>
+<li>Atomic registration writes (temp + rename) + per-namespace mutex</li>
+<li>Registry <code>valueType</code> fix: <code>REG_DWORD</code>/<code>REG_SZ</code>/... → <code>Dword</code>/<code>String</code>/...</li>
+<li>Regenerate <code>ssh.osc.yaml</code> - was using a non-existent resource type</li>
+<li>Status endpoint perf: cache + dedup + concurrency gate + stdin fix</li>
+</ul>
+<h2 id="reliability-and-security"><a class="header" href="#reliability-and-security">Reliability and security</a></h2>
+<ul>
+<li>Compliance audit fidelity: null-tolerant Defender enums + indeterminate state</li>
+<li>Memoize <code>getSystemInfo</code> for the process lifetime</li>
+<li>Bounded worker queue + retries with backoff for transient CLI errors</li>
+<li>Translate Policy CSP <code>0x82F00009</code> + LSA <code>0xD0000022</code> to actionable hints</li>
+<li>Pre-deploy snapshot saves PRIOR yaml; <code>lastAuditedAt</code> on enforce</li>
+<li><code>oscfg apply --content</code> falls back to temp file for large manifests</li>
+<li>CSRF guard on all state-mutating routes; binary cache source typo fix</li>
+</ul>
+<h2 id="foundation-hardening"><a class="header" href="#foundation-hardening">Foundation hardening</a></h2>
+<ul>
+<li>Use <code>fs/promises</code> everywhere; remove sync I/O from history</li>
+<li>History security: refuse path traversal, restrict to user dir</li>
+<li>CI matrix on Linux + Windows; bump CI Node + Vitest versions</li>
+<li>ESLint cleanup; strict-mode TypeScript</li>
+<li>Snapshot dedupe + retention sweep (default 50, env-tunable)</li>
+<li>Restore safety: re-apply pre-restore snapshot before changes</li>
+<li>Analyzer correctness - fix <code>isCriticalSetting</code> heuristics</li>
+<li>Use server-side validation summary from source YAML in compliance</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="reference/glossary.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="reference/glossary.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

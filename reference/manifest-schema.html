@@ -1,0 +1,416 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Manifest schema (oscfg 1.3.9-preview11) - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Quick Start</li><li class="chapter-item expanded "><a href="../quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Install & run</a></li><li class="chapter-item expanded "><a href="../quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first manifest</a></li><li class="chapter-item expanded "><a href="../quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs deploying</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user-guide/manifest-editor.html"><strong aria-hidden="true">4.</strong> Manifest editor</a></li><li class="chapter-item expanded "><a href="../user-guide/machine-configuration.html"><strong aria-hidden="true">5.</strong> Azure Machine Configuration deployment</a></li><li class="chapter-item expanded "><a href="../user-guide/matrix-diff.html"><strong aria-hidden="true">6.</strong> Diff: pairwise + master matrix</a></li><li class="chapter-item expanded "><a href="../user-guide/cis-compliance.html"><strong aria-hidden="true">7.</strong> CIS cross-reference & compliance</a></li><li class="chapter-item expanded "><a href="../user-guide/rationale.html"><strong aria-hidden="true">8.</strong> Rationale & change-author capture</a></li><li class="chapter-item expanded "><a href="../user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Audit-pack (PDF + Markdown)</a></li><li class="chapter-item expanded "><a href="../user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Analysis provenance</a></li><li class="chapter-item expanded "><a href="../user-guide/history-snapshots.html"><strong aria-hidden="true">11.</strong> History, snapshots, retention</a></li><li class="chapter-item expanded affix "><li class="part-title">Architecture</li><li class="chapter-item expanded "><a href="../architecture/system-overview.html"><strong aria-hidden="true">12.</strong> System overview</a></li><li class="chapter-item expanded "><a href="../architecture/module-map.html"><strong aria-hidden="true">13.</strong> Module map</a></li><li class="chapter-item expanded "><a href="../architecture/registration-semantics.html"><strong aria-hidden="true">14.</strong> Registration semantics</a></li><li class="chapter-item expanded "><a href="../architecture/mixed-platform.html"><strong aria-hidden="true">15.</strong> Mixed-platform classification</a></li><li class="chapter-item expanded "><a href="../architecture/oscfg-cli.html"><strong aria-hidden="true">16.</strong> oscfg CLI contract</a></li><li class="chapter-item expanded "><a href="../architecture/diagrams.html"><strong aria-hidden="true">17.</strong> Diagrams</a></li><li class="chapter-item expanded affix "><li class="part-title">API Reference</li><li class="chapter-item expanded "><a href="../api-reference/manifests.html"><strong aria-hidden="true">18.</strong> Baselines</a></li><li class="chapter-item expanded "><a href="../api-reference/deploy-health.html"><strong aria-hidden="true">19.</strong> Deploy & health</a></li><li class="chapter-item expanded "><a href="../api-reference/diff.html"><strong aria-hidden="true">20.</strong> Diff</a></li><li class="chapter-item expanded "><a href="../api-reference/compliance.html"><strong aria-hidden="true">21.</strong> Compliance</a></li><li class="chapter-item expanded "><a href="../api-reference/history-import-export.html"><strong aria-hidden="true">22.</strong> History, import & export</a></li><li class="chapter-item expanded "><a href="../api-reference/audit-pack.html"><strong aria-hidden="true">23.</strong> Audit pack</a></li><li class="chapter-item expanded "><a href="../api-reference/rationale.html"><strong aria-hidden="true">24.</strong> Rationale</a></li><li class="chapter-item expanded affix "><li class="part-title">Operations</li><li class="chapter-item expanded "><a href="../operations/ci.html"><strong aria-hidden="true">25.</strong> CI on Linux + Windows</a></li><li class="chapter-item expanded "><a href="../operations/smoke-testing.html"><strong aria-hidden="true">26.</strong> Smoke testing on Windows</a></li><li class="chapter-item expanded "><a href="../operations/upstream-bugs.html"><strong aria-hidden="true">27.</strong> Filing upstream bugs</a></li><li class="chapter-item expanded "><a href="../operations/troubleshooting.html"><strong aria-hidden="true">28.</strong> Troubleshooting</a></li><li class="chapter-item expanded affix "><li class="part-title">Contributing</li><li class="chapter-item expanded "><a href="../contributing/agents-md.html"><strong aria-hidden="true">29.</strong> AGENTS.md (canonical guide)</a></li><li class="chapter-item expanded "><a href="../contributing/conventions.html"><strong aria-hidden="true">30.</strong> Coding conventions</a></li><li class="chapter-item expanded "><a href="../contributing/testing.html"><strong aria-hidden="true">31.</strong> Testing expectations</a></li><li class="chapter-item expanded "><a href="../contributing/adding-oscfg-types.html"><strong aria-hidden="true">32.</strong> Adding a new oscfg type</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="../reference/manifest-schema.html" class="active"><strong aria-hidden="true">33.</strong> Manifest schema (oscfg 1.3.9-preview11)</a></li><li class="chapter-item expanded "><a href="../reference/registered-types.html"><strong aria-hidden="true">34.</strong> Registered types</a></li><li class="chapter-item expanded "><a href="../reference/glossary.html"><strong aria-hidden="true">35.</strong> Glossary</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../changelog.html">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/reference/manifest-schema.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="manifest-schema"><a class="header" href="#manifest-schema">Manifest schema</a></h1>
+<p>This page describes the current app-side manifest validation surfaces.
+The on-disk JSON Schema at
+<a href="https://github.com/Azure/ConfigForge/blob/main/apps/desktop/src/data/osc-manifest-schema.json"><code>apps/desktop/src/data/osc-manifest-schema.json</code></a>
+drives Monaco/editor validation for the form-supported Windows resource
+types. Registration also runs the core shape validator in
+<code>packages/core/src/platform.ts</code>. The targeted <code>oscfg</code> version is tracked
+separately in <code>packages/core/src/oscfg/registered-types.ts</code>.</p>
+<h2 id="top-level-grammar"><a class="header" href="#top-level-grammar">Top-level grammar</a></h2>
+<pre><code class="language-yaml">resources:                       # REQUIRED - top-level ARRAY
+  - name: &lt;string&gt;               # required by core registration for top-level resources; optional in the editor JSON Schema
+    type: &lt;string&gt;               # REQUIRED, fully-qualified, slash-notation
+    properties: { ... }          # required by the editor JSON Schema for modeled resource items; optional at core shape-validation level
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> <code>resources:</code> must be an array of objects. A bare
+object, a string, or a non-existent key all produce a status-400
+hard block at register time. Core registration requires each
+top-level resource to have <code>name</code> and <code>type</code>; nested Group resources
+can inherit identity from the parent. <code>properties</code>, when present,
+must be an object. The editor JSON Schema requires <code>type</code> and
+<code>properties</code> for the resource items it models.</p>
+</blockquote>
+<h2 id="reserved-property-keys"><a class="header" href="#reserved-property-keys">Reserved property keys</a></h2>
+<p>The following keys are special - interpreted by the CLI rather
+than passed through to the resource:</p>
+<div class="table-wrapper"><table><thead><tr><th>Key</th><th>Used by</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>expression</code></td><td><code>Microsoft.OSConfig/Test</code></td><td>Compliance assertion expression.</td></tr>
+<tr><td><code>compliance</code></td><td><code>Microsoft.OSConfig/Test</code></td><td>One of <code>equal</code>, <code>gte</code>, <code>lte</code>, …</td></tr>
+<tr><td><code>template</code></td><td><code>Microsoft.OSConfig/Test</code></td><td>Optional message template.</td></tr>
+<tr><td><code>resource</code></td><td><code>Microsoft.OSConfig/Test</code></td><td>The resource the test asserts on.</td></tr>
+</tbody></table>
+</div>
+<h2 id="resource-wrappers"><a class="header" href="#resource-wrappers">Resource wrappers</a></h2>
+<p><code>Microsoft.OSConfig/Group</code> and <code>Microsoft.OSConfig/Test</code> are
+<em>wrappers</em> - they nest other resources:</p>
+<pre><code class="language-yaml">resources:
+  - name: ssh-hardening
+    type: Microsoft.OSConfig/Group
+    properties:
+      resources:                # ← nested array
+        - name: PermitRootLogin
+          type: Microsoft.OSConfig/Test
+          properties:
+            resource:
+              type: Microsoft.OSConfig/FileLine
+              properties:
+                path: /etc/ssh/sshd_config
+                line: PermitRootLogin no
+            expression: "PermitRootLogin == 'no'"
+            compliance: equal
+</code></pre>
+<p>The core validator walks both wrappers recursively. A <code>'mixed'</code>
+platform manifest is detected even when the offending type is
+buried inside a wrapper.</p>
+<h2 id="registry-resource"><a class="header" href="#registry-resource">Registry resource</a></h2>
+<p>The most-used Windows resource. <strong>All three</strong> of <code>keyPath</code>,
+<code>valueName</code>, and <code>valueType</code> are required at the schema level - see
+the <code>required: ["keyPath","valueName","valueType"]</code> line in the
+shipped JSON Schema's <code>registry</code> definition. The <code>value</code> shape is
+constrained by <code>valueType</code> via a <code>oneOf</code>:</p>
+<pre><code class="language-yaml">resources:
+  - name: NTLMOutgoingHardening
+    type: Microsoft.Windows/Registry
+    properties:
+      keyPath: HKLM:\SYSTEM\CurrentControlSet\Control\Lsa\MSV1_0
+      valueName: NtlmMinClientSec
+      valueType: REG_DWORD
+      value: 537395200
+</code></pre>
+<h3 id="canonical-valuetype-values-and-matching-value-shapes"><a class="header" href="#canonical-valuetype-values-and-matching-value-shapes">Canonical <code>valueType</code> values and matching <code>value</code> shapes</a></h3>
+<p>Registry <code>valueType</code> behavior:</p>
+<ul>
+<li><strong>Upstream contract:</strong> The current microsoft/osconfig <code>schema/.document.json</code>
+defines only <code>REG_DWORD</code> and <code>REG_QWORD</code> in its integer enum and
+<code>REG_MULTI_SZ</code> in its array enum.</li>
+<li><strong>Published examples:</strong> Upstream <code>docs/resources/windows/Registry.md</code>,
+<code>examples/registry.osc.yaml</code>, and Microsoft Learn set/test/quickstart files
+use <code>REG_*</code> names.</li>
+<li><strong>Compatibility inputs:</strong> The editor accepts aliases such as <code>Dword</code> and
+<code>String</code> when opening older content.</li>
+<li><strong>Execution boundary:</strong> ConfigForge normalizes every known alias to <code>REG_*</code>.</li>
+<li><strong>Provider behavior:</strong> Observed provider versions can return success for a
+compatibility alias without applying the registry value.</li>
+</ul>
+<p>The canonical pairing rules are:</p>
+<div class="table-wrapper"><table><thead><tr><th><code>valueType</code></th><th><code>value</code> JSON type</th></tr></thead><tbody>
+<tr><td><code>REG_SZ</code>, <code>REG_EXPAND_SZ</code>, <code>REG_BINARY</code></td><td><code>string</code></td></tr>
+<tr><td><code>REG_DWORD</code>, <code>REG_QWORD</code></td><td><code>integer</code></td></tr>
+<tr><td><code>REG_MULTI_SZ</code></td><td><code>array</code> of <code>string</code></td></tr>
+</tbody></table>
+</div>
+<p>ConfigForge maps compatibility aliases before execution:</p>
+<div class="table-wrapper"><table><thead><tr><th>Compatibility input</th><th>Canonical output</th></tr></thead><tbody>
+<tr><td><code>String</code></td><td><code>REG_SZ</code></td></tr>
+<tr><td><code>ExpandString</code></td><td><code>REG_EXPAND_SZ</code></td></tr>
+<tr><td><code>Binary</code></td><td><code>REG_BINARY</code></td></tr>
+<tr><td><code>Dword</code>, <code>REG_DWORD_LITTLE_ENDIAN</code></td><td><code>REG_DWORD</code></td></tr>
+<tr><td><code>QWord</code>, <code>REG_QWORD_LITTLE_ENDIAN</code></td><td><code>REG_QWORD</code></td></tr>
+<tr><td><code>MultiString</code></td><td><code>REG_MULTI_SZ</code></td></tr>
+<tr><td><code>None</code></td><td><code>REG_NONE</code></td></tr>
+</tbody></table>
+</div>
+<p><code>REG_DWORD_BIG_ENDIAN</code> is not rewritten because changing its byte order would
+change the requested Registry semantics. It remains unchanged so the installed
+OSConfig provider can reject it explicitly if unsupported.</p>
+<p>A <code>value</code> whose type doesn't match the <code>valueType</code> category will
+fail the editor JSON-Schema <code>oneOf</code> constraint. The core register
+validator is intentionally lighter and only enforces manifest shape.</p>
+<blockquote>
+<p>The CSV / security-definition import (<code>packages/core/src/handlers/import.ts</code>)
+calls <code>inferRegistryValueType(expectedValue)</code> to satisfy the
+<code>valueType</code> requirement automatically. Integers in the DWORD range become
+<code>REG_DWORD</code>. Larger exact integers become <code>REG_QWORD</code>. Other values become
+<code>REG_SZ</code>. New import sources should re-use that helper.</p>
+</blockquote>
+<h2 id="microsoftosconfigbaselinerule-placeholder-v022"><a class="header" href="#microsoftosconfigbaselinerule-placeholder-v022"><code>Microsoft.OSConfig/BaselineRule</code> placeholder (v0.2.2+)</a></h2>
+<p>Emitted by the importer when the source is an Azure Policy Guest Configuration baseline catalog (a JSON with a <code>settingsReference[]</code> array). Each entry maps to one of these placeholders carrying the rule <strong>identity</strong> (<code>ruleId</code>, <code>displayName</code>, <code>severity</code>, <code>schemaType</code>, <code>originalSettingName</code>) without the implementation. The OSConfig agent on the target machine is the only thing that knows how to evaluate each rule by its <code>ruleId</code>.</p>
+<pre><code class="language-yaml">resources:
+  - name: 1_1_1_1_Ensure_cramfs_kernel_module_is_not_available
+    type: Microsoft.OSConfig/BaselineRule
+    properties:
+      ruleId: 2b568469-ea61-c184-66ba-db6720414ddd
+      displayName: 1.1.1.1 Ensure cramfs kernel module is not available
+      severity: Critical
+      schemaType: string
+</code></pre>
+<p>This type is intentionally <strong>not</strong> in the editor's schema validator's <code>oneOf</code> - the validator flags it as an unknown type so users see the constraint immediately. The oscfg CLI also doesn't recognise it, so audit/deploy fails loudly. The Azure Policy export refuses any manifest containing this type (would silently report Compliant for every VM otherwise). Map each placeholder to a concrete resource type (<code>Microsoft.Windows/Registry</code>, <code>Microsoft.OSConfig/FileLine</code>, etc.) with real implementation details before deployment.</p>
+<h2 id="csp-resource"><a class="header" href="#csp-resource">CSP resource</a></h2>
+<pre><code class="language-yaml">resources:
+  - name: TelemetryAllowed
+    type: Microsoft.Windows/CSP
+    properties:
+      path: ./Vendor/MSFT/Policy/Config/System/AllowTelemetry
+      type: integer
+      value: 0
+</code></pre>
+<p><code>properties.path</code> is either a string or <code>{ get, set }</code> object pair
+(see the <code>csp</code> definition in the schema). <code>properties.type</code> is one
+of <code>string</code> / <code>integer</code> / <code>boolean</code> / <code>array</code>. <code>properties.name</code> is
+optional.</p>
+<h2 id="audit-policy-resource"><a class="header" href="#audit-policy-resource">Audit policy resource</a></h2>
+<pre><code class="language-yaml">resources:
+  - name: AuditLogonEvents
+    type: Microsoft.Windows/AuditPolicy
+    properties:
+      subcategory: "Logon"
+      value: 3        # 0=none, 1=success, 2=failure, 3=success+failure
+</code></pre>
+<p><code>Microsoft.Windows/AuditPolicy</code> is in the current registered-type
+whitelist. Earlier preview builds returned <code>Unsupported resource type</code>
+for it; ConfigForge surfaced that as a soft warning at register time.
+If you target an older CLI version, that soft-warning path still
+triggers - see <a href="./registered-types.html">Reference → Registered types</a>.</p>
+<h2 id="validation"><a class="header" href="#validation">Validation</a></h2>
+<p>Validation is split across two layers:</p>
+<div class="table-wrapper"><table><thead><tr><th>Check</th><th>Where</th><th>What it does</th></tr></thead><tbody>
+<tr><td><code>validateManifestSchema()</code></td><td><code>packages/core/src/platform.ts</code></td><td>Top-level object, required <code>resources</code> array, resource object/name/type checks, optional <code>properties</code> object check, recursive Group/Test traversal. Hard errors → status 400.</td></tr>
+<tr><td><code>detectManifestPlatform()</code></td><td><code>packages/core/src/platform.ts</code></td><td>Classifies into <code>windows</code> / <code>linux</code> / <code>cross-platform</code> / <code>mixed</code>.</td></tr>
+<tr><td><code>hasMixedPlatformResources()</code></td><td><code>packages/core/src/platform.ts</code></td><td>Independent mixed-platform detector (catches mixes buried in wrappers).</td></tr>
+<tr><td><code>isRegisteredType(t, platform)</code></td><td><code>packages/core/src/oscfg/registered-types.ts</code></td><td>Whitelist lookup. Types missing from the whitelist soft-warn at register time when the manifest targets this host.</td></tr>
+<tr><td>Editor inline validator</td><td><code>apps/desktop/src/components/manifest-editor.tsx</code></td><td>The tighter Monaco-side validator: enforces e.g. <code>keyPath</code> + <code>valueName</code> + <code>valueType</code> on Registry resources for early UX feedback.</td></tr>
+<tr><td>Editor JSON-Schema validator</td><td>Monaco JSON language service against <code>apps/desktop/src/data/osc-manifest-schema.json</code></td><td>The structural pass for schema-modeled resources.</td></tr>
+</tbody></table>
+</div>
+<h2 id="verified-bounds"><a class="header" href="#verified-bounds">Verified bounds</a></h2>
+<p>The code currently exposes these verified app-side bounds:</p>
+<div class="table-wrapper"><table><thead><tr><th>Bound</th><th>Default</th></tr></thead><tbody>
+<tr><td>Max Group/Test traversal depth in core validation</td><td>50</td></tr>
+<tr><td>Max IPC manifest/import content payload</td><td>10 MB (<code>MAX_MANIFEST_CONTENT_LEN</code> / <code>MAX_IMPORT_BYTES</code>, CF-SEC-003)</td></tr>
+</tbody></table>
+</div>
+<p>No separate max-resource-count or per-field string bound is documented
+here because the current core validator does not expose one.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="./registered-types.html">Reference → Registered types</a></li>
+<li><a href="../architecture/mixed-platform.html">Architecture → Mixed-platform classification</a></li>
+<li><a href="../quick-start/first-manifest.html">Quick Start → Your first manifest</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../contributing/adding-oscfg-types.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../reference/registered-types.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../contributing/adding-oscfg-types.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../reference/registered-types.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

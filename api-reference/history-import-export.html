@@ -1,0 +1,442 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>History, import &amp; export - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Quick Start</li><li class="chapter-item expanded "><a href="../quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Install & run</a></li><li class="chapter-item expanded "><a href="../quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first manifest</a></li><li class="chapter-item expanded "><a href="../quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs deploying</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user-guide/manifest-editor.html"><strong aria-hidden="true">4.</strong> Manifest editor</a></li><li class="chapter-item expanded "><a href="../user-guide/machine-configuration.html"><strong aria-hidden="true">5.</strong> Azure Machine Configuration deployment</a></li><li class="chapter-item expanded "><a href="../user-guide/matrix-diff.html"><strong aria-hidden="true">6.</strong> Diff: pairwise + master matrix</a></li><li class="chapter-item expanded "><a href="../user-guide/cis-compliance.html"><strong aria-hidden="true">7.</strong> CIS cross-reference & compliance</a></li><li class="chapter-item expanded "><a href="../user-guide/rationale.html"><strong aria-hidden="true">8.</strong> Rationale & change-author capture</a></li><li class="chapter-item expanded "><a href="../user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Audit-pack (PDF + Markdown)</a></li><li class="chapter-item expanded "><a href="../user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Analysis provenance</a></li><li class="chapter-item expanded "><a href="../user-guide/history-snapshots.html"><strong aria-hidden="true">11.</strong> History, snapshots, retention</a></li><li class="chapter-item expanded affix "><li class="part-title">Architecture</li><li class="chapter-item expanded "><a href="../architecture/system-overview.html"><strong aria-hidden="true">12.</strong> System overview</a></li><li class="chapter-item expanded "><a href="../architecture/module-map.html"><strong aria-hidden="true">13.</strong> Module map</a></li><li class="chapter-item expanded "><a href="../architecture/registration-semantics.html"><strong aria-hidden="true">14.</strong> Registration semantics</a></li><li class="chapter-item expanded "><a href="../architecture/mixed-platform.html"><strong aria-hidden="true">15.</strong> Mixed-platform classification</a></li><li class="chapter-item expanded "><a href="../architecture/oscfg-cli.html"><strong aria-hidden="true">16.</strong> oscfg CLI contract</a></li><li class="chapter-item expanded "><a href="../architecture/diagrams.html"><strong aria-hidden="true">17.</strong> Diagrams</a></li><li class="chapter-item expanded affix "><li class="part-title">API Reference</li><li class="chapter-item expanded "><a href="../api-reference/manifests.html"><strong aria-hidden="true">18.</strong> Baselines</a></li><li class="chapter-item expanded "><a href="../api-reference/deploy-health.html"><strong aria-hidden="true">19.</strong> Deploy & health</a></li><li class="chapter-item expanded "><a href="../api-reference/diff.html"><strong aria-hidden="true">20.</strong> Diff</a></li><li class="chapter-item expanded "><a href="../api-reference/compliance.html"><strong aria-hidden="true">21.</strong> Compliance</a></li><li class="chapter-item expanded "><a href="../api-reference/history-import-export.html" class="active"><strong aria-hidden="true">22.</strong> History, import & export</a></li><li class="chapter-item expanded "><a href="../api-reference/audit-pack.html"><strong aria-hidden="true">23.</strong> Audit pack</a></li><li class="chapter-item expanded "><a href="../api-reference/rationale.html"><strong aria-hidden="true">24.</strong> Rationale</a></li><li class="chapter-item expanded affix "><li class="part-title">Operations</li><li class="chapter-item expanded "><a href="../operations/ci.html"><strong aria-hidden="true">25.</strong> CI on Linux + Windows</a></li><li class="chapter-item expanded "><a href="../operations/smoke-testing.html"><strong aria-hidden="true">26.</strong> Smoke testing on Windows</a></li><li class="chapter-item expanded "><a href="../operations/upstream-bugs.html"><strong aria-hidden="true">27.</strong> Filing upstream bugs</a></li><li class="chapter-item expanded "><a href="../operations/troubleshooting.html"><strong aria-hidden="true">28.</strong> Troubleshooting</a></li><li class="chapter-item expanded affix "><li class="part-title">Contributing</li><li class="chapter-item expanded "><a href="../contributing/agents-md.html"><strong aria-hidden="true">29.</strong> AGENTS.md (canonical guide)</a></li><li class="chapter-item expanded "><a href="../contributing/conventions.html"><strong aria-hidden="true">30.</strong> Coding conventions</a></li><li class="chapter-item expanded "><a href="../contributing/testing.html"><strong aria-hidden="true">31.</strong> Testing expectations</a></li><li class="chapter-item expanded "><a href="../contributing/adding-oscfg-types.html"><strong aria-hidden="true">32.</strong> Adding a new oscfg type</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="../reference/manifest-schema.html"><strong aria-hidden="true">33.</strong> Manifest schema (oscfg 1.3.9-preview11)</a></li><li class="chapter-item expanded "><a href="../reference/registered-types.html"><strong aria-hidden="true">34.</strong> Registered types</a></li><li class="chapter-item expanded "><a href="../reference/glossary.html"><strong aria-hidden="true">35.</strong> Glossary</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../changelog.html">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/api-reference/history-import-export.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="cfshistory-cfsrevert-cfsimportchannel-cfsexportchannel"><a class="header" href="#cfshistory-cfsrevert-cfsimportchannel-cfsexportchannel"><code>cfs.history.*</code>, <code>cfs.revert.*</code>, <code>cfs.importChannel.*</code>, <code>cfs.exportChannel.*</code></a></h1>
+<blockquote>
+<p><strong>Phase 10 transport note.</strong> These surfaces were <code>/api/history</code>,
+<code>/api/revert</code>, <code>/api/import</code>, and <code>/api/export</code> in the Next.js era.
+The pure handlers in
+<code>packages/core/src/handlers/{history,history-write,revert,import,export}.ts</code>
+now back the IPC channels below. Multipart <code>formData()</code> upload is gone
+— Electron has direct disk access, so import is split into
+<code>cfs:import:openAndParse</code> (file picker → read → parse) and
+<code>cfs:import:fromContent</code> (renderer-supplied content). Contract shapes
+preserved.</p>
+</blockquote>
+<h2 id="cfshistorylist-name-id---channel-cfshistorylist"><a class="header" href="#cfshistorylist-name-id---channel-cfshistorylist"><code>cfs.history.list({ name, id? })</code> — channel <code>cfs:history:list</code></a></h2>
+<p>List snapshot summaries (no payload) when <code>id</code> is omitted; fetch one
+snapshot's full payload + sidecar when <code>id</code> is supplied. Newest first.</p>
+<pre><code class="language-ts">// Without id — list summaries
+const { data } = await cfs.history.list({ name: 'ws2025-baseline' });
+// data: Array&lt;{
+//   id: string;                  // &lt;ISO-8601-with-dashes&gt;.&lt;8-hex&gt;
+//   manifestName: string;
+//   timestamp: string;
+//   message?: string;            // auto-register uses changeSummary when provided
+//   author?: string;             // only when sidecar carries it
+//   authorEmail?: string;
+//   rationale?: string;
+//   size: number;
+// }&gt;
+
+// With id — full payload
+const { data } = await cfs.history.list({
+  name: 'ws2025-baseline',
+  id: '2026-03-01T14-22-00.000Z.a3f8b1c4',
+});
+// data: same shape + content: string (the YAML body)
+</code></pre>
+<p>The snapshot <code>id</code> format is
+<code>&lt;ISO-8601-with-dashes&gt;.&lt;8-hex-random-suffix&gt;</code> (the 8-hex from
+<code>randomBytes(4)</code> disambiguates writes within the same millisecond).
+On disk: <code>.osc.yaml</code> appended.</p>
+<p>Errors:</p>
+<div class="table-wrapper"><table><thead><tr><th>Status</th><th>When</th></tr></thead><tbody>
+<tr><td>400</td><td>Missing <code>name</code>, malformed namespace, path-traversal-blocked id.</td></tr>
+<tr><td>404</td><td>Snapshot <code>id</code> not found (only when <code>id</code> is supplied).</td></tr>
+</tbody></table>
+</div>
+<h2 id="cfshistorysave-name-content-message---channel-cfshistorysave"><a class="header" href="#cfshistorysave-name-content-message---channel-cfshistorysave"><code>cfs.history.save({ name, content, message? })</code> — channel <code>cfs:history:save</code></a></h2>
+<p>Create a snapshot manually (the editor save flow does this
+automatically; this channel is for tooling).</p>
+<pre><code class="language-ts">type SaveSnapshotRequest = { name: string; content: string; message?: string };
+</code></pre>
+<blockquote>
+<p><strong>Note:</strong> This channel takes only <code>{ name, content, message? }</code>. It
+does <strong>not</strong> accept <code>author</code> / <code>authorEmail</code> / <code>rationale</code> — those are
+only recorded by the auto-snapshot path inside
+<a href="./manifests.html"><code>cfs.manifests.register</code></a>, which calls the structured
+<code>createSnapshot()</code> form internally and resolves the author server-side.</p>
+</blockquote>
+<p>If content is byte-identical to the immediate predecessor snapshot,
+dedup returns the existing entry (metadata preserved).</p>
+<h2 id="cfshistorydelete-name-id---channel-cfshistorydelete"><a class="header" href="#cfshistorydelete-name-id---channel-cfshistorydelete"><code>cfs.history.delete({ name, id })</code> — channel <code>cfs:history:delete</code></a></h2>
+<p>Delete a snapshot. Idempotent — deleting a non-existent id returns
+<code>{ message: "Snapshot '&lt;id&gt;' deleted" }</code>, not 404. Validates against
+path-traversal.</p>
+<h2 id="cfsrevertapply-name---channel-cfsrevertapply"><a class="header" href="#cfsrevertapply-name---channel-cfsrevertapply"><code>cfs.revert.apply({ name })</code> — channel <code>cfs:revert:apply</code></a></h2>
+<p>Roll the manifest back to the pre-deploy state.</p>
+<pre><code class="language-ts">type RevertResult = {
+  message: string;
+  data: {
+    Reverted: true;
+    Method: 'reapply-manifest' | 'delete-namespace';
+    preDeployTimestamp?: string;
+  };
+};
+</code></pre>
+<p>The handler reads <code>&lt;userDataDir&gt;/snapshots/&lt;ns&gt;.pre-deploy.json</code>
+(written by the last successful deploy). If a usable <code>manifestYaml</code>
+exists, the snapshot is <strong>re-validated</strong> (H6 — schema, mixed-platform
+rejection, host-platform match) before being re-applied via
+<code>oscfg apply</code> (<code>Method: 'reapply-manifest'</code>). Otherwise the namespace
+is deleted via <code>oscfg delete namespace</code> (<code>Method: 'delete-namespace'</code>).</p>
+<blockquote>
+<p><strong>Note:</strong> <code>cfs.revert.apply</code> does <strong>not</strong> accept a snapshot id — it
+always reverts to the snapshot the deploy channel stamped. To
+reapply a specific historical snapshot, fetch it via
+<code>cfs.history.list({ name, id })</code> and re-register the content through
+<code>cfs.manifests.register({ name, content })</code>.</p>
+</blockquote>
+<h3 id="preflight-gate--cli-required"><a class="header" href="#preflight-gate--cli-required">Preflight gate — CLI required</a></h3>
+<p>Like <code>runDeploy</code>, the revert handler maps CLI-missing failures to
+<code>cliRequiredError(...)</code> (status 412, code <code>CLI_REQUIRED</code>) via
+<code>isCliMissingMessage(result.error)</code> so the renderer's
+<code>&lt;CliRequiredModal /&gt;</code> opens instead of a toast.</p>
+<h2 id="cfsimportchannelopenandparse--channel-cfsimportopenandparse"><a class="header" href="#cfsimportchannelopenandparse--channel-cfsimportopenandparse"><code>cfs.importChannel.openAndParse()</code> — channel <code>cfs:import:openAndParse</code></a></h2>
+<p>Open the native OS file picker, read the file, parse. Returns the same
+shape as <code>fromContent</code> (or an <code>IpcErrorEnvelope</code> on user-cancel).</p>
+<h2 id="cfsimportchannelfromcontent-filename-content--bytes---channel-cfsimportfromcontent"><a class="header" href="#cfsimportchannelfromcontent-filename-content--bytes---channel-cfsimportfromcontent"><code>cfs.importChannel.fromContent({ filename, content? | bytes? })</code> — channel <code>cfs:import:fromContent</code></a></h2>
+<p>Parse renderer-supplied text or binary content. Exactly one of
+<code>content: string</code> or <code>bytes: Uint8Array</code> is required; the 10 MB cap
+(<code>MAX_IMPORT_BYTES</code>) applies to either. Larger payloads return 413;
+empty text content returns 400.</p>
+<pre><code class="language-ts">type ImportResult = {
+  type: 'manifest' | 'security-definition' | 'baseline-spreadsheet';
+  filename: string;
+  data: Record&lt;string, unknown&gt;;
+  yaml: string;                // canonical YAML for downstream tools
+};
+</code></pre>
+<p>File-type detection (<code>detectFileType</code>):</p>
+<div class="table-wrapper"><table><thead><tr><th>Extension</th><th>Recognised shape</th><th>Output <code>type</code></th></tr></thead><tbody>
+<tr><td><code>.osc.yaml</code> / <code>.osc.yml</code> / <code>.yaml</code> / <code>.yml</code></td><td><code>parseOscYaml</code></td><td><code>'manifest'</code></td></tr>
+<tr><td><code>.json</code> with non-empty <code>resources[]</code></td><td>manifest-JSON</td><td><code>'manifest'</code></td></tr>
+<tr><td><code>.json</code> with a <code>source: "&lt;yaml&gt;"</code> field containing an embedded manifest</td><td>embedded-source unwrap → <code>parseOscYaml</code></td><td><code>'manifest'</code></td></tr>
+<tr><td><code>.json</code> with <code>settingsReference[]</code> (Azure Policy Guest Configuration baseline catalog)</td><td><code>parseSecurityDefinition</code> (origin: <code>settingsReference</code>)</td><td><code>'security-definition'</code></td></tr>
+<tr><td><code>.json</code> with <code>Settings[]</code> / <code>settings[]</code> / <code>desiredConfiguration[]</code></td><td><code>parseSecurityDefinition</code> (origin: <code>settings</code>)</td><td><code>'security-definition'</code></td></tr>
+<tr><td><code>.csv</code> / <code>.tsv</code> / <code>.xlsx</code></td><td><code>parseExcelBaseline</code></td><td><code>'baseline-spreadsheet'</code></td></tr>
+</tbody></table>
+</div>
+<p>Friendly errors (added v0.2.2) for known-but-unimportable JSON shapes — the importer detects them and surfaces an actionable message with the file's identifying metadata instead of the generic "Unrecognized JSON shape":</p>
+<div class="table-wrapper"><table><thead><tr><th>Detected shape</th><th>What it is</th><th>Error message</th></tr></thead><tbody>
+<tr><td><code>{ properties.policyRule }</code></td><td>Azure Policy Definition wrapper — references a Guest Configuration package by name but doesn't carry the settings.</td><td>Names the <code>policyRule.then.details.name</code> + <code>metadata.guestConfiguration.{name,version}</code> and tells the user to import the baseline JSON inside the GC package instead.</td></tr>
+<tr><td><code>{ id, version, rules[] }</code> with <code>ruleId</code> on each rule</td><td>Rule-metadata reference file (descriptions / remediation steps, pairs with a baseline by ruleId).</td><td>Names the rule count + the baseline id and tells the user to import the matching baseline JSON (with <code>settingsReference[]</code>) instead.</td></tr>
+<tr><td><code>{ resources: [] }</code> with no other content</td><td>Empty manifest with no <code>source</code> field.</td><td>Surfaces explicitly instead of silently importing as a 0-resource manifest.</td></tr>
+</tbody></table>
+</div>
+<p>Every successful shape is normalized into canonical YAML in the <code>yaml</code> field so the editor sees one format.</p>
+<h3 id="settingsreference-mapping-azure-policy-gc-baseline-imports-v022"><a class="header" href="#settingsreference-mapping-azure-policy-gc-baseline-imports-v022"><code>settingsReference[]</code> mapping (Azure Policy GC baseline imports, v0.2.2)</a></h3>
+<p>The settingsReference shape carries only the rule <strong>identity</strong> (<code>ruleId</code>, <code>displayName</code>, <code>severity</code>, <code>schema.type</code>, <code>defaultValue</code>) — not the implementation (no registry path, no file path, no command line). The OSConfig agent on the target machine is the only thing that knows how to evaluate each rule by its ruleId.</p>
+<p>The importer maps each entry to a <code>Microsoft.OSConfig/BaselineRule</code> placeholder resource (not a synthetic <code>Microsoft.Windows/Registry</code>). The placeholder is honest about being unimplemented:</p>
+<ul>
+<li>The editor's schema validator flags <code>Microsoft.OSConfig/BaselineRule</code> as an unknown type — exactly the signal needed: "map this to a concrete type before deployment."</li>
+<li>The oscfg CLI doesn't recognise the type, so audit/deploy fails loudly instead of silently faking compliance.</li>
+<li>The imported manifest opens with a leading banner comment explaining the constraint and what to do next.</li>
+<li>Matrix diff, search, library browse, and rename all still work — the manifest is editable, just not deployable as-is.</li>
+</ul>
+<p>This is deliberate: synthetic Registry placeholders with <code>HKLM:\AzurePolicy\&lt;name&gt;</code> keyPaths would let users build a fake audit/deploy manifest that silently reports "compliant" by checking registry keys that don't exist. False compliance is worse than no compliance.</p>
+<h3 id="v021--registry-schema-fix"><a class="header" href="#v021--registry-schema-fix">v0.2.1 — Registry schema fix</a></h3>
+<p>CSV / TSV / XLSX and JSON security-definition imports now emit
+<code>Microsoft.Windows/Registry</code> resources with <strong>all three</strong> schema-required
+properties (<code>keyPath</code>, <code>valueName</code>, <code>valueType</code>). Previously the CSV
+import omitted <code>valueType</code> (and the JSON path also omitted <code>valueName</code>),
+so the editor's inline validator flagged every imported row as invalid.</p>
+<p><code>valueType</code> is inferred from <code>expectedValue</code> via
+<code>inferRegistryValueType()</code> (exported from <code>import.ts</code>) emits canonical
+upstream Registry types. Integer-shaped values in the DWORD range get
+<code>REG_DWORD</code>. Larger exact integers get <code>REG_QWORD</code>. Other values get
+<code>REG_SZ</code>. Users can override after import. New import sources should re-use
+the same helper.</p>
+<h2 id="cfsexportchannelget-name-format-effect-ostype---channel-cfsexportget"><a class="header" href="#cfsexportchannelget-name-format-effect-ostype---channel-cfsexportget"><code>cfs.exportChannel.get({ name, format?, effect?, osType? })</code> — channel <code>cfs:export:get</code></a></h2>
+<p>Download the manifest. Defaults to <code>yaml</code>.</p>
+<pre><code class="language-ts">type ExportFormat = 'yaml' | 'json' | 'mof' | 'excel' | 'azurepolicy';
+
+type ExportRequest = {
+  name: string;
+  format?: ExportFormat;
+  effect?: 'AuditIfNotExists' | 'DeployIfNotExists'; // azurepolicy only
+  osType?: 'Windows' | 'Linux';                      // azurepolicy override
+};
+
+type ExportArtifact = {
+  filename: string;
+  contentType: string;
+  body: string;
+  cacheable: boolean;     // true for yaml/json/mof when source YAML is on disk
+};
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>Format</th><th>Content-Type</th><th>Notes</th></tr></thead><tbody>
+<tr><td><code>yaml</code></td><td><code>application/x-yaml</code></td><td>Lossless source manifest (preserves comments). Falls back to <code>resourcesToYaml(namespace, liveResources)</code> when no on-disk source.</td></tr>
+<tr><td><code>json</code></td><td><code>application/json</code></td><td>Canonical manifest JSON. Round-trips through <code>cfs.importChannel.*</code>.</td></tr>
+<tr><td><code>mof</code></td><td><code>text/plain</code></td><td>DSC-compatible MOF text.</td></tr>
+<tr><td><code>excel</code></td><td><code>text/csv</code></td><td>Flattened CSV. Matches the legacy PowerShell-edition CSV shape.</td></tr>
+<tr><td><code>azurepolicy</code></td><td><code>application/json</code></td><td>Azure Policy Guest Configuration definition. See <a href="#azurepolicy-export-shape-v023">Azure Policy export shape</a> below. <code>effect: 'AuditIfNotExists'</code> (default) or <code>'DeployIfNotExists'</code>. Optional <code>osType: 'Windows' | 'Linux'</code> overrides auto-detection.</td></tr>
+</tbody></table>
+</div>
+<h3 id="azurepolicy-export-shape-v023"><a class="header" href="#azurepolicy-export-shape-v023"><code>azurepolicy</code> export shape (v0.2.3+)</a></h3>
+<p>The export was a structurally-incomplete stub through v0.2.2; v0.2.3 rewrote it to match a real Microsoft-shipped Guest Configuration policy. The emitted JSON now carries every field Azure Policy actually needs to deploy or audit settings:</p>
+<ul>
+<li><code>metadata.requiredProviders: ["Microsoft.GuestConfiguration"]</code></li>
+<li><code>metadata.guestConfiguration.{ contentType, contentUri, contentHash, configurationParameter }</code> — <code>configurationParameter</code> here is an <strong>object</strong> mapping ARM-parameter name → MOF-parameter name (the OSConfig agent reads this to wire policy values into resource configs)</li>
+<li>One ARM parameter per manifest setting, with the manifest's current value as <code>defaultValue</code></li>
+<li><code>IncludeArcMachines</code> toggle (defaults to <code>"false"</code> — Azure-VM-only by default; operators opt in to Arc per assignment)</li>
+<li><code>existenceCondition</code> with both <code>complianceStatus</code> AND <code>parameterHash</code> so ARM parameter changes propagate via reassignment (without this, parameter changes silently never apply)</li>
+<li>Dual deployment-template resources: one for <code>Microsoft.Compute/virtualMachines/.../guestConfigurationAssignments</code> and one for <code>Microsoft.HybridCompute/machines/.../guestConfigurationAssignments</code>, each gated by a <code>condition</code> on the <code>type</code> parameter</li>
+<li><code>guestConfiguration.configurationParameter</code> inside the deployment template is an <strong>array</strong> of <code>{ name, value }</code> per setting (different shape than the metadata object map)</li>
+<li><code>versions: ["&lt;version&gt;"]</code> array</li>
+<li>Assignment name uses <code>uniqueString()</code> so multiple policy assignments coexist</li>
+</ul>
+<p>Mapping convention: ARM parameter name = sanitized resource name (alphanumeric + underscore); MOF parameter name = <code>&lt;resource.name&gt;;Value</code> (matches what <code>exportToMof</code> writes). Test wrappers unwrap to the inner resource for keyPath/valueName extraction. <code>compliance.equals</code> wins over <code>properties.value</code> when both are present.</p>
+<p>Workflow: generate the MOF via <code>format: 'mof'</code>, zip it with the package metadata, upload to Azure Storage, then replace the <code>REPLACE_WITH_YOUR_MOF_PACKAGE_URI</code> / <code>REPLACE_WITH_SHA256_OF_PACKAGE_ZIP</code> placeholders in the policy JSON with the storage URI and SHA256 hash.</p>
+<p>Safety guards in the export handler:</p>
+<ul>
+<li>Refuses to export when the manifest contains <code>Microsoft.OSConfig/BaselineRule</code> placeholders (the imported-baseline shape). Those carry no implementation — the OSConfig agent would skip every resource without flagging an error, and Azure would report every VM as Compliant. Error message names the affected placeholders.</li>
+<li>Rejects manifests that somehow mix Windows and Linux resources (a GC package is single-OS by definition).</li>
+<li>Auto-detects OS family from resource type prefixes (<code>Microsoft.Windows/*</code> → Windows; <code>Microsoft.OSConfig/FileLine|Sshd|Package|Firewall|...</code> and <code>Microsoft.Linux/*</code> → Linux). Default falls to Windows for ambiguous / empty manifests.</li>
+</ul>
+<h2 id="cfsexportchannelsavereq--channel-cfsexportsave"><a class="header" href="#cfsexportchannelsavereq--channel-cfsexportsave"><code>cfs.exportChannel.save(req)</code> — channel <code>cfs:export:save</code></a></h2>
+<p>Same handler, but main pops a native save dialog and writes the bytes
+to the chosen path. Returns <code>{ ok: true, path }</code> or <code>IpcErrorEnvelope</code>
+on user-cancel.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="../user-guide/history-snapshots.html">User Guide → History &amp; snapshots</a></li>
+<li><a href="../user-guide/rationale.html">User Guide → Rationale</a></li>
+<li><a href="../architecture/module-map.html">Architecture → Module map</a></li>
+<li><a href="./manifests.html">API Reference → <code>cfs.manifests.*</code></a> — auto-snapshot on register</li>
+<li><a href="./deploy-health.html">API Reference → <code>cfs.deploy.*</code></a> — pre-deploy snapshot stamping</li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../api-reference/compliance.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../api-reference/audit-pack.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../api-reference/compliance.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../api-reference/audit-pack.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>
