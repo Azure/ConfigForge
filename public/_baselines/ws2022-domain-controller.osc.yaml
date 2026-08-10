@@ -1087,8 +1087,8 @@ resources:
           keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
           valueName: DefaultInboundAction
           valueType: REG_DWORD
-      expression: (value == 1)
-      template: The value {value} must be 1.
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallDomainProfileLogDroppedPackets
     type: Microsoft.OSConfig/Test
     properties:
@@ -1218,8 +1218,8 @@ resources:
           keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
           valueName: DefaultInboundAction
           valueType: REG_DWORD
-      expression: (value == 1)
-      template: The value {value} must be 1.
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPrivateProfileLogDroppedPackets
     type: Microsoft.OSConfig/Test
     properties:
@@ -1349,8 +1349,8 @@ resources:
           keyPath: HKEY_LOCAL_MACHINE:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
           valueName: DefaultInboundAction
           valueType: REG_DWORD
-      expression: (value == 1)
-      template: The value {value} must be 1.
+      expression: ((((value == 1)) || ((value == null))))
+      template: The value {value} must be one of 1, (not set).
   - name: FirewallPublicProfileLogDroppedPackets
     type: Microsoft.OSConfig/Test
     properties:

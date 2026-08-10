@@ -209,6 +209,15 @@ const INFORMATIONAL = {
   expression: 'true',
   template: 'The value {value} is informational for this control.',
 };
+const EFFECTIVE_DEFAULT_FIREWALL_RULES = new Set([
+  'FirewallDomainProfileInboundConnection',
+  'FirewallPrivateProfileInboundConnection',
+  'FirewallPublicProfileInboundConnection',
+]);
+const EFFECTIVE_DEFAULT_FIREWALL_ASSERTION = {
+  expression: '((((value == 1)) || ((value == null))))',
+  template: 'The value {value} must be one of 1, (not set).',
+};
 
 const literal = (value) => (typeof value === 'string' ? JSON.stringify(value) : String(value));
 const list = (values) => `[${values.map(literal).join(',')}]`;
@@ -542,7 +551,11 @@ function convertRegistry(rule, report) {
     }
   }
 
-  const compiled = compileSchema(schema, valueKind(hasValue ? properties.value : undefined));
+  // An unset DefaultInboundAction uses Windows Firewall's effective block
+  // default, so it is equivalent to the explicit hardened value 1.
+  const compiled = EFFECTIVE_DEFAULT_FIREWALL_RULES.has(rule.name)
+    ? EFFECTIVE_DEFAULT_FIREWALL_ASSERTION
+    : compileSchema(schema, valueKind(hasValue ? properties.value : undefined));
   return [{
     name: rule.name,
     type: TEST,

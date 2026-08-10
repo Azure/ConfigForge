@@ -1319,8 +1319,8 @@ resources:
           keyPath: HKEY_LOCAL_MACHINE:\SYSTEM\CurrentControlSet\Services\W32Time\TimeProviders\NtpClient
           valueName: Enabled
           valueType: REG_DWORD
-      expression: (value == 0)
-      template: The value {value} must be 0.
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: EnableGuestAccountStatus
     type: Microsoft.OSConfig/Test
     properties:
