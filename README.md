@@ -6,9 +6,9 @@
 
 > The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
 
-The current Windows/Linux release is `v0.3.102`. The current macOS Author
+The current Windows/Linux release is `v0.3.103`. The current macOS Author
 release is `mac-v0.3.101-author.1`; both are published as prereleases. The
-package versions are `0.3.102` for the Full edition and `0.3.101-author.1`
+package versions are `0.3.103` for the Full edition and `0.3.101-author.1`
 for the macOS Author edition.
 
 ## Export to Azure Machine Configuration
@@ -250,7 +250,8 @@ is not a universal binary.
 
 | Version | Highlights |
 |---|---|
-| **0.3.102** (current Windows/Linux release) | Fixes pre-deploy Audit with OSConfig 1.4.3 so single-resource CSP, Registry, Test, and User Rights reads are evaluated instead of reported as indeterminate |
+| **0.3.103** (current Windows/Linux release) | Makes all 12 Windows Server role baselines enforceable with OSConfig 1.4.3 and validates exact-count Audit plus fully compliant ApplyAndAutoCorrect on native Azure VMs |
+| **0.3.102** (prior Windows/Linux release) | Fixes pre-deploy Audit with OSConfig 1.4.3 so single-resource CSP, Registry, Test, and User Rights reads are evaluated instead of reported as indeterminate |
 | **0.3.101** (prior Windows/Linux release) | Clears the remaining GitHub security alerts with patched DOMPurify, fast-uri, ip-address, React Router, and Undici releases |
 | **0.3.100** (prior Windows/Linux release) | Updates js-yaml to the patched 4.3.1 release for `GHSA-5p4m-2wfm-xmqj` |
 | **0.3.99** (prior Windows/Linux release) | Verifies Enforce results, preserves exact QWords, keeps Revert safe, repairs WS2022 readability, and adds Machine Configuration Set compatibility |

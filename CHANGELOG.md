@@ -1,5 +1,21 @@
 # Changelog
 
+## [0.3.103] - 2026-08-09
+
+### Fixed
+
+- Make every bundled Windows Server baseline safe for Machine Configuration
+  enforcement with Microsoft.OSConfig 1.4.3. Windows Server 2016 and 2019
+  account-policy controls now use the same non-mutating Test wrappers as the
+  repaired 2022 profiles, controls without an authoritative value are
+  informational instead of permanently noncompliant, 2022 domain firewall
+  defaults accept the effective unset state, and role-managed 2025 NTP state
+  is informational.
+- Validate all 12 role baselines on native Azure Server 2016, 2019, 2022, and
+  2025 VMs. Every Audit report has its exact expected resource count and zero
+  unread entries; ApplyAndAutoCorrect finishes Compliant with zero remaining
+  noncompliant resources and changes the regression probe from `0` to `1`.
+
 ## [0.3.102] - 2026-08-08
 
 ### Fixed

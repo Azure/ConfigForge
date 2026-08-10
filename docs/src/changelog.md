@@ -6,6 +6,18 @@ foundational work by theme.
 
 ## Unreleased
 
+## v0.3.103 - 2026-08-09
+
+- **Windows baseline enforcement compatibility:** Windows Server 2016 and
+  2019 account-policy controls now use safe Test wrappers, controls without an
+  authoritative value are informational, Windows Server 2022 domain firewall
+  defaults accept the effective unset state, and role-managed Windows Server
+  2025 NTP state is informational.
+- **Full Azure validation:** All 12 Windows Server role baselines pass native
+  Azure Machine Configuration Audit and ApplyAndAutoCorrect with exact
+  resource counts, zero unread entries, and zero remaining noncompliance on
+  Microsoft.OSConfig 1.4.3.
+
 ## v0.3.102 - 2026-08-08
 
 - **OSConfig 1.4.3 audit compatibility:** Pre-deploy Audit now unwraps the

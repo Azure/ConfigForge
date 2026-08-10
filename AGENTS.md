@@ -19,12 +19,12 @@ The following release references were verified on 2026-08-06:
 
 | Line | Reference | State |
 |---|---|---|
-| `main` | `v0.3.102` | Current Windows/Linux release. It fixes pre-deploy Audit compatibility with OSConfig 1.4.3 single-resource array responses. |
+| `main` | `v0.3.103` | Current Windows/Linux release. All 12 Windows Server role baselines pass native Azure Audit and ApplyAndAutoCorrect with OSConfig 1.4.3. |
 | `mac-author-build` | `mac-v0.3.101-author.1` | Current author-only macOS release, published as a prerelease with the compatible baseline, authoring, packaging, and security fixes. |
 
 On `mac-author-build`, the root package, desktop package, and lockfile records
 use `0.3.101-author.1`. The current macOS Author release is
-`mac-v0.3.101-author.1`. The Full-edition package versions are `0.3.102`; do not copy
+`mac-v0.3.101-author.1`. The Full-edition package versions are `0.3.103`; do not copy
 macOS package metadata to `main`.
 
 ### Current feature inventory
