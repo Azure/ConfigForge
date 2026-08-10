@@ -1049,11 +1049,16 @@ resources:
     properties:
       name: SeTrustedCredManAccessPrivilege
       value: []
-  - name: "Accounts: Guest account status"
-    type: Microsoft.Windows/AccountPolicy
+  - name: 'Accounts: Guest account status'
+    type: Microsoft.OSConfig/Test
     properties:
-      name: EnableGuestAccount
-      value: false
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: EnableGuestAccount
+          value: false
+      expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: Act as part of the operating system
     type: Microsoft.Windows/UserRightsAssignment
     properties:
@@ -1126,10 +1131,15 @@ resources:
       value:
         - "*S-1-5-32-546"
   - name: Enforce password history
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: PasswordHistoryLength
-      value: 24
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: PasswordHistoryLength
+          value: 24
+      expression: (value != null && value >= 24)
+      template: The value {value} must be greater than or equal to 24.
   - name: Force shutdown from a remote system
     type: Microsoft.Windows/UserRightsAssignment
     properties:
@@ -1163,20 +1173,35 @@ resources:
       name: SeLockMemoryPrivilege
       value: []
   - name: Maximum password age
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: MaximumPasswordAge
-      value: 42
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: MaximumPasswordAge
+          value: 42
+      expression: (value != null && value >= 1 && value <= 70)
+      template: The value {value} must be between 1 and 70.
   - name: Minimum password age
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: MinimumPasswordAge
-      value: 1
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: MinimumPasswordAge
+          value: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: Minimum password length
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: MinimumPasswordLength
-      value: 14
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: MinimumPasswordLength
+          value: 14
+      expression: (value != null && value >= 14)
+      template: The value {value} must be greater than or equal to 14.
   - name: Modify an object label
     type: Microsoft.Windows/UserRightsAssignment
     properties:
@@ -1189,10 +1214,15 @@ resources:
       value:
         - "*S-1-5-32-544"
   - name: Password must meet complexity requirements
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: EnforcePasswordComplexity
-      value: true
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: EnforcePasswordComplexity
+          value: true
+      expression: ((((value == true)) || ((value == null))))
+      template: The value {value} must be one of true, (not set).
   - name: Perform volume maintenance tasks
     type: Microsoft.Windows/UserRightsAssignment
     properties:
@@ -1234,10 +1264,15 @@ resources:
         - "*S-1-5-32-544"
         - "*S-1-5-32-551"
   - name: Store passwords using reversible encryption
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: EnablePasswordReversibleEncryption
-      value: false
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: EnablePasswordReversibleEncryption
+          value: false
+      expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: Take ownership of files or other objects
     type: Microsoft.Windows/UserRightsAssignment
     properties:
@@ -1375,15 +1410,25 @@ resources:
       valueType: Dword
       value: 1
   - name: Reset account lockout counter after
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: LockoutReset
-      value: 15
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: LockoutReset
+          value: 15
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: Account lockout threshold
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: LockoutThreshold
-      value: 3
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: LockoutThreshold
+          value: 3
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: Turn on PowerShell Script Block Logging
     type: Microsoft.Windows/Registry
     properties:
@@ -1454,11 +1499,15 @@ resources:
       valueName: NoConnectedUser
       valueType: Dword
       value: 3
-  - name: "Accounts: Rename administrator account"
-    type: Microsoft.Windows/AccountPolicy
+  - name: 'Accounts: Rename administrator account'
+    type: Microsoft.OSConfig/Test
     properties:
-      name: AdministratorAccountName
-      value:
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: AdministratorAccountName
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: "Interactive logon: Prompt user to change password before expiration"
     type: Microsoft.Windows/Registry
     properties:
@@ -1473,11 +1522,16 @@ resources:
       valueName: SMBServerNameHardeningLevel
       valueType: Dword
       value: 1
-  - name: "Network access: Allow anonymous SID/Name translation"
-    type: Microsoft.Windows/AccountPolicy
+  - name: 'Network access: Allow anonymous SID/Name translation'
+    type: Microsoft.OSConfig/Test
     properties:
-      name: EnableAnonymousNameTranslation
-      value: false
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: EnableAnonymousNameTranslation
+          value: false
+      expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: Limits print driver installation to Administrators
     type: Microsoft.Windows/Registry
     properties:
@@ -1674,20 +1728,28 @@ resources:
       valueName: LogSuccessfulConnections
       valueType: Dword
       value: 1
-  - name: "Windows Firewall: Private: Inbound connections"
-    type: Microsoft.Windows/Registry
+  - name: 'Windows Firewall: Private: Inbound connections'
+    type: Microsoft.OSConfig/Test
     properties:
-      keyPath: HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
-      valueName: DefaultInboundAction
-      valueType: Dword
-      value:
-  - name: "Windows Firewall: Domain: Inbound connections"
-    type: Microsoft.Windows/Registry
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PrivateProfile
+          valueName: DefaultInboundAction
+          valueType: Dword
+      expression: 'true'
+      template: The value {value} is informational for this control.
+  - name: 'Windows Firewall: Domain: Inbound connections'
+    type: Microsoft.OSConfig/Test
     properties:
-      keyPath: HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
-      valueName: DefaultInboundAction
-      valueType: Dword
-      value:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\DomainProfile
+          valueName: DefaultInboundAction
+          valueType: Dword
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: "Windows Firewall: Private: Logging: Name"
     type: Microsoft.Windows/Registry
     properties:
@@ -1723,13 +1785,17 @@ resources:
       valueName: LogSuccessfulConnections
       valueType: Dword
       value: 1
-  - name: "Windows Firewall: Public: Inbound connections"
-    type: Microsoft.Windows/Registry
+  - name: 'Windows Firewall: Public: Inbound connections'
+    type: Microsoft.OSConfig/Test
     properties:
-      keyPath: HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
-      valueName: DefaultInboundAction
-      valueType: Dword
-      value:
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKLM:\SOFTWARE\Policies\Microsoft\WindowsFirewall\PublicProfile
+          valueName: DefaultInboundAction
+          valueType: Dword
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: "Windows Firewall: Public: Logging: Name"
     type: Microsoft.Windows/Registry
     properties:
@@ -1752,10 +1818,15 @@ resources:
       valueType: Dword
       value: 1
   - name: Account Lockout Duration
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: LockoutDuration
-      value: 15
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: LockoutDuration
+          value: 15
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: "MSS: (DisableIPSourceRouting) IP source routing protection level (protects against packet spoofing)"
     type: Microsoft.Windows/Registry
     properties:
@@ -1770,22 +1841,34 @@ resources:
       valueName: PreventDeviceMetadataFromNetwork
       valueType: Dword
       value: 1
-  - name: "Interactive logon: Message text for users attempting to log on"
-    type: Microsoft.Windows/Registry
+  - name: 'Interactive logon: Message text for users attempting to log on'
+    type: Microsoft.OSConfig/Test
     properties:
-      keyPath: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-      valueName: LegalNoticeText
-      valueType: String
-      value:
-  - name: "Interactive logon: Message title for users attempting to log on"
-    type: Microsoft.Windows/Registry
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: LegalNoticeText
+          valueType: String
+      expression: 'true'
+      template: The value {value} is informational for this control.
+  - name: 'Interactive logon: Message title for users attempting to log on'
+    type: Microsoft.OSConfig/Test
     properties:
-      keyPath: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
-      valueName: LegalNoticeCaption
-      valueType: String
-      value:
-  - name: "Accounts: Rename guest account"
-    type: Microsoft.Windows/AccountPolicy
+      resource:
+        type: Microsoft.Windows/Registry
+        properties:
+          keyPath: HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System
+          valueName: LegalNoticeCaption
+          valueType: String
+      expression: 'true'
+      template: The value {value} is informational for this control.
+  - name: 'Accounts: Rename guest account'
+    type: Microsoft.OSConfig/Test
     properties:
-      name: GuestAccountName
-      value:
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: GuestAccountName
+      expression: 'true'
+      template: The value {value} is informational for this control.

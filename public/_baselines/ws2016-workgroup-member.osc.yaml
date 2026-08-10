@@ -1014,11 +1014,16 @@ resources:
     properties:
       name: SeTrustedCredManAccessPrivilege
       value: []
-  - name: "Accounts: Guest account status"
-    type: Microsoft.Windows/AccountPolicy
+  - name: 'Accounts: Guest account status'
+    type: Microsoft.OSConfig/Test
     properties:
-      name: EnableGuestAccount
-      value: false
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: EnableGuestAccount
+          value: false
+      expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: Act as part of the operating system
     type: Microsoft.Windows/UserRightsAssignment
     properties:
@@ -1097,10 +1102,15 @@ resources:
       value:
         - "*S-1-5-32-546"
   - name: Enforce password history
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: PasswordHistoryLength
-      value: 24
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: PasswordHistoryLength
+          value: 24
+      expression: (value != null && value >= 24)
+      template: The value {value} must be greater than or equal to 24.
   - name: Force shutdown from a remote system
     type: Microsoft.Windows/UserRightsAssignment
     properties:
@@ -1134,20 +1144,35 @@ resources:
       name: SeLockMemoryPrivilege
       value: []
   - name: Maximum password age
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: MaximumPasswordAge
-      value: 42
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: MaximumPasswordAge
+          value: 42
+      expression: (value != null && value >= 1 && value <= 70)
+      template: The value {value} must be between 1 and 70.
   - name: Minimum password age
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: MinimumPasswordAge
-      value: 1
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: MinimumPasswordAge
+          value: 1
+      expression: (value != null && value >= 1)
+      template: The value {value} must be greater than or equal to 1.
   - name: Minimum password length
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: MinimumPasswordLength
-      value: 14
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: MinimumPasswordLength
+          value: 14
+      expression: (value != null && value >= 14)
+      template: The value {value} must be greater than or equal to 14.
   - name: Modify an object label
     type: Microsoft.Windows/UserRightsAssignment
     properties:
@@ -1160,10 +1185,15 @@ resources:
       value:
         - "*S-1-5-32-544"
   - name: Password must meet complexity requirements
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: EnforcePasswordComplexity
-      value: true
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: EnforcePasswordComplexity
+          value: true
+      expression: ((((value == true)) || ((value == null))))
+      template: The value {value} must be one of true, (not set).
   - name: Perform volume maintenance tasks
     type: Microsoft.Windows/UserRightsAssignment
     properties:
@@ -1205,10 +1235,15 @@ resources:
         - "*S-1-5-32-544"
         - "*S-1-5-32-551"
   - name: Store passwords using reversible encryption
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: EnablePasswordReversibleEncryption
-      value: false
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: EnablePasswordReversibleEncryption
+          value: false
+      expression: ((((value == false)) || ((value == null))))
+      template: The value {value} must be one of false, (not set).
   - name: Take ownership of files or other objects
     type: Microsoft.Windows/UserRightsAssignment
     properties:
@@ -1290,10 +1325,15 @@ resources:
       valueType: Dword
       value: 1
   - name: Account lockout threshold
-    type: Microsoft.Windows/AccountPolicy
+    type: Microsoft.OSConfig/Test
     properties:
-      name: LockoutThreshold
-      value: 3
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: LockoutThreshold
+          value: 3
+      expression: 'true'
+      template: The value {value} is informational for this control.
   - name: Turn on PowerShell Script Block Logging
     type: Microsoft.Windows/Registry
     properties:
@@ -1370,8 +1410,12 @@ resources:
       valueName: LogFileSize
       valueType: Dword
       value: 16384
-  - name: "Accounts: Rename guest account"
-    type: Microsoft.Windows/AccountPolicy
+  - name: 'Accounts: Rename guest account'
+    type: Microsoft.OSConfig/Test
     properties:
-      name: GuestAccountName
-      value:
+      resource:
+        type: Microsoft.Windows/AccountPolicy
+        properties:
+          name: GuestAccountName
+      expression: 'true'
+      template: The value {value} is informational for this control.
