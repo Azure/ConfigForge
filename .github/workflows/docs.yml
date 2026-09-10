@@ -30,10 +30,10 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Install mdBook
-        uses: peaceiris/actions-mdbook@v2
+        uses: peaceiris/actions-mdbook@ee69d230fe19748b7abf22df32acaa93833fad08 # v2.0.0
         with:
           mdbook-version: '0.4.40'
 
@@ -54,7 +54,7 @@ jobs:
           mdbook-mermaid install .
 
       - name: Lint markdown
-        uses: DavidAnson/markdownlint-cli2-action@v18
+        uses: DavidAnson/markdownlint-cli2-action@eb5ca3ab411449c66620fe7f1b3c9e10547144b0 # v18.0.0
         with:
           globs: 'docs/src/**/*.md'
 
@@ -62,7 +62,7 @@ jobs:
         run: cd docs && mdbook build
 
       - name: Upload artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: book
           path: docs/book
@@ -75,10 +75,10 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Install mdBook
-        uses: peaceiris/actions-mdbook@v2
+        uses: peaceiris/actions-mdbook@ee69d230fe19748b7abf22df32acaa93833fad08 # v2.0.0
         with:
           mdbook-version: '0.4.40'
 
@@ -102,7 +102,7 @@ jobs:
         run: cd docs && mdbook build
 
       - name: Deploy to gh-pages
-        uses: peaceiris/actions-gh-pages@v4
+        uses: peaceiris/actions-gh-pages@84c30a85c19949d7eee79c4ff27748b70285e453 # v4.1.0
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_dir: ./docs/book
