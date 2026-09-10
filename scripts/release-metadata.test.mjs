@@ -1,7 +1,7 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License.
 
-import { access, readFile } from 'node:fs/promises';
+import { access, readFile, readdir } from 'node:fs/promises';
 import { describe, expect, it } from 'vitest';
 
 async function read(path) {
@@ -54,7 +54,7 @@ describe('public release metadata', () => {
     expect(script).toContain('[string]$Repo = "Azure/ConfigForge"');
     expect(script).toMatch(/gh workflow run "Release \(macOS author\)"[\s\S]*?--ref main/);
     expect(workflow).toMatch(
-      /uses: actions\/checkout@v4\s*\r?\n\s+with:\s*\r?\n\s+ref: \$\{\{ inputs\.release_tag \}\}/m,
+      /uses: actions\/checkout@[0-9a-f]{40}(?:\s+#\s+\S+)?\s*\r?\n\s+with:\s*\r?\n\s+ref: \$\{\{ inputs\.release_tag \}\}/m,
     );
     expect(workflow).toContain('test "$(git rev-parse HEAD)" = "$tag_commit"');
     expect(workflow).toContain('Expected exactly 5 macOS author assets');
@@ -63,6 +63,22 @@ describe('public release metadata', () => {
     expect(workflow).not.toContain('sha256sum');
     expect(workflow).not.toContain('sort -z');
     expect(workflow).not.toContain('default:');
+  });
+
+  it('pins external GitHub Actions to immutable commit SHAs', async () => {
+    const workflowDirectory = new URL('../.github/workflows/', import.meta.url);
+    const workflowNames = await readdir(workflowDirectory);
+
+    for (const workflowName of workflowNames.filter((name) => /\.ya?ml$/.test(name))) {
+      const workflow = await read(`.github/workflows/${workflowName}`);
+      const actionReferences = [...workflow.matchAll(/^\s*-\s+uses:\s+([^\s#]+)/gm)]
+        .map((match) => match[1])
+        .filter((reference) => !reference.startsWith('./') && !reference.startsWith('docker://'));
+
+      for (const reference of actionReferences) {
+        expect(reference, `${workflowName}: ${reference}`).toMatch(/^[^@\s]+@[0-9a-f]{40}$/);
+      }
+    }
   });
 
   it('keeps remote lockfile tarballs on the public npm registry', async () => {
