@@ -1,0 +1,413 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Module map - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Quick Start</li><li class="chapter-item expanded "><a href="../quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Install & run</a></li><li class="chapter-item expanded "><a href="../quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first manifest</a></li><li class="chapter-item expanded "><a href="../quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs deploying</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user-guide/manifest-editor.html"><strong aria-hidden="true">4.</strong> Manifest editor</a></li><li class="chapter-item expanded "><a href="../user-guide/machine-configuration.html"><strong aria-hidden="true">5.</strong> Azure Machine Configuration deployment</a></li><li class="chapter-item expanded "><a href="../user-guide/matrix-diff.html"><strong aria-hidden="true">6.</strong> Diff: pairwise + master matrix</a></li><li class="chapter-item expanded "><a href="../user-guide/cis-compliance.html"><strong aria-hidden="true">7.</strong> CIS cross-reference & compliance</a></li><li class="chapter-item expanded "><a href="../user-guide/rationale.html"><strong aria-hidden="true">8.</strong> Rationale & change-author capture</a></li><li class="chapter-item expanded "><a href="../user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Audit-pack (PDF + Markdown)</a></li><li class="chapter-item expanded "><a href="../user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Analysis provenance</a></li><li class="chapter-item expanded "><a href="../user-guide/history-snapshots.html"><strong aria-hidden="true">11.</strong> History, snapshots, retention</a></li><li class="chapter-item expanded affix "><li class="part-title">Architecture</li><li class="chapter-item expanded "><a href="../architecture/system-overview.html"><strong aria-hidden="true">12.</strong> System overview</a></li><li class="chapter-item expanded "><a href="../architecture/module-map.html" class="active"><strong aria-hidden="true">13.</strong> Module map</a></li><li class="chapter-item expanded "><a href="../architecture/registration-semantics.html"><strong aria-hidden="true">14.</strong> Registration semantics</a></li><li class="chapter-item expanded "><a href="../architecture/mixed-platform.html"><strong aria-hidden="true">15.</strong> Mixed-platform classification</a></li><li class="chapter-item expanded "><a href="../architecture/oscfg-cli.html"><strong aria-hidden="true">16.</strong> oscfg CLI contract</a></li><li class="chapter-item expanded "><a href="../architecture/diagrams.html"><strong aria-hidden="true">17.</strong> Diagrams</a></li><li class="chapter-item expanded affix "><li class="part-title">API Reference</li><li class="chapter-item expanded "><a href="../api-reference/manifests.html"><strong aria-hidden="true">18.</strong> Baselines</a></li><li class="chapter-item expanded "><a href="../api-reference/deploy-health.html"><strong aria-hidden="true">19.</strong> Deploy & health</a></li><li class="chapter-item expanded "><a href="../api-reference/diff.html"><strong aria-hidden="true">20.</strong> Diff</a></li><li class="chapter-item expanded "><a href="../api-reference/compliance.html"><strong aria-hidden="true">21.</strong> Compliance</a></li><li class="chapter-item expanded "><a href="../api-reference/history-import-export.html"><strong aria-hidden="true">22.</strong> History, import & export</a></li><li class="chapter-item expanded "><a href="../api-reference/audit-pack.html"><strong aria-hidden="true">23.</strong> Audit pack</a></li><li class="chapter-item expanded "><a href="../api-reference/rationale.html"><strong aria-hidden="true">24.</strong> Rationale</a></li><li class="chapter-item expanded affix "><li class="part-title">Operations</li><li class="chapter-item expanded "><a href="../operations/ci.html"><strong aria-hidden="true">25.</strong> CI on Linux + Windows</a></li><li class="chapter-item expanded "><a href="../operations/smoke-testing.html"><strong aria-hidden="true">26.</strong> Smoke testing on Windows</a></li><li class="chapter-item expanded "><a href="../operations/upstream-bugs.html"><strong aria-hidden="true">27.</strong> Filing upstream bugs</a></li><li class="chapter-item expanded "><a href="../operations/troubleshooting.html"><strong aria-hidden="true">28.</strong> Troubleshooting</a></li><li class="chapter-item expanded affix "><li class="part-title">Contributing</li><li class="chapter-item expanded "><a href="../contributing/agents-md.html"><strong aria-hidden="true">29.</strong> AGENTS.md (canonical guide)</a></li><li class="chapter-item expanded "><a href="../contributing/conventions.html"><strong aria-hidden="true">30.</strong> Coding conventions</a></li><li class="chapter-item expanded "><a href="../contributing/testing.html"><strong aria-hidden="true">31.</strong> Testing expectations</a></li><li class="chapter-item expanded "><a href="../contributing/adding-oscfg-types.html"><strong aria-hidden="true">32.</strong> Adding a new oscfg type</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="../reference/manifest-schema.html"><strong aria-hidden="true">33.</strong> Manifest schema (oscfg 1.3.9-preview11)</a></li><li class="chapter-item expanded "><a href="../reference/registered-types.html"><strong aria-hidden="true">34.</strong> Registered types</a></li><li class="chapter-item expanded "><a href="../reference/glossary.html"><strong aria-hidden="true">35.</strong> Glossary</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../changelog.html">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/architecture/module-map.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="module-map"><a class="header" href="#module-map">Module map</a></h1>
+<p>A conservative map of the current <code>apps/desktop/</code> and <code>packages/core/</code> split. It only lists modules that exist on <code>main</code>.</p>
+<h2 id="appsdesktopelectron----main-process--preload"><a class="header" href="#appsdesktopelectron----main-process--preload"><code>apps/desktop/electron/</code> -- Main process + preload</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>main.ts</code></td><td>BrowserWindow construction, app lifecycle, IPC + protocol registration.</td></tr>
+<tr><td><code>preload.ts</code></td><td><code>contextBridge.exposeInMainWorld('cfs', { … })</code>. Single contract source for the renderer-side <code>window.cfs.*</code> shape. <strong>Flavor-specific</strong>: the macOS author preload omits <code>health</code>, <code>deploy</code>, <code>deployRecovery</code>, <code>revert</code>, <code>auditResults</code>, and <code>system</code>.</td></tr>
+<tr><td><code>ipc-handlers.ts</code></td><td>Registers every <code>cfs:*</code> IPC channel. Each channel is a thin wrapper around a <code>packages/core/handlers/</code> export.</td></tr>
+<tr><td><code>ipc-validators.ts</code></td><td>Typed payload validators per channel (CF-SEC-002). Rejects malformed payloads at the IPC boundary, before they reach handlers.</td></tr>
+<tr><td><code>navigation-guard.ts</code></td><td>Blocks <code>will-navigate</code> outside the bundled UI + file:// navigation (CF-SEC-001).</td></tr>
+<tr><td><code>protocol-handler.ts</code></td><td><code>cfs-blob://</code> custom protocol for streaming in-process artifacts (PDFs, exports) to the renderer without writing to disk first.</td></tr>
+<tr><td><code>log.ts</code></td><td>Typed main-process logger (v0.2.1). <code>scoped(name)</code>, <code>setLogger()</code>, <code>resetLogger()</code>, <code>redact()</code>. Wraps <code>electron-log</code>; falls back to console in vitest.</td></tr>
+<tr><td><code>elevate.ts</code></td><td>Process elevation. UAC on Windows, <code>pkexec</code> on Linux. Uses <code>scoped('elevate')</code> for all logging.</td></tr>
+<tr><td><code>platform-detection.ts</code></td><td>RDP / Wayland / X11 / WSL detection helpers used by elevate + main window creation.</td></tr>
+</tbody></table>
+</div>
+<h2 id="appsdesktopsrclib----renderer-infrastructure"><a class="header" href="#appsdesktopsrclib----renderer-infrastructure"><code>apps/desktop/src/lib/</code> -- Renderer infrastructure</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>cfs.ts</code></td><td>Renderer-side typed proxy for <code>window.cfs</code>, plus <code>safeCfs()</code> / <code>hasCfsNamespace()</code> capability checks.</td></tr>
+<tr><td><code>platform.ts</code></td><td>Renderer platform/theme hooks through the preload bridge.</td></tr>
+<tr><td><code>use-navigation-guard.ts</code></td><td>Unsaved-changes navigation guard for the HashRouter app.</td></tr>
+<tr><td><code>electron-restore-client.ts</code></td><td>Renderer client for interrupted deploy recovery UI.</td></tr>
+<tr><td><code>monaco-setup.ts</code></td><td>Monaco setup shared by editor surfaces.</td></tr>
+</tbody></table>
+</div>
+<h2 id="appsdesktopsrcpages----pages"><a class="header" href="#appsdesktopsrcpages----pages"><code>apps/desktop/src/pages/</code> -- pages</a></h2>
+<p>The five Phase A-E lighthouse pages are directory-based:</p>
+<pre><code class="language-text">&lt;Page&gt;/
+├─ index.tsx
+├─ state/             # hooks + tests
+├─ components/        # optional memoized sub-components
+└─ helpers.tsx        # optional pure render helpers
+</code></pre>
+<div class="table-wrapper"><table><thead><tr><th>Page directory</th><th>State/hooks</th><th>Components</th></tr></thead><tbody>
+<tr><td><code>ManifestEditor/</code></td><td><code>useManifestEditorState</code>, <code>useDeployFlow</code> (+ tests)</td><td><code>AddSettingsPane</code>, <code>ComplianceTable</code>, <code>DeployResultPanel</code>, <code>ManifestContent</code>, <code>ManifestDetailFooter</code>, <code>ManifestHeader</code>, <code>VisualManifestViewer</code></td></tr>
+<tr><td><code>Manifests/</code></td><td><code>useManifestList</code>, <code>useFlashMessage</code>, <code>useBulkSelection</code> (+ tests)</td><td>none extracted yet</td></tr>
+<tr><td><code>ManifestNew/</code></td><td><code>useNewManifestForm</code> (+ tests)</td><td>none extracted yet</td></tr>
+<tr><td><code>Library/</code></td><td><code>useLibraryFilters</code> (+ tests)</td><td>none extracted yet</td></tr>
+<tr><td><code>Diff/</code></td><td><code>useDiffMatrix</code> (+ tests)</td><td><code>CisDiffTab</code>; other panels remain in <code>index.tsx</code></td></tr>
+</tbody></table>
+</div>
+<p>Other current page files are still flat files: <code>Home.tsx</code> (Dashboard), <code>Compliance.tsx</code> (Export Readiness), <code>CisCatalog.tsx</code> (Benchmark Mapping), <code>Settings.tsx</code>, <code>ManifestAuditPack.tsx</code>, <code>ManifestCompliance.tsx</code>, <code>ManifestHistory.tsx</code>, <code>ManifestRationale.tsx</code>, and <code>NotFound.tsx</code>.</p>
+<p>Routes are wired in <code>apps/desktop/src/App.tsx</code>; sidebar labels are wired in <code>apps/desktop/src/components/Sidebar.tsx</code>.</p>
+<h2 id="appsdesktopsrccomponents----shared-sub-components"><a class="header" href="#appsdesktopsrccomponents----shared-sub-components"><code>apps/desktop/src/components/</code> -- Shared sub-components</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>manifest-editor.tsx</code></td><td>Monaco-based YAML/JSON editor + inline validator. Validates against <code>data/osc-manifest-schema.json</code> (Monaco JSON mode) AND a custom inline validator that's tighter (e.g. enforces <code>keyPath</code> + <code>valueName</code> + <code>valueType</code> for Registry resources).</td></tr>
+<tr><td><code>diff-viewer.tsx</code></td><td>Pairwise diff component used by the Diff page.</td></tr>
+<tr><td><code>ai-analysis-panel.tsx</code></td><td>AI changelog generation panel (Diff page).</td></tr>
+<tr><td><code>conflict-detector.tsx</code></td><td>local conflict detection across selected manifests.</td></tr>
+<tr><td><code>HealthIndicator.tsx</code></td><td>Footer pill: 🟢/🟠/🔴/⚪ states. Clickable amber opens <code>CliRequiredModal</code>.</td></tr>
+<tr><td><code>WelcomeDialog.tsx</code></td><td>First-run two-card welcome. Persists dismissal via <code>localStorage['cfs.welcome.dismissedAt']</code>.</td></tr>
+<tr><td><code>CliRequiredModal.tsx</code></td><td>Shared install dialog opened by Manifests / ManifestEditor / Layout / WelcomeDialog when <code>oscfg</code> is missing.</td></tr>
+<tr><td><code>Layout.tsx</code></td><td>Top-level layout: sidebar, header, footer, route outlet. Wires HealthIndicator.onInstallClick → CliRequiredModal.</td></tr>
+<tr><td><code>ExternalLink.tsx</code></td><td>Anchor wrapper that routes through <code>cfs.shell.openExternal()</code> so external URLs open in the user's default browser.</td></tr>
+<tr><td><code>AuditProgressCounter.tsx</code></td><td>Stable-width progress counter for audit operations. Uses monospace digit rendering to prevent layout shift as numbers increment.</td></tr>
+</tbody></table>
+</div>
+<p><code>pages/ManifestEditor/components/VisualManifestViewer.tsx</code> is shared by
+ManifestEditor and ManifestNew. Its pure projection/mutation layer lives in
+<code>pages/ManifestEditor/visual-viewer.ts</code>.
+| <code>Breadcrumb.tsx</code> | Breadcrumb navigation component. Renders the current page path as clickable segments for quick navigation between parent views. |</p>
+<h2 id="packagescoresrchandlers----pure-handler-functions"><a class="header" href="#packagescoresrchandlers----pure-handler-functions"><code>packages/core/src/handlers/</code> -- Pure handler functions</a></h2>
+<p>Single source of truth for business logic. Each handler is a pure function called from <code>apps/desktop/electron/ipc-handlers.ts</code> and directly tested by vitest.</p>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>index.ts</code></td><td>Re-exports.</td></tr>
+<tr><td><code>manifests.ts</code></td><td>List / register / delete manifests. Platform-agnostic register (schema-only); deploy is the platform gate.</td></tr>
+<tr><td><code>deploy.ts</code></td><td><code>runDeploy</code> (audit + enforce modes). Preflight checks <code>resolveOscfgBinary()</code>; throws <code>cliRequiredError()</code> if missing.</td></tr>
+<tr><td><code>revert.ts</code></td><td><code>revertManifest</code>: restore pre-deploy snapshot or delete the namespace when no usable snapshot exists. It revalidates snapshot YAML before apply and translates CLI-missing apply/delete failures to <code>CLI_REQUIRED</code>.</td></tr>
+<tr><td><code>health.ts</code></td><td><code>getHealthStatus</code> + <code>recheckHealth</code> (cache-busting reprobe).</td></tr>
+<tr><td><code>import.ts</code></td><td>File → manifest converter. CSV/TSV/XLSX and JSON security-definition imports both emit Registry resources with all schema-required props (<code>keyPath</code> + <code>valueName</code> + <code>valueType</code>) via <code>inferRegistryValueType()</code>. Imports capped at <code>MAX_IMPORT_BYTES = 10 MB</code>.</td></tr>
+<tr><td><code>export.ts</code></td><td>Manifest → YAML/JSON round-trip.</td></tr>
+<tr><td><code>library.ts</code></td><td>Catalog of bundled baselines.</td></tr>
+<tr><td><code>history.ts</code></td><td>Snapshot store wrappers.</td></tr>
+<tr><td><code>audit-pack.ts</code></td><td>PDF + markdown audit-pack builder. Uses <code>escapeMarkdown()</code> for any user-supplied or generated text (CF-SEC-005/006).</td></tr>
+<tr><td><code>docs.ts</code>, <code>docs-write.ts</code></td><td>Manifest documentation generation/save surfaces.</td></tr>
+<tr><td><code>baseline-csv.ts</code></td><td>Per-baseline CSV parser.</td></tr>
+<tr><td><code>downloads.ts</code></td><td>Browser-download surface (filename/MIME negotiation).</td></tr>
+<tr><td><code>rationale.ts</code>, <code>rationale-write.ts</code></td><td>Per-manifest rationale log read/write surfaces.</td></tr>
+<tr><td><code>manifests-status.ts</code></td><td>Registered/CLI-visible status lookup.</td></tr>
+<tr><td><code>diff-matrix.ts</code>, <code>matrix-xlsx.ts</code></td><td>Matrix diff and XLSX export handlers.</td></tr>
+<tr><td><code>cis-lookup.ts</code></td><td>Per-resource CIS lookup chain.</td></tr>
+<tr><td><code>cis-bulk-lookup.ts</code></td><td>Bulk CIS coverage for the Diff page's CIS Diff tab.</td></tr>
+<tr><td><code>cis-status.ts</code></td><td>CIS data discovery, diagnostics, and cache reset support.</td></tr>
+<tr><td><code>settings.ts</code></td><td><code>~/.configforge/settings.json</code> preferences, atomic writes, retention resolution.</td></tr>
+<tr><td><code>activity.ts</code></td><td>Recent activity feed.</td></tr>
+<tr><td><code>compliance-report.ts</code></td><td>Compliance report handler.</td></tr>
+<tr><td><code>system-config.ts</code></td><td>System configuration summaries for manifests.</td></tr>
+<tr><td><code>drift.ts</code>, <code>scenarios.ts</code></td><td>Retired/unavailable compatibility surfaces.</td></tr>
+<tr><td><code>errors.ts</code></td><td><code>HandlerError</code> with <code>code</code> field. <code>cliRequiredError()</code> factory (status 412, code <code>CLI_REQUIRED</code>). <code>isCliMissingMessage()</code> substring detector.</td></tr>
+<tr><td><code>contract.ts</code></td><td>Shared request/response types.</td></tr>
+</tbody></table>
+</div>
+<h2 id="packagescoresrcoscfg----single-cli-choke-point"><a class="header" href="#packagescoresrcoscfg----single-cli-choke-point"><code>packages/core/src/oscfg/</code> -- Single CLI choke-point</a></h2>
+<p><code>runOscfg()</code> in <code>runner.ts</code> is the operational CLI spawn path. <code>binary.ts</code> uses <code>spawnSync</code> only for discovery/version probes; handlers and renderer code do not spawn <code>oscfg</code> directly.</p>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>index.ts</code></td><td>Re-exports.</td></tr>
+<tr><td><code>runner.ts</code></td><td>Bounded worker queue (MAX_CONCURRENT_SPAWNS = 4), preamble scrubbing, translated errors, stdin-EOF management.</td></tr>
+<tr><td><code>binary.ts</code></td><td>Resolves <code>oscfg</code> from <code>OSCFG_BIN</code> env, well-known install paths, PATH, WindowsApps alias, MSIX (<code>Get-AppxPackage</code>), and the dev-only <code>resources/oscfg/&lt;plat&gt;/</code> drop.</td></tr>
+<tr><td><code>apply.ts</code></td><td><code>oscfg apply</code> wrapper.</td></tr>
+<tr><td><code>get.ts</code></td><td><code>oscfg get namespace</code> / <code>get resource -n &lt;ns&gt;</code>.</td></tr>
+<tr><td><code>exec.ts</code></td><td><code>oscfg exec resource --mode ...</code> wrapper for direct provider reads.</td></tr>
+<tr><td><code>manage.ts</code></td><td>Namespace/resource deletion helpers.</td></tr>
+<tr><td><code>registered-types.ts</code></td><td>Whitelist of resource types accepted by the targeted CLI version (<code>OSCFG_CLI_VERSION = '1.3.9-preview11'</code>). Types missing from the list trigger a soft warning at register time; the manifest still registers.</td></tr>
+<tr><td><code>registry-types.ts</code></td><td>Maps compatibility Registry <code>valueType</code> inputs to the canonical upstream <code>REG_*</code> forms.</td></tr>
+<tr><td><code>registry.ts</code></td><td>Registry resource specifics.</td></tr>
+<tr><td><code>compliance.ts</code></td><td>Decides <code>compliant</code> / <code>non-compliant</code> / <code>indeterminate</code> from CLI output.</td></tr>
+<tr><td><code>naming.ts</code></td><td><code>isValidNamespace</code>: refuses path-traversal, control chars.</td></tr>
+<tr><td><code>format.ts</code></td><td>Pretty-prints CLI output for the UI.</td></tr>
+<tr><td><code>concurrency.ts</code></td><td>Per-namespace mutex.</td></tr>
+</tbody></table>
+</div>
+<h2 id="packagescoresrcai----local-analysis-and-provenance"><a class="header" href="#packagescoresrcai----local-analysis-and-provenance"><code>packages/core/src/ai/</code> -- Local analysis and provenance</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>analyzer.ts</code></td><td>Local, deterministic diff/changelog analysis (no LLM or network). <code>analyzeDiff</code>, <code>generateChangelog</code>, <code>renderChangelogMarkdown</code>. Output is labeled via <code>tagAsAiGenerated</code> before it leaves the system.</td></tr>
+<tr><td><code>provenance.ts</code></td><td><code>AiSource</code> + <code>Provenance</code> types, <code>normalizeUrl</code> (strips utm_*, etc.), <code>dedupeSources</code>, <code>computeCitationCoverage</code> (mean of per-source confidence — a heuristic), <code>decorateWithProvenance</code>.</td></tr>
+<tr><td><code>circular-guard.ts</code></td><td><code>tagAsAiGenerated</code> / <code>isAiGenerated</code> / <code>assertNotAiGenerated</code> / <code>stripAiMarker</code>. <strong>Spoof-resistant</strong> (CF-SEC-007) via an in-process content-hash registry (FNV-1a 64-bit, browser-safe) in addition to the inline <code>&lt;!-- ai-generated:rev=N --&gt;</code> marker. Pure JS hash, no <code>crypto</code> import, so the module is safe to pull into the renderer bundle. <code>assertNotAiGenerated</code>/<code>isAiGenerated</code> detect marked content but are <strong>not currently wired</strong> into ingestion (advisory labeling, not enforcement).</td></tr>
+</tbody></table>
+</div>
+<h2 id="packagescoresrcmarkdown----output-escaping"><a class="header" href="#packagescoresrcmarkdown----output-escaping"><code>packages/core/src/markdown/</code> -- Output escaping</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>escape.ts</code></td><td><code>escapeMarkdown(text)</code>: escapes <code>&lt;</code>, <code>&gt;</code>, <code>&amp;</code>, etc. so user-supplied or generated content rendered as markdown can't inject HTML / script (CF-SEC-005/006).</td></tr>
+</tbody></table>
+</div>
+<h2 id="packagescoresrcmanifest----registration-metadata"><a class="header" href="#packagescoresrcmanifest----registration-metadata"><code>packages/core/src/manifest/</code> -- Registration metadata</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>rationale-store.ts</code></td><td>Per-manifest JSONL rationale log.</td></tr>
+<tr><td><code>audit-results-store.ts</code></td><td>Per-manifest audit-result store.</td></tr>
+</tbody></table>
+</div>
+<h2 id="packagescoresrchistory----snapshot-store"><a class="header" href="#packagescoresrchistory----snapshot-store"><code>packages/core/src/history/</code> -- Snapshot store</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>index.ts</code></td><td><code>saveSnapshot</code> / <code>createSnapshot</code>, <code>listSnapshots</code>, <code>getSnapshot</code>. Dedupe + retention sweep.</td></tr>
+<tr><td><code>restore.ts</code></td><td>Pre-restore snapshot + replay.</td></tr>
+<tr><td><code>author.ts</code></td><td><code>resolveAuthor()</code>: env → git → OS user → <code>unknown</code>.</td></tr>
+</tbody></table>
+</div>
+<h2 id="packagescoresrcdiff----pairwise--matrix"><a class="header" href="#packagescoresrcdiff----pairwise--matrix"><code>packages/core/src/diff/</code> -- Pairwise + matrix</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>matrix.ts</code></td><td>N-way matrix builder.</td></tr>
+<tr><td><code>xlsx-builder.ts</code></td><td>Excel export.</td></tr>
+</tbody></table>
+</div>
+<h2 id="packagescoresrcaudit-pack----auditor-deliverable"><a class="header" href="#packagescoresrcaudit-pack----auditor-deliverable"><code>packages/core/src/audit-pack/</code> -- Auditor deliverable</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>index.ts</code></td><td>PDF builder. Streams to a <code>Readable</code>.</td></tr>
+<tr><td><code>sections.ts</code></td><td>One function per section: header, compliance, history, rationale, citations, footer.</td></tr>
+<tr><td><code>markdown.ts</code></td><td>Markdown emitter. Uses <code>escapeMarkdown()</code> for user-supplied text.</td></tr>
+<tr><td><code>rationale-loader.ts</code></td><td>Loads + filters per-manifest rationale entries for the pack.</td></tr>
+</tbody></table>
+</div>
+<h2 id="packagescoresrccis----microsoftcis-cross-reference"><a class="header" href="#packagescoresrccis----microsoftcis-cross-reference"><code>packages/core/src/cis/</code> -- Microsoft/CIS cross-reference</a></h2>
+<blockquote>
+<p>The data files this module reads are <strong>not</strong> bundled in the repo or
+installer (license restrictions). Users drop their own legally
+licensed CIS benchmark files into the data directory at runtime.
+Loaders return <code>null</code> when files are absent and the UI hides every
+CIS surface.</p>
+</blockquote>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>data.ts</code></td><td>Loads user-supplied JSON catalogs from the CIS data directory. Returns <code>null</code> on <code>ENOENT</code>.</td></tr>
+<tr><td><code>crossref.ts</code></td><td>Strict-name match + property-mapping fallback.</td></tr>
+<tr><td><code>compliance.ts</code></td><td><code>{matched, mismatched, missing, score}</code>.</td></tr>
+<tr><td><code>xccdf-parser.ts</code></td><td>XCCDF + OVAL XML parser. Supports registry exact lookup, non-registry indices, CSP-aware fuzzy title matching, and Linux fuzzy helpers used by bulk CIS Diff.</td></tr>
+<tr><td><code>azure-policy-cis.ts</code></td><td>Azure Policy CIS JSON parser. Supplies the Azure Policy fallback catalogs; Windows uses PascalCase/CSP word-overlap, while Linux bulk matching uses <code>linuxFuzzyMatch</code>.</td></tr>
+</tbody></table>
+</div>
+<h2 id="packagescoresrcsystem----os-dispatch"><a class="header" href="#packagescoresrcsystem----os-dispatch"><code>packages/core/src/system/</code> -- OS dispatch</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>index.ts</code></td><td><code>getSystemInfo</code>: memoized for the process lifetime.</td></tr>
+<tr><td><code>windows.ts</code></td><td>PowerShell calls for admin check, server type, OS version.</td></tr>
+<tr><td><code>linux.ts</code></td><td>Bash calls for the same.</td></tr>
+<tr><td><code>types.ts</code></td><td>Shared shape.</td></tr>
+</tbody></table>
+</div>
+<h2 id="packagescoresrcimport-export"><a class="header" href="#packagescoresrcimport-export"><code>packages/core/src/import-export/</code></a></h2>
+<div class="table-wrapper"><table><thead><tr><th>File</th><th>Role</th></tr></thead><tbody>
+<tr><td><code>index.ts</code></td><td>YAML / JSON round-trips + <code>parseExcelBaseline</code> for CSV/TSV/XLSX import.</td></tr>
+</tbody></table>
+</div>
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../architecture/system-overview.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../architecture/registration-semantics.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../architecture/system-overview.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../architecture/registration-semantics.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

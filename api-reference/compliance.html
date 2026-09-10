@@ -1,0 +1,349 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Compliance - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Quick Start</li><li class="chapter-item expanded "><a href="../quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Install & run</a></li><li class="chapter-item expanded "><a href="../quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first manifest</a></li><li class="chapter-item expanded "><a href="../quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs deploying</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user-guide/manifest-editor.html"><strong aria-hidden="true">4.</strong> Manifest editor</a></li><li class="chapter-item expanded "><a href="../user-guide/machine-configuration.html"><strong aria-hidden="true">5.</strong> Azure Machine Configuration deployment</a></li><li class="chapter-item expanded "><a href="../user-guide/matrix-diff.html"><strong aria-hidden="true">6.</strong> Diff: pairwise + master matrix</a></li><li class="chapter-item expanded "><a href="../user-guide/cis-compliance.html"><strong aria-hidden="true">7.</strong> CIS cross-reference & compliance</a></li><li class="chapter-item expanded "><a href="../user-guide/rationale.html"><strong aria-hidden="true">8.</strong> Rationale & change-author capture</a></li><li class="chapter-item expanded "><a href="../user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Audit-pack (PDF + Markdown)</a></li><li class="chapter-item expanded "><a href="../user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Analysis provenance</a></li><li class="chapter-item expanded "><a href="../user-guide/history-snapshots.html"><strong aria-hidden="true">11.</strong> History, snapshots, retention</a></li><li class="chapter-item expanded affix "><li class="part-title">Architecture</li><li class="chapter-item expanded "><a href="../architecture/system-overview.html"><strong aria-hidden="true">12.</strong> System overview</a></li><li class="chapter-item expanded "><a href="../architecture/module-map.html"><strong aria-hidden="true">13.</strong> Module map</a></li><li class="chapter-item expanded "><a href="../architecture/registration-semantics.html"><strong aria-hidden="true">14.</strong> Registration semantics</a></li><li class="chapter-item expanded "><a href="../architecture/mixed-platform.html"><strong aria-hidden="true">15.</strong> Mixed-platform classification</a></li><li class="chapter-item expanded "><a href="../architecture/oscfg-cli.html"><strong aria-hidden="true">16.</strong> oscfg CLI contract</a></li><li class="chapter-item expanded "><a href="../architecture/diagrams.html"><strong aria-hidden="true">17.</strong> Diagrams</a></li><li class="chapter-item expanded affix "><li class="part-title">API Reference</li><li class="chapter-item expanded "><a href="../api-reference/manifests.html"><strong aria-hidden="true">18.</strong> Baselines</a></li><li class="chapter-item expanded "><a href="../api-reference/deploy-health.html"><strong aria-hidden="true">19.</strong> Deploy & health</a></li><li class="chapter-item expanded "><a href="../api-reference/diff.html"><strong aria-hidden="true">20.</strong> Diff</a></li><li class="chapter-item expanded "><a href="../api-reference/compliance.html" class="active"><strong aria-hidden="true">21.</strong> Compliance</a></li><li class="chapter-item expanded "><a href="../api-reference/history-import-export.html"><strong aria-hidden="true">22.</strong> History, import & export</a></li><li class="chapter-item expanded "><a href="../api-reference/audit-pack.html"><strong aria-hidden="true">23.</strong> Audit pack</a></li><li class="chapter-item expanded "><a href="../api-reference/rationale.html"><strong aria-hidden="true">24.</strong> Rationale</a></li><li class="chapter-item expanded affix "><li class="part-title">Operations</li><li class="chapter-item expanded "><a href="../operations/ci.html"><strong aria-hidden="true">25.</strong> CI on Linux + Windows</a></li><li class="chapter-item expanded "><a href="../operations/smoke-testing.html"><strong aria-hidden="true">26.</strong> Smoke testing on Windows</a></li><li class="chapter-item expanded "><a href="../operations/upstream-bugs.html"><strong aria-hidden="true">27.</strong> Filing upstream bugs</a></li><li class="chapter-item expanded "><a href="../operations/troubleshooting.html"><strong aria-hidden="true">28.</strong> Troubleshooting</a></li><li class="chapter-item expanded affix "><li class="part-title">Contributing</li><li class="chapter-item expanded "><a href="../contributing/agents-md.html"><strong aria-hidden="true">29.</strong> AGENTS.md (canonical guide)</a></li><li class="chapter-item expanded "><a href="../contributing/conventions.html"><strong aria-hidden="true">30.</strong> Coding conventions</a></li><li class="chapter-item expanded "><a href="../contributing/testing.html"><strong aria-hidden="true">31.</strong> Testing expectations</a></li><li class="chapter-item expanded "><a href="../contributing/adding-oscfg-types.html"><strong aria-hidden="true">32.</strong> Adding a new oscfg type</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="../reference/manifest-schema.html"><strong aria-hidden="true">33.</strong> Manifest schema (oscfg 1.3.9-preview11)</a></li><li class="chapter-item expanded "><a href="../reference/registered-types.html"><strong aria-hidden="true">34.</strong> Registered types</a></li><li class="chapter-item expanded "><a href="../reference/glossary.html"><strong aria-hidden="true">35.</strong> Glossary</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../changelog.html">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/api-reference/compliance.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="cfscompliancereport---cis-scoring"><a class="header" href="#cfscompliancereport---cis-scoring"><code>cfs.compliance.report</code> - CIS scoring</a></h1>
+<blockquote>
+<p><strong>Phase 10 transport note.</strong> Was <code>/api/compliance/report</code>.
+<code>packages/core/src/handlers/compliance-report.ts</code> now backs the
+<code>cfs:compliance:report</code> IPC channel. Contract preserved.</p>
+</blockquote>
+<p>Score a registered manifest against a CIS baseline. Implementation in
+<code>packages/core/src/cis/compliance.ts</code>; the handler glues it to the
+host-injected baseline catalog.</p>
+<blockquote>
+<p><strong>Note:</strong> Requires user-supplied CIS data files under the runtime's
+resolved public asset root (via <code>resolvePublicAsset()</code>) AND a matching
+<code>cis-benchmark</code> entry in the host-injected <code>BASELINE_CATALOG</code>.
+ConfigForge does <strong>not</strong> redistribute CIS Benchmark content
+(license restrictions); catalog entries that previously pointed at
+bundled CIS YAMLs have been removed. See
+<a href="../user-guide/cis-compliance.html">User Guide → CIS compliance</a> to
+reintroduce them locally. Use <code>cfs.cis.status()</code> to gate UI; it
+returns availability, resolved data directory, expected-file diagnostics,
+discovered XCCDF files, and discovered Azure Policy CIS JSON files.</p>
+</blockquote>
+<h2 id="cfscompliancereport-manifest-against----channel-cfscompliancereport"><a class="header" href="#cfscompliancereport-manifest-against----channel-cfscompliancereport"><code>cfs.compliance.report({ manifest, against })</code> - channel <code>cfs:compliance:report</code></a></h2>
+<p><code>against</code> accepts any <code>id</code> from <code>BASELINE_CATALOG</code> whose <code>category</code> is
+<code>cis-benchmark</code> and whose <code>source</code> is <code>'local'</code> with a populated
+<code>manifestUrl</code>. Out of the box no such entries exist -
+populating them is part of the user-side enable step.</p>
+<pre><code class="language-ts">type ComplianceResponse = {
+  manifest: string;
+  against: string;
+  baselineName: string;
+  generatedAt: string;
+  report: {
+    matched: number;
+    mismatched: number;
+    missing: number;
+    score: number;          // round(matched / total * 100)
+    total: number;          // CIS baseline rule count (not matched+mismatched+missing)
+    severityBreakdown: Record&lt;string,
+      { matched: number; mismatched: number; missing: number }&gt;;
+    perRule: Array&lt;{
+      ruleName: string;
+      type?: string;
+      status: 'matched' | 'mismatched' | 'missing';
+      myValue?: unknown;
+      expected?: unknown;
+      severity: string;       // e.g. "High" or "Unknown", depending on local CIS data
+      gpoPath?: string | null;
+      ruleId?: string;
+    }&gt;;
+    extras: Array&lt;{ ruleName: string; type?: string }&gt;;  // informational - does NOT lower score
+  };
+};
+</code></pre>
+<p><code>extras[]</code> are settings present in the user manifest but not in the CIS
+baseline - informational only.</p>
+<h2 id="caching"><a class="header" href="#caching">Caching</a></h2>
+<p><code>createCachedDedup</code> (<code>packages/core/src/handlers/cache.ts</code>) - 5-minute
+TTL keyed by <code>${namespace}::${baselineId}</code> with in-flight dedup.
+Re-registering the manifest invalidates downstream.</p>
+<h2 id="errors"><a class="header" href="#errors">Errors</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Status</th><th>When</th></tr></thead><tbody>
+<tr><td>400</td><td>Missing <code>manifest</code> / <code>against</code>; catalog entry not <code>cis-benchmark</code>; no local <code>manifestUrl</code>; resolved path escapes the public asset root.</td></tr>
+<tr><td>404</td><td>Manifest not registered, or <code>against</code> id not in <code>BASELINE_CATALOG</code>.</td></tr>
+<tr><td>422</td><td>User manifest YAML failed to parse.</td></tr>
+<tr><td>500</td><td>Could not read baseline file, or CIS YAML parse failed.</td></tr>
+</tbody></table>
+</div>
+<p>Call <code>cfs.cis.status()</code> first to gate UI.</p>
+<pre><code class="language-ts">type CisStatus = {
+  available: boolean;
+  dataDir?: string;
+  files?: Array&lt;{ name: string; present: boolean; description: string; required: boolean }&gt;;
+  unexpectedFiles?: Array&lt;{ name: string; didYouMean: string | null }&gt;;
+  schemaError?: string | null;
+  source?: 'json' | 'xccdf' | 'both';
+  legacyMappingsLoaded?: boolean;
+  legacyRuleCatalogCount?: number;
+  xccdfFiles?: Array&lt;{
+    filename: string;
+    platform: 'windows' | 'linux' | 'unknown';
+    product: string;
+    version: string;
+    title: string;
+    hasOval: boolean;
+  }&gt;;
+  azurePolicyCisFiles?: Array&lt;{
+    filename: string;
+    platform: 'windows' | 'linux' | 'unknown';
+    benchmarkName: string;
+    benchmarkVersion: string;
+    ruleCount: number;
+  }&gt;;
+};
+</code></pre>
+<p>The <code>Library</code> (Microsoft Baselines) and <code>ManifestEditor</code> pages already gate off this signal.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="../user-guide/cis-compliance.html">User Guide - CIS compliance</a></li>
+<li><a href="./audit-pack.html">API Reference - <code>cfs.auditPack.*</code></a></li>
+<li><a href="../architecture/module-map.html">Architecture - Module map</a></li>
+</ul>
+<h2 id="cfscisrecheck---channel-cfscisrecheck"><a class="header" href="#cfscisrecheck---channel-cfscisrecheck"><code>cfs.cis.recheck()</code> - channel <code>cfs:cis:recheck</code></a></h2>
+<blockquote>
+<p><strong>Added in v0.3.2.</strong> Force-refreshes all CIS data caches (status + global mappings) without an app restart. Pairs with the Benchmark Mapping page's <strong>Re-check catalog</strong> button.</p>
+</blockquote>
+<h2 id="cfscisrevealdatadir---channel-cfscisreveal-data-dir"><a class="header" href="#cfscisrevealdatadir---channel-cfscisreveal-data-dir"><code>cfs.cis.revealDataDir()</code> - channel <code>cfs:cis:reveal-data-dir</code></a></h2>
+<blockquote>
+<p><strong>Added in v0.3.2.</strong> Creates the CIS data directory if missing, opens it in the system file manager (Explorer / Finder), and invalidates the status cache.</p>
+</blockquote>
+<h2 id="cfscisbulklookupnamespace-benchmarkfilename---channel-cfscisbulk-lookup"><a class="header" href="#cfscisbulklookupnamespace-benchmarkfilename---channel-cfscisbulk-lookup"><code>cfs.cis.bulkLookup(namespace, benchmarkFilename?)</code> - channel <code>cfs:cis:bulk-lookup</code></a></h2>
+<blockquote>
+<p><strong>Added in v0.3.x.</strong> Batch CIS rule lookup for the Diff page's CIS Diff tab. See <a href="./diff.html#cfscisbulklookupnamespace-benchmarkfilename--channel-cfscisbulk-lookup"><code>cfs.diff.*</code></a> for the full contract.</p>
+</blockquote>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../api-reference/diff.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../api-reference/history-import-export.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../api-reference/diff.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../api-reference/history-import-export.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

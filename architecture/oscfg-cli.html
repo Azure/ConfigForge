@@ -1,0 +1,330 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>oscfg CLI contract - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Quick Start</li><li class="chapter-item expanded "><a href="../quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Install & run</a></li><li class="chapter-item expanded "><a href="../quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first manifest</a></li><li class="chapter-item expanded "><a href="../quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs deploying</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user-guide/manifest-editor.html"><strong aria-hidden="true">4.</strong> Manifest editor</a></li><li class="chapter-item expanded "><a href="../user-guide/machine-configuration.html"><strong aria-hidden="true">5.</strong> Azure Machine Configuration deployment</a></li><li class="chapter-item expanded "><a href="../user-guide/matrix-diff.html"><strong aria-hidden="true">6.</strong> Diff: pairwise + master matrix</a></li><li class="chapter-item expanded "><a href="../user-guide/cis-compliance.html"><strong aria-hidden="true">7.</strong> CIS cross-reference & compliance</a></li><li class="chapter-item expanded "><a href="../user-guide/rationale.html"><strong aria-hidden="true">8.</strong> Rationale & change-author capture</a></li><li class="chapter-item expanded "><a href="../user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Audit-pack (PDF + Markdown)</a></li><li class="chapter-item expanded "><a href="../user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Analysis provenance</a></li><li class="chapter-item expanded "><a href="../user-guide/history-snapshots.html"><strong aria-hidden="true">11.</strong> History, snapshots, retention</a></li><li class="chapter-item expanded affix "><li class="part-title">Architecture</li><li class="chapter-item expanded "><a href="../architecture/system-overview.html"><strong aria-hidden="true">12.</strong> System overview</a></li><li class="chapter-item expanded "><a href="../architecture/module-map.html"><strong aria-hidden="true">13.</strong> Module map</a></li><li class="chapter-item expanded "><a href="../architecture/registration-semantics.html"><strong aria-hidden="true">14.</strong> Registration semantics</a></li><li class="chapter-item expanded "><a href="../architecture/mixed-platform.html"><strong aria-hidden="true">15.</strong> Mixed-platform classification</a></li><li class="chapter-item expanded "><a href="../architecture/oscfg-cli.html" class="active"><strong aria-hidden="true">16.</strong> oscfg CLI contract</a></li><li class="chapter-item expanded "><a href="../architecture/diagrams.html"><strong aria-hidden="true">17.</strong> Diagrams</a></li><li class="chapter-item expanded affix "><li class="part-title">API Reference</li><li class="chapter-item expanded "><a href="../api-reference/manifests.html"><strong aria-hidden="true">18.</strong> Baselines</a></li><li class="chapter-item expanded "><a href="../api-reference/deploy-health.html"><strong aria-hidden="true">19.</strong> Deploy & health</a></li><li class="chapter-item expanded "><a href="../api-reference/diff.html"><strong aria-hidden="true">20.</strong> Diff</a></li><li class="chapter-item expanded "><a href="../api-reference/compliance.html"><strong aria-hidden="true">21.</strong> Compliance</a></li><li class="chapter-item expanded "><a href="../api-reference/history-import-export.html"><strong aria-hidden="true">22.</strong> History, import & export</a></li><li class="chapter-item expanded "><a href="../api-reference/audit-pack.html"><strong aria-hidden="true">23.</strong> Audit pack</a></li><li class="chapter-item expanded "><a href="../api-reference/rationale.html"><strong aria-hidden="true">24.</strong> Rationale</a></li><li class="chapter-item expanded affix "><li class="part-title">Operations</li><li class="chapter-item expanded "><a href="../operations/ci.html"><strong aria-hidden="true">25.</strong> CI on Linux + Windows</a></li><li class="chapter-item expanded "><a href="../operations/smoke-testing.html"><strong aria-hidden="true">26.</strong> Smoke testing on Windows</a></li><li class="chapter-item expanded "><a href="../operations/upstream-bugs.html"><strong aria-hidden="true">27.</strong> Filing upstream bugs</a></li><li class="chapter-item expanded "><a href="../operations/troubleshooting.html"><strong aria-hidden="true">28.</strong> Troubleshooting</a></li><li class="chapter-item expanded affix "><li class="part-title">Contributing</li><li class="chapter-item expanded "><a href="../contributing/agents-md.html"><strong aria-hidden="true">29.</strong> AGENTS.md (canonical guide)</a></li><li class="chapter-item expanded "><a href="../contributing/conventions.html"><strong aria-hidden="true">30.</strong> Coding conventions</a></li><li class="chapter-item expanded "><a href="../contributing/testing.html"><strong aria-hidden="true">31.</strong> Testing expectations</a></li><li class="chapter-item expanded "><a href="../contributing/adding-oscfg-types.html"><strong aria-hidden="true">32.</strong> Adding a new oscfg type</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="../reference/manifest-schema.html"><strong aria-hidden="true">33.</strong> Manifest schema (oscfg 1.3.9-preview11)</a></li><li class="chapter-item expanded "><a href="../reference/registered-types.html"><strong aria-hidden="true">34.</strong> Registered types</a></li><li class="chapter-item expanded "><a href="../reference/glossary.html"><strong aria-hidden="true">35.</strong> Glossary</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../changelog.html">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/architecture/oscfg-cli.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="oscfg-cli-contract"><a class="header" href="#oscfg-cli-contract"><code>oscfg</code> CLI contract</a></h1>
+<p>ConfigForge shells out to the upstream Microsoft OSConfig CLI for deploy and audit operations. The upstream CLI documentation lives at <a href="https://github.com/microsoft/osconfig/tree/main/docs/cli">https://github.com/microsoft/osconfig/tree/main/docs/cli</a>.</p>
+<p>The current targeted upstream CLI version in code is <code>oscfg 1.3.9-preview11</code> (<code>packages/core/src/oscfg/registered-types.ts</code>).</p>
+<h2 id="bring-your-own-cli"><a class="header" href="#bring-your-own-cli">Bring-your-own CLI</a></h2>
+<p>ConfigForge installers do <strong>not</strong> bundle <code>oscfg</code>. Users install OSConfig separately. Editor, library, validation, diff, CIS mapping, and audit-pack generation can run without the CLI; deploy/audit/revert flows are CLI-gated.</p>
+<p>When a CLI-gated handler can determine that the CLI is missing, it throws <code>cliRequiredError()</code> from <code>packages/core/src/handlers/errors.ts</code> with status <code>412</code> and code <code>CLI_REQUIRED</code>. The preload bridge preserves those fields on the thrown renderer <code>Error</code> so UI code can open <code>CliRequiredModal</code>.</p>
+<h2 id="discovery-order"><a class="header" href="#discovery-order">Discovery order</a></h2>
+<p><code>packages/core/src/oscfg/binary.ts</code> resolves the binary in this order:</p>
+<ol>
+<li><code>OSCFG_BIN</code> environment override.</li>
+<li>Active runtime path strategy resource directory, primarily for dev/test drops under <code>resources/oscfg/&lt;platform&gt;-x64/</code>. The installer does not ship this directory.</li>
+<li>Legacy compiled-layout fallbacks under nearby <code>resources/oscfg/&lt;platform&gt;-x64/</code> paths.</li>
+<li>Well-known installed locations:
+<ul>
+<li>Windows: WindowsApps alias, WinGet Links, per-user OSConfig install, Program Files OSConfig/Microsoft OSConfig locations, and x86 Program Files equivalents.</li>
+<li>Linux: <code>/usr/local/bin/oscfg</code>, <code>/usr/bin/oscfg</code>, <code>/opt/osconfig/bin/oscfg</code>, <code>/opt/osconfig/oscfg</code>, and <code>$HOME/.local/bin/oscfg</code>.</li>
+</ul>
+</li>
+<li><code>PATH</code> via <code>where</code> or <code>which</code>.</li>
+<li>Windows MSIX fallback via <code>Get-AppxPackage Microsoft.OSConfig</code>.</li>
+</ol>
+<p><code>cfs.health.check()</code> reports the resolved binary path and source (<code>env</code>, <code>bundled</code>, <code>installed</code>, <code>path</code>, or <code>msix</code>). In current releases, <code>bundled</code> means a developer/test resource drop was found, not that the installer carried the CLI.</p>
+<h2 id="operational-invariants"><a class="header" href="#operational-invariants">Operational invariants</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Invariant</th><th>What it means</th></tr></thead><tbody>
+<tr><td><strong>Exit-code-driven</strong></td><td><code>0</code> = success, non-zero = failure. We never parse free-form prose to decide if a CLI call worked.</td></tr>
+<tr><td><strong>Captured CLI output</strong></td><td><code>stdout</code> and <code>stderr</code> are captured from the CLI. <code>runner.ts</code> strips the preview telemetry/privacy preamble from stdout before parsing or returning it, and known failure modes are translated to actionable messages while preserving enough CLI detail for troubleshooting.</td></tr>
+<tr><td><strong>Preamble scrubbing</strong></td><td>The preview CLI prints a multi-line telemetry banner before real payload. <code>runner.ts</code> strips it before returning, so downstream sees only the body.</td></tr>
+<tr><td><strong>Single operational spawn path</strong></td><td>CLI verbs go through <code>runOscfg()</code> in <code>runner.ts</code>. Handlers and renderer code do not spawn <code>oscfg</code> directly.</td></tr>
+<tr><td><strong>Bounded concurrency</strong></td><td><code>MAX_CONCURRENT_SPAWNS = 4</code>. Beyond that, callers queue. Avoids the Windows Defender real-time scan + <code>oscfg_event.dll</code> load-contention cliff that produced 60s timeouts during bulk audits.</td></tr>
+<tr><td><strong>Stdin closed</strong></td><td>Every spawn closes stdin immediately. Prevents the Windows-only "child waits for stdin EOF" hang we hit on the old spawn pipeline.</td></tr>
+<tr><td><strong>Per-namespace mutex</strong></td><td>Two concurrent <code>apply</code> operations on the same namespace serialize, never interleave (<code>packages/core/src/oscfg/concurrency.ts</code>).</td></tr>
+<tr><td><strong>CLI-missing preflight</strong></td><td><code>runDeploy()</code> checks <code>resolveOscfgBinary()</code> before starting deploy/audit work. Revert translates CLI-missing results where detected.</td></tr>
+</tbody></table>
+</div>
+<p><code>binary.ts</code> uses <code>spawnSync</code> for discovery/version probes; <code>runner.ts</code> owns long-running operational verbs.</p>
+<h2 id="verbs-wrapped-by-core"><a class="header" href="#verbs-wrapped-by-core">Verbs wrapped by core</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Verb</th><th>Module</th><th>Notes</th></tr></thead><tbody>
+<tr><td><code>oscfg apply -f &lt;file&gt; -n &lt;ns&gt;</code></td><td><code>apply.ts</code></td><td>File-based path; required for large manifests.</td></tr>
+<tr><td><code>oscfg apply --content "..." -n &lt;ns&gt;</code></td><td><code>apply.ts</code></td><td>Inline path; falls back to a temp file when content &gt; a tunable size.</td></tr>
+<tr><td><code>oscfg get namespace</code></td><td><code>get.ts</code></td><td>Lists all CLI-known namespaces.</td></tr>
+<tr><td><code>oscfg get resource -n &lt;ns&gt;</code></td><td><code>get.ts</code></td><td>Read-only audit.</td></tr>
+<tr><td><code>oscfg exec resource --mode &lt;mode&gt; ...</code></td><td><code>exec.ts</code></td><td>Direct provider reads for audit fallback.</td></tr>
+<tr><td><code>oscfg delete ...</code></td><td><code>manage.ts</code></td><td>Namespace/resource cleanup helpers.</td></tr>
+</tbody></table>
+</div>
+<p>If you need a new verb, add it to <code>packages/core/src/oscfg/</code> as a
+named export and re-use <code>runOscfg</code>. <strong>Do not</strong> shell out from a
+handler, and <strong>never</strong> add a <code>child_process.spawn('oscfg', …)</code>
+anywhere else in the tree.</p>
+<h2 id="unsupported-type-handling"><a class="header" href="#unsupported-type-handling">Unsupported-type handling</a></h2>
+<p><code>oscfg</code> returns <code>Unsupported resource type</code> for types the installed
+CLI doesn't know about. ConfigForge treats this as a <strong>soft warning</strong>
+(the registration still succeeds and other resources still apply).
+The set of types the targeted CLI version knows about lives in
+<a href="https://github.com/Azure/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts"><code>packages/core/src/oscfg/registered-types.ts</code></a>
+keyed by version (<code>OSCFG_CLI_VERSION</code>). Types missing from that
+whitelist trigger the soft-warning path at register time, only
+when the manifest targets this host's platform, to avoid spamming
+Windows-only-type false positives on a Linux machine.</p>
+<p>When you bump the targeted CLI version, re-run
+<code>scripts/probe-types.ps1</code> and update the whitelist (see
+<a href="../reference/registered-types.html">Reference → Registered types</a>).</p>
+<blockquote>
+<p><strong>Warning:</strong> Treating "Unsupported resource type" as a hard
+failure is explicitly forbidden in
+<a href="https://github.com/Azure/ConfigForge/blob/main/AGENTS.md"><code>AGENTS.md</code></a>.
+Don't regress this behaviour.</p>
+</blockquote>
+<h2 id="translated-cli-errors"><a class="header" href="#translated-cli-errors">Translated CLI errors</a></h2>
+<p>Some raw CLI errors are turned into actionable hints in
+<code>runner.translateKnownErrors</code>:</p>
+<div class="table-wrapper"><table><thead><tr><th>Raw CLI text</th><th>What we surface</th></tr></thead><tbody>
+<tr><td><code>oscfg requires Administrator privileges</code></td><td>"Run ConfigForge from an elevated PowerShell session."</td></tr>
+<tr><td><code>Policy CSP 0x82F00009</code></td><td>"Policy not applicable on this SKU."</td></tr>
+<tr><td><code>LSA 0xD0000022</code></td><td>"LSA security policy is locked; run from elevated PowerShell."</td></tr>
+</tbody></table>
+</div>
+<p>The original CLI output is still preserved in the response so a
+power user can see exactly what the binary said.</p>
+<h2 id="windows-admin-requirement"><a class="header" href="#windows-admin-requirement">Windows admin requirement</a></h2>
+<p>The preview CLI opens its log file in a protected directory on
+<strong>every</strong> invocation, including <code>get resource</code> reads. So on Windows,
+<em>every</em> Deploy / Audit operation requires elevation.
+<code>getHealthStatus()</code> reports <code>adminBlocked: true</code> when the current
+process can't reach the CLI log directory, and the in-app footer pill
+and Settings panel surface this as "admin required." A future CLI
+release is expected to make reads admin-free; until then, this page
+applies.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="./system-overview.html">Architecture → System overview</a></li>
+<li><a href="../operations/upstream-bugs.html">Operations → Filing upstream bugs</a></li>
+<li><a href="../reference/registered-types.html">Reference → Registered types</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../architecture/mixed-platform.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../architecture/diagrams.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../architecture/mixed-platform.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../architecture/diagrams.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

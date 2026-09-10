@@ -1,0 +1,310 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Registration semantics - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Quick Start</li><li class="chapter-item expanded "><a href="../quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Install & run</a></li><li class="chapter-item expanded "><a href="../quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first manifest</a></li><li class="chapter-item expanded "><a href="../quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs deploying</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user-guide/manifest-editor.html"><strong aria-hidden="true">4.</strong> Manifest editor</a></li><li class="chapter-item expanded "><a href="../user-guide/machine-configuration.html"><strong aria-hidden="true">5.</strong> Azure Machine Configuration deployment</a></li><li class="chapter-item expanded "><a href="../user-guide/matrix-diff.html"><strong aria-hidden="true">6.</strong> Diff: pairwise + master matrix</a></li><li class="chapter-item expanded "><a href="../user-guide/cis-compliance.html"><strong aria-hidden="true">7.</strong> CIS cross-reference & compliance</a></li><li class="chapter-item expanded "><a href="../user-guide/rationale.html"><strong aria-hidden="true">8.</strong> Rationale & change-author capture</a></li><li class="chapter-item expanded "><a href="../user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Audit-pack (PDF + Markdown)</a></li><li class="chapter-item expanded "><a href="../user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Analysis provenance</a></li><li class="chapter-item expanded "><a href="../user-guide/history-snapshots.html"><strong aria-hidden="true">11.</strong> History, snapshots, retention</a></li><li class="chapter-item expanded affix "><li class="part-title">Architecture</li><li class="chapter-item expanded "><a href="../architecture/system-overview.html"><strong aria-hidden="true">12.</strong> System overview</a></li><li class="chapter-item expanded "><a href="../architecture/module-map.html"><strong aria-hidden="true">13.</strong> Module map</a></li><li class="chapter-item expanded "><a href="../architecture/registration-semantics.html" class="active"><strong aria-hidden="true">14.</strong> Registration semantics</a></li><li class="chapter-item expanded "><a href="../architecture/mixed-platform.html"><strong aria-hidden="true">15.</strong> Mixed-platform classification</a></li><li class="chapter-item expanded "><a href="../architecture/oscfg-cli.html"><strong aria-hidden="true">16.</strong> oscfg CLI contract</a></li><li class="chapter-item expanded "><a href="../architecture/diagrams.html"><strong aria-hidden="true">17.</strong> Diagrams</a></li><li class="chapter-item expanded affix "><li class="part-title">API Reference</li><li class="chapter-item expanded "><a href="../api-reference/manifests.html"><strong aria-hidden="true">18.</strong> Baselines</a></li><li class="chapter-item expanded "><a href="../api-reference/deploy-health.html"><strong aria-hidden="true">19.</strong> Deploy & health</a></li><li class="chapter-item expanded "><a href="../api-reference/diff.html"><strong aria-hidden="true">20.</strong> Diff</a></li><li class="chapter-item expanded "><a href="../api-reference/compliance.html"><strong aria-hidden="true">21.</strong> Compliance</a></li><li class="chapter-item expanded "><a href="../api-reference/history-import-export.html"><strong aria-hidden="true">22.</strong> History, import & export</a></li><li class="chapter-item expanded "><a href="../api-reference/audit-pack.html"><strong aria-hidden="true">23.</strong> Audit pack</a></li><li class="chapter-item expanded "><a href="../api-reference/rationale.html"><strong aria-hidden="true">24.</strong> Rationale</a></li><li class="chapter-item expanded affix "><li class="part-title">Operations</li><li class="chapter-item expanded "><a href="../operations/ci.html"><strong aria-hidden="true">25.</strong> CI on Linux + Windows</a></li><li class="chapter-item expanded "><a href="../operations/smoke-testing.html"><strong aria-hidden="true">26.</strong> Smoke testing on Windows</a></li><li class="chapter-item expanded "><a href="../operations/upstream-bugs.html"><strong aria-hidden="true">27.</strong> Filing upstream bugs</a></li><li class="chapter-item expanded "><a href="../operations/troubleshooting.html"><strong aria-hidden="true">28.</strong> Troubleshooting</a></li><li class="chapter-item expanded affix "><li class="part-title">Contributing</li><li class="chapter-item expanded "><a href="../contributing/agents-md.html"><strong aria-hidden="true">29.</strong> AGENTS.md (canonical guide)</a></li><li class="chapter-item expanded "><a href="../contributing/conventions.html"><strong aria-hidden="true">30.</strong> Coding conventions</a></li><li class="chapter-item expanded "><a href="../contributing/testing.html"><strong aria-hidden="true">31.</strong> Testing expectations</a></li><li class="chapter-item expanded "><a href="../contributing/adding-oscfg-types.html"><strong aria-hidden="true">32.</strong> Adding a new oscfg type</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="../reference/manifest-schema.html"><strong aria-hidden="true">33.</strong> Manifest schema (oscfg 1.3.9-preview11)</a></li><li class="chapter-item expanded "><a href="../reference/registered-types.html"><strong aria-hidden="true">34.</strong> Registered types</a></li><li class="chapter-item expanded "><a href="../reference/glossary.html"><strong aria-hidden="true">35.</strong> Glossary</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../changelog.html">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/architecture/registration-semantics.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="registration-semantics"><a class="header" href="#registration-semantics">Registration semantics</a></h1>
+<p>ConfigForge separates <strong>register</strong> from <strong>deploy/audit</strong>:</p>
+<ul>
+<li><strong>Register</strong> validates and stores OSConfig manifest YAML. It does not contact the OSConfig CLI and does not mutate the device.</li>
+<li><strong>Deploy/audit</strong> are the CLI-backed operations. They shell out to the upstream Microsoft <code>oscfg</code> tool through <code>packages/core/src/oscfg/</code>.</li>
+</ul>
+<h2 id="ipc-channels-and-handlers"><a class="header" href="#ipc-channels-and-handlers">IPC channels and handlers</a></h2>
+<p>Channels are registered in <code>apps/desktop/electron/ipc-handlers.ts</code>. Mutating/privileged channels are guarded by validators in <code>apps/desktop/electron/ipc-validators.ts</code> before they call core handlers.</p>
+<div class="table-wrapper"><table><thead><tr><th>Channel (<code>cfs:*</code>)</th><th>Core handler</th><th>Main gates</th><th>Side effect</th></tr></thead><tbody>
+<tr><td><code>cfs:manifests:register</code></td><td><code>registerManifest</code></td><td>IPC type/length checks; manifest schema errors are hard failures.</td><td>Writes <code>&lt;ns&gt;.source.yaml</code> and <code>&lt;ns&gt;.json</code>; creates a best-effort history snapshot. Never calls <code>oscfg apply</code>.</td></tr>
+<tr><td><code>cfs:manifests:list</code></td><td><code>listManifests</code></td><td>Optional typed <code>{ live, includeResources, lite }</code> payload.</td><td>Reads registrations; when <code>live: true</code>, unions CLI-visible namespaces.</td></tr>
+<tr><td><code>cfs:manifests:status</code></td><td><code>getManifestStatus</code></td><td>Name payload validation.</td><td>Returns registered/CLI-visible status; registered-but-never-deployed is a soft <code>deployed: false</code> state.</td></tr>
+<tr><td><code>cfs:manifests:delete</code></td><td><code>deleteManifest</code></td><td>Name validation.</td><td>Best-effort CLI namespace deletion, then removes registration, rationale, audit-result cache, and history.</td></tr>
+<tr><td><code>cfs:deploy:run</code> (<code>mode: 'audit'</code>)</td><td><code>runDeploy</code></td><td>CLI present; registered source exists; platform must match host or be cross-platform; <code>mixed</code> is rejected.</td><td>Runs <code>oscfg get resource</code> and per-resource <code>oscfg exec resource</code> fallback; stamps <code>lastAuditedAt</code>; writes audit result best-effort.</td></tr>
+<tr><td><code>cfs:deploy:run</code> (<code>mode: 'enforce'</code>)</td><td><code>runDeploy</code></td><td>CLI present; admin/root pre-check; registered source exists; platform must match host or be cross-platform; <code>mixed</code> is rejected.</td><td>Writes pre-deploy snapshot, writes deploy-in-progress sentinel, runs <code>oscfg apply</code>, audits, stamps <code>lastAppliedAt</code>/<code>lastAuditedAt</code>.</td></tr>
+<tr><td><code>cfs:revert:apply</code></td><td><code>revertManifest</code></td><td>Name validation; snapshot YAML is revalidated before apply; CLI-missing errors are translated to <code>CLI_REQUIRED</code> where detected.</td><td>Re-applies <code>&lt;ns&gt;.pre-deploy.json</code> YAML, or deletes the namespace if no usable snapshot exists.</td></tr>
+</tbody></table>
+</div>
+<h2 id="hard-blocks-at-register-time-status-400"><a class="header" href="#hard-blocks-at-register-time-status-400">Hard blocks at register time (status 400)</a></h2>
+<ul>
+<li>Top-level YAML doesn't parse.</li>
+<li>Top-level isn't an object (e.g. it's a string or array).</li>
+<li><code>resources:</code> is missing or isn't an array.</li>
+<li>A resource in <code>resources:</code> is missing <code>name</code> or <code>type</code>.</li>
+<li>A <code>Microsoft.OSConfig/Group</code> has no nested array.</li>
+<li>A <code>Microsoft.OSConfig/Test</code> has no <code>resource:</code> block.</li>
+<li>A nested structure exceeds the recursion or numeric guards.</li>
+</ul>
+<h2 id="soft-warnings-at-register-time"><a class="header" href="#soft-warnings-at-register-time">Soft warnings at register time</a></h2>
+<p>The manifest is <strong>registered</strong> (status 200) and the <code>warnings[]</code>
+array on the response is populated. The UI surfaces these as yellow
+chips next to the manifest name.</p>
+<div class="table-wrapper"><table><thead><tr><th>Trigger</th><th>Behavior</th></tr></thead><tbody>
+<tr><td>Namespace collision after sanitization</td><td>Warns that the new display name maps to an existing namespace unless <code>force: true</code> is supplied.</td></tr>
+<tr><td>Manifest mixes Windows and Linux resource types</td><td>Warns at register; deploy/audit reject until split into per-platform manifests.</td></tr>
+<tr><td>Manifest platform differs from host platform</td><td>Warns at register; deploy/audit must run on a matching host.</td></tr>
+<tr><td>Manifest targets this host but contains types outside the targeted CLI allowlist</td><td>Warns that deploy may fail until the installed/upstream CLI supports those types.</td></tr>
+</tbody></table>
+</div>
+<h2 id="deployaudit-gates"><a class="header" href="#deployaudit-gates">Deploy/audit gates</a></h2>
+<p><code>runDeploy()</code> performs CLI and platform checks before it starts device work:</p>
+<ol>
+<li><code>resolveOscfgBinary()</code> must find the upstream OSConfig CLI. If not, <code>cliRequiredError()</code> returns status <code>412</code> and code <code>CLI_REQUIRED</code>.</li>
+<li>The registered source YAML must be readable from the registration store.</li>
+<li><code>detectManifestPlatform()</code> must match the host platform or return <code>cross-platform</code>; <code>mixed</code> is rejected.</li>
+<li>Enforce mode additionally checks admin/root before <code>oscfg apply</code>.</li>
+</ol>
+<p>On Windows, the current upstream CLI still requires Administrator privileges for read operations too. Health status exposes <code>adminBlocked</code>, and CLI errors are translated into actionable messages where possible.</p>
+<h2 id="fast-path-list-enrichment"><a class="header" href="#fast-path-list-enrichment">Fast-path list enrichment</a></h2>
+<p><code>cfs:manifests:list</code> (→ <code>listManifests</code>) unions:</p>
+<ol>
+<li><code>oscfg get namespace</code>: CLI-visible namespaces (only when called
+with <code>{ live: true }</code>).</li>
+<li><code>listRegistrations()</code>: disk state under <code>~/.configforge/manifests/</code>.</li>
+</ol>
+<p>For every registered namespace the handler uses the cached
+<code>resourceSummary</code> from the JSON, <strong>zero CLI spawns</strong> on the hot
+list path. Only namespaces visible to the CLI but <em>not</em> registered
+(deployed by something else, or before this refactor) fall through
+to a CLI fetch.</p>
+<p>The handler keeps two TTL-bucketed caches (disk-only vs. CLI-union),
+a 60-second TTL, and in-flight dedup keyed by a <code>cacheGeneration</code>
+counter so a concurrent register/delete invalidates the in-flight
+promise rather than overwriting the cache with stale data.</p>
+<h2 id="atomic-writes"><a class="header" href="#atomic-writes">Atomic writes</a></h2>
+<p>Registration metadata writes are serialized per namespace in <code>packages/core/src/oscfg/registry.ts</code>. <code>saveRegistration()</code> writes temp sibling files and renames them into place, with JSON as the commit marker.</p>
+<p>Version-history snapshots in <code>packages/core/src/history/index.ts</code> also use temp-file + rename writes for snapshot YAML and metadata sidecars.</p>
+<p>Pre-deploy snapshots are written before enforce-mode <code>oscfg apply</code> so revert has the prior YAML if deploy mutates the device. They are serialized by the deploy lock, but the current latest-pointer write uses direct <code>writeFile()</code> in <code>handlers/deploy.ts</code>.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="./mixed-platform.html">Mixed-platform classification</a></li>
+<li><a href="./oscfg-cli.html"><code>oscfg</code> CLI contract</a></li>
+<li><a href="../api-reference/manifests.html">API Reference → <code>manifests</code> channel</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../architecture/module-map.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../architecture/mixed-platform.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../architecture/module-map.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../architecture/mixed-platform.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

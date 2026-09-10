@@ -1,0 +1,554 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Azure Machine Configuration deployment - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Quick Start</li><li class="chapter-item expanded "><a href="../quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Install & run</a></li><li class="chapter-item expanded "><a href="../quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first manifest</a></li><li class="chapter-item expanded "><a href="../quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs deploying</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user-guide/manifest-editor.html"><strong aria-hidden="true">4.</strong> Manifest editor</a></li><li class="chapter-item expanded "><a href="../user-guide/machine-configuration.html" class="active"><strong aria-hidden="true">5.</strong> Azure Machine Configuration deployment</a></li><li class="chapter-item expanded "><a href="../user-guide/matrix-diff.html"><strong aria-hidden="true">6.</strong> Diff: pairwise + master matrix</a></li><li class="chapter-item expanded "><a href="../user-guide/cis-compliance.html"><strong aria-hidden="true">7.</strong> CIS cross-reference & compliance</a></li><li class="chapter-item expanded "><a href="../user-guide/rationale.html"><strong aria-hidden="true">8.</strong> Rationale & change-author capture</a></li><li class="chapter-item expanded "><a href="../user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Audit-pack (PDF + Markdown)</a></li><li class="chapter-item expanded "><a href="../user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Analysis provenance</a></li><li class="chapter-item expanded "><a href="../user-guide/history-snapshots.html"><strong aria-hidden="true">11.</strong> History, snapshots, retention</a></li><li class="chapter-item expanded affix "><li class="part-title">Architecture</li><li class="chapter-item expanded "><a href="../architecture/system-overview.html"><strong aria-hidden="true">12.</strong> System overview</a></li><li class="chapter-item expanded "><a href="../architecture/module-map.html"><strong aria-hidden="true">13.</strong> Module map</a></li><li class="chapter-item expanded "><a href="../architecture/registration-semantics.html"><strong aria-hidden="true">14.</strong> Registration semantics</a></li><li class="chapter-item expanded "><a href="../architecture/mixed-platform.html"><strong aria-hidden="true">15.</strong> Mixed-platform classification</a></li><li class="chapter-item expanded "><a href="../architecture/oscfg-cli.html"><strong aria-hidden="true">16.</strong> oscfg CLI contract</a></li><li class="chapter-item expanded "><a href="../architecture/diagrams.html"><strong aria-hidden="true">17.</strong> Diagrams</a></li><li class="chapter-item expanded affix "><li class="part-title">API Reference</li><li class="chapter-item expanded "><a href="../api-reference/manifests.html"><strong aria-hidden="true">18.</strong> Baselines</a></li><li class="chapter-item expanded "><a href="../api-reference/deploy-health.html"><strong aria-hidden="true">19.</strong> Deploy & health</a></li><li class="chapter-item expanded "><a href="../api-reference/diff.html"><strong aria-hidden="true">20.</strong> Diff</a></li><li class="chapter-item expanded "><a href="../api-reference/compliance.html"><strong aria-hidden="true">21.</strong> Compliance</a></li><li class="chapter-item expanded "><a href="../api-reference/history-import-export.html"><strong aria-hidden="true">22.</strong> History, import & export</a></li><li class="chapter-item expanded "><a href="../api-reference/audit-pack.html"><strong aria-hidden="true">23.</strong> Audit pack</a></li><li class="chapter-item expanded "><a href="../api-reference/rationale.html"><strong aria-hidden="true">24.</strong> Rationale</a></li><li class="chapter-item expanded affix "><li class="part-title">Operations</li><li class="chapter-item expanded "><a href="../operations/ci.html"><strong aria-hidden="true">25.</strong> CI on Linux + Windows</a></li><li class="chapter-item expanded "><a href="../operations/smoke-testing.html"><strong aria-hidden="true">26.</strong> Smoke testing on Windows</a></li><li class="chapter-item expanded "><a href="../operations/upstream-bugs.html"><strong aria-hidden="true">27.</strong> Filing upstream bugs</a></li><li class="chapter-item expanded "><a href="../operations/troubleshooting.html"><strong aria-hidden="true">28.</strong> Troubleshooting</a></li><li class="chapter-item expanded affix "><li class="part-title">Contributing</li><li class="chapter-item expanded "><a href="../contributing/agents-md.html"><strong aria-hidden="true">29.</strong> AGENTS.md (canonical guide)</a></li><li class="chapter-item expanded "><a href="../contributing/conventions.html"><strong aria-hidden="true">30.</strong> Coding conventions</a></li><li class="chapter-item expanded "><a href="../contributing/testing.html"><strong aria-hidden="true">31.</strong> Testing expectations</a></li><li class="chapter-item expanded "><a href="../contributing/adding-oscfg-types.html"><strong aria-hidden="true">32.</strong> Adding a new oscfg type</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="../reference/manifest-schema.html"><strong aria-hidden="true">33.</strong> Manifest schema (oscfg 1.3.9-preview11)</a></li><li class="chapter-item expanded "><a href="../reference/registered-types.html"><strong aria-hidden="true">34.</strong> Registered types</a></li><li class="chapter-item expanded "><a href="../reference/glossary.html"><strong aria-hidden="true">35.</strong> Glossary</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../changelog.html">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/user-guide/machine-configuration.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="deploy-through-azure-machine-configuration"><a class="header" href="#deploy-through-azure-machine-configuration">Deploy through Azure Machine Configuration</a></h1>
+<p>Use Azure Machine Configuration when you want Azure Policy to evaluate a
+ConfigForge baseline on Azure virtual machines or Azure Arc-enabled servers.</p>
+<p>The deployment path is:</p>
+<p><code>ConfigForge baseline → MOF → resolved MOF → Machine Configuration ZIP → Azure Storage → policy JSON → Azure Policy definition → policy assignment</code></p>
+<p>ConfigForge exports the compiled MOF. You do not need to author a separate DSC
+configuration.</p>
+<blockquote>
+<p>ConfigForge is an experimental community tool. Test every package and policy
+on a disposable machine before assigning it broadly.</p>
+</blockquote>
+<h2 id="supported-behavior"><a class="header" href="#supported-behavior">Supported behavior</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Package or policy mode</th><th>Purpose</th><th>Current guidance</th></tr></thead><tbody>
+<tr><td><code>Audit</code></td><td>Report compliance without changing the machine</td><td>Recommended default</td></tr>
+<tr><td><code>AuditAndSet</code> package + <code>ApplyAndMonitor</code> policy</td><td>Apply once during remediation, then monitor</td><td>Build with ConfigForge's package helper and validate on a disposable machine</td></tr>
+<tr><td><code>AuditAndSet</code> package + <code>ApplyAndAutoCorrect</code> policy</td><td>Reapply whenever drift is detected</td><td>Build with ConfigForge's package helper and validate on a disposable machine</td></tr>
+</tbody></table>
+</div>
+<p>Microsoft.OSConfig 1.4.3 audits ConfigForge packages successfully, but its
+PowerShell DSC resource has an upstream <code>Set()</code> serialization defect.
+ConfigForge's package helper applies a compatibility patch to the package copy
+for <code>AuditAndSet</code>; the globally installed module remains unchanged.</p>
+<h2 id="prerequisites"><a class="header" href="#prerequisites">Prerequisites</a></h2>
+<p>Use PowerShell 7:</p>
+<ul>
+<li>Windows: PowerShell 7.1.3 or later.</li>
+<li>Linux: PowerShell 7.2.4 or later.</li>
+<li>Local Machine Configuration package testing is not supported on macOS.
+Export the MOF on macOS, then move it to a supported packaging machine.</li>
+</ul>
+<p>Install the packaging and Azure modules:</p>
+<pre><code class="language-powershell">Set-PSRepository -Name PSGallery -InstallationPolicy Trusted
+
+Install-Module GuestConfiguration -Scope CurrentUser -Force
+Install-Module Microsoft.OSConfig -Scope CurrentUser -Force
+
+Install-Module Az.Accounts -Scope CurrentUser -Force
+Install-Module Az.Storage -Scope CurrentUser -Force
+Install-Module Az.Resources -Scope CurrentUser -Force
+Install-Module Az.PolicyInsights -Scope CurrentUser -Force
+</code></pre>
+<p>Confirm which Microsoft.OSConfig version packaging will use:</p>
+<pre><code class="language-powershell">Get-Module -ListAvailable Microsoft.OSConfig |
+  Sort-Object Version -Descending |
+  Select-Object Name, Version, ModuleBase
+</code></pre>
+<p>Target machines need:</p>
+<ul>
+<li>Azure VM Guest Configuration extension 1.26.24 or later, or Azure Arc agent
+1.10.0 or later.</li>
+<li>A system-assigned managed identity when required by the selected policy.</li>
+<li>The built-in initiative <strong>Deploy prerequisites to enable machine
+configuration policies on virtual machines</strong> assigned at or above the target
+scope.</li>
+</ul>
+<h2 id="1-export-the-mof-from-configforge"><a class="header" href="#1-export-the-mof-from-configforge">1. Export the MOF from ConfigForge</a></h2>
+<ol>
+<li>Open the baseline in <strong>Baseline Detail</strong>.</li>
+<li>Select <strong>Export</strong>.</li>
+<li>Select <strong>MOF (<code>.mof</code>)</strong>.</li>
+<li>Save the file in a versioned working folder.</li>
+</ol>
+<p>Example:</p>
+<pre><code class="language-powershell">$WorkingDirectory = 'C:\ConfigForge\MachineConfiguration'
+$MofPath = Join-Path $WorkingDirectory 'ContosoSecurityBaseline.mof'
+$PackageName = 'ContosoSecurityBaseline_1_0_0'
+
+New-Item -ItemType Directory -Path $WorkingDirectory -Force | Out-Null
+Test-Path $MofPath
+</code></pre>
+<p>Use a unique package name for every baseline release. Reusing package names or
+content URIs can leave Azure evaluating cached content.</p>
+<h2 id="2-resolve-the-microsoftosconfig-module-version"><a class="header" href="#2-resolve-the-microsoftosconfig-module-version">2. Resolve the Microsoft.OSConfig module version</a></h2>
+<p>ConfigForge exports:</p>
+<pre><code class="language-text">ModuleName = "Microsoft.OSConfig";
+ModuleVersion = "0.0.0";
+</code></pre>
+<p><code>0.0.0</code> is a portable placeholder so the same exported MOF can move between
+customer environments. Machine Configuration runtime requires the exact
+module version bundled into the ZIP, so resolve the placeholder on a packaging
+copy before running <code>New-GuestConfigurationPackage</code>.</p>
+<pre><code class="language-powershell">$InstalledOSConfig = Get-Module -ListAvailable Microsoft.OSConfig |
+  Sort-Object Version -Descending |
+  Select-Object -First 1
+
+if (-not $InstalledOSConfig) {
+  throw 'Microsoft.OSConfig is not installed.'
+}
+
+$ResolvedMofPath = Join-Path $WorkingDirectory `
+  'ContosoSecurityBaseline.resolved.mof'
+
+(Get-Content $MofPath -Raw).Replace(
+  'ModuleVersion = "0.0.0";',
+  "ModuleVersion = `"$($InstalledOSConfig.Version)`";"
+) | Set-Content $ResolvedMofPath -Encoding utf8
+</code></pre>
+<p>Confirm that every OSConfig instance was resolved:</p>
+<pre><code class="language-powershell">Select-String -Path $ResolvedMofPath -Pattern 'ModuleVersion'
+</code></pre>
+<p>Do not replace <code>ModuleName = "Microsoft.OSConfig"</code>.</p>
+<h2 id="3-create-the-package"><a class="header" href="#3-create-the-package">3. Create the package</a></h2>
+<p>Create packages through ConfigForge's package helper:</p>
+<pre><code class="language-powershell">$Package = &amp; .\scripts\new-machine-configuration-package.ps1 `
+  -Name $PackageName `
+  -Configuration $ResolvedMofPath `
+  -Type Audit `
+  -Path $WorkingDirectory `
+  -Version 1.0.0
+
+$PackagePath = $Package.Path
+Get-Item $PackagePath
+</code></pre>
+<p>For enforcement, use <code>-Type AuditAndSet</code>. The helper patches the package copy
+of Microsoft.OSConfig's DSC <code>Set()</code> boundary so Registry properties are passed
+to <code>oscfg</code> as compressed JSON. Microsoft.OSConfig 1.4.3 otherwise converts the
+property object to a PowerShell hashtable string such as <code>@{keyPath=...}</code>,
+which the Registry provider rejects as missing <code>keyPath</code>.</p>
+<p>The helper does not modify the globally installed PowerShell module. It fails
+closed if either expected wrapper copy is missing or no longer matches the
+known vulnerable/fixed implementation. Remove this compatibility patch after
+an upstream Microsoft.OSConfig release includes the JSON serialization fix.</p>
+<p>The ZIP contains:</p>
+<ul>
+<li>The resolved MOF.</li>
+<li>Guest Configuration runtime metadata.</li>
+<li>The installed Microsoft.OSConfig module.</li>
+</ul>
+<p>Keep the uncompressed package below 100 MB.</p>
+<h2 id="4-test-the-package-locally"><a class="header" href="#4-test-the-package-locally">4. Test the package locally</a></h2>
+<p>Run local tests from an elevated PowerShell 7 session on Windows or through
+<code>sudo pwsh</code> on Linux:</p>
+<pre><code class="language-powershell">Get-GuestConfigurationPackageComplianceStatus -Path $PackagePath
+</code></pre>
+<p>The first run installs the local Machine Configuration test agent. The result
+should include one resource result for every Test wrapper in the exported
+baseline.</p>
+<p>For example, the ConfigForge Windows Server 2025 Workgroup Member baseline
+produces 296 resource results.</p>
+<p>For an <code>AuditAndSet</code> package, test remediation only on a disposable machine:</p>
+<pre><code class="language-powershell">Start-GuestConfigurationPackageRemediation `
+  -Path $PackagePath `
+  -Verbose
+
+Get-GuestConfigurationPackageComplianceStatus -Path $PackagePath
+</code></pre>
+<h2 id="5-optional-sign-the-package"><a class="header" href="#5-optional-sign-the-package">5. Optional: sign the package</a></h2>
+<p>Machine Configuration always validates the package SHA-256 hash. Package
+signing is optional unless your organization requires certificate or GPG
+validation.</p>
+<p>Run <code>Protect-GuestConfigurationPackage</code> before upload and before policy
+generation.</p>
+<p>Windows example:</p>
+<pre><code class="language-powershell">$Certificate = Get-ChildItem Cert:\LocalMachine\My |
+  Where-Object {
+    $_.EnhancedKeyUsageList.FriendlyName -contains 'Code Signing'
+  } |
+  Select-Object -First 1
+
+Protect-GuestConfigurationPackage `
+  -Path $PackagePath `
+  -Certificate $Certificate `
+  -Verbose
+</code></pre>
+<p>Signed-package enforcement also requires distributing the public certificate
+and configuring target-machine certificate validation.</p>
+<h2 id="6-upload-the-zip-to-azure-storage"><a class="header" href="#6-upload-the-zip-to-azure-storage">6. Upload the ZIP to Azure Storage</a></h2>
+<p><code>Publish-GuestConfigurationPackage</code> is not part of GuestConfiguration 4.11.0.
+Upload the ZIP with <code>Set-AzStorageBlobContent</code>.</p>
+<p>The following example uses a private container and a read-only SAS URI:</p>
+<pre><code class="language-powershell">$SubscriptionId = '&lt;subscription-id&gt;'
+$StorageResourceGroup = '&lt;storage-resource-group&gt;'
+$StorageAccountName = '&lt;storage-account-name&gt;'
+$ContainerName = 'machine-configuration'
+
+Connect-AzAccount
+Set-AzContext -SubscriptionId $SubscriptionId
+
+$StorageKey = (
+  Get-AzStorageAccountKey `
+    -ResourceGroupName $StorageResourceGroup `
+    -Name $StorageAccountName |
+  Select-Object -First 1
+).Value
+
+$StorageContext = New-AzStorageContext `
+  -StorageAccountName $StorageAccountName `
+  -StorageAccountKey $StorageKey
+
+if (-not (Get-AzStorageContainer `
+    -Name $ContainerName `
+    -Context $StorageContext `
+    -ErrorAction SilentlyContinue)) {
+  New-AzStorageContainer `
+    -Name $ContainerName `
+    -Context $StorageContext | Out-Null
+}
+
+$BlobName = Split-Path $PackagePath -Leaf
+
+Set-AzStorageBlobContent `
+  -Container $ContainerName `
+  -File $PackagePath `
+  -Blob $BlobName `
+  -Context $StorageContext `
+  -Force | Out-Null
+
+$StartTime = (Get-Date).AddMinutes(-5)
+$ExpiryTime = $StartTime.AddYears(1)
+
+$ContentUri = New-AzStorageBlobSASToken `
+  -StartTime $StartTime `
+  -ExpiryTime $ExpiryTime `
+  -Container $ContainerName `
+  -Blob $BlobName `
+  -Permission r `
+  -Context $StorageContext `
+  -FullUri
+</code></pre>
+<p>Treat a SAS URI as a secret. Do not commit it to source control.</p>
+<p>For private access without SAS:</p>
+<ul>
+<li>Azure VMs can use a system-assigned or user-assigned identity with
+<strong>Storage Blob Data Reader</strong>.</li>
+<li>Azure Arc package downloads do not support user-assigned identity in this
+scenario. Use SAS or system-assigned identity.</li>
+</ul>
+<h2 id="7-generate-the-machine-configuration-policy"><a class="header" href="#7-generate-the-machine-configuration-policy">7. Generate the Machine Configuration policy</a></h2>
+<p>Generate an Audit policy:</p>
+<pre><code class="language-powershell">$PolicyOutputPath = Join-Path $WorkingDirectory 'policy'
+New-Item -ItemType Directory -Path $PolicyOutputPath -Force | Out-Null
+
+$PolicyConfig = @{
+  PolicyId      = (New-Guid).Guid
+  ContentUri    = $ContentUri
+  DisplayName   = 'Contoso security baseline'
+  Description   = 'Audits the ConfigForge security baseline.'
+  Path          = $PolicyOutputPath
+  Platform      = 'Windows'
+  PolicyVersion = [version]'1.0.0'
+  Mode          = 'Audit'
+}
+
+$PolicyResult = New-GuestConfigurationPolicy @PolicyConfig
+$PolicyFile = $PolicyResult.Path
+Get-Item $PolicyFile
+</code></pre>
+<p><code>New-GuestConfigurationPolicy -Path</code> expects an output folder, not the package
+path. Use the returned <code>Path</code> instead of constructing the policy filename.</p>
+<p>Audit mode produces an <code>_AuditIfNotExists.json</code> file. Apply modes produce a
+<code>_DeployIfNotExists.json</code> file.</p>
+<p>Do not modify the ZIP after this step. The policy contains the package hash. If
+the package changes, upload the new ZIP and regenerate the policy.</p>
+<h2 id="8-publish-the-azure-policy-definition"><a class="header" href="#8-publish-the-azure-policy-definition">8. Publish the Azure Policy definition</a></h2>
+<p>Creating a policy definition typically requires <strong>Resource Policy
+Contributor</strong> or equivalent permissions.</p>
+<pre><code class="language-powershell">$PolicyDefinition = New-AzPolicyDefinition `
+  -Name 'configforge-contoso-security-baseline-1-0-0' `
+  -DisplayName 'Contoso security baseline' `
+  -Description 'Machine Configuration policy generated from ConfigForge.' `
+  -Policy $PolicyFile
+</code></pre>
+<p>The definition appears under <strong>Azure Policy &gt; Definitions</strong>.</p>
+<h2 id="9-assign-the-policy"><a class="header" href="#9-assign-the-policy">9. Assign the policy</a></h2>
+<p>Assign the prerequisite initiative first:</p>
+<p><strong>Deploy prerequisites to enable machine configuration policies on virtual
+machines</strong></p>
+<p>Then assign the custom Audit policy:</p>
+<pre><code class="language-powershell">$TargetResourceGroupName = '&lt;target-resource-group&gt;'
+$Scope = (Get-AzResourceGroup -Name $TargetResourceGroupName).ResourceId
+
+$Assignment = New-AzPolicyAssignment `
+  -Name 'configforge-contoso-audit' `
+  -DisplayName 'ConfigForge - Contoso baseline audit' `
+  -Scope $Scope `
+  -PolicyDefinition $PolicyDefinition
+</code></pre>
+<p>For DeployIfNotExists policies, the assignment needs a managed identity,
+location, and the roles declared in the generated policy's
+<code>roleDefinitionIds</code>. The Azure portal's <strong>Create a remediation task</strong> flow is
+the simplest way to create the identity and required role assignments.</p>
+<h2 id="10-verify-the-deployment"><a class="header" href="#10-verify-the-deployment">10. Verify the deployment</a></h2>
+<ol>
+<li>Open <strong>Azure Policy &gt; Compliance</strong>.</li>
+<li>Locate the custom assignment.</li>
+<li>Confirm that the prerequisite initiative is compliant.</li>
+<li>Confirm that Azure created a guest configuration assignment on the target
+VM or Arc-enabled server.</li>
+<li>Wait for package download, extraction, and the first consistency scan.</li>
+<li>Open the guest assignment report and confirm that the resource count matches
+the exported baseline.</li>
+</ol>
+<p>Machine Configuration evaluation is asynchronous. Policy state can initially
+show NonCompliant while the guest assignment is still Pending.</p>
+<h2 id="troubleshooting"><a class="header" href="#troubleshooting">Troubleshooting</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Symptom</th><th>Resolution</th></tr></thead><tbody>
+<tr><td><code>Publish-GuestConfigurationPackage</code> is not recognized</td><td>Upload with <code>Set-AzStorageBlobContent</code>.</td></tr>
+<tr><td><code>Microsoft.OSConfig</code> cannot be found</td><td>Install it in the PowerShell 7 module path and recreate the ZIP.</td></tr>
+<tr><td>More than one Microsoft.OSConfig version is installed</td><td>The resolution step selects the newest version. Remove older copies if you require a different deterministic version.</td></tr>
+<tr><td>Runtime says module version <code>0.0.0</code> does not exist</td><td>Package the resolved MOF, not the portable exported MOF.</td></tr>
+<tr><td>Deployment reports <code>missing field keyPath</code> with properties like <code>{"@{keyPath": ...}</code></td><td>Recreate the <code>AuditAndSet</code> ZIP with <code>scripts/new-machine-configuration-package.ps1</code>; vanilla Microsoft.OSConfig 1.4.3 packages retain the upstream DSC serialization defect.</td></tr>
+<tr><td>Local compliance fails with access errors</td><td>Run PowerShell 7 elevated or through <code>sudo</code>.</td></tr>
+<tr><td>Package download returns HTTP 403</td><td>Renew the SAS URI or correct Storage Blob Data Reader access.</td></tr>
+<tr><td>The extension rejects the package hash</td><td>Upload a new ZIP and regenerate the policy. Do not alter the existing ZIP.</td></tr>
+<tr><td>Remediation does not start</td><td>Check the assignment identity, resource-group deployment permissions, role assignments, and remediation task.</td></tr>
+<tr><td>Package exceeds its size limit</td><td>Reduce package content; keep the uncompressed package below 100 MB.</td></tr>
+</tbody></table>
+</div>
+<h2 id="microsoft-learn-references"><a class="header" href="#microsoft-learn-references">Microsoft Learn references</a></h2>
+<ul>
+<li><a href="https://learn.microsoft.com/azure/governance/machine-configuration/how-to/develop-custom-package/overview">Develop a custom Machine Configuration package</a></li>
+<li><a href="https://learn.microsoft.com/azure/governance/machine-configuration/how-to/develop-custom-package/1-set-up-authoring-environment">Set up the authoring environment</a></li>
+<li><a href="https://learn.microsoft.com/azure/governance/machine-configuration/how-to/develop-custom-package/2-create-package">Create the package</a></li>
+<li><a href="https://learn.microsoft.com/azure/governance/machine-configuration/how-to/develop-custom-package/3-test-package">Test the package</a></li>
+<li><a href="https://learn.microsoft.com/azure/governance/machine-configuration/how-to/develop-custom-package/4-publish-package">Publish the package</a></li>
+<li><a href="https://learn.microsoft.com/azure/governance/machine-configuration/how-to/create-policy-definition">Create and publish a custom policy definition</a></li>
+<li><a href="https://learn.microsoft.com/azure/governance/policy/assign-policy-powershell">Assign a policy with Azure PowerShell</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../user-guide/manifest-editor.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../user-guide/matrix-diff.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../user-guide/manifest-editor.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../user-guide/matrix-diff.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

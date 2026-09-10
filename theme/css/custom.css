@@ -1,0 +1,58 @@
+/* Copyright (c) Microsoft Corporation. All rights reserved. */
+/* Licensed under the MIT License. */
+
+/* ConfigForge — light Microsoft-aligned theme accents.
+ * Keep this small. mdBook's default themes are good; we only override
+ * the primary accent so links and the search highlight look "Azure".
+ */
+
+:root {
+  --cfs-azure: #0078D4;
+  --cfs-azure-dark: #005A9E;
+}
+
+.light {
+  --links: var(--cfs-azure);
+  --searchresults-header-fg: var(--cfs-azure);
+  --search-mark-bg: #FFD66B;
+}
+
+.rust {
+  --links: var(--cfs-azure);
+}
+
+.navy {
+  --links: #4FB3FF;
+}
+
+.ayu {
+  --links: #4FB3FF;
+}
+
+.menu-title {
+  font-weight: 600;
+  letter-spacing: 0.01em;
+}
+
+@media print {
+  .sidebar,
+  .nav-chapters,
+  #menu-bar,
+  .mobile-nav-chapters {
+    display: none !important;
+  }
+  #content {
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  pre,
+  table {
+    page-break-inside: avoid;
+  }
+}
+
+blockquote {
+  border-left: 4px solid var(--cfs-azure);
+  background: rgba(0, 120, 212, 0.04);
+}
