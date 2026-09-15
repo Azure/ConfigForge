@@ -30,11 +30,13 @@ jobs:
           npm view @electron-internal/extract-zip@latest --json > dependency-evidence/electron-extract-zip.json
           node -p "require('./apps/desktop/package.json').devDependencies.electron"
           npm install --workspace @configforge/desktop --save-dev --save-prefix='~' electron@42.11.3 --ignore-scripts --include=optional --no-audit --no-fund
+          npm update brace-expansion nanoid --workspaces --include-workspace-root --ignore-scripts --include=optional --no-audit --no-fund
           cp package-lock.json dependency-evidence/package-lock.json
           git diff -- apps/desktop/package.json package-lock.json > dependency-evidence/refresh.diff
           node -e "const assert = require('node:assert/strict'); const lock = require('./package-lock.json'); assert.equal(lock.packages['apps/desktop'].devDependencies.electron, '~42.11.3'); for (const [p, m] of Object.entries(lock.packages)) { if (p.endsWith('node_modules/@xmldom/xmldom')) assert.equal(m.version, '0.8.15', p); if (p.endsWith('node_modules/electron')) assert.equal(m.version, '42.11.3', p); assert.ok(!p.endsWith('node_modules/extract-zip'), p); }"
           node scripts/verify-public-package-assets.mjs
           npm audit --json > dependency-evidence/audit.json
+          npx --no-install vitest run scripts/release-metadata.test.mjs
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         if: always()
         with:

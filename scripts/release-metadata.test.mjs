@@ -91,25 +91,47 @@ describe('public release metadata', () => {
     expect(nonPublic).toEqual([]);
   });
 
-  it('pins patched brace-expansion 5.x metadata', async () => {
+  it('pins patched brace-expansion versions in every supported major', async () => {
     const [packageJson, lockfile] = await Promise.all([
       read('package.json').then(JSON.parse),
       read('package-lock.json').then(JSON.parse),
     ]);
 
-    expect(packageJson.overrides['brace-expansion@5']).toBe('5.0.8');
-    // Partial matcher narrowed to only the security-relevant fields: the
-    // patched version, its registry tarball URL, its integrity hash, and
-    // dev-only status. Non-security metadata (license/dependencies/engines)
-    // is intentionally excluded since it can legitimately shift across
-    // lockfile regenerations without affecting the security pin.
-    expect(lockfile.packages['node_modules/brace-expansion']).toMatchObject({
-      version: '5.0.8',
-      resolved: 'https://registry.npmjs.org/brace-expansion/-/brace-expansion-5.0.8.tgz',
-      integrity:
-        'sha512-JZyDyq3D4AUifKTPOB7DELf6XsB3WdPuNxCtob1vFXPsSXhdAiHBWJ/tJ8HAc9aH84BK+5JFZLNkJKx3G9kzQg==',
-      dev: true,
-    });
+    const patchedVersions = { 1: '1.1.18', 2: '2.1.4', 5: '5.0.9' };
+    const copies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith('node_modules/brace-expansion'));
+
+    for (const [major, version] of Object.entries(patchedVersions)) {
+      expect(packageJson.overrides[`brace-expansion@${major}`]).toBe(version);
+    }
+    expect(copies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of copies) {
+      const major = metadata.version.split('.')[0];
+      expect(patchedVersions, packagePath).toHaveProperty(major);
+      expect(metadata.version, packagePath).toBe(patchedVersions[major]);
+      expect(metadata.resolved).toBe(
+        `https://registry.npmjs.org/brace-expansion/-/brace-expansion-${metadata.version}.tgz`,
+      );
+    }
+  });
+
+  it('keeps nanoid 3.x dependencies above the zero-size generator security fix', async () => {
+    const [packageJson, lockfile] = await Promise.all([
+      read('package.json').then(JSON.parse),
+      read('package-lock.json').then(JSON.parse),
+    ]);
+    const copies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith('node_modules/nanoid'));
+
+    expect(packageJson.overrides['nanoid@3']).toBe('^3.3.18');
+    expect(copies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of copies) {
+      const version = /^3\.(\d+)\.(\d+)$/.exec(metadata.version);
+      expect(version, `${packagePath}: ${metadata.version}`).not.toBeNull();
+      const minor = Number(version?.[1]);
+      const patch = Number(version?.[2]);
+      expect(minor > 3 || (minor === 3 && patch >= 18), packagePath).toBe(true);
+    }
   });
 
   it('keeps every xmldom dependency on a patched 0.8 release', async () => {
@@ -133,13 +155,19 @@ describe('public release metadata', () => {
   });
 
   it('uses Electron-maintained ZIP extraction instead of the vulnerable legacy package', async () => {
-    const lockfile = JSON.parse(await read('package-lock.json'));
+    const [desktopPackage, lockfile] = await Promise.all([
+      read('apps/desktop/package.json').then(JSON.parse),
+      read('package-lock.json').then(JSON.parse),
+    ]);
     const legacyCopies = Object.keys(lockfile.packages)
       .filter((packagePath) => packagePath.endsWith('node_modules/extract-zip'));
     const electronCopies = Object.entries(lockfile.packages)
       .filter(([packagePath]) => packagePath.endsWith('node_modules/electron'));
 
     expect(legacyCopies).toEqual([]);
+    expect(lockfile.packages['apps/desktop'].devDependencies.electron).toBe(
+      desktopPackage.devDependencies.electron,
+    );
     expect(electronCopies.length).toBeGreaterThan(0);
     for (const [packagePath, metadata] of electronCopies) {
       expect(metadata.dependencies['@electron-internal/extract-zip'], packagePath).toBeDefined();
