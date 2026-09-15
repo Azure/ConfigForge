@@ -77,6 +77,90 @@ describe('public release metadata', () => {
     expect(nonPublic).toEqual([]);
   });
 
+  it('pins patched brace-expansion versions in every supported major', async () => {
+    const [packageJson, lockfile] = await Promise.all([
+      read('package.json').then(JSON.parse),
+      read('package-lock.json').then(JSON.parse),
+    ]);
+
+    const patchedVersions = { 1: '1.1.18', 2: '2.1.4', 5: '5.0.9' };
+    const copies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith('node_modules/brace-expansion'));
+
+    for (const [major, version] of Object.entries(patchedVersions)) {
+      expect(packageJson.overrides[`brace-expansion@${major}`]).toBe(version);
+    }
+    expect(copies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of copies) {
+      const major = metadata.version.split('.')[0];
+      expect(patchedVersions, packagePath).toHaveProperty(major);
+      expect(metadata.version, packagePath).toBe(patchedVersions[major]);
+      expect(metadata.resolved).toBe(
+        `https://registry.npmjs.org/brace-expansion/-/brace-expansion-${metadata.version}.tgz`,
+      );
+    }
+  });
+
+  it('keeps nanoid 3.x dependencies above the zero-size generator security fix', async () => {
+    const [packageJson, lockfile] = await Promise.all([
+      read('package.json').then(JSON.parse),
+      read('package-lock.json').then(JSON.parse),
+    ]);
+    const copies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith('node_modules/nanoid'));
+
+    expect(packageJson.overrides['nanoid@3']).toBe('^3.3.18');
+    expect(copies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of copies) {
+      const version = /^3\.(\d+)\.(\d+)$/.exec(metadata.version);
+      expect(version, `${packagePath}: ${metadata.version}`).not.toBeNull();
+      const minor = Number(version?.[1]);
+      const patch = Number(version?.[2]);
+      expect(minor > 3 || (minor === 3 && patch >= 18), packagePath).toBe(true);
+    }
+  });
+
+  it('keeps every xmldom dependency on a patched 0.8 release', async () => {
+    const [packageJson, lockfile] = await Promise.all([
+      read('package.json').then(JSON.parse),
+      read('package-lock.json').then(JSON.parse),
+    ]);
+    const copies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith('node_modules/@xmldom/xmldom'));
+
+    expect(packageJson.overrides['@xmldom/xmldom']).toBe('^0.8.15');
+    expect(copies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of copies) {
+      const version = /^0\.8\.(\d+)$/.exec(metadata.version);
+      expect(version, `${packagePath}: ${metadata.version}`).not.toBeNull();
+      expect(Number(version?.[1]), packagePath).toBeGreaterThanOrEqual(15);
+      expect(metadata.resolved).toBe(
+        `https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-${metadata.version}.tgz`,
+      );
+    }
+  });
+
+  it('uses Electron-maintained ZIP extraction instead of the vulnerable legacy package', async () => {
+    const [desktopPackage, lockfile] = await Promise.all([
+      read('apps/desktop/package.json').then(JSON.parse),
+      read('package-lock.json').then(JSON.parse),
+    ]);
+    const legacyCopies = Object.keys(lockfile.packages)
+      .filter((packagePath) => packagePath.endsWith('node_modules/extract-zip'));
+    const electronCopies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith('node_modules/electron'));
+
+    expect(legacyCopies).toEqual([]);
+    expect(lockfile.packages['apps/desktop'].devDependencies.electron).toBe(
+      desktopPackage.devDependencies.electron,
+    );
+    expect(electronCopies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of electronCopies) {
+      expect(metadata.dependencies['@electron-internal/extract-zip'], packagePath).toBeDefined();
+      expect(metadata.dependencies).not.toHaveProperty('extract-zip');
+    }
+  });
+
   it('publishes canonical MIT license files and workspace metadata', async () => {
     const [license, notice, rootPackage, corePackage, lockfile] = await Promise.all([
       read('LICENSE'),

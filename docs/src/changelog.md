@@ -3,6 +3,13 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
+## Unreleased
+
+- **Dependency security:** Port patched xmldom, brace-expansion, and nanoid
+  dependencies, and update Electron to 42.11.3 to remove the vulnerable
+  legacy ZIP extractor. The macOS Author version and author-only capability
+  boundary are unchanged.
+
 ## macOS Author v0.3.101-author.1 - 2026-08-07
 
 `mac-v0.3.101-author.1` is the current macOS Author release and is published

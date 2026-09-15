@@ -1,5 +1,17 @@
 # Changelog
 
+## [Unreleased]
+
+### Security
+
+- Port the dependency security fixes from the Full edition without changing
+  the macOS Author version or capability boundary: require xmldom 0.8.15+,
+  brace-expansion 1.1.18 / 2.1.4 / 5.0.9, and nanoid 3.3.18+.
+- Update Electron within 42.x to 42.11.3, replacing the vulnerable legacy
+  `extract-zip` installation dependency with Electron-maintained extraction.
+- Guard every resolved copy and Electron workspace/lockfile consistency
+  against regressions.
+
 ## [0.3.101-author.1] - 2026-08-07
 
 > `mac-v0.3.101-author.1` is the current macOS Author release and is
