@@ -54,6 +54,7 @@
     "vitest": "^4.1.11"
   },
   "overrides": {
+    "@xmldom/xmldom": "^0.8.15",
     "dompurify": "$dompurify",
     "tmp": "^0.2.7",
     "shell-quote": "1.9.0",
