@@ -38,6 +38,10 @@
   uses Electron's maintained ZIP extractor instead of the unpatched
   `extract-zip` package, removing the vulnerable dependency rather than
   dismissing its symlink-write advisory (`GHSA-7pqw-9j4j-h8q3`).
+- Update the existing `brace-expansion` overrides to 1.1.18, 2.1.4, and
+  5.0.9, and require `nanoid` 3.3.18+ in the 3.x line. These address the
+  unbounded-expansion and zero-size generator denial-of-service advisories
+  found by a full development-and-production dependency audit.
 
 ## [0.3.101] - 2026-08-07
 
