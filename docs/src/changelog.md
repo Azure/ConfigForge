@@ -9,6 +9,9 @@ foundational work by theme.
 - **Build dependency security:** Require patched `@xmldom/xmldom` 0.8.15+
   within the 0.8 line for Electron packaging tools, with a lockfile guard
   against reintroducing vulnerable copies.
+- **Electron installation security:** Update to Electron 42.11.3, whose
+  maintained ZIP extractor replaces the vulnerable legacy `extract-zip`
+  dependency.
 
 ## v0.3.103 - 2026-08-09
 

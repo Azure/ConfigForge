@@ -30,6 +30,7 @@ jobs:
           npm view @electron-internal/extract-zip@latest --json > dependency-evidence/electron-extract-zip.json
           npm install --package-lock-only --ignore-scripts --include=optional --no-audit --no-fund
           cp package-lock.json dependency-evidence/package-lock.json
+          node -e "const assert = require('node:assert/strict'); const lock = require('./package-lock.json'); assert.equal(lock.packages['apps/desktop/node_modules/@xmldom/xmldom'].version, '0.8.15'); assert.equal(lock.packages['apps/desktop/node_modules/electron'].version, '42.11.3'); assert.ok(!Object.keys(lock.packages).some(p => p.endsWith('node_modules/extract-zip')));"
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: xmldom-dependency-evidence

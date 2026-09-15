@@ -132,6 +132,21 @@ describe('public release metadata', () => {
     }
   });
 
+  it('uses Electron-maintained ZIP extraction instead of the vulnerable legacy package', async () => {
+    const lockfile = JSON.parse(await read('package-lock.json'));
+    const legacyCopies = Object.keys(lockfile.packages)
+      .filter((packagePath) => packagePath.endsWith('node_modules/extract-zip'));
+    const electronCopies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith('node_modules/electron'));
+
+    expect(legacyCopies).toEqual([]);
+    expect(electronCopies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of electronCopies) {
+      expect(metadata.dependencies['@electron-internal/extract-zip'], packagePath).toBeDefined();
+      expect(metadata.dependencies).not.toHaveProperty('extract-zip');
+    }
+  });
+
   it('publishes canonical MIT license files and workspace metadata', async () => {
     const [license, notice, rootPackage, corePackage, lockfile] = await Promise.all([
       read('LICENSE'),
