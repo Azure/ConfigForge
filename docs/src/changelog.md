@@ -9,6 +9,8 @@ shipped semver tag; older entries summarize the foundational work by theme.
   dependencies, and update Electron to 42.11.3 to remove the vulnerable
   legacy ZIP extractor. The macOS Author version and author-only capability
   boundary are unchanged.
+- **Security parity:** Include the remaining audited js-yaml, sharp, Vitest,
+  and transitive build-tool fixes already present in the Full edition.
 
 ## macOS Author v0.3.101-author.1 - 2026-08-07
 

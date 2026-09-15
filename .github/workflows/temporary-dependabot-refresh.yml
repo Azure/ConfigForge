@@ -23,7 +23,7 @@ jobs:
           set -euo pipefail
           mkdir -p dependency-evidence
           npm install --workspace @configforge/desktop --save-dev --save-prefix='~' electron@42.11.3 --ignore-scripts --include=optional --no-audit --no-fund
-          npm update brace-expansion nanoid @xmldom/xmldom --workspaces --include-workspace-root --ignore-scripts --include=optional --no-audit --no-fund
+          npm update brace-expansion nanoid @xmldom/xmldom vitest js-yaml sharp browserslist fast-uri joi postcss-selector-parser baseline-browser-mapping --workspaces --include-workspace-root --ignore-scripts --include=optional --no-audit --no-fund
           cp package-lock.json dependency-evidence/package-lock.json
           git diff -- apps/desktop/package.json package-lock.json > dependency-evidence/refresh.diff
           npm audit --json > dependency-evidence/audit.json

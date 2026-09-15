@@ -11,6 +11,10 @@
   `extract-zip` installation dependency with Electron-maintained extraction.
 - Guard every resolved copy and Electron workspace/lockfile consistency
   against regressions.
+- Bring across the remaining Full-edition dependency fixes identified by
+  the author-branch audit: js-yaml 4.3.2, sharp 0.35.4, Vitest 4.1.11+,
+  and patched Browserslist, fast-uri, Joi, postcss-selector-parser, and
+  baseline-browser-mapping transitive dependencies.
 
 ## [0.3.101-author.1] - 2026-08-07
 
