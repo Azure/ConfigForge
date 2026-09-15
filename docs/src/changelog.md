@@ -6,6 +6,10 @@ foundational work by theme.
 
 ## Unreleased
 
+- **Build dependency security:** Require patched `@xmldom/xmldom` 0.8.15+
+  within the 0.8 line for Electron packaging tools, with a lockfile guard
+  against reintroducing vulnerable copies.
+
 ## v0.3.103 - 2026-08-09
 
 - **Windows baseline enforcement compatibility:** Windows Server 2016 and

@@ -112,6 +112,26 @@ describe('public release metadata', () => {
     });
   });
 
+  it('keeps every xmldom dependency on a patched 0.8 release', async () => {
+    const [packageJson, lockfile] = await Promise.all([
+      read('package.json').then(JSON.parse),
+      read('package-lock.json').then(JSON.parse),
+    ]);
+    const copies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith('node_modules/@xmldom/xmldom'));
+
+    expect(packageJson.overrides['@xmldom/xmldom']).toBe('^0.8.15');
+    expect(copies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of copies) {
+      const version = /^0\.8\.(\d+)$/.exec(metadata.version);
+      expect(version, `${packagePath}: ${metadata.version}`).not.toBeNull();
+      expect(Number(version?.[1]), packagePath).toBeGreaterThanOrEqual(15);
+      expect(metadata.resolved).toBe(
+        `https://registry.npmjs.org/@xmldom/xmldom/-/xmldom-${metadata.version}.tgz`,
+      );
+    }
+  });
+
   it('publishes canonical MIT license files and workspace metadata', async () => {
     const [license, notice, rootPackage, corePackage, lockfile] = await Promise.all([
       read('LICENSE'),

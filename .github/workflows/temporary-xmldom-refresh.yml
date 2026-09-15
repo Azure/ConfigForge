@@ -26,7 +26,9 @@ jobs:
           npm view @xmldom/xmldom@0.8.15 --json > dependency-evidence/xmldom-0.8.15.json
           npm view extract-zip@latest --json > dependency-evidence/extract-zip-latest.json
           npm view electron@latest version dependencies --json > dependency-evidence/electron-latest.json
-          npm update @xmldom/xmldom --package-lock-only --ignore-scripts --include=optional --no-audit --no-fund
+          npm view electron@42 version dependencies --json > dependency-evidence/electron-42-versions.json
+          npm view @electron-internal/extract-zip@latest --json > dependency-evidence/electron-extract-zip.json
+          npm install --package-lock-only --ignore-scripts --include=optional --no-audit --no-fund
           cp package-lock.json dependency-evidence/package-lock.json
       - uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:

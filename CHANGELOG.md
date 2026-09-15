@@ -28,6 +28,13 @@
 
 ## [Unreleased]
 
+### Security
+
+- Require `@xmldom/xmldom` 0.8.15 or later in the 0.8 line for Electron
+  packaging dependencies. This addresses the XML injection, malformed-input,
+  and quadratic-time parsing advisories affecting the previous 0.8.13 copy.
+  Add a regression guard covering every resolved copy in the lockfile.
+
 ## [0.3.101] - 2026-08-07
 
 ### Security
