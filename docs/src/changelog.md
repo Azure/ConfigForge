@@ -6,6 +6,8 @@ foundational work by theme.
 
 ## Unreleased
 
+- **SBOM tooling security:** Pin CycloneDX npm 6.0.0 to address
+  `GHSA-q69g-4hcv-6jg4`, with regression coverage for resolved versions.
 - **Build dependency security:** Require patched `@xmldom/xmldom` 0.8.15+
   within the 0.8 line for Electron packaging tools, with a lockfile guard
   against reintroducing vulnerable copies.

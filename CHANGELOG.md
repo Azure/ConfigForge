@@ -30,6 +30,9 @@
 
 ### Security
 
+- Upgrade the pinned CycloneDX SBOM generator to 6.0.0 to fix Windows
+  workspace-argument shell injection (`GHSA-q69g-4hcv-6jg4`). Guard the
+  manifest and every lockfile copy against reintroducing a vulnerable release.
 - Require `@xmldom/xmldom` 0.8.15 or later in the 0.8 line for Electron
   packaging dependencies. This addresses the XML injection, malformed-input,
   and quadratic-time parsing advisories affecting the previous 0.8.13 copy.
