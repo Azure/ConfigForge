@@ -28,6 +28,21 @@
 
 ## [Unreleased]
 
+### Security
+
+- Require `@xmldom/xmldom` 0.8.15 or later in the 0.8 line for Electron
+  packaging dependencies. This addresses the XML injection, malformed-input,
+  and quadratic-time parsing advisories affecting the previous 0.8.13 copy.
+  Add a regression guard covering every resolved copy in the lockfile.
+- Update Electron within the 42.x line to 42.11.3. Its installation tooling
+  uses Electron's maintained ZIP extractor instead of the unpatched
+  `extract-zip` package, removing the vulnerable dependency rather than
+  dismissing its symlink-write advisory (`GHSA-7pqw-9j4j-h8q3`).
+- Update the existing `brace-expansion` overrides to 1.1.18, 2.1.4, and
+  5.0.9, and require `nanoid` 3.3.18+ in the 3.x line. These address the
+  unbounded-expansion and zero-size generator denial-of-service advisories
+  found by a full development-and-production dependency audit.
+
 ## [0.3.101] - 2026-08-07
 
 ### Security

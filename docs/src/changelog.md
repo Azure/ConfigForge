@@ -6,6 +6,16 @@ foundational work by theme.
 
 ## Unreleased
 
+- **Build dependency security:** Require patched `@xmldom/xmldom` 0.8.15+
+  within the 0.8 line for Electron packaging tools, with a lockfile guard
+  against reintroducing vulnerable copies.
+- **Electron installation security:** Update to Electron 42.11.3, whose
+  maintained ZIP extractor replaces the vulnerable legacy `extract-zip`
+  dependency.
+- **Build dependency hardening:** Update all supported `brace-expansion`
+  lines and `nanoid` 3.x to patched releases for denial-of-service advisories
+  found by the full dependency audit.
+
 ## v0.3.103 - 2026-08-09
 
 - **Windows baseline enforcement compatibility:** Windows Server 2016 and
