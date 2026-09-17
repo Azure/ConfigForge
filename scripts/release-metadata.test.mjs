@@ -77,6 +77,27 @@ describe('public release metadata', () => {
     expect(nonPublic).toEqual([]);
   });
 
+  it('pins a patched CycloneDX SBOM generator without vulnerable resolved copies', async () => {
+    const [packageJson, lockfile] = await Promise.all([
+      read('package.json').then(JSON.parse),
+      read('package-lock.json').then(JSON.parse),
+    ]);
+    const dependency = '@cyclonedx/cyclonedx-npm';
+    const pinned = packageJson.devDependencies[dependency];
+    const version = /^(\d+)\.\d+\.\d+$/.exec(pinned);
+    const copies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith(`node_modules/${dependency}`));
+
+    expect(version, pinned).not.toBeNull();
+    expect(Number(version?.[1])).toBeGreaterThanOrEqual(6);
+    expect(lockfile.packages[''].devDependencies[dependency]).toBe(pinned);
+    expect(copies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of copies) {
+      expect(metadata.version, packagePath).toBe(pinned);
+      expect(metadata.dev, packagePath).toBe(true);
+    }
+  });
+
   it('pins patched brace-expansion versions in every supported major', async () => {
     const [packageJson, lockfile] = await Promise.all([
       read('package.json').then(JSON.parse),

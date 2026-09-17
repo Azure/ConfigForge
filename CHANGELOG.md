@@ -4,6 +4,9 @@
 
 ### Security
 
+- Upgrade the pinned CycloneDX SBOM generator to 6.0.0 to fix Windows
+  workspace-argument shell injection (`GHSA-q69g-4hcv-6jg4`). Guard the
+  manifest and every lockfile copy against reintroducing a vulnerable release.
 - Port the dependency security fixes from the Full edition without changing
   the macOS Author version or capability boundary: require xmldom 0.8.15+,
   brace-expansion 1.1.18 / 2.1.4 / 5.0.9, and nanoid 3.3.18+.
