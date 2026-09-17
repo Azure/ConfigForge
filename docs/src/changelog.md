@@ -5,6 +5,8 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 ## Unreleased
 
+- **SBOM tooling security:** Pin CycloneDX npm 6.0.0 to address
+  `GHSA-q69g-4hcv-6jg4`, with regression coverage for resolved versions.
 - **Dependency security:** Port patched xmldom, brace-expansion, and nanoid
   dependencies, and update Electron to 42.11.3 to remove the vulnerable
   legacy ZIP extractor. The macOS Author version and author-only capability
