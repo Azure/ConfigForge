@@ -51,17 +51,19 @@
     "jsdom": "^29.1.1",
     "prettier": "3.8.3",
     "typescript": "^5.7.3",
-    "vitest": "^4.1.5"
+    "vitest": "^4.1.11"
   },
   "overrides": {
+    "@xmldom/xmldom": "^0.8.15",
     "dompurify": "$dompurify",
     "tmp": "^0.2.7",
     "shell-quote": "1.9.0",
-    "brace-expansion@1": "1.1.16",
-    "brace-expansion@2": "2.1.2",
-    "brace-expansion@5": "5.0.8",
+    "brace-expansion@1": "1.1.18",
+    "brace-expansion@2": "2.1.4",
+    "brace-expansion@5": "5.0.9",
+    "nanoid@3": "^3.3.18",
     "esbuild": "^0.28.1",
-    "js-yaml": "^4.3.1",
+    "js-yaml": "^4.3.2",
     "undici@7": "^7.29.0",
     "undici@6": "^6.28.0"
   }
