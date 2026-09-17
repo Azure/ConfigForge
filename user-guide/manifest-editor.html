@@ -1,0 +1,432 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Manifest editor - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Quick Start</li><li class="chapter-item expanded "><a href="../quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Install & run</a></li><li class="chapter-item expanded "><a href="../quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first manifest</a></li><li class="chapter-item expanded "><a href="../quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs deploying</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user-guide/manifest-editor.html" class="active"><strong aria-hidden="true">4.</strong> Manifest editor</a></li><li class="chapter-item expanded "><a href="../user-guide/machine-configuration.html"><strong aria-hidden="true">5.</strong> Azure Machine Configuration deployment</a></li><li class="chapter-item expanded "><a href="../user-guide/matrix-diff.html"><strong aria-hidden="true">6.</strong> Diff: pairwise + master matrix</a></li><li class="chapter-item expanded "><a href="../user-guide/cis-compliance.html"><strong aria-hidden="true">7.</strong> CIS cross-reference & compliance</a></li><li class="chapter-item expanded "><a href="../user-guide/rationale.html"><strong aria-hidden="true">8.</strong> Rationale & change-author capture</a></li><li class="chapter-item expanded "><a href="../user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Audit-pack (PDF + Markdown)</a></li><li class="chapter-item expanded "><a href="../user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Analysis provenance</a></li><li class="chapter-item expanded "><a href="../user-guide/history-snapshots.html"><strong aria-hidden="true">11.</strong> History, snapshots, retention</a></li><li class="chapter-item expanded affix "><li class="part-title">Architecture</li><li class="chapter-item expanded "><a href="../architecture/system-overview.html"><strong aria-hidden="true">12.</strong> System overview</a></li><li class="chapter-item expanded "><a href="../architecture/module-map.html"><strong aria-hidden="true">13.</strong> Module map</a></li><li class="chapter-item expanded "><a href="../architecture/registration-semantics.html"><strong aria-hidden="true">14.</strong> Registration semantics</a></li><li class="chapter-item expanded "><a href="../architecture/mixed-platform.html"><strong aria-hidden="true">15.</strong> Mixed-platform classification</a></li><li class="chapter-item expanded "><a href="../architecture/oscfg-cli.html"><strong aria-hidden="true">16.</strong> oscfg CLI contract</a></li><li class="chapter-item expanded "><a href="../architecture/diagrams.html"><strong aria-hidden="true">17.</strong> Diagrams</a></li><li class="chapter-item expanded affix "><li class="part-title">API Reference</li><li class="chapter-item expanded "><a href="../api-reference/manifests.html"><strong aria-hidden="true">18.</strong> Baselines</a></li><li class="chapter-item expanded "><a href="../api-reference/deploy-health.html"><strong aria-hidden="true">19.</strong> Deploy & health</a></li><li class="chapter-item expanded "><a href="../api-reference/diff.html"><strong aria-hidden="true">20.</strong> Diff</a></li><li class="chapter-item expanded "><a href="../api-reference/compliance.html"><strong aria-hidden="true">21.</strong> Compliance</a></li><li class="chapter-item expanded "><a href="../api-reference/history-import-export.html"><strong aria-hidden="true">22.</strong> History, import & export</a></li><li class="chapter-item expanded "><a href="../api-reference/audit-pack.html"><strong aria-hidden="true">23.</strong> Audit pack</a></li><li class="chapter-item expanded "><a href="../api-reference/rationale.html"><strong aria-hidden="true">24.</strong> Rationale</a></li><li class="chapter-item expanded affix "><li class="part-title">Operations</li><li class="chapter-item expanded "><a href="../operations/ci.html"><strong aria-hidden="true">25.</strong> CI on Linux + Windows</a></li><li class="chapter-item expanded "><a href="../operations/smoke-testing.html"><strong aria-hidden="true">26.</strong> Smoke testing on Windows</a></li><li class="chapter-item expanded "><a href="../operations/upstream-bugs.html"><strong aria-hidden="true">27.</strong> Filing upstream bugs</a></li><li class="chapter-item expanded "><a href="../operations/troubleshooting.html"><strong aria-hidden="true">28.</strong> Troubleshooting</a></li><li class="chapter-item expanded affix "><li class="part-title">Contributing</li><li class="chapter-item expanded "><a href="../contributing/agents-md.html"><strong aria-hidden="true">29.</strong> AGENTS.md (canonical guide)</a></li><li class="chapter-item expanded "><a href="../contributing/conventions.html"><strong aria-hidden="true">30.</strong> Coding conventions</a></li><li class="chapter-item expanded "><a href="../contributing/testing.html"><strong aria-hidden="true">31.</strong> Testing expectations</a></li><li class="chapter-item expanded "><a href="../contributing/adding-oscfg-types.html"><strong aria-hidden="true">32.</strong> Adding a new oscfg type</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="../reference/manifest-schema.html"><strong aria-hidden="true">33.</strong> Manifest schema (oscfg 1.3.9-preview11)</a></li><li class="chapter-item expanded "><a href="../reference/registered-types.html"><strong aria-hidden="true">34.</strong> Registered types</a></li><li class="chapter-item expanded "><a href="../reference/glossary.html"><strong aria-hidden="true">35.</strong> Glossary</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../changelog.html">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/user-guide/manifest-editor.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="manifest-editor"><a class="header" href="#manifest-editor">Manifest editor</a></h1>
+<blockquote>
+<p><strong>v0.3.48:</strong> the editor itself does <strong>not</strong> require the OSConfig CLI.
+Authoring, validation, history, CIS cross-reference, rationale, and
+the audit-pack PDF all work without it. Only the <strong>Deploy</strong>,
+<strong>Audit</strong>, and <strong>Revert</strong> actions are CLI-gated. Clicking those
+while OSConfig is missing opens the shared <code>CliRequiredModal</code> with
+an Install link + Recheck button rather than failing with a raw
+spawn error. The footer health pill (🟢 / 🟠 / 🔴 / ⚪) surfaces
+the current CLI install state at all times.</p>
+</blockquote>
+<p>The manifest editor is the primary authoring surface. It accepts raw
+YAML or editable Visual spreadsheet changes, validates as you type,
+and persists to <code>~/.configforge/manifests/&lt;ns&gt;.source.yaml</code> on save.</p>
+<h2 id="open"><a class="header" href="#open">Open</a></h2>
+<ul>
+<li>New baseline: <strong>My Baselines → Register New</strong> in the side nav.</li>
+<li>Existing baseline: <strong>My Baselines → click any namespace</strong> in the list,
+then <strong>Edit</strong>.</li>
+</ul>
+<h2 id="what-it-does"><a class="header" href="#what-it-does">What it does</a></h2>
+<ul>
+<li>Live syntax checking in Code mode and structural validation in
+Visual mode. Code and Visual edits round-trip through canonical YAML
+when the source can be parsed.</li>
+<li>Resource-type pickers populated from
+<a href="https://github.com/Azure/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts"><code>registered-types.ts</code></a>.
+Aspirational types (in baselines but not yet supported by the target
+CLI) show with a warning chip.</li>
+<li>A CIS rule cross-reference drawer. When CIS data is available
+locally (see <a href="./cis-compliance.html">Benchmark Mapping</a> for how to enable),
+the drawer shows the matching rule's ID, severity, and GPO path
+next to the resource at the cursor. Matches are resolved from
+Azure Policy JSON or XCCDF+OVAL data (not only the legacy
+<code>cis-mappings.json</code> file). v0.3.46 tightened fuzzy matching from
+substring matching to exact-word-set matching with a higher threshold,
+which reduces over-matching; property-mapping fallback still appears
+with lower confidence.
+The drawer is <strong>hidden entirely</strong> when CIS data is not present
+(the <code>useCisAvailable()</code> hook short-circuits the render).</li>
+<li>The "Why?" rationale modal. See <a href="./rationale.html">Rationale</a>.</li>
+</ul>
+<h2 id="yaml-editor"><a class="header" href="#yaml-editor">YAML editor</a></h2>
+<ul>
+<li>Two-space indentation. Tabs are rejected by the parser.</li>
+<li>The editor uses Monaco with a YAML language service for inline error
+squiggles (missing <code>name:</code>, missing <code>type:</code>, malformed
+<code>properties:</code>).</li>
+<li>Save is <code>Ctrl+S</code> (or <code>Cmd+S</code> on macOS). Save runs the same
+validation pass that the <code>cfs:manifests:register</code> IPC handler runs
+on the main process side.</li>
+</ul>
+<h2 id="code-and-visual-modes"><a class="header" href="#code-and-visual-modes">Code and Visual modes</a></h2>
+<p>The editor provides <strong>Code</strong> and <strong>Visual</strong> modes. Code mode can view
+YAML, JSON, or MOF; MOF is read-only. Visual mode is an editable
+spreadsheet for supported baseline settings, with inline cell editing,
+Add settings, row selection, delete, and keyboard navigation. Tab
+saves and moves right. Enter saves and moves down. Shift+Enter remains
+a newline for structured values.</p>
+<blockquote>
+<p><strong>v0.2.1 import fix:</strong> CSV / TSV / XLSX / JSON security-definition
+imports now emit <code>Microsoft.Windows/Registry</code> resources with all
+three schema-required properties (<code>keyPath</code>, <code>valueName</code>,
+<code>valueType</code>). Before v0.2.1 the import omitted <code>valueType</code> (and the
+JSON path also dropped <code>valueName</code>), so the schema validator flagged
+every imported row as invalid the moment the editor opened it. The
+importer now infers <code>valueType</code> from <code>expectedValue</code> via
+<code>inferRegistryValueType()</code>: DWORD-range integers → <code>REG_DWORD</code>, larger
+exact integers → <code>REG_QWORD</code>, and other values → <code>REG_SZ</code>.</p>
+</blockquote>
+<h2 id="resource-wrappers"><a class="header" href="#resource-wrappers">Resource wrappers</a></h2>
+<p>Two resource types are <em>wrappers</em> that nest other resources:</p>
+<div class="table-wrapper"><table><thead><tr><th>Wrapper</th><th>Behaviour</th></tr></thead><tbody>
+<tr><td><code>Microsoft.OSConfig/Group</code></td><td>A logical group; nested resources are validated recursively.</td></tr>
+<tr><td><code>Microsoft.OSConfig/Test</code></td><td>An assertion. Wraps a single resource and adds an <code>expression</code>/<code>compliance</code> field.</td></tr>
+</tbody></table>
+</div>
+<p>The platform validator (<code>packages/core/src/platform.ts</code>) walks both
+wrappers recursively, so a Linux resource hidden inside a
+Windows-only Group is still caught.</p>
+<h2 id="save-flow"><a class="header" href="#save-flow">Save flow</a></h2>
+<pre><code class="language-text">edit → validate → persist source.yaml + .json → optional snapshot →
+  show success banner with any soft warnings
+</code></pre>
+<blockquote>
+<p><strong>Tip:</strong> The save flow does <strong>not</strong> call <code>oscfg apply</code>. To deploy,
+you need to explicitly hit <strong>Deploy</strong> (admin/root required on the
+host platform; the CLI must be installed). If OSConfig is missing,
+Deploy opens the install dialog instead of failing. See
+<a href="../quick-start/authoring-vs-deploying.html">Authoring vs deploying</a>.</p>
+</blockquote>
+<h2 id="export-formats"><a class="header" href="#export-formats">Export formats</a></h2>
+<p>The current renderer <strong>Export</strong> menu writes the manifest in these
+formats:</p>
+<div class="table-wrapper"><table><thead><tr><th>Format</th><th>Extension</th><th>Use</th></tr></thead><tbody>
+<tr><td>YAML</td><td><code>.osc.yaml</code></td><td>Native OSConfig manifest - the canonical source.</td></tr>
+<tr><td>JSON</td><td><code>.json</code></td><td>The manifest as JSON.</td></tr>
+<tr><td>MOF</td><td><code>.mof</code></td><td>DSC Managed Object Format for the Azure Machine Configuration toolchain (see below). Read-only in the editor.</td></tr>
+<tr><td>CSV</td><td><code>.csv</code></td><td>Flat per-resource rows for spreadsheets / bulk review.</td></tr>
+</tbody></table>
+</div>
+<p>Use the separate <strong>Docs</strong> button to download generated Markdown
+documentation. Azure Policy export exists in the core handler but is
+not exposed by the current Manifest Editor UI.</p>
+<h3 id="machine-configuration-package-route"><a class="header" href="#machine-configuration-package-route">Machine Configuration package route</a></h3>
+<p>To reach Azure Policy / Machine Configuration through a package, export
+<strong>MOF (<code>.mof</code>)</strong>, then hand the <code>.mof</code> to the
+<a href="https://learn.microsoft.com/azure/governance/machine-configuration/how-to-create-package"><code>GuestConfiguration</code></a>
+PowerShell module (Azure Machine Configuration) to turn it into a
+package and a policy definition.</p>
+<p><strong>Prerequisites (one-time, on the packaging machine - PowerShell 7,
+run as Administrator):</strong> the exported MOF declares the OSConfig DSC
+resource, so <code>New-GuestConfigurationPackage</code> needs both modules
+installed to bundle it into the package:</p>
+<pre><code class="language-powershell">Install-Module GuestConfiguration -Scope AllUsers -Force
+# The exported MOF carries a portable 0.0.0 placeholder. Resolve it to
+# the newest module installed on the packaging machine before packaging.
+Install-Module Microsoft.OSConfig -Scope AllUsers -Repository PSGallery -Force
+</code></pre>
+<p>Then build and publish:</p>
+<pre><code class="language-powershell">$InstalledOSConfig = Get-Module -ListAvailable Microsoft.OSConfig |
+  Sort-Object Version -Descending |
+  Select-Object -First 1
+$ResolvedMof = '.\MySecurityBaseline.resolved.mof'
+(Get-Content '.\MySecurityBaseline.mof' -Raw).Replace(
+  'ModuleVersion = "0.0.0";',
+  "ModuleVersion = `"$($InstalledOSConfig.Version)`";"
+) | Set-Content $ResolvedMof -Encoding utf8
+
+# MOF to Machine Configuration package (.zip)
+New-GuestConfigurationPackage `
+  -Name MySecurityBaseline `
+  -Configuration $ResolvedMof `
+  -Type Audit `
+  -Path .\package
+
+# Upload the returned ZIP to Azure Storage with Set-AzStorageBlobContent,
+# then pass its read-only URI to the policy generator.
+New-GuestConfigurationPolicy `
+  -PolicyId &lt;new-guid&gt; `
+  -ContentUri &lt;package-uri&gt; `
+  -DisplayName 'My Security Baseline' `
+  -Path .\policy `
+  -Platform Windows `
+  -PolicyVersion 1.0.0 `
+  -Mode Audit
+</code></pre>
+<p>Then assign the generated definition in Azure Policy. Use this route
+when you want to own the packaging and publishing step - custom
+storage, your own GUIDs/versioning, or package signing.</p>
+<p>See <a href="./machine-configuration.html">Deploy through Azure Machine Configuration</a>
+for the complete package, Storage, Azure Policy, assignment, verification, and
+troubleshooting workflow.</p>
+<blockquote>
+<p>The exported MOF uses <code>ModuleVersion = "0.0.0"</code> as a portable placeholder.
+Resolve it to the packaging machine's installed version as shown above;
+Machine Configuration runtime requires the exact bundled version. If the module isn't installed,
+<code>New-GuestConfigurationPackage</code> fails with <em>"Failed to find a module
+with the name 'Microsoft.OSConfig'."</em></p>
+<p>Microsoft.OSConfig 1.3.11 can audit these packages, but its PowerShell
+resource has an upstream <code>Set()</code> serialization defect. The example therefore
+defaults to Audit. Use <code>AuditAndSet</code> plus an Apply mode only with a newer
+module that contains the fix.</p>
+</blockquote>
+<h2 id="what-changes-dont-trigger-a-save"><a class="header" href="#what-changes-dont-trigger-a-save">What changes don't trigger a save</a></h2>
+<ul>
+<li>Re-typing the exact same content as the last save → de-duplicated by
+the snapshot store (no new history entry).</li>
+<li>Comments-only changes → still trigger a save (the comment is part of
+the source YAML and is preserved on export).</li>
+</ul>
+<h2 id="errors-youll-see"><a class="header" href="#errors-youll-see">Errors you'll see</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Error</th><th>Meaning</th><th>Fix</th></tr></thead><tbody>
+<tr><td><code>resources is required</code></td><td>Top-level YAML doesn't have a <code>resources:</code> array.</td><td>Wrap your resources under <code>resources:</code>.</td></tr>
+<tr><td><code>invalid Group/Test wrapper</code></td><td>A <code>Microsoft.OSConfig/Group</code> or <code>Microsoft.OSConfig/Test</code> has no nested array.</td><td>Add <code>resources:</code> (Group) or <code>resource:</code> (Test) inside.</td></tr>
+<tr><td><code>Unsupported resource type</code></td><td>The target CLI doesn't know this type, it's not in the registered whitelist.</td><td>Soft warning only; the rest of the manifest still applies.</td></tr>
+<tr><td><code>mixed-platform manifest</code></td><td>Your YAML has both Windows and Linux resource types.</td><td>Split it. <code>'mixed'</code> is rejected at deploy time.</td></tr>
+<tr><td><code>CLI not installed</code> (on Deploy / Audit / Revert)</td><td>OSConfig isn't on this machine.</td><td>The dialog's <strong>Install</strong> button opens the <a href="https://github.com/microsoft/osconfig/tree/main/docs/cli">OSConfig CLI docs</a>; <strong>Recheck</strong> auto-dismisses once the resolver finds it.</td></tr>
+</tbody></table>
+</div>
+<h2 id="breadcrumbs"><a class="header" href="#breadcrumbs">Breadcrumbs</a></h2>
+<p>Breadcrumb navigation appears on the Editor, History, and Audit Pack
+pages. The breadcrumb trail shows the current manifest namespace and the
+active sub-page so you can jump back without the side nav.</p>
+<h2 id="stable-width-audit-counter"><a class="header" href="#stable-width-audit-counter">Stable-width audit counter</a></h2>
+<p>The audit counter badge in the manifest header now uses a
+fixed-width layout. Previous versions caused layout jitter when the
+count changed during a deploy because the badge width shifted with
+the digit count. The counter is now stable regardless of the
+displayed number.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="../reference/manifest-schema.html">Reference → Manifest schema</a></li>
+<li><a href="../reference/registered-types.html">Reference → Registered types</a></li>
+<li><a href="./history-snapshots.html">User Guide → History &amp; snapshots</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../quick-start/authoring-vs-deploying.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../user-guide/machine-configuration.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../quick-start/authoring-vs-deploying.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../user-guide/machine-configuration.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>

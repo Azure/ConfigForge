@@ -1,0 +1,505 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Baselines - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="../favicon.svg">
+        <link rel="shortcut icon" href="../favicon.png">
+        <link rel="stylesheet" href="../css/variables.css">
+        <link rel="stylesheet" href="../css/general.css">
+        <link rel="stylesheet" href="../css/chrome.css">
+        <link rel="stylesheet" href="../css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="../FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="../fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="../highlight.css">
+        <link rel="stylesheet" href="../tomorrow-night.css">
+        <link rel="stylesheet" href="../ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="../theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "../";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="../introduction.html">Introduction</a></li><li class="chapter-item expanded affix "><li class="part-title">Quick Start</li><li class="chapter-item expanded "><a href="../quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Install & run</a></li><li class="chapter-item expanded "><a href="../quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first manifest</a></li><li class="chapter-item expanded "><a href="../quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs deploying</a></li><li class="chapter-item expanded affix "><li class="part-title">User Guide</li><li class="chapter-item expanded "><a href="../user-guide/manifest-editor.html"><strong aria-hidden="true">4.</strong> Manifest editor</a></li><li class="chapter-item expanded "><a href="../user-guide/machine-configuration.html"><strong aria-hidden="true">5.</strong> Azure Machine Configuration deployment</a></li><li class="chapter-item expanded "><a href="../user-guide/matrix-diff.html"><strong aria-hidden="true">6.</strong> Diff: pairwise + master matrix</a></li><li class="chapter-item expanded "><a href="../user-guide/cis-compliance.html"><strong aria-hidden="true">7.</strong> CIS cross-reference & compliance</a></li><li class="chapter-item expanded "><a href="../user-guide/rationale.html"><strong aria-hidden="true">8.</strong> Rationale & change-author capture</a></li><li class="chapter-item expanded "><a href="../user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Audit-pack (PDF + Markdown)</a></li><li class="chapter-item expanded "><a href="../user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Analysis provenance</a></li><li class="chapter-item expanded "><a href="../user-guide/history-snapshots.html"><strong aria-hidden="true">11.</strong> History, snapshots, retention</a></li><li class="chapter-item expanded affix "><li class="part-title">Architecture</li><li class="chapter-item expanded "><a href="../architecture/system-overview.html"><strong aria-hidden="true">12.</strong> System overview</a></li><li class="chapter-item expanded "><a href="../architecture/module-map.html"><strong aria-hidden="true">13.</strong> Module map</a></li><li class="chapter-item expanded "><a href="../architecture/registration-semantics.html"><strong aria-hidden="true">14.</strong> Registration semantics</a></li><li class="chapter-item expanded "><a href="../architecture/mixed-platform.html"><strong aria-hidden="true">15.</strong> Mixed-platform classification</a></li><li class="chapter-item expanded "><a href="../architecture/oscfg-cli.html"><strong aria-hidden="true">16.</strong> oscfg CLI contract</a></li><li class="chapter-item expanded "><a href="../architecture/diagrams.html"><strong aria-hidden="true">17.</strong> Diagrams</a></li><li class="chapter-item expanded affix "><li class="part-title">API Reference</li><li class="chapter-item expanded "><a href="../api-reference/manifests.html" class="active"><strong aria-hidden="true">18.</strong> Baselines</a></li><li class="chapter-item expanded "><a href="../api-reference/deploy-health.html"><strong aria-hidden="true">19.</strong> Deploy & health</a></li><li class="chapter-item expanded "><a href="../api-reference/diff.html"><strong aria-hidden="true">20.</strong> Diff</a></li><li class="chapter-item expanded "><a href="../api-reference/compliance.html"><strong aria-hidden="true">21.</strong> Compliance</a></li><li class="chapter-item expanded "><a href="../api-reference/history-import-export.html"><strong aria-hidden="true">22.</strong> History, import & export</a></li><li class="chapter-item expanded "><a href="../api-reference/audit-pack.html"><strong aria-hidden="true">23.</strong> Audit pack</a></li><li class="chapter-item expanded "><a href="../api-reference/rationale.html"><strong aria-hidden="true">24.</strong> Rationale</a></li><li class="chapter-item expanded affix "><li class="part-title">Operations</li><li class="chapter-item expanded "><a href="../operations/ci.html"><strong aria-hidden="true">25.</strong> CI on Linux + Windows</a></li><li class="chapter-item expanded "><a href="../operations/smoke-testing.html"><strong aria-hidden="true">26.</strong> Smoke testing on Windows</a></li><li class="chapter-item expanded "><a href="../operations/upstream-bugs.html"><strong aria-hidden="true">27.</strong> Filing upstream bugs</a></li><li class="chapter-item expanded "><a href="../operations/troubleshooting.html"><strong aria-hidden="true">28.</strong> Troubleshooting</a></li><li class="chapter-item expanded affix "><li class="part-title">Contributing</li><li class="chapter-item expanded "><a href="../contributing/agents-md.html"><strong aria-hidden="true">29.</strong> AGENTS.md (canonical guide)</a></li><li class="chapter-item expanded "><a href="../contributing/conventions.html"><strong aria-hidden="true">30.</strong> Coding conventions</a></li><li class="chapter-item expanded "><a href="../contributing/testing.html"><strong aria-hidden="true">31.</strong> Testing expectations</a></li><li class="chapter-item expanded "><a href="../contributing/adding-oscfg-types.html"><strong aria-hidden="true">32.</strong> Adding a new oscfg type</a></li><li class="chapter-item expanded affix "><li class="part-title">Reference</li><li class="chapter-item expanded "><a href="../reference/manifest-schema.html"><strong aria-hidden="true">33.</strong> Manifest schema (oscfg 1.3.9-preview11)</a></li><li class="chapter-item expanded "><a href="../reference/registered-types.html"><strong aria-hidden="true">34.</strong> Registered types</a></li><li class="chapter-item expanded "><a href="../reference/glossary.html"><strong aria-hidden="true">35.</strong> Glossary</a></li><li class="chapter-item expanded affix "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="../changelog.html">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="../print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/api-reference/manifests.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="cfsmanifests---manifest-crud"><a class="header" href="#cfsmanifests---manifest-crud"><code>cfs.manifests.*</code> - manifest CRUD</a></h1>
+<blockquote>
+<p><strong>Phase 10 transport note.</strong> Was <code>/api/manifests/*</code> in Phase 1–9. The
+same pure handlers in <code>packages/core/src/handlers/manifests.ts</code> now
+back the IPC channels below. Request/response <strong>shapes preserved</strong> -
+only the transport changed (HTTP → IPC). Renderer code calls
+<code>window.cfs.manifests.*</code> via <code>apps/desktop/electron/preload.ts</code>.</p>
+</blockquote>
+<p>Authoring goes here. Deployment is separate
+(<a href="./deploy-health.html"><code>cfs.deploy.*</code></a>). Registration is schema-only and
+never spawns the CLI - see
+<a href="../architecture/registration-semantics.html">Architecture → Registration semantics</a>.</p>
+<h2 id="complete-ipc-surface"><a class="header" href="#complete-ipc-surface">Complete IPC surface</a></h2>
+<p>This table is the current renderer preload surface from
+<code>apps/desktop/electron/preload.ts</code>. The macOS author build omits the
+flavor-conditional namespaces called out in <code>apps/desktop/src/lib/flavor.ts</code>.
+Legacy scenario and drift methods still exist only as compatibility stubs and
+always return a not-supported <code>501</code> envelope.</p>
+<div class="table-wrapper"><table><thead><tr><th>Namespace</th><th>Method or event</th><th>IPC channel</th><th>Purpose</th></tr></thead><tbody>
+<tr><td><code>cfs.activity</code></td><td><code>recent()</code></td><td><code>cfs:activity:recent</code></td><td>Read the recent activity feed.</td></tr>
+<tr><td><code>cfs.auditPack</code></td><td><code>get(req)</code></td><td><code>cfs:audit-pack:get</code></td><td>Build an audit-pack artifact in memory.</td></tr>
+<tr><td><code>cfs.auditPack</code></td><td><code>save(req)</code></td><td><code>cfs:audit-pack:save</code></td><td>Save an audit-pack artifact through a native dialog.</td></tr>
+<tr><td><code>cfs.auditResults</code></td><td><code>get(id)</code></td><td><code>cfs:audit-results:get</code></td><td>Read the last cached device-audit result.</td></tr>
+<tr><td><code>cfs.baselineCsv</code></td><td><code>fetch(req)</code></td><td><code>cfs:baseline-csv:fetch</code></td><td>Fetch and parse a baseline CSV source.</td></tr>
+<tr><td><code>cfs.cis</code></td><td><code>status()</code></td><td><code>cfs:cis:status</code></td><td>Report CIS catalog availability and diagnostics.</td></tr>
+<tr><td><code>cfs.cis</code></td><td><code>lookup(req)</code></td><td><code>cfs:cis:lookup</code></td><td>Look up one resource against CIS data.</td></tr>
+<tr><td><code>cfs.cis</code></td><td><code>revealDataDir()</code></td><td><code>cfs:cis:reveal-data-dir</code></td><td>Open the runtime CIS data directory.</td></tr>
+<tr><td><code>cfs.cis</code></td><td><code>recheck()</code></td><td><code>cfs:cis:recheck</code></td><td>Clear CIS caches and re-read data.</td></tr>
+<tr><td><code>cfs.cis</code></td><td><code>warmup()</code></td><td><code>cfs:cis:warmup</code></td><td>Pre-parse discovered CIS catalogs.</td></tr>
+<tr><td><code>cfs.cis</code></td><td><code>bulkLookup(namespace, benchmarkFilename?)</code></td><td><code>cfs:cis:bulk-lookup</code></td><td>Score one manifest against a CIS benchmark.</td></tr>
+<tr><td><code>cfs.compliance</code></td><td><code>report(req)</code></td><td><code>cfs:compliance:report</code></td><td>Build a CIS compliance report.</td></tr>
+<tr><td><code>cfs.deploy</code></td><td><code>run(req, onProgress?)</code></td><td><code>cfs:deploy:run</code> and <code>cfs:deploy:progress</code></td><td>Run deploy or audit with progress events.</td></tr>
+<tr><td><code>cfs.deploy</code></td><td><code>cancel(jobId)</code></td><td><code>cfs:deploy:cancel</code></td><td>Request cancellation for a running deploy job.</td></tr>
+<tr><td><code>cfs.deployRecovery</code></td><td><code>listInterrupted()</code></td><td><code>cfs:deploy:list-interrupted</code></td><td>List orphaned deploy sentinels.</td></tr>
+<tr><td><code>cfs.deployRecovery</code></td><td><code>dismiss(namespace)</code></td><td><code>cfs:deploy:dismiss-interrupted</code></td><td>Dismiss an interrupted-deploy sentinel.</td></tr>
+<tr><td><code>cfs.diff</code></td><td><code>matrix(names)</code></td><td><code>cfs:diff:matrix</code></td><td>Build the N-way manifest matrix.</td></tr>
+<tr><td><code>cfs.diff</code></td><td><code>matrixXlsxSave(names)</code></td><td><code>cfs:diff:matrix-xlsx:save</code></td><td>Save the matrix as an XLSX workbook.</td></tr>
+<tr><td><code>cfs.docs</code></td><td><code>get(name)</code></td><td><code>cfs:docs:get</code></td><td>Read generated docs for a manifest.</td></tr>
+<tr><td><code>cfs.docs</code></td><td><code>generate(req)</code></td><td><code>cfs:docs:generate</code></td><td>Generate docs from manifest content.</td></tr>
+<tr><td><code>cfs.drift</code></td><td><code>list()</code></td><td><code>cfs:drift:list</code></td><td>Retired compatibility stub; always returns 501 not supported.</td></tr>
+<tr><td><code>cfs.exportChannel</code></td><td><code>get(req)</code></td><td><code>cfs:export:get</code></td><td>Return an export artifact.</td></tr>
+<tr><td><code>cfs.exportChannel</code></td><td><code>save(req)</code></td><td><code>cfs:export:save</code></td><td>Save an export artifact through a native dialog.</td></tr>
+<tr><td><code>cfs.health</code></td><td><code>check()</code></td><td><code>cfs:health:check</code></td><td>Probe OSConfig CLI health from cache.</td></tr>
+<tr><td><code>cfs.health</code></td><td><code>recheck()</code></td><td><code>cfs:health:recheck</code></td><td>Clear health cache and reprobe.</td></tr>
+<tr><td><code>cfs.history</code></td><td><code>list(req)</code></td><td><code>cfs:history:list</code></td><td>List snapshots or read one snapshot.</td></tr>
+<tr><td><code>cfs.history</code></td><td><code>save(req)</code></td><td><code>cfs:history:save</code></td><td>Save a manual history snapshot.</td></tr>
+<tr><td><code>cfs.history</code></td><td><code>delete(req)</code></td><td><code>cfs:history:delete</code></td><td>Delete a history snapshot.</td></tr>
+<tr><td><code>cfs.importChannel</code></td><td><code>openAndParse()</code></td><td><code>cfs:import:openAndParse</code></td><td>Open a file picker, read the file, and parse it.</td></tr>
+<tr><td><code>cfs.importChannel</code></td><td><code>fromContent(req)</code></td><td><code>cfs:import:fromContent</code></td><td>Parse renderer-supplied text or bytes.</td></tr>
+<tr><td><code>cfs.library</code></td><td><code>list()</code></td><td><code>cfs:library:list</code></td><td>List bundled baseline library entries.</td></tr>
+<tr><td><code>cfs.library</code></td><td><code>get(req)</code></td><td><code>cfs:library:get</code></td><td>Read one library entry.</td></tr>
+<tr><td><code>cfs.manifests</code></td><td><code>list(opts?)</code></td><td><code>cfs:manifests:list</code></td><td>List registered and optionally live manifests.</td></tr>
+<tr><td><code>cfs.manifests</code></td><td><code>get(name, opts?)</code></td><td><code>cfs:manifests:get</code></td><td>Read one manifest summary.</td></tr>
+<tr><td><code>cfs.manifests</code></td><td><code>getSource(name)</code></td><td><code>cfs:manifests:source</code></td><td>Read registered source YAML.</td></tr>
+<tr><td><code>cfs.manifests</code></td><td><code>fetchUri(uri)</code></td><td><code>cfs:manifests:fetch-uri</code></td><td>Fetch remote manifest text without registration.</td></tr>
+<tr><td><code>cfs.manifests</code></td><td><code>register(req)</code></td><td><code>cfs:manifests:register</code></td><td>Register source YAML and metadata.</td></tr>
+<tr><td><code>cfs.manifests</code></td><td><code>restore(req)</code></td><td><code>cfs:manifests:restore</code></td><td>Restore a just-deleted registration from recovery data.</td></tr>
+<tr><td><code>cfs.manifests</code></td><td><code>delete(name, options?)</code></td><td><code>cfs:manifests:delete</code></td><td>Delete a registration and return recovery metadata.</td></tr>
+<tr><td><code>cfs.manifests</code></td><td><code>status(name)</code></td><td><code>cfs:manifests:status</code></td><td>Probe deployed state for one manifest.</td></tr>
+<tr><td><code>cfs.platform</code></td><td><code>info()</code></td><td><code>cfs:platform:info</code></td><td>Read host platform and theme snapshot.</td></tr>
+<tr><td><code>cfs.platform</code></td><td><code>onThemeChanged(cb)</code></td><td><code>cfs:platform:theme-changed</code></td><td>Subscribe to OS theme changes.</td></tr>
+<tr><td><code>cfs.rationale</code></td><td><code>list(id)</code></td><td><code>cfs:rationale:list</code></td><td>Read rationale entries for a manifest.</td></tr>
+<tr><td><code>cfs.rationale</code></td><td><code>append(req)</code></td><td><code>cfs:rationale:append</code></td><td>Append a rationale entry.</td></tr>
+<tr><td><code>cfs.revert</code></td><td><code>apply(req)</code></td><td><code>cfs:revert:apply</code></td><td>Revert a deployed namespace.</td></tr>
+<tr><td><code>cfs.scenarios</code></td><td><code>list()</code></td><td><code>cfs:scenarios:list</code></td><td>Retired compatibility stub; always returns 501 not supported.</td></tr>
+<tr><td><code>cfs.settings</code></td><td><code>get()</code></td><td><code>cfs:settings:get</code></td><td>Read user settings.</td></tr>
+<tr><td><code>cfs.settings</code></td><td><code>set(patch)</code></td><td><code>cfs:settings:set</code></td><td>Merge and persist user settings.</td></tr>
+<tr><td><code>cfs.shell</code></td><td><code>openExternal(url)</code></td><td><code>cfs:shell:open-external</code></td><td>Open an HTTP or HTTPS URL in the default browser.</td></tr>
+<tr><td><code>cfs.system</code></td><td><code>isElevated()</code></td><td><code>cfs:system:is-elevated</code></td><td>Check current process elevation.</td></tr>
+<tr><td><code>cfs.system</code></td><td><code>elevate()</code></td><td><code>cfs:system:elevate</code></td><td>Relaunch with OS elevation when supported.</td></tr>
+<tr><td><code>cfs.systemConfig</code></td><td><code>summary()</code></td><td><code>cfs:system-config:summary</code></td><td>Summarize host system configuration.</td></tr>
+<tr><td><code>cfs.systemConfig</code></td><td><code>forManifest(name)</code></td><td><code>cfs:system-config:get</code></td><td>Read host configuration for one manifest.</td></tr>
+<tr><td><code>cfs.update</code></td><td><code>getStatus()</code></td><td><code>cfs:update:get-status</code></td><td>Read the current auto-update status.</td></tr>
+<tr><td><code>cfs.update</code></td><td><code>onStatus(cb)</code></td><td><code>cfs:update:status</code></td><td>Subscribe to auto-update status events.</td></tr>
+<tr><td><code>cfs.update</code></td><td><code>check()</code></td><td><code>cfs:update:check</code></td><td>Manually check for updates.</td></tr>
+<tr><td><code>cfs.update</code></td><td><code>download()</code></td><td><code>cfs:update:download</code></td><td>Start update download.</td></tr>
+<tr><td><code>cfs.update</code></td><td><code>quitAndInstall()</code></td><td><code>cfs:update:quit-and-install</code></td><td>Quit and install a downloaded update.</td></tr>
+</tbody></table>
+</div>
+<h2 id="cfsmanifestslistopts---channel-cfsmanifestslist"><a class="header" href="#cfsmanifestslistopts---channel-cfsmanifestslist"><code>cfs.manifests.list(opts?)</code> - channel <code>cfs:manifests:list</code></a></h2>
+<p>List all manifests. Disk-only on the hot path: enriches each registered
+namespace from <code>~/.configforge/manifests/&lt;ns&gt;.json</code> without spawning the
+CLI. Pass <code>{ live: true }</code> to also union in CLI-visible namespaces; those
+entries fall through to <code>oscfg get namespace</code>.</p>
+<p>Two in-process caches (disk-only vs. live-union), 60s TTL, in-flight
+dedup via a generation token. Any <code>register</code>/<code>delete</code> invalidates both.</p>
+<pre><code class="language-ts">type ListManifestsOptions = {
+  live?: boolean;
+  includeResources?: boolean; // default true
+  lite?: boolean;             // explicit opt-in to drop Resources[]
+  force?: boolean;            // bypass list caches for explicit refresh
+};
+
+type ManifestSummary = {
+  Name: string;
+  DisplayName: string;
+  Source: 'oscfg' | 'library';
+  RegistrationSource: 'user' | 'library' | 'import' | null;
+  RegistrationSourceId: string | null;
+  Deployed: boolean;
+  LastAppliedAt: string | null;
+  LastAuditedAt: string | null;
+  Revision: string | null;
+  Platform: string | null;
+  ResourceCount: number;
+  Validation: {
+    hasSchema: boolean;
+    hasEnforcementValues: boolean;
+    hasComplianceCriteria: boolean;
+    issues: string[];
+  } | null;
+  Compliance: {
+    auditedAt: string;
+    total: number;
+    compliant: number;
+    nonCompliant: number;
+    indeterminate: number;
+    errors: number;
+  } | null;
+  RegisteredAt: string | null;
+  LastModifiedAt: string | null;
+  Resources?: { name: string; type: string }[]; // omitted when lite=true
+};
+
+const { data } = await cfs.manifests.list();
+// or
+const { data } = await cfs.manifests.list({ live: true, lite: true });
+</code></pre>
+<p>Field casing is intentionally <code>PascalCase</code> for back-compat with the
+PowerShell-edition UI. <code>Source</code> is <code>"oscfg"</code> (locally-authored) or
+<code>"library"</code> (catalog-sourced). <code>Resources</code> is <code>[]</code> for CLI-only
+namespaces; the detail page fetches them via <code>cfs.manifests.get(name)</code>.</p>
+<h2 id="cfsmanifestsgetname-opts---channel-cfsmanifestsget"><a class="header" href="#cfsmanifestsgetname-opts---channel-cfsmanifestsget"><code>cfs.manifests.get(name, opts?)</code> - channel <code>cfs:manifests:get</code></a></h2>
+<p>Single-manifest read (perf W2 / C5). Returns <code>{ data: null }</code> (does
+<strong>not</strong> throw) for unknown namespaces.</p>
+<pre><code class="language-ts">const { data, warning } = await cfs.manifests.get('ws2025-baseline');
+// data: ManifestSummary | null
+// warning?: string - surfaces e.g. "Registered source YAML missing on disk"
+</code></pre>
+<h2 id="cfsmanifestsgetsourcename---channel-cfsmanifestssource"><a class="header" href="#cfsmanifestsgetsourcename---channel-cfsmanifestssource"><code>cfs.manifests.getSource(name)</code> - channel <code>cfs:manifests:source</code></a></h2>
+<p>Return the registered source YAML exactly as stored on disk, or
+<code>{ data: null }</code> when the namespace is not registered. This is distinct
+from <code>status</code>, which reads/reconstructs live state from <code>oscfg</code>.</p>
+<pre><code class="language-ts">const { data } = await cfs.manifests.getSource('ws2025-baseline');
+// data: string | null
+</code></pre>
+<h2 id="cfsmanifestsfetchuriuri---channel-cfsmanifestsfetch-uri"><a class="header" href="#cfsmanifestsfetchuriuri---channel-cfsmanifestsfetch-uri"><code>cfs.manifests.fetchUri(uri)</code> - channel <code>cfs:manifests:fetch-uri</code></a></h2>
+<p>Fetch remote YAML for preview/edit without registering it. The same URL
+validation and 10 MB / 30 s fetch limits used by <code>register({ uri })</code>
+apply; the response is <code>{ content: string }</code>.</p>
+<h2 id="cfsmanifestsrestorereq---channel-cfsmanifestsrestore"><a class="header" href="#cfsmanifestsrestorereq---channel-cfsmanifestsrestore"><code>cfs.manifests.restore(req)</code> - channel <code>cfs:manifests:restore</code></a></h2>
+<p>Restore a just-deleted registration from captured recovery data without
+overwriting an existing namespace. The restore path validates the YAML
+content and writes only the registration metadata and source YAML; it does
+not reconstruct deployment pointers, history, rationale, or audit records.</p>
+<pre><code class="language-ts">type RestoreManifestRequest = {
+  namespace: string;
+  displayName: string;
+  content: string;
+  source: 'user' | 'library' | 'import';
+  sourceId?: string;
+};
+
+type RestoreManifestResult = {
+  message: string;
+  data: {
+    namespace: string;
+    platform: 'windows' | 'linux' | 'mixed' | 'cross-platform' | 'unknown';
+  };
+};
+</code></pre>
+<p>Errors: <code>400</code> for invalid request, content, or schema; <code>409</code> when the
+namespace is already registered.</p>
+<h2 id="cfsmanifestsregisterreq---channel-cfsmanifestsregister"><a class="header" href="#cfsmanifestsregisterreq---channel-cfsmanifestsregister"><code>cfs.manifests.register(req)</code> - channel <code>cfs:manifests:register</code></a></h2>
+<p>Register a new manifest. Schema validation only - never calls
+<code>oscfg apply</code>. Best-effort auto-snapshot to <code>~/.configforge/history/&lt;ns&gt;/</code>
+runs in the background (failures logged, not surfaced).</p>
+<pre><code class="language-ts">type RegisterManifestRequest = {
+  name: string;                              // display name - sanitized to namespace
+  content?: string;                          // YAML or JSON; content or uri is required. Non-empty content wins over uri; an empty content string falls back to uri.
+  uri?: string;                              // http/https URL (10 MB cap, 30 s timeout)
+  // path is a rejected legacy field; use importChannel or content instead.
+  source?: 'user' | 'library' | 'import';    // default 'user'
+  sourceId?: string;
+  rationale?: string;                        // persisted on snapshot .meta sidecar
+  changeSummary?: string;                    // v0.3.47; max 200 chars at IPC boundary
+  force?: boolean;                           // override namespace-collision guard
+  author?: string;                           // test affordance - server resolves via resolveAuthor()
+};
+
+type RegisterManifestResult = {
+  message: string;
+  data: { namespace: string; platform: 'windows' | 'linux' | 'mixed' | 'cross-platform' | 'unknown' };
+  warnings: string[];
+};
+</code></pre>
+<p><code>changeSummary</code> is the short diff-derived label shown in History instead
+of the generic "Manifest registered" message. The renderer computes it
+from the save diff; IPC validation caps it at 200 characters.</p>
+<p>Hard 400 via <code>HandlerError</code> / IPC validation:</p>
+<ul>
+<li>Missing <code>name</code>, or <code>sanitizeNamespace(name)</code> empty.</li>
+<li>Both <code>content</code> and <code>uri</code> absent or empty (whitespace-only counts as empty).</li>
+<li>Legacy <code>path</code> is rejected by <code>validateRegisterManifestRequest()</code> and by the core handler; use <code>importChannel</code> or pass already-read YAML via <code>content</code>.</li>
+<li>Remote <code>uri</code> &gt; 10 MB → <code>HandlerError(413)</code>.</li>
+<li>Unsupported URI scheme (only <code>http:</code> / <code>https:</code>).</li>
+<li>Content fails YAML/JSON parse or <code>validateManifestSchema</code>.</li>
+</ul>
+<p>Soft warnings (registration succeeds, populated in <code>warnings[]</code>):</p>
+<ul>
+<li>Manifest targets a different platform than the host.</li>
+<li>Mixed Windows + Linux resource types.</li>
+<li>Resource types not in the host-platform registered-type whitelist.</li>
+<li>Namespace collision: a different display name already maps to the same sanitized namespace (#20). The renderer can pass <code>force: true</code> to override.</li>
+</ul>
+<blockquote>
+<p>Cross-platform authoring is supported. Deploy/audit are the gates
+that enforce platform match.</p>
+<p>On macOS, platform-mismatch warnings are suppressed in the UI because the macOS author build has no deploy capability.</p>
+</blockquote>
+<h2 id="cfsmanifestsdeletename---channel-cfsmanifestsdelete"><a class="header" href="#cfsmanifestsdeletename---channel-cfsmanifestsdelete"><code>cfs.manifests.delete(name)</code> - channel <code>cfs:manifests:delete</code></a></h2>
+<p>Remove a registration. Best-effort CLI cleanup (<code>oscfg delete namespace</code>)
+runs in parallel; failures don't block. Also cleans the per-manifest
+rationale log and the cached audit-results JSON (v0.1.6).</p>
+<pre><code class="language-ts">type DeleteManifestResult = {
+  message: string;
+  data: {
+    namespace: string;
+    cliRemoved: boolean;        // false for registered-but-never-deployed - expected, not a failure
+    cliError: string | null;
+    rationaleLogRemoved: boolean;
+    rationaleLogError: string | null;
+    recovery: RegistrationRecoveryBackup | null;
+  };
+};
+</code></pre>
+<h2 id="cfsmanifestsstatusname---channel-cfsmanifestsstatus"><a class="header" href="#cfsmanifestsstatusname---channel-cfsmanifestsstatus"><code>cfs.manifests.status(name)</code> - channel <code>cfs:manifests:status</code></a></h2>
+<p>Per-manifest deployed-state probe (read-only). 5s cache + in-flight
+dedup. Returns a soft stub when the manifest is registered but never
+deployed, instead of an error.</p>
+<pre><code class="language-ts">// Deployed namespace
+{
+  data: '# Reported system configuration for: ws2025-baseline\n...',
+  name: 'ws2025-baseline',
+  resources: [/* live resources from oscfg get resource */],
+  deployed: true,
+}
+
+// Registered but never deployed (soft stub, not an error)
+{
+  data: '# ws2025-baseline is registered but not yet deployed on this host.\n...',
+  name: 'ws2025-baseline',
+  resources: [],
+  deployed: false,
+  cliError: 'Namespace not found',
+}
+</code></pre>
+<h2 id="error-shape"><a class="header" href="#error-shape">Error shape</a></h2>
+<p>Handlers throw <code>HandlerError(status, message)</code> (see
+<code>packages/core/src/handlers/errors.ts</code>). The IPC layer wraps to
+<code>{ ok: false, status, error, code? }</code>; the preload <code>call&lt;T&gt;()</code> helper
+re-throws as a regular <code>Error</code> with <code>.status</code> (and <code>.code</code>) attached.</p>
+<h2 id="see-also"><a class="header" href="#see-also">See also</a></h2>
+<ul>
+<li><a href="../architecture/registration-semantics.html">Architecture - Registration semantics</a></li>
+<li><a href="../architecture/module-map.html">Architecture - Module map</a></li>
+<li><a href="./deploy-health.html">API Reference - <code>cfs.deploy.*</code> + <code>cfs.health.*</code></a></li>
+<li><a href="https://github.com/Azure/ConfigForge/blob/main/AGENTS.md#registration-semantics"><code>AGENTS.md</code> - registration semantics</a></li>
+</ul>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+                            <a rel="prev" href="../architecture/diagrams.html" class="mobile-nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                                <i class="fa fa-angle-left"></i>
+                            </a>
+
+                            <a rel="next prefetch" href="../api-reference/deploy-health.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+                    <a rel="prev" href="../architecture/diagrams.html" class="nav-chapters previous" title="Previous chapter" aria-label="Previous chapter" aria-keyshortcuts="Left">
+                        <i class="fa fa-angle-left"></i>
+                    </a>
+
+                    <a rel="next prefetch" href="../api-reference/deploy-health.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="../elasticlunr.min.js"></script>
+        <script src="../mark.min.js"></script>
+        <script src="../searcher.js"></script>
+
+        <script src="../clipboard.min.js"></script>
+        <script src="../highlight.js"></script>
+        <script src="../book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="../mermaid.min.js"></script>
+        <script src="../mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>
