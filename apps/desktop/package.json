@@ -50,7 +50,7 @@
     "@typescript-eslint/parser": "^8.59.2",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.5.0",
-    "concurrently": "^9.2.4",
+    "concurrently": "^9.2.5",
     "cross-env": "^7.0.3",
     "electron": "~42.11.3",
     "electron-builder": "~26.15.3",
