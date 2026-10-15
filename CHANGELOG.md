@@ -30,6 +30,22 @@
 
 ### Security
 
+- Update DOMPurify to 3.4.16, Axios to 1.20.0, ip-address to 10.7.2,
+  all supported brace-expansion lines, and both Undici lines for current
+  Dependabot advisories. Guard every resolved copy against regression.
+- Patch additional full-audit findings in sharp, fast-uri, joi, and
+  source-map-js without changing the application's version or framework majors.
+- Update http-cache-semantics to 4.3.0, outside the reported affected range,
+  and override the vulnerable CSS selector parser with 7.1.6+. Preserve
+  Tailwind 3 and cover its generated variants and child selectors in a
+  compatibility regression test.
+- Update concurrently to 9.2.5 and its shell-quote dependency to 1.12.0.
+  Correct the root override that otherwise keeps the vulnerable 1.9.0
+  shell-quote copy despite the parent-package update.
+- Refresh the SHA-pinned setup-node and upload-artifact GitHub Actions.
+- Keep the unpatched build-only braces (`GHSA-vfj7-8cjw-p6xm`) and
+  sprintf-js (`GHSA-hp3w-g68c-fv3c`) advisories visible. Neither upstream
+  package has a patched release; no advisory is suppressed or dismissed.
 - Upgrade the pinned CycloneDX SBOM generator to 6.0.0 to fix Windows
   workspace-argument shell injection (`GHSA-q69g-4hcv-6jg4`). Guard the
   manifest and every lockfile copy against reintroducing a vulnerable release.
