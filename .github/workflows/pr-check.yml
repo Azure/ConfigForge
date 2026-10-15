@@ -212,11 +212,14 @@ jobs:
           import { readFileSync } from 'node:fs';
           import { runInNewContext } from 'node:vm';
           const namespaces = {};
+          const preloadModule = { exports: {} };
           const electron = {
             contextBridge: { exposeInMainWorld: (name, api) => { namespaces[name] = api; } },
             ipcRenderer: { on() {}, removeListener() {}, invoke() {} },
           };
           runInNewContext(readFileSync('apps/desktop/dist/electron/preload.js', 'utf8'), {
+            module: preloadModule,
+            exports: preloadModule.exports,
             require: (name) => {
               assert.equal(name, 'electron');
               return electron;
