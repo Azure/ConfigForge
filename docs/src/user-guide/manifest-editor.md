@@ -1,22 +1,18 @@
 # Manifest editor
 
-> **v0.3.48:** the editor itself does **not** require the OSConfig CLI.
-> Authoring, validation, history, CIS cross-reference, rationale, and
-> the audit-pack PDF all work without it. Only the **Deploy**,
-> **Audit**, and **Revert** actions are CLI-gated. Clicking those
-> while OSConfig is missing opens the shared `CliRequiredModal` with
-> an Install link + Recheck button rather than failing with a raw
-> spawn error. The footer health pill (🟢 / 🟠 / 🔴 / ⚪) surfaces
-> the current CLI install state at all times.
+Use the baseline editor to review settings, make changes, and export your
+work. A **manifest** is the YAML/JSON document behind a baseline.
+Authoring works in both editions without the OSConfig CLI, administrator
+access, or Azure.
 
-The manifest editor is the primary authoring surface. It accepts raw
-YAML or editable Visual spreadsheet changes, validates as you type,
-and persists to `~/.configforge/manifests/<ns>.source.yaml` on save.
+New here? Complete [Your first baseline](../quick-start/first-manifest.md)
+before exploring packaging or device controls.
 
 ## Open
 
-- New baseline: **My Baselines → Register New** in the side nav.
-- Existing baseline: **My Baselines → click any namespace** in the list,
+- New baseline: **My Baselines → Create new baseline**, choose a starting
+  point, then **Create baseline** to review before registering.
+- Existing baseline: **My Baselines → open a baseline** in the list,
   then **Edit**.
 
 ## What it does
@@ -26,17 +22,15 @@ and persists to `~/.configforge/manifests/<ns>.source.yaml` on save.
   when the source can be parsed.
 - Resource-type pickers populated from
   [`registered-types.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts).
-  Aspirational types (in baselines but not yet supported by the target
-  CLI) show with a warning chip.
+  Types unknown to the targeted CLI show a warning; this does not prevent
+  drafting but needs investigation before device use.
 - A CIS rule cross-reference drawer. When CIS data is available
   locally (see [Benchmark Mapping](./cis-compliance.md) for how to enable),
   the drawer shows the matching rule's ID, severity, and GPO path
   next to the resource at the cursor. Matches are resolved from
   Azure Policy JSON or XCCDF+OVAL data (not only the legacy
-  `cis-mappings.json` file). v0.3.46 tightened fuzzy matching from
-  substring matching to exact-word-set matching with a higher threshold,
-  which reduces over-matching; property-mapping fallback still appears
-  with lower confidence.
+  `cis-mappings.json` file). Fuzzy matches and lower-confidence fallbacks
+  need human review. A match is not proof that values or device state comply.
   The drawer is **hidden entirely** when CIS data is not present
   (the `useCisAvailable()` hook short-circuits the render).
 - The "Why?" rationale modal. See [Rationale](./rationale.md).
@@ -60,15 +54,12 @@ Add settings, row selection, delete, and keyboard navigation. Tab
 saves and moves right. Enter saves and moves down. Shift+Enter remains
 a newline for structured values.
 
-> **v0.2.1 import fix:** CSV / TSV / XLSX / JSON security-definition
-> imports now emit `Microsoft.Windows/Registry` resources with all
-> three schema-required properties (`keyPath`, `valueName`,
-> `valueType`). Before v0.2.1 the import omitted `valueType` (and the
-> JSON path also dropped `valueName`), so the schema validator flagged
-> every imported row as invalid the moment the editor opened it. The
-> importer now infers `valueType` from `expectedValue` via
-> `inferRegistryValueType()`: DWORD-range integers → `REG_DWORD`, larger
-> exact integers → `REG_QWORD`, and other values → `REG_SZ`.
+Each baseline remembers its Code or Visual view. Nested Test/Group settings
+retain their source structure, values retain their types, and large QWord
+integers retain precision. Import supported YAML/JSON or CSV/TSV/XLSX settings
+through **Create new baseline**, then review the converted content before
+saving. An arbitrary report spreadsheet is not necessarily an importable
+baseline.
 
 ## Resource wrappers
 
@@ -77,7 +68,7 @@ Two resource types are _wrappers_ that nest other resources:
 | Wrapper                    | Behaviour                                                                          |
 | -------------------------- | ---------------------------------------------------------------------------------- |
 | `Microsoft.OSConfig/Group` | A logical group; nested resources are validated recursively.                       |
-| `Microsoft.OSConfig/Test`  | An assertion. Wraps a single resource and adds an `expression`/`compliance` field. |
+| `Microsoft.OSConfig/Test`  | An assertion around a single nested resource, with its test expression/schema. |
 
 The platform validator (`packages/core/src/platform.ts`) walks both
 wrappers recursively, so a Linux resource hidden inside a
@@ -114,73 +105,30 @@ not exposed by the current Manifest Editor UI.
 
 ### Machine Configuration package route
 
-To reach Azure Policy / Machine Configuration through a package, export
-**MOF (`.mof`)**, then hand the `.mof` to the
-[`GuestConfiguration`](https://learn.microsoft.com/azure/governance/machine-configuration/how-to-create-package)
-PowerShell module (Azure Machine Configuration) to turn it into a
-package and a policy definition.
+For Azure Policy evaluation, export **MOF (`.mof`)** and follow the
+[complete Machine Configuration workflow](./machine-configuration.md).
+Packaging, testing, Storage upload, and policy assignment happen outside the
+editor.
 
-**Prerequisites (one-time, on the packaging machine - PowerShell 7,
-run as Administrator):** the exported MOF declares the OSConfig DSC
-resource, so `New-GuestConfigurationPackage` needs both modules
-installed to bundle it into the package:
+On the **packaging machine**, `New-GuestConfigurationPackage` requires the
+**Microsoft.OSConfig PowerShell module 1.4.10 or later**, alongside the separate
+**GuestConfiguration** toolkit and **PowerShell 7** runtime. Version 1.4.10
+refers to the module, not PowerShell. The install command is
+`Install-Module -Name Microsoft.OSConfig -MinimumVersion 1.4.10`.
 
-```powershell
-Install-Module GuestConfiguration -Scope AllUsers -Force
-# The exported MOF carries a portable 0.0.0 placeholder. Resolve it to
-# the newest module installed on the packaging machine before packaging.
-Install-Module Microsoft.OSConfig -Scope AllUsers -Repository PSGallery -Force
-```
+The exported `ModuleVersion = "0.0.0"` is a portable placeholder. The
+[version-resolution step](./machine-configuration.md#2-resolve-the-microsoftosconfig-module-version)
+selects an installed version at or above 1.4.10 and fails if none is available
+before replacing the placeholder. The MOF must bind to that exact bundled
+version. Keep the resulting ZIP immutable after policy generation because the
+policy contains its hash.
 
-Then build and publish:
+Start with **Audit** and validate the exact baseline/module combination.
+The minimum version is not a blanket assurance that upstream issues are
+resolved. Do not apply historical 1.4.3 package patches to 1.4.10+.
 
-```powershell
-$InstalledOSConfig = Get-Module -ListAvailable Microsoft.OSConfig |
-  Sort-Object Version -Descending |
-  Select-Object -First 1
-$ResolvedMof = '.\MySecurityBaseline.resolved.mof'
-(Get-Content '.\MySecurityBaseline.mof' -Raw).Replace(
-  'ModuleVersion = "0.0.0";',
-  "ModuleVersion = `"$($InstalledOSConfig.Version)`";"
-) | Set-Content $ResolvedMof -Encoding utf8
-
-# MOF to Machine Configuration package (.zip)
-New-GuestConfigurationPackage `
-  -Name MySecurityBaseline `
-  -Configuration $ResolvedMof `
-  -Type Audit `
-  -Path .\package
-
-# Upload the returned ZIP to Azure Storage with Set-AzStorageBlobContent,
-# then pass its read-only URI to the policy generator.
-New-GuestConfigurationPolicy `
-  -PolicyId <new-guid> `
-  -ContentUri <package-uri> `
-  -DisplayName 'My Security Baseline' `
-  -Path .\policy `
-  -Platform Windows `
-  -PolicyVersion 1.0.0 `
-  -Mode Audit
-```
-
-Then assign the generated definition in Azure Policy. Use this route
-when you want to own the packaging and publishing step - custom
-storage, your own GUIDs/versioning, or package signing.
-
-See [Deploy through Azure Machine Configuration](./machine-configuration.md)
-for the complete package, Storage, Azure Policy, assignment, verification, and
-troubleshooting workflow.
-
-> The exported MOF uses `ModuleVersion = "0.0.0"` as a portable placeholder.
-> Resolve it to the packaging machine's installed version as shown above;
-> Machine Configuration runtime requires the exact bundled version. If the module isn't installed,
-> `New-GuestConfigurationPackage` fails with _"Failed to find a module
-> with the name 'Microsoft.OSConfig'."_
->
-> Microsoft.OSConfig 1.3.11 can audit these packages, but its PowerShell
-> resource has an upstream `Set()` serialization defect. The example therefore
-> defaults to Audit. Use `AuditAndSet` plus an Apply mode only with a newer
-> module that contains the fix.
+For a review document instead of a deployable package, use
+[Audit Pack](./audit-pack.md). It needs none of these packaging tools.
 
 ## What changes don't trigger a save
 
@@ -195,7 +143,7 @@ troubleshooting workflow.
 | ------------------------------------------------ | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `resources is required`                          | Top-level YAML doesn't have a `resources:` array.                              | Wrap your resources under `resources:`.                                                                                                                                         |
 | `invalid Group/Test wrapper`                     | A `Microsoft.OSConfig/Group` or `Microsoft.OSConfig/Test` has no nested array. | Add `resources:` (Group) or `resource:` (Test) inside.                                                                                                                          |
-| `Unsupported resource type`                      | The target CLI doesn't know this type, it's not in the registered whitelist.   | Soft warning only; the rest of the manifest still applies.                                                                                                                      |
+| `Unsupported resource type`                      | The type is not in the targeted CLI's registered list. | A soft warning permits authoring, not guaranteed deployment. Review provider support before device use. |
 | `mixed-platform manifest`                        | Your YAML has both Windows and Linux resource types.                           | Split it. `'mixed'` is rejected at deploy time.                                                                                                                                 |
 | `CLI not installed` (on Deploy / Audit / Revert) | OSConfig isn't on this machine.                                                | The dialog's **Install** button opens the [OSConfig CLI docs](https://github.com/microsoft/osconfig/tree/main/docs/cli); **Recheck** auto-dismisses once the resolver finds it. |
 

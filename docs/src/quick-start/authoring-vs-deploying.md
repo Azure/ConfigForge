@@ -1,96 +1,92 @@
 # Authoring vs deploying
 
-ConfigForge draws a sharp line between *authoring a manifest*
-(safe, platform-agnostic, no CLI required) and *deploying it* (the
-Full-edition operations that touch the live OS, and the only ones that
-need the `oscfg` CLI installed). The macOS Author edition is for
-authoring-only workflows. It includes Diff and Audit Pack export but omits
-device deploy, audit, enforce, revert, elevation, and CLI-health surfaces.
-Mixing the two was the single biggest design defect of the pre-`unified`
-editions, and unmixing them is what lets you safely author Linux
-manifests on a Windows laptop - even with no CLI at all.
+**Registering or saving a baseline does not apply it.** Start with authoring
+in either edition. Only move to device operations when you deliberately want
+to evaluate or change a lab machine.
+
+The macOS Author edition includes authoring, Diff, Benchmark Mapping,
+history, rationale, and Audit Pack export. It has no device Deploy, Audit,
+Enforce, Revert, elevation, or CLI-health controls.
 
 ## The split
 
-| Phase | IPC channel | What happens | Privileges | CLI required? | Platform-checked? |
-| --- | --- | --- | --- | --- | --- |
-| **Author / register** | `cfs:manifests:register` | Schema validation, source-YAML persisted, summary computed. **Never** spawns `oscfg`. | None | No | Soft warning only |
-| **Deploy** | `cfs:deploy:run` (`mode=enforce`) | `oscfg apply` against the live system. | Admin/root | Yes | **Hard gate** - `'mixed'` rejected |
-| **Audit** | `cfs:deploy:run` (`mode=audit`) | `oscfg get resource` - read-only check. | None on Linux; admin on Windows (preview-CLI bug) | Yes | Hard gate |
-| **Revert** | `cfs.revert.apply` / `cfs:revert:apply` | Re-applies a prior snapshot, or deletes the namespace. | Admin/root | Yes | Hard gate |
+| Action | What it does | What you need |
+| --- | --- | --- |
+| **Author / Register / Save** | Validates structure and saves a baseline in your local workspace; does not apply settings | Either edition; no CLI, admin access, or Azure |
+| **Diff / Benchmark Mapping** | Compares baseline content or maps settings to supplied rules | Either edition; your own licensed data for benchmark mapping |
+| **Audit Pack** | Exports a PDF/Markdown report from available saved data; does not run an Audit | Either edition; no CLI at export time |
+| **Audit** | Checks settings on the local device without intentionally applying desired values | Full edition, matching host, `oscfg`; admin on Windows, appropriate read permissions on Linux |
+| **Deploy / Enforce** | Applies desired settings to the local device and checks the result | Full edition, matching host, `oscfg`, admin/root, and a recovery plan |
+| **Revert** | Reapplies an available pre-deploy snapshot, or removes enforcement/registration when no usable snapshot exists | Full edition and CLI/privilege/platform requirements; not a complete machine restore |
+
+Schema validation and benchmark coverage are **not** proof of device
+compliance. A device result may also be incomplete: inspect settings marked
+unread or indeterminate rather than counting them as compliant.
 
 ## CLI presence is surfaced everywhere
 
-v0.2.0 introduced the bring-your-own-CLI contract. The state is
-surfaced in three places so you never wonder which mode you are in:
+In the **Full edition**:
 
-- **Welcome dialog** on first launch offers two cards: *Author only*
-  (Editor mode, no CLI) and *Author + deploy* (opens the install
-  dialog if the CLI is missing).
-- **Footer health pill** reads 🟢 **OSConfig CLI v…** when installed,
-  🟠 **Editor mode, CLI not installed** otherwise. Clicking the
-  amber pill opens the install dialog.
-- **Settings → System Health** shows the resolved binary path,
-  source (`env` / `installed` / `path` / `msix` / `bundled`), and
-  admin status. A **Recheck** button re-runs the probe without
-  restarting the app.
+- The Welcome dialog offers **Author baselines anywhere** or
+  **Author + deploy on this machine**.
+- The footer shows **Editor mode, CLI not installed** when the CLI is absent.
+  This is a normal authoring state; clicking it opens installation guidance.
+- **Settings → System Health** shows detected CLI information.
+  **Recheck** refreshes it after installation.
 
-When the CLI is missing, Deploy / Audit / Revert preflight in
-`packages/core/src/handlers/` throws `cliRequiredError()` (status
-412, code `'CLI_REQUIRED'`), and the renderer routes that envelope
-through `<CliRequiredModal />` instead of a generic error toast.
+The native `oscfg` CLI is not bundled. Install it only for local device
+operations, using [INSTALL.md](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md#optional-local-device-operations).
+This CLI is separate from the Microsoft.OSConfig PowerShell module used for
+Machine Configuration packaging.
 
 ## Why this matters
 
-Before the unified refactor, registering a Linux manifest from a
-Windows machine would fail at register time with `Unsupported
-resource type` or platform-mismatch errors. Authors couldn't draft a
-baseline for a different OS than their workstation. Now register is
-**platform-agnostic**: any well-formed manifest is accepted, the
-detected platform is recorded, and a soft warning fires when the
-host doesn't match - never a block.
+You can author Windows baselines on a Mac or Linux computer, and Linux
+baselines on Windows. Authoring does not need a matching target machine.
+Deploy/Audit require a compatible local Windows/Linux host. A baseline that
+mixes platform-specific Windows and Linux settings cannot be deployed as one
+unit.
 
-Hard gates only fire when you ask the system to *do* something to
-the live host (deploy, audit, revert) - and those gates require the
-CLI to be installed in the first place.
+ConfigForge is experimental and not intended for production use. Before
+changing a lab device, review every setting, take a machine backup or snapshot,
+and have a recovery path. Applying security settings can affect access,
+networking, and workloads.
 
 ## Soft warnings vs hard errors
 
-- **Hard error** - the manifest is malformed (missing `resources:`,
-  wrong shape, invalid Group/Test wrapper). Refused at register
-  time.
-- **Soft warning** - registered successfully but worth flagging:
-  - manifest platform doesn't match host;
-  - manifest is `'mixed'` (Windows + Linux types in one document);
-  - manifest uses a type unknown to this host's `oscfg` install
-    (only surfaced when the manifest *targets* this host, so
-    cross-platform drafts don't spam false positives).
+- **Hard error:** malformed content, such as a missing `resources:` array or
+  an invalid nested wrapper. Correct it before registering.
+- **Soft warning:** registration succeeded, but the target differs from this
+  computer, the baseline mixes platforms, or a type is unknown to the
+  targeted CLI. Review it before any device operation.
 
-See [Architecture → Registration semantics](../architecture/registration-semantics.md)
-for the full state machine, and
-[Architecture → Mixed-platform classification](../architecture/mixed-platform.md)
-for how `'mixed'` is detected.
+A soft warning permits drafting; it does not promise that the remaining
+settings will apply safely. Developer details remain in
+[registration semantics](../architecture/registration-semantics.md) and
+[platform classification](../architecture/mixed-platform.md).
 
 ## Practical example
 
-You're a security engineer on a Windows workstation drafting a
-baseline for a Linux fleet (no `oscfg` installed yet - that's fine):
+To draft a Linux baseline on Windows or macOS:
 
-1. Paste the Linux YAML into the editor.
-2. **Register** - succeeds, with a `warnings[]` entry: *"Manifest
-   targets `linux`, host is `windows` - deploy from a Linux
-   machine."*
-3. The manifest now lives in `~/.configforge/manifests/<ns>.json`.
-   In either edition, you can run [Diff](../user-guide/matrix-diff.md), score
-   it against [CIS](../user-guide/cis-compliance.md), and export an
-   [audit-pack](../user-guide/audit-pack.md) - none of which need `oscfg`.
-4. **Deploy** is rejected on the Windows machine (`'CLI_REQUIRED'`
-   if the CLI isn't installed; `'mixed'`/platform-mismatch if it
-   is). Install the target device's OSConfig CLI from
-   <https://github.com/microsoft/osconfig/tree/main/docs/cli>, then move
-   the registration JSON + source YAML to a Linux box (or re-register
-   there) to deploy.
+1. Select **Microsoft Baselines → Linux Security Baseline → Use as Template**.
+2. Review and **Register Baseline**. A host/target warning does not mean a
+   device has been changed.
+3. Use Diff, history, rationale, and Audit Pack while reviewing the draft.
+4. Export YAML and import it into the Full edition on a disposable Linux
+   machine when you are ready for device evaluation.
+5. Install the CLI there, run **Audit** first, and inspect unread settings and
+   noncompliance. Only choose **Enforce** after reviewing the intended changes
+   and recovery plan.
 
-> **Tip:** Snapshots and history work in the authoring phase too -
-> nothing about [version history](../user-guide/history-snapshots.md)
-> needs `oscfg` or the OS to match.
+## Azure Machine Configuration is a separate path
+
+For Azure Policy evaluation, export **MOF** and follow
+[Deploy through Azure Machine Configuration](../user-guide/machine-configuration.md).
+Package creation requires **PowerShell 7**, the **GuestConfiguration** toolkit,
+and the **Microsoft.OSConfig PowerShell module 1.4.10 or later** on the
+packaging machine. Version 1.4.10 refers to the module, not the runtime.
+
+The guide binds the MOF to an exact installed module version, creates an
+Audit-first ZIP, tests it, and then covers hosting and policy assignment.
+None of those steps is required for authoring or Audit Pack export.

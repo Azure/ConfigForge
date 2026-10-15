@@ -1,17 +1,21 @@
 # Benchmark Mapping with CIS data
 
-> ⚠️ **Important:** ConfigForge **does not bundle CIS Benchmark
-> data**. The Center for Internet Security licenses CIS Benchmarks
-> under terms incompatible with redistributing derived YAML / JSON /
-> XCCDF artifacts in a public open-source repository. This page
-> describes local/offline features that are **disabled by default**
-> for data-dependent surfaces until you, the user, supply your own
-> legally licensed copy of the data files locally.
+Benchmark Mapping helps you find which benchmark rules correspond to the
+settings in your baseline. It is an optional review tool available in both
+editions; you can author and compare baselines without setting it up.
+
+> **Bring your own data.** ConfigForge does not bundle CIS Benchmark data.
+> Supply a legally licensed copy and follow its redistribution terms.
 >
 > The editor cross-reference drawer and Diff page **CIS Diff** tab are
 > hidden until supported CIS data is present. The **Benchmark Mapping**
 > sidebar page remains visible so users can see the resolved data
 > folder and setup guidance. No OSConfig CLI is required.
+
+**Coverage is not device compliance.** A rule match does not prove that the
+configured value meets the benchmark, that a machine has that value, or that
+the baseline is certified. Review mappings and values, and use device Audit
+separately when you need a machine-state check.
 
 ## What this feature does (when enabled)
 
@@ -40,17 +44,17 @@ it resolves under the app's public assets as `_baselines/cis/_data`.
 
 ### 1. Azure Policy CIS baseline JSON (primary, recommended)
 
-This is the simplest and recommended path for most users.
+If you already have a supported CIS settings catalog in Azure Policy JSON
+format, use it directly:
 
-1. Open the Azure portal.
-2. Navigate to **Azure Policy > Machine Configuration > CIS**.
-3. Download the CIS baseline JSON for your target OS.
-4. Drop the downloaded JSON file into `_baselines/cis/_data` (or the
-   exact folder shown on the Benchmark Mapping page in the app).
-5. Click **Re-check catalog** on the Benchmark Mapping page.
+1. Confirm the file contains a `settingsReference` array of benchmark
+   settings for the OS you want to compare. An arbitrary policy definition or
+   assignment JSON is not a benchmark catalog.
+2. Copy the JSON into the exact folder shown on **Benchmark Mapping**.
+3. Select **Re-check catalog** and inspect the detected file/platform status.
 
-The app parses the Azure Policy structure automatically. No manual
-conversion is needed.
+This route does not require signing in to Azure. JSON catalogs may represent
+only a subset of a benchmark; coverage is relative to the data you supply.
 
 ### 2. XCCDF + OVAL XML (alternative)
 
@@ -68,7 +72,7 @@ mapping table at startup.
 
 ### 3. Legacy OSConfig pipeline JSON (advanced)
 
-This is the internal `cis-mappings.json` format used by earlier
+This is the legacy `cis-mappings.json` format used by earlier
 versions of ConfigForge and the OSConfig
 [`mc/CIS`](https://github.com/microsoft/osconfig/tree/main/mc/CIS)
 scripts. It remains supported for backward compatibility.
@@ -120,9 +124,9 @@ fails, the engine checks whether the resource is a recognized type:
 The drawer marks property-mapping matches with a verification pill so
 the author knows to review them.
 
-> **Note:** A high-confidence match means the names/identity agree. It
-> does **not** assert the *values* agree. That is what CIS Diff coverage
-> is for.
+> **Note:** A high-confidence match means the names/identity agree. Neither
+> that match nor the CIS Diff coverage percentage proves that the *values*
+> agree. Review the desired values and the benchmark's requirements separately.
 
 ## CIS Diff coverage report
 
@@ -146,8 +150,8 @@ The main score is computed strictly:
 - `coverage = covered CIS rules / total benchmark rules * 100`.
 
 > **Tip:** `coverage == 100` means every supplied CIS rule has at least
-> one matching resource. It does *not* mean your manifest is identical
-> to the CIS baseline; extra hardening remains allowed.
+> one matching resource. It does not mean the values are correct, that the
+> manifest is identical to the benchmark, or that any device is compliant.
 
 ### When CIS data is not available
 
@@ -165,14 +169,16 @@ badges and can switch to a Missing-from-CIS view that lists missing benchmark ru
 Audit Pack export supports both PDF and Markdown. Both formats include
 manifest metadata and can include compliance, device-audit, history,
 rationale, and citations when those inputs are available. Open
-**Manifest > Audit Pack** and choose **Download PDF** or **Download
-Markdown**, or trigger the audit-pack IPC channel with `format: 'pdf'`
-or `format: 'markdown'`.
+the baseline's **Audit Pack** and choose **Download PDF** or **Download
+Markdown**. Generating this report does not run a device Audit.
 
 Today analysis provenance is not persisted per manifest, so the
 citations/provenance section is omitted in normal UI-generated audit
 packs. Both formats omit the CIS section gracefully when CIS data isn't
 available. See [Audit-pack](./audit-pack.md).
+
+<details>
+<summary>Developer reference: performance and data-dependent controls</summary>
 
 ## Performance (when data is present)
 
@@ -191,6 +197,8 @@ available. See [Audit-pack](./audit-pack.md).
 | Audit-pack PDF "CIS coverage" section | Server-side: skipped when `loadCisGlobalMappings()` returns `null` |
 | `cfs.cis.lookup()` | Returns `{ name, match: null }` when data absent |
 | `cfs.cis.bulkLookup()` | Returns benchmark coverage data for the Diff page's CIS Diff tab; errors clearly when a selected benchmark file is unavailable |
+
+</details>
 
 ## See also
 

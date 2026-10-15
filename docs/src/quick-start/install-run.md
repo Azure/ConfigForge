@@ -1,116 +1,131 @@
 # Install & run
 
-ConfigForge is an Electron 42 + React 18 + FluentUI v9 + Vite desktop app. The
-**Full** edition runs on Windows and Linux and includes authoring plus
-CLI-gated device deploy/audit/revert. The **Author** edition is an ARM64-only
-Apple Silicon macOS build. It includes authoring, Microsoft Baselines, Diff,
-Benchmark Mapping, history, rationale, and Audit Pack export while omitting
-device operations. The native `oscfg` CLI is **not bundled** and is **not
-required** for authoring in either edition.
+Download the desktop app to start authoring. **You do not need Node.js, the
+OSConfig CLI, PowerShell modules, administrator access, or an Azure subscription
+to author baselines.** Installing software may still require approval on a
+managed computer.
 
-The current Windows/Linux release is `v0.3.103`. The current macOS Author
-release is `mac-v0.3.101-author.1`; both are published as prereleases. The
-package versions are `0.3.103` for the Full edition and `0.3.101-author.1`
-for the macOS Author edition.
+> ConfigForge is experimental, community-maintained, provided as-is, and not
+> intended for production use. It is not an officially supported Microsoft
+> product.
 
 ## Prerequisites
 
-| Requirement | Notes |
-| --- | --- |
-| **Node.js 22 LTS** | The repo pins Node 22 via `.nvmrc`. Run `nvm use` (or upgrade your Node) so `node --version` reports `v22`. |
-| **`oscfg` CLI binary** *(optional)* | Only needed for Deploy / Audit / Revert in the Full edition. Install separately from the [OSConfig CLI docs](https://github.com/microsoft/osconfig/tree/main/docs/cli). |
-| **Admin / root** *(optional)* | Required on Windows for *every* CLI operation (preview-CLI bug - see [Operations → Filing upstream bugs](../operations/upstream-bugs.md)). On Linux, only `oscfg apply` needs `sudo`. |
+| Your computer | Edition and download | Capabilities |
+| --- | --- | --- |
+| Windows/Linux x64 | [Full v0.3.103](https://github.com/Azure/ConfigForge/releases/tag/v0.3.103) | Authoring and review; optional CLI-based local device operations |
+| macOS, Apple Silicon (M1 or later) | [Author mac-v0.3.101-author.1](https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.101-author.1) | Authoring and review, including Audit Pack export; no device operations |
 
-## Get the code
+Both are prereleases. macOS is ARM64-only: Intel Macs and universal binaries
+are not supported.
 
-```bash
+## Download and install
+
+1. Open the release for your edition and expand **Assets**.
+2. Download the installer or portable archive for your OS and the release's
+   checksum manifest. Do not choose the source-code archive unless you plan
+   to build the app.
+3. Verify the asset's SHA-256 against the published checksum and follow the
+   platform-specific [installation instructions](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md#install-the-desktop-app).
+4. Open ConfigForge normally. Authoring does not require elevation.
+
+**Downloads are unsigned; macOS builds are not notarized.** Checksum matching
+does not establish publisher identity or safety. Review warnings, use only
+approved per-file exceptions, and do not disable SmartScreen or Gatekeeper
+globally. On managed computers, ask your administrator if blocked.
+The [installation guide](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md)
+explains the risks and platform-specific options.
+
+## Verify
+
+1. If the Welcome dialog appears, choose **Author baselines anywhere**.
+2. Open **Microsoft Baselines** and confirm the catalog appears.
+3. Follow [Your first baseline](./first-manifest.md) to register and export
+   a copy.
+
+In the Full edition, **Editor mode, CLI not installed** is a valid state—not
+an installation failure. You can ignore it while authoring. macOS Author
+intentionally omits CLI-health and device-operation controls.
+
+## Optional tools
+
+- **Local device Audit/Deploy/Revert:** Full edition, a matching Windows/Linux
+  host, and the separately installed `oscfg` CLI. Windows CLI operations
+  require elevation. See [Authoring vs deploying](./authoring-vs-deploying.md).
+- **Azure Machine Configuration packaging:** PowerShell 7, GuestConfiguration,
+  and the **Microsoft.OSConfig PowerShell module 1.4.10 or later** on the
+  packaging machine. Version 1.4.10 is **not** the PowerShell runtime version.
+  See the [complete packaging guide](../user-guide/machine-configuration.md).
+- **Benchmark Mapping:** your own legally licensed benchmark data.
+  See [data setup](../user-guide/cis-compliance.md).
+
+## Updating
+
+Read the [release notes](../changelog.md), back up your workspace at
+`~/.configforge/`, and install the new release for the **same edition**.
+Recheck the release checksum and unsigned-download guidance.
+The workspace holds baselines, history, rationale, and available audit results.
+See [privacy and local storage](https://github.com/Azure/ConfigForge/blob/main/PRIVACY.md).
+
+## Build from source (optional)
+
+For contributors or readers choosing to build reviewed source. These commands
+are **not** needed for the downloaded app.
+
+### Get the code
+
+Use Node **22.12+ LTS** or **24 LTS** and Git. `.nvmrc` and `.node-version`
+select the default Node 22 toolchain.
+
+```powershell
 git clone https://github.com/Azure/ConfigForge.git
 cd ConfigForge
 ```
 
-> **Note:** `main` is the active Windows/Linux Full-edition line. On an Apple
-> Silicon Mac (M1 or later), users can build the
-> `mac-v0.3.98-author.1` tagged source while the matching release remains
-> unpublished. Intel Macs and universal binaries are not supported.
-> macOS release builds are unsigned by design. Clear quarantine after
-> copying the app into Applications:
->
-> ```bash
-> xattr -cr "/Applications/ConfigForge Author.app"
-> ```
+### Install dependencies
 
-## Install dependencies
+Choose the correct branch **before** restoring dependencies:
 
-```bash
+```powershell
+# Windows or Linux Full edition
+git checkout main
+node --version
 npm ci
 ```
 
-Use `npm ci` (not `npm install`) for a clean, lockfile-faithful
-install. The `postinstall` script runs `scripts/chmod-oscfg.js`,
-which marks any developer-supplied `oscfg` binary under
-`resources/oscfg/linux-x64/` executable (no-op on Windows and when
-no binary is present - most users don't drop one in).
-
-## Run
+For Apple Silicon macOS:
 
 ```bash
+git checkout mac-author-build
+node --version
+npm ci
+```
+
+The version check must report Node 22.12+ or 24.x. Use `npm ci` for a
+lockfile-faithful install. If dependencies were installed under an unsupported
+Node release, switch to the supported toolchain, remove `node_modules`, and
+run `npm ci` again.
+
+### Run
+
+Windows/Linux Full:
+
+```powershell
 npm run desktop:dev
 ```
 
-This runs Vite (renderer) + Electron in parallel with hot-reload and
-opens the ConfigForge window. There is **no browser URL** -
-the UI lives entirely in the Electron window. `npm run dev` is not a
-script; the Next.js host was retired in Phase 10.
+Apple Silicon macOS Author:
 
-> **Warning:** On Windows, **launch from an elevated PowerShell** if
-> you plan to exercise Deploy or Audit. The preview `oscfg` CLI opens
-> its log file in a protected directory on every invocation,
-> including read-only audits, so a non-admin run fails at the first
-> CLI call. Editor-mode flows (author, diff, import/export,
-> audit-pack PDF) work fine without elevation.
+```bash
+npm run dev:author -w @configforge/desktop
+```
 
-## Verify
-
-In the running app:
-
-1. Look at the footer health pill. It should read either
-   🟢 **OSConfig CLI v…** (CLI installed) or
-   🟠 **Editor mode, CLI not installed** (default first-run state).
-   Both are valid; only the second blocks Deploy.
-2. Open **Settings → System Health** for the resolved CLI path,
-   source (`env` / `installed` / `path` / `msix` / `bundled`), and
-   admin status. Click **Recheck** if you just installed the CLI.
-3. Open **My Baselines → Register New** and paste the
-   [first-manifest example](./first-manifest.md). It should register
-   with zero errors.
-
-If the System Health panel says `binary not found`, install the CLI from
-the [OSConfig CLI docs](https://github.com/microsoft/osconfig/tree/main/docs/cli),
-or set `$env:OSCFG_BIN` / `$OSCFG_BIN` to point at a local copy and
-click **Recheck**.
+These commands open Electron with hot reload; there is no browser URL.
+Launch without elevation for authoring. For contributor setup and validation,
+see [CONTRIBUTING.md](https://github.com/Azure/ConfigForge/blob/main/CONTRIBUTING.md).
 
 ## Build a desktop installer
 
-```bash
-npm run desktop:build         # core + renderer + electron main
-npm run desktop:dist          # full installer (Win or Linux per host)
-```
-
-See [`apps/desktop/PACKAGING.md`](../../../apps/desktop/PACKAGING.md)
-for the cross-platform build matrix and unsigned-build trust guidance.
-
-## Updating
-
-The repo is plain `git pull`-able:
-
-```bash
-git pull
-npm ci
-npm run desktop:dev
-```
-
-No database, no migration step. Runtime state lives in
-`~/.configforge/` (manifests, history, rationale, audit-results); it
-is backwards-compatible across releases. Core authoring and analysis work
-offline. Supported update checks and user-requested public URL imports use the
-network as described in [`PRIVACY.md`](../../../PRIVACY.md).
+See [desktop packaging](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/PACKAGING.md)
+for Windows/Linux and macOS Author commands, build-host requirements, and smoke
+checks. A source build remains unsigned unless you arrange your own signing.
