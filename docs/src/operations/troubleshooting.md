@@ -1,7 +1,23 @@
 # Troubleshooting
 
-A grab-bag of error messages and fixes. Listed in roughly the
-order new users encounter them.
+Start with the section matching your symptom. Authoring does not require the
+CLI, elevation, or Azure.
+
+## Download is blocked
+
+Releases are unsigned, and macOS builds are not notarized. Verify the download
+source and SHA-256 checksum, then follow your organization's approved process.
+Do not disable operating-system protections globally. See
+[installation and download warnings](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md#install-the-desktop-app).
+
+## Machine Configuration package creation fails
+
+Use **PowerShell 7**, **GuestConfiguration**, and the **Microsoft.OSConfig
+PowerShell module 1.4.10 or later** on the packaging machine. The CLI installed
+with winget does not satisfy the module requirement. Resolve the MOF's `0.0.0`
+placeholder to an exact qualifying installed module version before packaging.
+Follow the [packaging checks and troubleshooting](../user-guide/machine-configuration.md#troubleshooting);
+do not apply the historical 1.4.3 patch to 1.4.10+ packages.
 
 ## "`oscfg` binary not found"
 
@@ -10,10 +26,13 @@ installed**) even after install. Settings → System Health reports
 `oscfg.path: null` and Deploy / Audit / Revert open the
 `<CliRequiredModal />` install dialog.
 
+If you only want to author, compare, or export, this is a normal Full-edition
+state and needs no fix. macOS Author intentionally has no CLI/device controls.
+
 Causes & fixes:
 
 1. No `OSCFG_BIN`, no `oscfg` on `$PATH`, no install in a well-known
-   location. Follow [INSTALL.md](../../../INSTALL.md) for the
+   location. Follow [INSTALL.md](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md) for the
    platform-specific install path (Windows: `winget install
    Microsoft.OSConfig`; Linux: the latest release tarball into
    `/usr/local/bin/`). Click **Recheck** in Settings → System Health
@@ -53,8 +72,9 @@ whitelist for the targeted `oscfg` build. The whitelist lives at
 [`packages/core/src/oscfg/registered-types.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/oscfg/registered-types.ts)
 keyed by `OSCFG_CLI_VERSION`.
 
-Fix: this is intentional graceful degradation - the rest of the
-manifest still applies. When upstream adds a new type, re-probe with
+Fix: registration permits authoring with a warning; it does not guarantee
+successful or safe deployment. Check the target CLI's provider support before
+using device operations. For contributors, when upstream adds a new type, re-probe with
 `scripts/probe-types.ps1` and add it to the whitelist + bump
 `OSCFG_CLI_VERSION`. See
 [Contributing → Adding a new oscfg type](../contributing/adding-oscfg-types.md).

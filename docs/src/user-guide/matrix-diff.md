@@ -1,26 +1,23 @@
 # Diff: Pairwise + CIS + Matrix
 
-> **v0.3.48:** Diff is a pure-renderer feature - no OSConfig CLI
-> required. Pairwise and Matrix modes load source YAML from the
-> manifest store and compute deltas in-process, so they work in
-> Editor mode (amber footer pill) exactly as they do with the CLI
-> installed. The CIS tab also runs locally against user-supplied CIS
-> data.
+Compare baseline content before deciding what to change. Diff works in both
+editions without the OSConfig CLI, administrator access, or Azure. It does not
+inspect or modify a device.
 
 ConfigForge's **Diff** page has three tabs:
 
 - **Pairwise** - classic A vs B comparison from registered manifests or
   pasted/uploaded YAML. The Compare button auto-scrolls to the results
   once the diff renders.
-- **CIS Diff** - industry-aligned coverage scoring against a selected
+- **CIS Diff** - benchmark-rule coverage against a selected
   CIS baseline. It appears when CIS data is loaded and its Compare
   button auto-scrolls to the score/results.
 - **Matrix (N-way)** - pick 2-10 manifests, see a side-by-side table
   with each row a setting and each column a baseline.
 
-The matrix mode is the one auditors and consultants asked for: the
-research showed that pairwise compare doesn't scale past three
-baselines.
+**Coverage is not device compliance.** A matching rule does not establish that
+values meet the benchmark or that a device uses them. See
+[Benchmark Mapping](./cis-compliance.md) for interpretation and data setup.
 
 ## Open
 
@@ -33,6 +30,9 @@ baselines.
   the manifests to include with checkboxes (up to 10).
 
 ## How rows are merged
+
+<details>
+<summary>Technical matching rules and historical fixes</summary>
 
 The matrix builder lives in
 [`packages/core/src/diff/matrix.ts`](https://github.com/Azure/ConfigForge/blob/main/packages/core/src/diff/matrix.ts).
@@ -70,6 +70,8 @@ merges the same setting across baselines.
 > in naming convention (`AuditLogon` / `Audit Logon` / `audit_logon`).
 > The matrix builder is unaffected; its keying already covers these
 > cases.
+
+</details>
 
 ## Row status
 
