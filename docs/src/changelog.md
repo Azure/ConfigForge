@@ -5,6 +5,21 @@ shipped semver tag; older entries summarize the foundational work by theme.
 
 ## Unreleased
 
+- **Dependency security:** Update DOMPurify, Axios, ip-address,
+  every supported brace-expansion and Undici line, and concurrently to
+  patched releases. Also patch sharp, fast-uri, joi, and source-map-js
+  findings uncovered by the full dependency audit.
+  Correct the root shell-quote override so the vulnerable copy is not
+  retained, and add lockfile regression coverage.
+- **Cache and CSS tooling:** Update http-cache-semantics beyond the reported
+  affected range and use a patched CSS selector parser without upgrading
+  Tailwind 3. Cover compiled variant and child-selector compatibility.
+- **CI dependencies:** Refresh the SHA-pinned setup-node and upload-artifact
+  GitHub Actions.
+- **macOS validation:** Build the author edition and native icons on macOS,
+  and verify that its compiled bridge excludes device-operation APIs.
+- **Remaining upstream advisories:** Build-only braces and sprintf-js have
+  no patched releases. Their advisories remain visible without suppression.
 - **SBOM tooling security:** Pin CycloneDX npm 6.0.0 to address
   `GHSA-q69g-4hcv-6jg4`, with regression coverage for resolved versions.
 - **Dependency security:** Port patched xmldom, brace-expansion, and nanoid
