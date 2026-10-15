@@ -1,298 +1,226 @@
 # ConfigForge
 
-> ⚠️ **Disclaimer:** This tool is provided as-is without Microsoft support. This is an experimental project to help customers accelerate their use of security baselines while helping IT architects validate desired configurations. ConfigForge is **not** an officially supported Microsoft product. **Not intended for production use** — for experimentation, learning, and community contributions only. **Use at your own risk.**
+**Create, compare, and share OSConfig security baselines—before changing a device.**
+Start with a Microsoft baseline or your own settings, review them visually, and
+export a baseline or review report. No CLI, administrator access, or Azure
+subscription is needed for authoring.
 
-**Cross-platform OSConfig security baseline authoring desktop app.** Electron 42 + React 18 + FluentUI v9 + Vite. Windows + Linux use the full build from `main`; macOS uses the author-only flavor from `mac-author-build`. Author, validate, compare, and export on every supported edition. Device deploy and audit are Full-edition features that use the native [`oscfg`](https://github.com/microsoft/osconfig/tree/main/docs/cli) CLI on Windows or Linux.
+> **Experimental, community-maintained, and provided as-is.** ConfigForge is
+> not an officially supported Microsoft product and is **not intended for
+> production use**. Use it for learning and evaluation at your own risk.
+> [Support boundaries](./SUPPORT.md)
 
-> The `oscfg` binary is **not** bundled. Editor, Microsoft Baselines, Diff, Benchmark Mapping, and Audit Pack PDF/Markdown export all work without it, including in the macOS Author edition. Deploy, device Audit, and Revert require the Full edition and the CLI. See [`INSTALL.md`](./INSTALL.md) for platform-by-platform install steps.
+**[Download releases](https://github.com/Azure/ConfigForge/releases)** ·
+**[Documentation](https://azure.github.io/ConfigForge/)** ·
+**[First baseline walkthrough](./docs/src/quick-start/first-manifest.md)**
 
-The current Windows/Linux release is `v0.3.103`. The current macOS Author
-release is `mac-v0.3.101-author.1`; both are published as prereleases. The
-package versions are `0.3.103` for the Full edition and `0.3.101-author.1`
-for the macOS Author edition.
+## Download the right edition
 
-## Export to Azure Machine Configuration
+| Your computer | Download | What you can do |
+| --- | --- | --- |
+| Windows or Linux (x64) | **Full** — [v0.3.103](https://github.com/Azure/ConfigForge/releases/tag/v0.3.103) | Author, validate, compare, and export. Optional local Deploy, Audit, and Revert require the separately installed `oscfg` CLI. |
+| macOS on Apple Silicon (M1 or later) | **Author** — [mac-v0.3.101-author.1](https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.101-author.1) | The same authoring and review workflows, including Audit Pack export; no device operations. ARM64 only—not Intel or universal. |
 
-Use this supported path to deploy a ConfigForge baseline through Azure Policy:
+Both releases are **prereleases**. Full-edition package versions are `0.3.103`;
+the macOS Author package version is `0.3.101-author.1`.
 
-`ConfigForge baseline → MOF → resolved MOF → Machine Configuration ZIP → Azure Storage → generated policy JSON → policy definition → assignment`
+**Downloads are unsigned; macOS builds are also not notarized.** Download only
+from this repository's release page, compare the asset's SHA-256 with the
+published checksum, and follow your organization's software policy.
+Checksums check file integrity, not publisher identity or safety. Do not
+disable SmartScreen or Gatekeeper globally. See [installation and download
+warnings](./INSTALL.md#install-the-desktop-app) before opening an installer.
+Building from reviewed source is another option, not a safety guarantee.
 
-1. Open **Baseline Detail**, select **Export**, and save the baseline as
-   **MOF (`.mof`)**.
-2. On a PowerShell 7 packaging machine, install `GuestConfiguration`,
-   `Microsoft.OSConfig`, and the required `Az` modules.
-3. Resolve the exported MOF's portable `ModuleVersion = "0.0.0"` placeholder
-   to the newest `Microsoft.OSConfig` version installed on that machine:
+## Create your first baseline
 
-   ```powershell
-   $Module = Get-Module -ListAvailable Microsoft.OSConfig |
-     Sort-Object Version -Descending |
-     Select-Object -First 1
-   (Get-Content .\Baseline.mof -Raw).Replace(
-     'ModuleVersion = "0.0.0";',
-     "ModuleVersion = `"$($Module.Version)`";"
-   ) | Set-Content .\Baseline.resolved.mof -Encoding utf8
-   ```
+A **baseline** is a set of desired settings. A **manifest** is the YAML or JSON
+document that describes those settings. **Register** means save a baseline to
+your ConfigForge workspace—not apply it to a device.
 
-4. Create and test an Audit package:
+1. Install and open the edition for your computer. If the Welcome dialog
+   appears, choose **Author baselines anywhere**.
+2. Open **Microsoft Baselines**, choose a baseline to explore, and select
+   **Use as Template**.
+3. Give your copy a unique name, review its settings in **Visual** or **Code**,
+   and select **Register Baseline**.
+4. Open it from **My Baselines** and choose **Export → YAML** to save a portable
+   copy.
 
-   ```powershell
-   $Package = New-GuestConfigurationPackage `
-     -Name ConfigForgeBaseline_1_0_0 `
-     -Configuration .\Baseline.resolved.mof `
-     -Type Audit `
-     -Path .\package `
-     -Force
+**Success:** your baseline appears in My Baselines and you have an exported
+`.osc.yaml` file. You have not deployed or audited anything. A Full-edition
+**Editor mode, CLI not installed** indicator is expected and does not block
+this workflow.
 
-   Get-GuestConfigurationPackageComplianceStatus -Path $Package.Path
-   ```
+For screenshots, alternative starting points, and a small YAML example, follow
+[Your first baseline](./docs/src/quick-start/first-manifest.md).
 
-5. Upload the ZIP with `Set-AzStorageBlobContent`, create a read-only package
-   URI, then run `New-GuestConfigurationPolicy -Mode Audit`.
-6. Publish the returned JSON with `New-AzPolicyDefinition` and assign it with
-   `New-AzPolicyAssignment`. Azure VMs also need the built-in Machine
-   Configuration prerequisite initiative.
+![Microsoft Baselines: choose a template to create your own baseline](./docs/images/screenshots/library.png)
 
-Use a unique package name/version and do not modify the ZIP after generating
-the policy because the definition includes its content hash. Audit is the
-documented default while Microsoft.OSConfig 1.3.11 retains its upstream
-remediation serialization defect.
+## Choose what to do next
+
+| Your goal | Guide | Extra requirements |
+| --- | --- | --- |
+| Edit settings or import YAML, JSON, CSV, or XLSX | [Baseline editor](./docs/src/user-guide/manifest-editor.md) | None for authoring |
+| Compare two baselines or a matrix of up to ten | [Diff](./docs/src/user-guide/matrix-diff.md) | None |
+| Map settings to a benchmark | [Benchmark Mapping](./docs/src/user-guide/cis-compliance.md) | Your own legally licensed benchmark data; CIS data is not bundled |
+| Record why settings changed | [Rationale](./docs/src/user-guide/rationale.md) and [history](./docs/src/user-guide/history-snapshots.md) | None |
+| Export a PDF or Markdown review report | [Audit Pack](./docs/src/user-guide/audit-pack.md) | Uses available saved data; does not run a device Audit |
+| Evaluate a local lab device | [Authoring vs deploying](./docs/src/quick-start/authoring-vs-deploying.md) | Full edition, matching Windows/Linux host, CLI, and appropriate privileges |
+| Evaluate a baseline through Azure Policy | [Machine Configuration](./docs/src/user-guide/machine-configuration.md) | Separate packaging environment and Azure permissions |
+
+**Benchmark coverage is not proof of device compliance.** A mapped setting
+does not establish that its value is correct or that a device uses it. An
+**Audit Pack** is an exported report; **Audit** checks a device through `oscfg`.
+Missing or old device results must not be presented as a current audit.
 
 ## What it looks like
 
-Left rail order is **Dashboard, My Baselines, Microsoft Baselines, Export Readiness, Diff, Benchmark Mapping, Settings**.
+Screenshots illustrate the workflows; exact layout varies by release and
+edition. Device controls shown in Full-edition screenshots are absent on macOS.
+
+<details>
+<summary>Explore the editor, comparison, and report screenshots</summary>
 
 ### Microsoft Baselines: start from a curated catalog
 
-Browse pre-built security baselines (Windows Server 2016/2019/2022/2025,
-member, domain controller, and workgroup; Microsoft Defender; LAPS; Secured
-Core; and Linux Security Baseline) and click **Use as Template** to fork one
-into your own baseline.
-
-![Microsoft Baselines: pre-built security baselines you can fork into your own baseline](./docs/images/screenshots/library.png)
+Browse Windows Server role baselines, Defender, LAPS, Secured Core, and the
+Linux Security Baseline. **Use as Template** creates your own editable copy.
 
 ### Dashboard: system health + quick actions
 
-See the resolved `oscfg` version, admin status, server type, and OS version at a glance. Three quick-action buttons (New Baseline, Browse Microsoft Baselines, Compare Baselines) jump straight into authoring or compliance.
+Start a baseline, browse Microsoft Baselines, or compare existing work.
+The Full edition also surfaces CLI and device health.
 
-![Dashboard: system health, registered-baseline count, quick actions, and recent activity](./docs/images/screenshots/home.png)
+![Dashboard and quick actions](./docs/images/screenshots/home.png)
 
 ### My Baselines: localized catalog and persistent workspaces
 
-Search and filter the localized administration table, see real Date Modified
-values in the local calendar, open multiple baselines in persistent tabs, and
-compare selected baselines. Unsaved edits are protected before a tab closes or
-navigation leaves the workspace.
+Search and filter baselines, open persistent tabs, and compare selected items.
+Unsaved-edit prompts help protect work when closing a tab or navigating away.
 
 ### Baseline editor: author and export an Audit Pack
 
-YAML / JSON / Visual editing includes live validation, version history, CIS
-cross-reference, and one-click Audit Pack PDF/Markdown export. Each baseline
-remembers its Code or Visual view. Read-only Code view explains how to enter
-editing, and unsaved changes are protected when a baseline tab closes or
-navigation leaves the editor. The Full edition also exposes CLI-gated device
-deploy/audit controls; the macOS Author edition does not.
+Review Code or Visual views, edit settings, and export your work.
 
-![Baseline editor: YAML/JSON/Visual tabs, deploy + audit, history, and Audit Pack button](./docs/images/screenshots/manifest-detail.png)
+![Baseline editor in the Full edition](./docs/images/screenshots/manifest-detail.png)
 
 ### Visual spreadsheet: edit settings in place
 
-Switch to **Visual** mode and click **Edit** to work directly in grouped setting
-tables. Edit cells, add known Windows or Linux setting types, add blank rows,
-or select rows for deletion. Test wrappers and Group children remain bound to
-their original YAML structure, typed values remain typed, and QWord integers
-retain full precision. On current `main`, Tab commits and moves right, Enter
-moves down through nested values, final Enter appends and focuses a new value,
-and invalid drafts retain focus. PR #77 carries that PR #76 behavior on the
-current macOS branch.
+Edit cells, add supported setting types, or remove selected rows. Nested
+Test/Group structure, typed values, and exact QWord integers are preserved.
 
-![Visual spreadsheet with inline setting editing](./docs/images/screenshots/visual-builder.png)
+![Visual spreadsheet editing](./docs/images/screenshots/visual-builder.png)
 
 ### Audit pack: the auditor deliverable
 
-One click on **Audit Pack** opens a download surface with PDF + Markdown
-buttons, an inline PDF preview, and a sidebar showing exactly what's in the
-pack (baseline header, compliance report, version history, rationale log, and
-analysis provenance labels). This authoring/export workflow is available in both the
-Full and macOS Author editions; it does not perform a device audit.
+Export PDF or Markdown from saved baseline, history, and available review data.
+No device audit is performed when generating the report.
 
-![Audit pack download page: PDF + Markdown buttons, inline preview, what's-included sidebar](./docs/images/screenshots/audit-pack.png)
+![Audit Pack download and preview](./docs/images/screenshots/audit-pack.png)
 
 ### Create a new baseline: choose from five starting points
 
-Create a blank Windows or Linux baseline, start from a starter template,
-choose a Microsoft Baseline in place, load from a public URL, or import a local
-`.osc.yaml`, `.json`, `.csv`, or binary `.xlsx` file. The validated import path
-converts supported spreadsheet data into editable OSConfig settings.
+Start a custom Windows/Linux baseline, choose a template, import a baseline
+file, import a spreadsheet, or load a public URL.
 
-![Register new baseline: import/paste/build with platform-aware validation](./docs/images/screenshots/new-manifest.png)
+![New baseline starting points](./docs/images/screenshots/new-manifest.png)
 
 ### Compare baselines: Pairwise, CIS, Matrix
 
-The Diff page has **Pairwise**, **CIS**, and **Matrix** views. Starting a
-comparison with exactly two selected baselines preselects them in Pairwise.
-Starting with three through ten selected baselines preselects them in Matrix.
-Pairwise shows source and setting changes; Matrix aligns equivalent rules
-across multiple baselines.
+Two selected baselines open Pairwise; three through ten open Matrix.
+The CIS view requires user-supplied benchmark data.
 
-![Compare baselines: pairwise diff with diff stats, AI insights, and Setting Changes panel](./docs/images/screenshots/diff.png)
+![Pairwise comparison](./docs/images/screenshots/diff.png)
 
 ### Benchmark Mapping: bring-your-own benchmark data
 
-Drop CIS Azure Policy JSON or XCCDF+OVAL XML files onto the **Benchmark Mapping** page (no benchmarks are bundled — CIS licensing). The page auto-detects platform and shows per-file status indicators with Re-check / Open folder actions. CIS data powers the inline cross-reference drawer in the editor, the compliance scoring on every baseline, and the bulk CIS Diff tab.
+Use the data folder shown in **Benchmark Mapping**, then re-check the catalog.
+See the [data setup guide](./docs/src/user-guide/cis-compliance.md).
 
-![Benchmark Mapping page: per-file detection status with Re-check + Open folder actions](./docs/images/screenshots/cis-mapping.png)
+![Benchmark data detection](./docs/images/screenshots/cis-mapping.png)
 
 ### CIS Diff: bulk compliance scoring
 
-The Diff page includes a **CIS Diff** tab that scores any baseline against any user-supplied CIS benchmark. Big compliance % hero metric ("X of Y CIS rules covered"), filterable setting table with red ✕ / green ✓ status icons (click the Status column to sort), per-row source badge (Azure Policy vs XCCDF), and a "Missing from CIS" filter to surface unmapped rules.
+The percentage measures unique benchmark rules covered by matching settings,
+not device compliance or certification.
 
-![CIS Diff tab: compliance hero metric + sortable setting coverage table](./docs/images/screenshots/cis-diff.png)
+![CIS coverage table](./docs/images/screenshots/cis-diff.png)
+
+</details>
+
+## Optional: install the OSConfig CLI for Deploy / Audit
+
+The native [`oscfg`](https://github.com/microsoft/osconfig/tree/main/docs/cli)
+CLI is **not bundled**. It is separate from the PowerShell modules used for
+Machine Configuration packaging. The targeted CLI is `oscfg 1.3.9-preview11`;
+see [INSTALL.md](./INSTALL.md#optional-local-device-operations) for setup.
+
+Start with Audit on a disposable, matching-platform device. Enforce changes
+settings; Revert is not a substitute for a machine backup. On Windows, the
+preview CLI requires elevation even for Audit. Authoring does not.
+
+## Export to Azure Machine Configuration
+
+This is an **advanced, optional workflow**, not a prerequisite for using the
+app:
+
+`ConfigForge baseline → MOF → resolved MOF → Machine Configuration ZIP → Azure Storage → generated policy JSON → policy definition → assignment`
+
+On the **packaging machine**, `New-GuestConfigurationPackage` needs the
+**Microsoft.OSConfig PowerShell module version 1.4.10 or later** to bundle the
+OSConfig DSC resource. Install it with
+`Install-Module -Name Microsoft.OSConfig -MinimumVersion 1.4.10`.
+This is a **module version**, not a PowerShell runtime version. PowerShell 7
+and the separate **GuestConfiguration** packaging toolkit are also required.
+
+The [complete Machine Configuration guide](./docs/src/user-guide/machine-configuration.md)
+checks for a qualifying installed module, binds the exported
+`ModuleVersion = "0.0.0"` placeholder to that exact version, and creates an
+Audit-first package. Keep each ZIP and its URI immutable after policy
+generation: the policy contains the package hash. Test the baseline and
+module combination; the minimum version is not a claim that every OSConfig
+issue is resolved. [Module release](https://www.powershellgallery.com/packages/Microsoft.OSConfig/1.4.10)
 
 ## Quick start: run from source
 
-```powershell
-# Requires Node 22.12+ LTS or Node 24 LTS.
-# .nvmrc and .node-version select the default Node 22 toolchain.
-git clone https://github.com/Azure/ConfigForge.git
-cd ConfigForge
-git checkout main
-node --version                     # must report v22.12+ or v24.x
-npm ci
-npm run desktop:dev               # Windows + Linux full flavor
-
-# On an Apple Silicon Mac, use the author flavor instead:
-git checkout mac-author-build
-node --version                     # must report v22.12+ or v24.x
-npm ci
-npm run dev:author -w @configforge/desktop
-```
-
-Both development commands run Vite (renderer) + Electron with hot-reload.
-Source builds reject unsupported Node.js releases before Vite starts. If
-dependencies were installed with an unsupported release, switch to Node 22 or
-24, delete `node_modules`, run `npm ci`, and retry the development command.
-
-### Optional: install the OSConfig CLI for Deploy / Audit
-
-The editor, library, diff, compare, CIS mapping, import/export, and audit-pack PDF features all work without the CLI. To enable Deploy / Audit / Revert against a real Windows or Linux machine, install OSConfig separately:
-
-- **All platforms:** see [`INSTALL.md`](./INSTALL.md) for platform-by-platform steps.
-- **Upstream:** https://github.com/microsoft/osconfig
-- **Current target:** `oscfg 1.3.9-preview11`
-
-After install, click the amber **Editor mode, CLI not installed** pill in the footer (or the **Recheck** button in Settings) to flip the app into Deploy-capable mode without restarting. On Windows the CLI currently requires running ConfigForge from an **elevated PowerShell**.
+Source builds are optional. Follow [Build from source](./docs/src/quick-start/install-run.md#build-from-source-optional)
+for the separate Full and macOS Author commands and the supported Node
+toolchain. You do not need Node.js to run a downloaded desktop build.
 
 ## Building installers
 
-```powershell
-# Windows: NSIS .exe + portable zip (~113 MB / ~149 MB)
-npm run desktop:dist:win
-
-# Linux: portable tar.gz from any host (~140 MB)
-npm run desktop:dist:linux
-```
-
-Full Linux installer matrix (AppImage + deb + rpm) needs a Linux build host. `release.yml` uses `ubuntu-latest` for that. See [`apps/desktop/PACKAGING.md`](./apps/desktop/PACKAGING.md) for the full build matrix and the post-build smoke checklist.
-
-The macOS Author DMG targets Apple Silicon (`arm64`) and is built from
-`mac-author-build` with `npm run dist:mac:author -w @configforge/desktop`. It
-is ARM64-only, unsigned, and not notarized. It does not support Intel Macs and
-is not a universal binary.
-
-> **Builds are unsigned.** This project holds no code-signing credentials, so installers are unsigned by design — Windows SmartScreen and macOS Gatekeeper will warn. The trust path is building from source (above); you can optionally self-sign your own local build via [`apps/desktop/scripts/generate-dev-cert.ps1`](./apps/desktop/scripts/generate-dev-cert.ps1).
+See [desktop packaging](./apps/desktop/PACKAGING.md) for platform-specific
+commands, build-host requirements, and smoke checks. Full Linux installer
+builds require Linux; macOS Author builds require Apple Silicon.
 
 ## Repo layout
 
-| Path | What |
-|---|---|
-| `apps/desktop/**` | The Electron app: renderer (React + FluentUI v9 + Vite), main process, preload bridge, electron-builder config |
-| `apps/desktop/src/pages/<Page>/` | Each lighthouse page lives in its own directory with `index.tsx` (composition), `state/` (custom hooks + their tests), `components/` (memoised sub-components), and optional `helpers.tsx`. Pattern landed during the Phase A-E renderer-page split |
-| `packages/core/**` | Platform-neutral core: manifests, history, audit-pack, oscfg wrapper, analysis provenance labeling (`circular-guard`, `provenance`; local heuristic, advisory). Imported as `@configforge/core` from the desktop app |
-| `resources/oscfg/**` | **Dev-only convenience drop** for contributors who bring their own `oscfg` binary. Never shipped to users; the installer carries no Microsoft-owned binaries |
-| `public/_baselines/**` | Curated baseline manifests (Windows Server, Defender, LAPS, Secured Core, Linux SFF, etc.), bundled into installers |
-| `docs/**` | mdbook documentation site (separate from the app) |
-| `scripts/**` | Postinstall + helper scripts (oscfg chmod, dev-cert generator, screenshot capture, etc.) |
-| `.github/workflows/**` | `pr-check.yml` (lint + vitest + Playwright Electron smoke), `release.yml` (Full-edition tagged releases), `release-mac.yml` (explicit-tag macOS Author draft assets), and `docs.yml` (mdBook site) |
+The desktop app uses Electron, React, Fluent UI, and Vite. Its shared core
+lives in `packages/core`; the documentation site lives in `docs`.
+See the [system overview](./docs/src/architecture/system-overview.md) and
+[module map](./docs/src/architecture/module-map.md) for developer details.
 
 ## Documentation
 
-- **[`apps/desktop/DESIGN.md`](./apps/desktop/DESIGN.md)**: the Fluent v2 design system contract (principles, signature experiences, tokens, reviewer checklist).
-- **[`apps/desktop/PACKAGING.md`](./apps/desktop/PACKAGING.md)**: installer build workflow, cross-platform matrix, smoke checklists, troubleshooting. Builds are unsigned (optional local self-sign helper included).
-- **[`apps/desktop/CI.md`](./apps/desktop/CI.md)**: GitHub Actions workflows (PR check + release pipeline), supply-chain hardening (`npm audit` gate, CycloneDX SBOM, `npx --no-install` tooling pin), trigger scope, release-cutting walkthrough.
-- **[`SUPPORT.md`](./SUPPORT.md)** and **[`SECURITY.md`](./SECURITY.md)**: best-effort support boundaries and private vulnerability reporting.
-- **[`apps/desktop/src/design/PLATFORM.md`](./apps/desktop/src/design/PLATFORM.md)**: platform-specific UX rules (Windows Mica + custom titlebar, Linux native frame, etc.).
-- **[`CHANGELOG.md`](./CHANGELOG.md)**: per-release notes. The current macOS
-  Author tagged source is `mac-v0.3.97-author.1`; its matching release is a
-  draft and unpublished.
-- **[`docs/src/SUMMARY.md`](./docs/src/SUMMARY.md)**: documentation source for
-  Quick Start, User Guide, Architecture, API Reference, and Operations. The
-  `docs` workflow builds this into an mdBook site and deploys it to the
-  `gh-pages` branch at <https://azure.github.io/ConfigForge/>.
+- [Documentation site](https://azure.github.io/ConfigForge/) and [source navigation](./docs/src/SUMMARY.md).
+- [Troubleshooting](./docs/src/operations/troubleshooting.md), [support](./SUPPORT.md), and [privacy](./PRIVACY.md).
+- Developer references: [design contract](./apps/desktop/DESIGN.md),
+  [platform UX](./apps/desktop/src/design/PLATFORM.md), [packaging](./apps/desktop/PACKAGING.md),
+  and [CI/release workflow](./apps/desktop/CI.md).
 
 ## Contributing
 
-- Read [`AGENTS.md`](./AGENTS.md), the canonical guide for AI agents, also a useful summary for humans.
-- Pre-PR bar:
-  ```powershell
-  npm ci
-  npm run lint           # 0 errors; `warn`-level max-lines flags are tracked-but-not-blocking
-  npm test               # vitest full suite
-  npm run desktop:build  # core + renderer + electron main; must succeed cleanly
-  ```
-  Smoke-test on Windows from elevated PowerShell if you touched `apps/desktop/electron/**` or `packages/core/src/oscfg/**`.
-- To regenerate the screenshots above: run `npm ci`, build the desktop app once (`npm run desktop:build`), then run `node scripts/capture-screenshots.mjs`. The repository's existing Playwright dependency launches the bundled Electron app, navigates each page, and writes PNGs to `docs/images/screenshots/`.
-- See [`CONTRIBUTING.md`](./CONTRIBUTING.md) and [`AGENTS.md`](./AGENTS.md)
-  for ownership, active-branch, review, release, and cherry-pick guidance.
-- Optional: `npm run format` (Prettier) and `npm run format:check`. Prettier was added in v0.2.1 with no mass-format run. Adopt incrementally on files you touch.
+See [CONTRIBUTING.md](./CONTRIBUTING.md) and [AGENTS.md](./AGENTS.md)
+for ownership, active-branch, review, release, and cherry-pick guidance.
+Report reproducible bugs through [GitHub Issues](https://github.com/Azure/ConfigForge/issues);
+include the edition, version, OS, and a minimal non-sensitive example.
 
 ## Release history (high-level)
 
-| Version | Highlights |
-|---|---|
-| **0.3.103** (current Windows/Linux release) | Makes all 12 Windows Server role baselines enforceable with OSConfig 1.4.3 and validates exact-count Audit plus fully compliant ApplyAndAutoCorrect on native Azure VMs |
-| **0.3.102** (prior Windows/Linux release) | Fixes pre-deploy Audit with OSConfig 1.4.3 so single-resource CSP, Registry, Test, and User Rights reads are evaluated instead of reported as indeterminate |
-| **0.3.101** (prior Windows/Linux release) | Clears the remaining GitHub security alerts with patched DOMPurify, fast-uri, ip-address, React Router, and Undici releases |
-| **0.3.100** (prior Windows/Linux release) | Updates js-yaml to the patched 4.3.1 release for `GHSA-5p4m-2wfm-xmqj` |
-| **0.3.99** (prior Windows/Linux release) | Verifies Enforce results, preserves exact QWords, keeps Revert safe, repairs WS2022 readability, and adds Machine Configuration Set compatibility |
-| **0.3.98** (prior Windows/Linux release) | Adds complete Machine Configuration deployment documentation and removes stale/internal public-doc guidance |
-| **0.3.101-author.1** (current macOS prerelease) | Ports the author-safe baseline, lossless data, Machine Configuration packaging, build, and security fixes |
-| **0.3.98-author.1** (prior macOS prerelease) | Ports the public documentation and Machine Configuration guidance to macOS Author |
-| **0.3.97** (prior Windows/Linux draft) | Preserves authoritative CLI reasons for expression-backed Test resources and adds detailed templates to all WS2025 controls |
-| **0.3.97-author.1** (prior macOS draft) | Ports the same detailed audit-reason behavior to the author-only macOS line |
-| **0.3.96** (prior Windows/Linux draft) | Preserves all 320/321/296 WS2025 controls while fixing Registry/CSP contracts and CEL compliance, and hardens Machine Configuration MOF export in PR #104 |
-| **0.3.96-author.1** (prior macOS draft) | Ports the same WS2025 authoring and global MOF export fixes to the author-only macOS line in PR #105 |
-| **0.3.95** (prior Windows/Linux draft) | Replaces unreliable native hover titles with FluentUI tooltips on My Baselines status cells (keyboard accessible, ARIA-exposed multiline details) in PR #100; corrects documentation architecture and release-state drift in PR #97 |
-| **0.3.94** (prior Full edition) | Excludes CIS benchmark source data from public installers, publishes the public licensing/privacy/support/security policy surface, patches dev-only `brace-expansion` 5.x, and refreshes nine README screenshots with synthetic benchmark content in PR #89 |
-| **0.3.94-author.1** (prior macOS draft) | Carries the public-source packaging, policy, privacy, security, and nine synthetic screenshot updates into the author-only Apple Silicon edition without adding device operations |
-| **0.3.93-author.2** (historical macOS source milestone; no current tag or release) | Ports the standalone Windows Server 2025 audit repairs, corrected CIS aliases, Source-link cleanup, and policy-identity fixes through PR #83/#84. Historical workflow evidence is superseded by the current `mac-v0.3.101-author.1` prerelease metadata. |
-| **0.3.93-author.1** (historical macOS source milestone; no current tag or release) | Restored complete macOS authoring parity and nested Enter/Tab editing through PRs #75, #76, and #77. Historical workflow evidence is superseded by the current `mac-v0.3.101-author.1` prerelease metadata. |
-| **0.3.93** (prior Full edition) | Adds nested Enter/Tab editing and repairs standalone Windows Server 2025 audits, CIS mapping, and Matrix Diff policy identity handling |
-| **0.3.92** | Patches the desktop updater, AppImage packager, PostCSS processor, and archive toolchain against newly disclosed vulnerabilities |
-| **0.3.91** | Shows stacked Test schema rules in Visual mode and enforces supported constraints on newly edited values |
-| **0.3.90** | Prevents Baseline Detail footer collisions and keeps long multi-value Visual rows inside their table columns |
-| **0.3.89** | Completes Baseline Detail spreadsheet authoring, typed multi-value editing, accessible Add settings, deterministic history, and all current Dependabot fixes |
-| **0.3.88** | Completes the July Loop revisions with pill tabs, sortable and left-aligned baseline data, reliable status tooltips, and safe one-click Undo |
-| **0.3.87** | Removes the local `ImpersonateClient` manifest override while retaining minimum-version handling for oscfg 1.3.9 or newer |
-| **0.3.86** | Current OSConfig-compatible `ImpersonateClient` YAML and minimum-version handling for oscfg 1.3.9 or newer |
-| **0.3.85** | My Baselines rows stay behind the opaque sticky column header while scrolling |
-| **0.3.84** | Export options are limited to YAML, JSON, MOF, and CSV; all remaining high-severity development dependency advisories are cleared |
-| **0.3.83** | Development dependency security refresh: `tar` 7.5.20 and `axios` 1.18.1; no runtime feature changes |
-| **0.3.82** | Baseline document identity, view-only Visual feedback, top/bottom Add setting actions, and Matrix baseline search |
-| **0.3.81** | Footer actions retain labels and reflow into balanced compact rows across Electron resolutions |
-| **0.3.80** | First-class OSConfig CSV imports, a responsive no-scroll Baseline Detail footer, and correct Save → Skip navigation after compliance deep links |
-| **0.3.79** | Search compliance reports, filter by Compliant / Non-compliant / Could not read, and sort by status |
-| **0.3.78** | Correct baseline platform icons and Monaco warning styling; persist compliance reports and move them into a large centered dialog |
-| **0.3.77** | Completed Loop design pass: five-source baseline wizard with in-place Microsoft template selection, real XLSX import, visible Date Modified values, per-baseline Code/Visual memory, and Save/Discard/Cancel close protection |
-| **0.3.76** | Cognitive Walkthrough polish: Pairwise Diff for two selections, shared Code/Visual Undo, a device-compliance drawer, final-cell Enter row creation, faster OSConfig recheck, corrected platform/status presentation, and streamlined onboarding/Benchmark Mapping |
-| **0.3.62 – 0.3.68** | Rebrand **ConfigForge Spark → ConfigForge**; vocabulary refresh (**Manifests → My Baselines**, **Library → Microsoft Baselines**, **Validation → Export Readiness**, **CIS Mapping → Benchmark Mapping**, *resource* → *setting*, **OSConfig vNext → Gen 2**); unsigned OSS release pipeline with `SHA256SUMS` + SBOM verification; MOF export targets the `Microsoft.OSConfig` module; Monaco overflow-widget dropdown root-cause fix; "Could not read" compliance bucket on baseline cards |
-| **0.3.54 – 0.3.61** | Localization rollout (FR / DE / ES) — five extraction waves, machine-translation + review tooling, `Intl` date/number/relative-time formatters, and length/overflow visual QA |
-| **0.3.45 – 0.3.53** | Benchmark (CIS) Mapping subtitle + Diff › CIS tab; real History change summaries + auto-scroll Compare; CIS fuzzy-matching tightening; Group resources expand inline in Visual Builder; Diff "Select baseline" dropdown stability (Monaco overflow fix) |
-| **0.3.27 – 0.3.36** | CIS matcher quality pass (CSP UserRights, alias table, XCCDF fuzzy fallback, 36/36 mappable UserRights match WS2025 CIS); 100x cis.status() perf fix; 3-second warmup deferral eliminates manifest-open regression; ResourceChangesPanel and Resource-level diff stats; AI summary numbers consistent across panels |
-| **0.3.14 – 0.3.26** | CIS Mapping page (Azure Policy JSON + XCCDF/OVAL XML auto-detect), CIS cross-reference drawer in the manifest editor, CIS Diff tab on the Diff page, settings store with history retention, deploy recovery banner, breadcrumb navigation |
-| **0.2.1** | Phase A-E renderer-page split; 15/15 security audit findings closed; typed main-process logger with secret redaction; Prettier config; CSV-import schema fix |
-| **0.2.0** | Bring-your-own-CLI: removed bundled `oscfg` binary, added Welcome dialog + CliRequiredModal, well-known-paths binary resolver, MSIX fallback. Legal scaffolding (LICENSE / NOTICE / SECURITY / THIRDPARTYNOTICES) for OSS readiness |
-| **0.1.x** | Initial Electron migration in 10 phases (Next.js to Electron + React Router + FluentUI v9 + Vite). See git log on `main` for per-phase commits |
+See [CHANGELOG.md](./CHANGELOG.md) for detailed historical validation and
+[the documentation changelog](./docs/src/changelog.md) for a shorter summary.
+Past module-version validation records are not current packaging prerequisites.
 
 ## Code of Conduct
 
@@ -300,7 +228,9 @@ This project has adopted the [Microsoft Open Source Code of Conduct](https://ope
 
 ## Security
 
-To report a security vulnerability, please follow the instructions in [SECURITY.md](./SECURITY.md). **Do not** file security issues as public GitHub issues. ConfigForge does not collect telemetry; see [PRIVACY.md](./PRIVACY.md).
+To report a security vulnerability, follow [SECURITY.md](./SECURITY.md).
+**Do not** file security issues as public GitHub issues. ConfigForge does not
+collect telemetry; see [PRIVACY.md](./PRIVACY.md).
 
 ## License
 

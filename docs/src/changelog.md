@@ -6,6 +6,17 @@ foundational work by theme.
 
 ## Unreleased
 
+- **Clearer getting started:** Download the correct Full or Apple Silicon
+  Author edition, save a first baseline without CLI/admin/Azure prerequisites,
+  and choose optional comparison, reporting, device, or packaging workflows.
+  Keep technical references available under contributor navigation and explain
+  unsigned-download risks, Audit Pack vs device Audit, and benchmark coverage.
+- **Machine Configuration prerequisites:** Package with the **Microsoft.OSConfig
+  PowerShell module 1.4.10+**, separate from the PowerShell 7 runtime and
+  GuestConfiguration toolkit. The canonical Audit-first guide rejects missing
+  or older modules before resolving the MOF, keeps exact-version/immutable-ZIP
+  requirements, and excludes the historical 1.4.3 patch from current guidance.
+  The minimum version is not a statement that all upstream issues are fixed.
 - **Dependency security:** Update DOMPurify, Axios, ip-address,
   every supported brace-expansion and Undici line, and concurrently to
   patched releases. Also patch sharp, fast-uri, joi, and source-map-js

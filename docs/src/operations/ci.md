@@ -13,7 +13,7 @@ ConfigForge uses GitHub Actions from `.github/workflows/`. The product is an Ele
 
 The Win/Linux Release workflow intentionally ignores hyphen-suffix tags
 (`!v*-*`). macOS Author releases use separate tags such as
-`mac-v0.3.98-author.1`; dispatch the protected `main` workflow definition
+`mac-v0.3.101-author.1`; dispatch the protected `main` workflow definition
 manually and let its checkout step select the immutable macOS tag.
 
 ## What `pr-check.yml` runs
@@ -35,8 +35,8 @@ files; main PR #76 then passed its full suite plus 32 focused nested-navigation
 tests. Mac port PR #77 passed 79 focused tests and two isolated Playwright
 scenarios. Historical `0.3.93-author.1` and `0.3.93-author.2` validation
 records are superseded; their tags and releases no longer exist. The current
-macOS Author tagged source is `mac-v0.3.98-author.1`, with an unpublished
-draft release. Use its current GitHub checks and release metadata as the
+macOS Author release is `mac-v0.3.101-author.1`, published as a prerelease.
+Use its current GitHub checks and release metadata as the
 authority rather than pinning a workflow run in this document.
 
 Caching covers npm, Electron binaries, electron-builder, and Playwright browser downloads. Concurrency cancels stale PR runs on the same branch.
@@ -58,7 +58,12 @@ Each platform job:
 9. Uploads installers, checksums, and SBOMs to a draft GitHub Release.
 10. Stashes the same artifacts on the workflow run for short-term recovery.
 
-Release artifacts are **unsigned** by design — there is no code signing in CI. On Windows, SmartScreen warns until a binary builds reputation; on macOS, Gatekeeper requires `xattr -cr`. The trust path is building from source; optional local self-signing is described in `apps/desktop/scripts/generate-dev-cert.ps1`.
+Release artifacts are **unsigned** by design; macOS builds are not notarized.
+There is no code signing in CI. Follow the
+[download-verification and per-app warning guidance](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md#install-the-desktop-app),
+not a blanket security bypass. Building from reviewed source is an alternative,
+not a safety guarantee; the optional local self-sign helper is described in
+the [packaging guide](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/PACKAGING.md).
 
 ## What `release-mac.yml` runs
 
