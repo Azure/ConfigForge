@@ -46,7 +46,7 @@
     "@testing-library/react": "^16.3.2",
     "@testing-library/user-event": "^14.6.1",
     "@types/node": "^22.10.5",
-    "dompurify": "^3.4.13",
+    "dompurify": "^3.4.16",
     "eslint-config-prettier": "10.1.8",
     "jsdom": "^29.1.1",
     "prettier": "3.8.3",
@@ -57,14 +57,15 @@
     "@xmldom/xmldom": "^0.8.15",
     "dompurify": "$dompurify",
     "tmp": "^0.2.7",
-    "shell-quote": "1.9.0",
-    "brace-expansion@1": "1.1.18",
-    "brace-expansion@2": "2.1.4",
-    "brace-expansion@5": "5.0.9",
+    "shell-quote": "1.12.0",
+    "brace-expansion@1": "1.1.21",
+    "brace-expansion@2": "2.1.7",
+    "brace-expansion@5": "5.0.12",
     "nanoid@3": "^3.3.18",
+    "postcss-selector-parser": "^7.1.6",
     "esbuild": "^0.28.1",
     "js-yaml": "^4.3.2",
-    "undici@7": "^7.29.0",
-    "undici@6": "^6.28.0"
+    "undici@7": "^7.29.1",
+    "undici@6": "^6.28.1"
   }
 }

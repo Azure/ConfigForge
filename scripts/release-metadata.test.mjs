@@ -104,7 +104,7 @@ describe('public release metadata', () => {
       read('package-lock.json').then(JSON.parse),
     ]);
 
-    const patchedVersions = { 1: '1.1.18', 2: '2.1.4', 5: '5.0.9' };
+    const patchedVersions = { 1: '1.1.21', 2: '2.1.7', 5: '5.0.12' };
     const copies = Object.entries(lockfile.packages)
       .filter(([packagePath]) => packagePath.endsWith('node_modules/brace-expansion'));
 
@@ -119,6 +119,91 @@ describe('public release metadata', () => {
       expect(metadata.resolved).toBe(
         `https://registry.npmjs.org/brace-expansion/-/brace-expansion-${metadata.version}.tgz`,
       );
+    }
+  });
+
+  it('keeps patched security overrides aligned with the workspace manifests', async () => {
+    const [packageJson, desktopPackage, lockfile] = await Promise.all([
+      read('package.json').then(JSON.parse),
+      read('apps/desktop/package.json').then(JSON.parse),
+      read('package-lock.json').then(JSON.parse),
+    ]);
+    const shellQuoteCopies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith('node_modules/shell-quote'));
+
+    expect(packageJson.overrides['shell-quote']).toBe('1.12.0');
+    expect(packageJson.overrides['undici@6']).toBe('^6.28.1');
+    expect(packageJson.overrides['undici@7']).toBe('^7.29.1');
+    expect(packageJson.overrides['postcss-selector-parser']).toBe('^7.1.6');
+    expect(packageJson.overrides.dompurify).toBe('$dompurify');
+    expect(packageJson.devDependencies.dompurify).toBe('^3.4.16');
+    expect(lockfile.packages[''].devDependencies.dompurify).toBe(
+      packageJson.devDependencies.dompurify,
+    );
+    expect(desktopPackage.devDependencies.concurrently).toBe('^9.2.5');
+    expect(lockfile.packages['apps/desktop'].devDependencies.concurrently).toBe(
+      desktopPackage.devDependencies.concurrently,
+    );
+    expect(desktopPackage.devDependencies.sharp).toBe('0.35.5');
+    expect(lockfile.packages['apps/desktop'].devDependencies.sharp).toBe(
+      desktopPackage.devDependencies.sharp,
+    );
+    expect(shellQuoteCopies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of shellQuoteCopies) {
+      expect(metadata.version, packagePath).toBe(packageJson.overrides['shell-quote']);
+    }
+  });
+
+  it.each([
+    ['axios', { 1: [20, 0] }],
+    ['dompurify', { 3: [4, 16] }],
+    ['fast-uri', { 3: [1, 8] }],
+    ['http-cache-semantics', { 4: [3, 0] }],
+    ['ip-address', { 10: [7, 2] }],
+    ['joi', { 18: [2, 9] }],
+    ['postcss-selector-parser', { 7: [1, 6] }],
+    ['sharp', { 0: [35, 5] }],
+    ['source-map-js', { 1: [2, 2] }],
+    ['undici', { 6: [28, 1], 7: [29, 1] }],
+  ])('keeps every %s dependency above its patched security floor', async (dependency, floors) => {
+    const lockfile = JSON.parse(await read('package-lock.json'));
+    const copies = Object.entries(lockfile.packages)
+      .filter(([packagePath]) => packagePath.endsWith(`node_modules/${dependency}`));
+
+    expect(copies.length).toBeGreaterThan(0);
+    for (const [packagePath, metadata] of copies) {
+      expect(metadata.version, packagePath).toMatch(/^\d+\.\d+\.\d+$/);
+      const [major, minor, patch] = metadata.version.split('.').map(Number);
+      expect(floors, packagePath).toHaveProperty(String(major));
+      const [minimumMinor, minimumPatch] = floors[major];
+      expect(
+        minor > minimumMinor || (minor === minimumMinor && patch >= minimumPatch),
+        `${packagePath}: ${metadata.version}`,
+      ).toBe(true);
+    }
+  });
+
+  it('retains optional native build packages for every supported release platform', async () => {
+    const lockfile = JSON.parse(await read('package-lock.json'));
+    const required = [
+      '@rollup/rollup-darwin-arm64',
+      '@rollup/rollup-linux-x64-gnu',
+      '@rollup/rollup-win32-x64-msvc',
+      '@esbuild/darwin-arm64',
+      '@esbuild/linux-x64',
+      '@esbuild/win32-x64',
+      '@img/sharp-darwin-arm64',
+      '@img/sharp-linux-x64',
+      '@img/sharp-win32-x64',
+    ];
+
+    for (const dependency of required) {
+      const copies = Object.entries(lockfile.packages)
+        .filter(([packagePath]) => packagePath.endsWith(`node_modules/${dependency}`));
+      expect(copies.length, dependency).toBeGreaterThan(0);
+      for (const [packagePath, metadata] of copies) {
+        expect(metadata.optional, packagePath).toBe(true);
+      }
     }
   });
 
