@@ -1,15 +1,64 @@
-# Your first manifest
+# Your first baseline
 
-Once `npm run desktop:dev` has opened the ConfigForge window
-(or you're running an installed build), register a tiny manifest
-end-to-end so you can confirm the round-trip works before authoring
-anything real. No CLI install required - registration works in
-Editor mode.
+**Goal:** save your own baseline in My Baselines and export a YAML copy.
+Nothing in this walkthrough deploys settings or audits a device.
+Use either edition of the [installed app](./install-run.md); no CLI,
+administrator access, or Azure subscription is required.
 
-## Minimal Windows manifest
+A **baseline** is a set of desired settings. A **manifest** is the YAML or JSON
+document describing them. **Register** means save it in ConfigForge.
 
-Save this as `hello.osc.yaml` (or just paste it directly into the
-editor - you don't have to write it to disk first):
+## Start from a Microsoft baseline
+
+1. Open ConfigForge. If the Welcome dialog appears, choose **Author baselines
+   anywhere**.
+2. Open **Microsoft Baselines** in the sidebar.
+3. Choose a baseline to explore and select **Use as Template**. This opens an
+   editable copy; you are not changing the bundled template.
+4. Give the copy a unique name, such as `my-first-baseline`.
+5. Review its settings in **Visual** or **Code**. You can save the unchanged
+   copy first; you do not need to edit a security setting to complete this step.
+
+![Microsoft Baselines catalog](https://raw.githubusercontent.com/Azure/ConfigForge/main/docs/images/screenshots/library.png)
+
+## Register
+
+1. Select **Register Baseline**.
+2. Confirm the success message, then open **My Baselines** and find your copy.
+3. Open the baseline and select **Export → YAML**.
+4. Save the `.osc.yaml` file. Keep it for review or import into another
+   ConfigForge workspace.
+
+**Success:** your copy appears in My Baselines and the exported file contains
+a `resources:` list. Registration is local; it does not apply settings or
+publish to Azure. **Not audited** is expected for a new baseline.
+
+If registration reports a schema error, correct it before continuing. A
+platform-mismatch or unsupported-type warning means the draft needs review
+before device use—not that the baseline has been tested.
+
+## Try one edit
+
+Open your saved copy, select **Edit**, and use **Visual** to change a value.
+Select **Save** and record a short reason if prompted. Use **History** to
+review changes and **Export** to save the updated baseline.
+See the [editor guide](../user-guide/manifest-editor.md) for typed values,
+keyboard navigation, and Code mode.
+
+![Visual baseline editor](https://raw.githubusercontent.com/Azure/ConfigForge/main/docs/images/screenshots/visual-builder.png)
+
+## Other starting points
+
+In **My Baselines**, select **Create new baseline**. The setup page offers a
+custom Windows/Linux baseline, a library template, a baseline file, a settings
+spreadsheet, or a public URL. **Create baseline** opens the editor for review
+before registration.
+
+### Minimal Windows manifest
+
+For a small example instead of a full template, choose **Create my own
+baseline**, select Windows, and select **Create baseline**. Give it the name
+`hello`, switch to Code/YAML, and replace the starter content with:
 
 ```yaml
 resources:
@@ -22,87 +71,48 @@ resources:
       value: "1"
 ```
 
-> **Tip:** YAML is two-space-indented; tabs are rejected by the
-> parser. The `resources:` key must be a **top-level array**, not a
-> string or map. `Microsoft.Windows/Registry` resources must declare
-> all three of `keyPath`, `valueName`, and `valueType`. See
-> [Reference → Manifest schema](../reference/manifest-schema.md) for
-> the full grammar.
+Register and export it as above. This is an **authoring example**, not a
+recommended security control. Applying it later would change the registry.
+YAML uses spaces, not tabs; `resources:` must be a top-level array.
 
-## Minimal Linux manifest
+### Minimal Linux manifest
 
-```yaml
-resources:
-  - name: hello-cfs-osconfig
-    type: Microsoft.OSConfig/Test
-    properties:
-      resource: SshdConfig
-      expression: "PermitRootLogin == 'no'"
-      compliance: equal
-```
-
-## Register
-
-In the UI:
-
-1. Open **My Baselines** in the sidebar, then click **Register New**.
-2. Paste your YAML, upload a `.osc.yaml` / `.json` / `.csv` file, or
-   edit settings directly in the Visual spreadsheet.
-3. Pick the target platform (Windows or Linux). The editor's
-   validation adjusts accordingly.
-4. Click **Register Baseline**.
-
-You should see a success banner and the manifest in the list. If
-you're authoring a Windows manifest on Linux (or vice versa), you'll
-get a soft `warnings[]` entry instead of a hard error - that's by
-design (see [Architecture → Registration semantics](../architecture/registration-semantics.md)).
-
-To open the editor afterwards: **My Baselines → click the baseline row**.
-The detail/editor view loads with Code / Visual modes,
-version history, and the **Audit Pack** button in both editions. The Full
-edition also shows device deploy/audit controls gated on CLI presence.
+For Linux, choose **Create my own baseline → Linux** and review the generated
+starter in Code or Visual. Alternatively, use the bundled **Linux Security
+Baseline** through **Microsoft Baselines → Use as Template**.
+Treat starter values as examples, not a deployment recommendation.
+You can author Linux settings on Windows or macOS without a Linux device.
 
 ## Confirm via CLI (optional)
 
-If you have the OSConfig CLI installed and want to cross-check what
-ConfigForge wrote into the namespace, open an elevated PowerShell
-(or `sudo` shell on Linux):
+A registered baseline is saved in **ConfigForge**, not automatically in an
+`oscfg` namespace. `oscfg get namespace` is therefore not a check that this
+authoring walkthrough succeeded. Confirm the saved baseline in My Baselines
+and its exported YAML instead.
 
-```text
-$ oscfg get namespace
-hello
-
-$ oscfg get resource -n hello
-hello-cfs-registry  Microsoft.Windows/Registry  ...
-```
-
-> **Note:** `oscfg` doesn't always emit machine-readable output in
-> the preview build. ConfigForge wraps the CLI to scrub the
-> telemetry preamble and surface only the payload - see
-> [Architecture → `oscfg` CLI contract](../architecture/oscfg-cli.md).
+For a separate local lab evaluation, follow
+[Authoring vs deploying](./authoring-vs-deploying.md).
 
 ## Inspect the on-disk state
+
+For a baseline registered as `hello`, ConfigForge stores:
 
 ```text
 ~/.configforge/manifests/
 ├── hello.json              ← registration metadata
-└── hello.source.yaml       ← lossless source manifest
+└── hello.source.yaml       ← source manifest
 ```
 
-The `.json` file holds the platform-detection result, resource
-summary, and any soft warnings. The `.source.yaml` is the YAML you
-posted; it's what the Export action returns and what the
-[Audit-pack](../user-guide/audit-pack.md) embeds.
+Prefer **Export → YAML** for moving a baseline to another computer, then import
+it there. Do not copy live registration metadata to simulate a deployment.
 
 ## Next steps
 
-- Try the [editor](../user-guide/manifest-editor.md) to build a
-  manifest from a form rather than YAML.
-- Compare manifests on the [Diff page](../user-guide/matrix-diff.md):
-  Pairwise, CIS Diff, or Matrix.
-- Score a manifest against a CIS benchmark using
-  [Benchmark Mapping](../user-guide/cis-compliance.md) (requires
-  user-supplied CIS data files - see that page for setup).
-- Install the OSConfig CLI from the
-  [OSConfig CLI docs](https://github.com/microsoft/osconfig/tree/main/docs/cli)
-  to light up Deploy / Audit / Revert in the Full edition.
+- [Compare baselines](../user-guide/matrix-diff.md) without extra tools.
+- Add your own licensed data for [Benchmark Mapping](../user-guide/cis-compliance.md).
+  Coverage is not proof of device compliance.
+- Export an [Audit Pack](../user-guide/audit-pack.md) for review. It does not
+  run a device audit.
+- Only when you need a lab evaluation, choose [local device
+  operations](./authoring-vs-deploying.md) or [Azure Machine
+  Configuration packaging](../user-guide/machine-configuration.md).

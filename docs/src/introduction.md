@@ -1,164 +1,117 @@
 # Introduction
 
-> ⚠️ **Microsoft community-maintained project.** ConfigForge is **not** an
-> officially supported Microsoft product and is **not intended for production
-> use**. Use it for experimentation, learning, and community contributions at
-> your own risk.
-
 ## What is ConfigForge?
 
-**ConfigForge is a security-baseline authoring tool for the OSConfig ecosystem.** It gives Windows and Linux security engineers a fast, visual way to write, validate, deploy, audit, version, and export the YAML manifests that the [`oscfg`](https://github.com/microsoft/osconfig/tree/main/docs/cli) command-line tool consumes - without hand-editing files in a text editor or memorizing the schema.
+ConfigForge is a desktop app for creating, reviewing, and sharing OSConfig
+security baselines. Start from a Microsoft template or your own settings,
+compare changes, and export your work before deciding whether to test it on a
+device.
 
-The app is an **Electron 42 + React 18 + FluentUI v9 + Vite desktop
-application** with two editions:
+> **Experimental and community-maintained.** ConfigForge is not an officially
+> supported Microsoft product and is **not intended for production use**.
+> It is provided as-is for learning and evaluation, at your own risk.
 
-- **Full edition** (`main` branch) - Windows + Linux with deploy, elevation, health probe, and audit-results storage.
-- **Author edition** (`mac-author-build` branch) - ARM64 Apple Silicon macOS
-  authoring with editor, Microsoft Baselines, Diff, validation, Benchmark
-  Mapping, history, rationale, and Audit Pack export. Device-operation
-  namespaces (`health`, `deploy`, `deployRecovery`, `revert`, `auditResults`,
-  and elevation methods under `system`) are intentionally omitted. Authors
-  deploy later from the Full edition on Windows or Linux.
+**Start here:** [Install the app](./quick-start/install-run.md) →
+[Create your first baseline](./quick-start/first-manifest.md).
+You do not need a CLI, administrator access, or an Azure subscription to
+complete this authoring walkthrough.
 
-The current Windows/Linux Full-edition release is `v0.3.101`. The current
-macOS Author release is `mac-v0.3.101-author.1`. Both are published as
-prereleases. The package version on `main` is `0.3.101`; the macOS Author
-package version is `0.3.101-author.1`.
-
-If you've ever maintained a security baseline by editing GPO templates, exporting Defender for Endpoint settings to a spreadsheet, or copy-pasting between half a dozen runbooks - this app is for you.
+On macOS, use the **Author edition**. It includes authoring and review
+workflows, not device operations; evaluate devices later using the Full
+edition on Windows/Linux or a separate Machine Configuration environment.
 
 ## What problem does it solve?
 
-Authoring a security baseline today is **slow, brittle, and lonely**:
+Keep desired settings in one editable baseline rather than reconciling
+separate spreadsheets and handwritten change notes. ConfigForge helps you
+compare drafts, record why values changed, and share a review report.
+It does not certify a baseline or prove that a device is compliant.
 
-- The source of truth lives in PDFs, spreadsheets, GPO Templates, or
-  internal wikis - not in a single artifact a tool can validate.
-- Comparing two baselines (your draft vs. CIS, your draft vs. last
-  quarter's, two regional variants of the same standard) means hours
-  of manual diffing in Excel.
-- When auditors ask "why did this value change?" the answer lives in
-  someone's email or in a Slack thread that scrolled away.
-- Exporting to the half-dozen formats different teams want (Intune,
-  Azure Policy, Excel, Markdown) is a copy-paste exercise that
-  drifts the moment any of them is edited.
-- Every baseline author hits the same wall: the tooling assumes you
-  already know the answer, instead of helping you find it.
+### Three terms to know
+
+- **Baseline:** your set of desired security settings.
+- **Manifest:** the YAML or JSON document describing a baseline.
+- **Register:** save a baseline in My Baselines. Registration does not deploy
+  settings or create an Azure resource.
+
+See the [glossary](./reference/glossary.md) when you need more terminology.
 
 ## What does ConfigForge do?
 
-The sidebar exposes **Dashboard**, **My Baselines**, **Microsoft Baselines**,
+Choose the next task you need; the advanced sections are optional.
+
+| Task | Start here | What to expect |
+| --- | --- | --- |
+| Create or edit a baseline | [Baseline editor](./user-guide/manifest-editor.md) | Code/Visual editing, validation, and YAML/JSON/MOF/CSV export |
+| Compare drafts | [Diff](./user-guide/matrix-diff.md) | Pairwise comparison or a matrix of up to ten baselines |
+| Review benchmark coverage | [Benchmark Mapping](./user-guide/cis-compliance.md) | Matches against your own licensed data; no CIS data is bundled |
+| Explain changes | [Rationale](./user-guide/rationale.md) and [history](./user-guide/history-snapshots.md) | Saved change reasons and snapshots |
+| Share review material | [Audit Pack](./user-guide/audit-pack.md) | PDF or Markdown from available saved data; not a new device audit |
+| Check a local lab device | [Authoring vs deploying](./quick-start/authoring-vs-deploying.md) | Optional CLI-based Audit, Deploy, and Revert in the Full edition |
+| Evaluate through Azure Policy | [Machine Configuration](./user-guide/machine-configuration.md) | Separate packaging, testing, hosting, and policy-assignment workflow |
+
+The sidebar uses **Dashboard**, **My Baselines**, **Microsoft Baselines**,
 **Export Readiness**, **Diff**, **Benchmark Mapping**, and **Settings**.
+Export Readiness concerns baseline validation; it is not a device-compliance
+result.
 
-The app is built around six core workflows, each of which closes one
-of the gaps above.
-
-### 1. Author and validate manifests in a structured editor
-
-A Monaco-based YAML editor with live schema validation, type-aware
-hints for every OSConfig resource type, and a side panel that surfaces
-the currently-selected resource's CIS rule cross-reference (when CIS
-data is available locally).
-
-→ See [User Guide → Manifest editor](./user-guide/manifest-editor.md).
-
-### 2. Compare baselines and explain the deltas
-
-Pairwise diff for two manifests, plus an N-way **master-matrix** that
-puts up to 10 baselines side-by-side as columns and shows which ones
-agree and which ones differ on every setting. generated narrative
-explanations describe *why* each delta matters in plain English. Excel
-export with conditional formatting for the auditor's offline review.
-
-→ See [User Guide → Matrix diff](./user-guide/matrix-diff.md).
-
-### 3. Capture change rationale as you author
-
-Every value change in the editor prompts a one-line "Why?" capture.
-Author identity is resolved automatically (git config → OS user). Every
-snapshot in the version history carries the author and the rationale,
-so the audit trail is built as a side-effect of normal authoring - not
-as a separate after-the-fact exercise.
-
-→ See [User Guide → Rationale](./user-guide/rationale.md).
-
-### 4. Generate the auditor's deliverable in one click
-
-A PDF audit-pack assembles the manifest, the version history (with
-authors and rationale), and the compliance scorecard against any
-user-supplied CIS benchmark into a single document ready to attach to a
-compliance review.
-
-→ See [User Guide → Audit pack](./user-guide/audit-pack.md).
-
-### 5. Benchmark Mapping and status tracking
-
-The Benchmark Mapping page shows which benchmark data files are detected on
-disk, with per-file status indicators. Users add Azure Policy JSON or
-XCCDF/OVAL files to the resolved data directory; the page provides Re-check
-and Open folder actions. Benchmark data powers the editor cross-reference and
-the Diff page's CIS tab for full-baseline coverage scoring.
-
-### 6. CIS Diff - bulk coverage analysis
-
-The Diff page includes a CIS Diff tab that annotates the N-way matrix with CIS rule coverage. Each matrix row shows whether the setting maps to a CIS benchmark rule, its severity, and match status. Powered by a bulk-lookup IPC that avoids per-row round trips.
-
-## Who is this for?
-
-| Audience | Start here |
-| --- | --- |
-| **Microsoft Baseline Author / Consultant** writing or maintaining a custom security baseline | [Quick Start → Install & run](./quick-start/install-run.md) |
-| **Security or compliance auditor** reviewing someone else's baseline | [User Guide → Benchmark Mapping](./user-guide/cis-compliance.md), [Diff](./user-guide/matrix-diff.md), and [Audit pack](./user-guide/audit-pack.md) |
-| **Integrator / SI / VAR** deploying baselines to customer environments | [Quick Start → Authoring vs. deploying](./quick-start/authoring-vs-deploying.md) |
-| **Engineer extending the codebase** | [Architecture → System overview](./architecture/system-overview.md) and [Contributing](./contributing/agents-md.md) |
-| **AI agent (Copilot, Claude, Cursor)** | [`AGENTS.md`](https://github.com/Azure/ConfigForge/blob/main/AGENTS.md) at the repo root |
-
-## How it fits in the OSConfig ecosystem
-
-ConfigForge is a **front-end** for the upstream `oscfg` CLI. The
-app does not replace the CLI, the OSConfig agent, or the schemas - it
-shells out to `oscfg` for every actual deploy / audit / get operation.
-
-```text
-┌──────────────────────────────────────┐
-│  ConfigForge UI (this app)     │  ← author, validate, diff, audit-pack
-└──────────────────────────────────────┘
-                  │
-                  ▼  spawns
-┌──────────────────────────────────────┐
-│  oscfg CLI (Microsoft, preview)      │  ← apply, get, namespace operations
-└──────────────────────────────────────┘
-                  │
-                  ▼
-┌──────────────────────────────────────┐
-│  OSConfig agent + native OS APIs     │  ← actually applies the configuration
-└──────────────────────────────────────┘
-```
-
-The current upstream CLI version targeted is **`oscfg 1.3.9-preview11`**.
+**Keep the results distinct:** benchmark coverage identifies matching rules,
+not necessarily matching values. Device Audit checks a machine. Audit Pack
+exports a report and only includes device results when saved results exist.
+Review their timestamps, scope, and any unread or unavailable settings.
 
 ## Supported platforms
 
-| Platform | Edition | Status |
+| Your computer | Edition | Start with |
 | --- | --- | --- |
-| **Windows 11 / Windows Server 2016-2025** | Full | Author, validate, deploy, audit, diff, export. Deploy/audit require an elevated shell with `oscfg` installed. |
-| **Linux (Ubuntu 22.04+)** | Full | Build is verified in CI; live deploy/audit requires a host with `oscfg` installed. |
-| **macOS on Apple Silicon (M1 or later)** | Author | ARM64-only authoring, validation, Microsoft Baselines, Diff, Benchmark Mapping, history, rationale, and Audit Pack export. Device operations are intentionally absent. Intel Macs and universal binaries are not supported. |
+| Windows (x64) | **Full** | Authoring without extra tools; local device operations need `oscfg` and elevation |
+| Linux (x64) | **Full** | Authoring; live device operations additionally need a compatible CLI/host and permissions |
+| macOS on Apple Silicon (M1 or later) | **Author** | Authoring, Diff, Benchmark Mapping, history, rationale, and Audit Pack export; no device operations |
 
-> ConfigForge normalizes authoring differences across platforms;
-> deploy and audit remain platform-gated by the local `oscfg` CLI.
+The current Windows/Linux release is
+[v0.3.103](https://github.com/Azure/ConfigForge/releases/tag/v0.3.103).
+The current macOS Author release is
+[mac-v0.3.101-author.1](https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.101-author.1).
+Both are prereleases and unsigned; macOS is not notarized. Intel Macs and
+universal binaries are not supported. Read the
+[download and installation guidance](./quick-start/install-run.md) first.
+
+## Who is this for?
+
+- **Baseline authors:** begin with [Your first baseline](./quick-start/first-manifest.md).
+- **Reviewers:** compare drafts and inspect an [Audit Pack](./user-guide/audit-pack.md),
+  keeping benchmark coverage separate from device evidence.
+- **Lab operators:** read [Authoring vs deploying](./quick-start/authoring-vs-deploying.md)
+  before using device operations.
+- **Contributors:** the [system overview](./architecture/system-overview.md),
+  [module map](./architecture/module-map.md), and [contribution guide](./contributing/agents-md.md)
+  cover implementation details.
+
+## How it fits in the OSConfig ecosystem
+
+The app authors baselines. For optional local operations, the Full edition
+calls the native `oscfg` CLI, which is installed separately. The targeted CLI
+is `oscfg 1.3.9-preview11`; CLI compatibility is separate from package tooling.
+
+For Azure Machine Configuration, export a MOF and move to a packaging machine
+with **PowerShell 7**, **GuestConfiguration**, and the **Microsoft.OSConfig
+PowerShell module 1.4.10 or later**. Version **1.4.10** refers to the module,
+not the PowerShell runtime. Follow the
+[packaging prerequisites](./user-guide/machine-configuration.md#prerequisites);
+these tools are not required to author in ConfigForge.
 
 ## Repository
 
-Source lives at
-[github.com/Azure/ConfigForge](https://github.com/Azure/ConfigForge). Active
-development happens on **`main`** (Windows/Linux full build) and
-**`mac-author-build`** (macOS Author). Shared changes land on `main` first and
-are ported through focused commits; the flavor branches are not cross-merged.
-
-> **Tip:** This documentation is generated from the `docs/` folder of the repository at every push to `main`. To suggest an edit, click the pencil icon at the top of any page - it links straight to the source markdown on GitHub.
+Source and documentation live at
+[Azure/ConfigForge](https://github.com/Azure/ConfigForge). The active branches
+are `main` for Windows/Linux Full and `mac-author-build` for macOS Author.
+The documentation site's edit link opens the corresponding Markdown source.
 
 ## Maintainer
 
-Maintained by the community. Use
-[GitHub Issues](https://github.com/Azure/ConfigForge/issues) for bug reports
-and feature discussions.
+Community-maintained by [@ABMFST](https://github.com/ABMFST). Use
+[GitHub Issues](https://github.com/Azure/ConfigForge/issues) for reproducible
+bugs and feature discussions. Read the
+[support boundaries](https://github.com/Azure/ConfigForge/blob/main/SUPPORT.md)
+and report vulnerabilities privately through
+[SECURITY.md](https://github.com/Azure/ConfigForge/blob/main/SECURITY.md).

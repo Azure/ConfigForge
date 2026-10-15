@@ -16,10 +16,25 @@ baselines before the CLI catches up - it just isn't called
 
 ## Audit-pack
 
-A single self-contained document (PDF or Markdown) per manifest,
-bundling header / compliance scorecard / version history /
-rationale log / analysis provenance. The auditor deliverable. See
+A PDF or Markdown review report per baseline, built from available saved
+metadata, comparison results, device results, history, and rationale.
+Exporting it does **not** run a device Audit. Missing data is omitted; live
+analysis provenance is not currently persisted, so its citations are absent
+from normal UI-generated reports. See
 [User Guide → Audit-pack](../user-guide/audit-pack.md).
+
+## Audit
+
+A local device check through the `oscfg` CLI in the Full edition. Distinct
+from authoring validation, benchmark coverage, and Audit Pack export. Inspect
+the result timestamp and unread/indeterminate settings before using it as
+evidence.
+
+## Baseline
+
+A set of desired configuration settings. ConfigForge stores and edits it as
+a [manifest](#manifest). A baseline is not a statement that a device currently
+has those settings.
 
 ## BYO-CLI
 
@@ -41,8 +56,10 @@ Center for Internet Security - publishes the
 ConfigForge **does not redistribute** CIS Benchmark content
 (license restrictions). The cross-reference and compliance features
 work when a user drops their own legally licensed catalog files into
-`public/_baselines/cis/_data/`. The app resolves the CIS data directory path at runtime; the Benchmark Mapping page shows the resolved location for each install type. The UI gracefully hides every CIS
-surface when those files are absent. See
+the data directory shown on Benchmark Mapping. The app resolves that directory
+for your installation. The UI hides the data-dependent CIS drawer and Diff
+tab when those files are absent. The Benchmark
+Mapping setup page remains visible. See
 [User Guide → CIS compliance](../user-guide/cis-compliance.md).
 
 ## Benchmark Mapping
@@ -51,11 +68,16 @@ The sidebar page (route `/cis`) for benchmark-data ingestion and status. It show
 
 ## CIS Diff
 
-A tab on the Diff page that annotates matrix-diff rows with CIS rule coverage. Powered by `cfs:cis:bulk-lookup` IPC. Shows which settings in the comparison matrix map to CIS benchmark rules and their severity. Requires CIS data to be present (see [Benchmark Mapping](#benchmark-mapping)).
+A tab on the Diff page that compares one baseline with a supplied benchmark.
+It shows covered/missing benchmark rules and matched settings; it is separate
+from Matrix (N-way). Requires CIS data (see [Benchmark Mapping](#benchmark-mapping)).
 
 ## Azure Policy CIS JSON
 
-The JSON format exported from the Azure portal containing CIS benchmark rule mappings for guest configuration policies. ConfigForge ingests these files on the Benchmark Mapping page alongside XCCDF files. Each JSON carries a `settingsReference[]` array that maps policy settings to CIS rule IDs.
+A supported JSON settings catalog with a `settingsReference[]` array mapping
+policy settings to benchmark rules. It is not an arbitrary Azure Policy
+definition or assignment export. ConfigForge reads it alongside XCCDF data
+from the Benchmark Mapping folder.
 
 ## Change summary
 
@@ -100,6 +122,9 @@ strict name-match scoring against the selected local CIS baseline YAML.
 Diff page's CIS Diff tab uses `cfs.cis.bulkLookup`, where compliance is
 unique CIS benchmark rules covered / total benchmark rules, with XCCDF
 and Azure Policy CIS matching.
+
+These are baseline-comparison/coverage measures, not device audits or
+certification. Matching a rule does not by itself prove its value agrees.
 
 ## Cross-platform manifest
 
@@ -153,8 +178,8 @@ this host is windows" warning.
 
 ## Manifest
 
-The YAML/JSON document describing what to apply. The unit of
-registration. See
+The YAML/JSON document describing a baseline's desired settings. Registering
+the document saves it locally; it does not apply the settings. See
 [Reference → Manifest schema](./manifest-schema.md).
 
 ## Master matrix
@@ -177,11 +202,26 @@ uses the same word.
 
 ## oscfg
 
-The native upstream CLI. Replaces the `Microsoft.OSConfig`
-PowerShell module that older editions used. ConfigForge **never**
-calls the PowerShell module - only the binary. Targeted version:
-`oscfg 1.3.9-preview11`. Since v0.2.0 the binary is no longer
-bundled (see [BYO-CLI](#byo-cli)).
+The native upstream CLI used by the Full edition for local device operations.
+Targeted version: `oscfg 1.3.9-preview11`. The binary is not bundled (see
+[BYO-CLI](#byo-cli)). It is not the PowerShell resource module or the
+GuestConfiguration packaging toolkit.
+
+## Microsoft.OSConfig PowerShell module
+
+Supplies the OSConfig DSC resource for Azure Machine Configuration packages.
+**Version 1.4.10 or later is required on the packaging machine** when creating
+a package from a ConfigForge-exported MOF. This is a module version, not a
+PowerShell runtime version. The app itself does not need this module for
+authoring or its CLI-based local operations.
+
+## GuestConfiguration
+
+The separate PowerShell toolkit providing `New-GuestConfigurationPackage`,
+package testing, and policy generation. It runs in the required
+**PowerShell 7** environment and bundles the exact Microsoft.OSConfig module
+version referenced by the resolved MOF. See
+[Machine Configuration packaging](../user-guide/machine-configuration.md).
 
 ## Phase A→E page split
 

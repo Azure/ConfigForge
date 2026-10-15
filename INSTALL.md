@@ -1,5 +1,12 @@
 # Installing ConfigForge and the OSConfig CLI
 
+Start by installing the desktop app. **Stop after the first-baseline
+walkthrough if you only want to author or review baselines.** The CLI and
+Machine Configuration packaging tools are optional, separate workflows.
+
+> ConfigForge is experimental, community-maintained, and not an officially
+> supported Microsoft product. It is not intended for production use.
+
 ConfigForge has two editions:
 
 - **Full edition** — Windows + Linux from the `main` branch. Authoring works without the CLI; Deploy, Audit, and Revert require `oscfg`.
@@ -8,9 +15,9 @@ ConfigForge has two editions:
   and Audit Pack export are available. Device Deploy, Audit, and Revert are
   intentionally omitted.
 
-The current Windows/Linux Full-edition release is `v0.3.101`. The current
+The current Windows/Linux Full-edition release is `v0.3.103`. The current
 macOS Author release is `mac-v0.3.101-author.1`. Both are published as
-prereleases. The Full-edition package version on `main` is `0.3.101`; the
+prereleases. The Full-edition package version on `main` is `0.3.103`; the
 macOS Author package version is `0.3.101-author.1`.
 
 ConfigForge does **not** bundle the OSConfig CLI. To use the Full edition's Deploy, Audit, or Revert features against a real Windows or Linux machine, install `oscfg` separately from its upstream source.
@@ -19,6 +26,53 @@ The editor, Microsoft Baselines, Diff, import/export, and Audit Pack features
 work without `oscfg`. This is Editor mode, and it is the default on first
 launch. In the Full edition, the Welcome dialog and footer health pill surface
 CLI state so you can switch to device operations after installing the CLI.
+
+## Install the desktop app
+
+1. Open the [ConfigForge releases](https://github.com/Azure/ConfigForge/releases)
+   page. Choose **Full v0.3.103** for Windows/Linux x64 or
+   **Author mac-v0.3.101-author.1** for Apple Silicon macOS. Expand **Assets**
+   and download the appropriate installer/archive and published checksum
+   manifest. Source-code archives are for contributors, not app installers.
+2. Compare the download's SHA-256 with its entry in the release checksum
+   manifest. For example, in PowerShell, replace the filename below with your
+   downloaded asset:
+
+   ```powershell
+   Get-FileHash -LiteralPath '.\downloaded-installer.exe' -Algorithm SHA256
+   ```
+
+   On Linux use `sha256sum <downloaded-asset>`; on macOS use
+   `shasum -a 256 <downloaded-asset>`. Stop if the checksum differs.
+3. Follow your organization's software policy before installing an unsigned
+   app. Windows users can run the installer or extract the portable archive.
+   Linux users should choose the package format for their distribution, or
+   extract the portable archive. For macOS, see [Author edition](#macos-author-edition).
+4. Open ConfigForge without elevation for authoring. If the Welcome dialog
+   appears, choose **Author baselines anywhere**, then follow
+   [Your first baseline](./docs/src/quick-start/first-manifest.md).
+
+**Unsigned-download warning:** these artifacts have no code-signing identity;
+macOS builds are also not notarized. A checksum confirms integrity relative to
+the published file, not that the app is safe. Do not disable operating-system
+security protections globally. If Windows SmartScreen blocks the installer,
+review its source and checksum and obtain approval before using any per-file
+override. On managed devices, ask your administrator rather than bypassing
+policy. Building from reviewed source is an alternative, not a safety guarantee.
+
+## Optional local device operations
+
+The following CLI setup is only for the Full edition's **Deploy**, device
+**Audit**, and **Revert**. Test on a disposable machine that matches the
+baseline's target OS. Registration alone does not apply a baseline.
+
+For **creating Azure Machine Configuration packages**, use the separate
+[packaging guide](./docs/src/user-guide/machine-configuration.md): it requires
+PowerShell 7, the GuestConfiguration toolkit, and the **Microsoft.OSConfig
+PowerShell module 1.4.10 or later** on the packaging machine.
+`Install-Module -Name Microsoft.OSConfig -MinimumVersion 1.4.10` installs that
+module; `winget install Microsoft.OSConfig` below installs the **CLI**, not
+the PowerShell packaging prerequisite.
 
 ---
 
@@ -114,9 +168,10 @@ the app into Deploy-capable mode without restarting.
 4. ConfigForge will auto-detect the binary on next launch (or
    click Recheck in the app).
 
-Deploy/Audit operations require root (or sudo) for the same reasons they do
-on Windows. The in-app health pill will surface "admin required" when
-unprivileged.
+Deploy/Revert require root or equivalent privileges. Audit permissions depend
+on the resource being read; protected settings may also require elevation.
+An unread setting is not evidence of compliance. This is separate from
+Machine Configuration package testing, which requires a privileged session.
 
 ---
 
@@ -132,18 +187,22 @@ prerelease after its five assets pass validation. Users can download the
 release or build the tagged source by following the instructions in the
 [Azure/ConfigForge repository](https://github.com/Azure/ConfigForge).
 
-The app is unsigned and not notarized. Copy **ConfigForge Author.app** to
-`/Applications`, then clear the browser-added quarantine attribute once:
+The app is unsigned and not notarized. Verify its release checksum before
+opening the DMG and copying **ConfigForge Author.app** to `/Applications`.
+Gatekeeper may block it. Prefer your organization's approved per-app process
+(for example, **System Settings → Privacy & Security → Open Anyway**, when
+available and permitted).
+
+Only if you have verified the download, accept the unsigned-app risk, and
+your policy permits it, remove the quarantine attribute from this app alone:
 
 ```bash
-xattr -cr "/Applications/ConfigForge Author.app"
+xattr -rd com.apple.quarantine "/Applications/ConfigForge Author.app"
 ```
 
-If that command reports a permission error, use:
-
-```bash
-sudo xattr -rd com.apple.quarantine "/Applications/ConfigForge Author.app"
-```
+This removes a Gatekeeper quarantine check; it does not sign or notarize the
+app. Do not clear all attributes, disable Gatekeeper globally, or escalate a
+permission failure just to bypass policy. Ask your administrator if blocked.
 
 The Author edition supports baseline authoring, validation, import, Diff,
 Benchmark Mapping, history, rationale, and Audit Pack PDF/Markdown export. It

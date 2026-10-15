@@ -2,6 +2,19 @@
 
 ## [Unreleased]
 
+### Documentation
+
+- Lead the README and documentation site with release downloads, edition
+  selection, and a first saved baseline without CLI, admin access, or Azure.
+  Keep advanced packaging and contributor references available without making
+  them prerequisites; clarify unsigned-download risks and report terminology.
+- Require the **Microsoft.OSConfig PowerShell module 1.4.10+** on the machine
+  creating Machine Configuration packages, separately from PowerShell 7 and
+  GuestConfiguration. Centralize Audit-first packaging, reject missing/older
+  modules before MOF version resolution, preserve exact-version binding and
+  immutable ZIP/hash guidance, and label the 1.4.3 patch helper historical.
+  This does not claim that all upstream baseline issues are resolved.
+
 ### Security
 
 - Update DOMPurify to 3.4.16, Axios to 1.20.0, ip-address to 10.7.2,

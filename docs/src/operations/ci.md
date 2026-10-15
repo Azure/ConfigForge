@@ -62,7 +62,12 @@ Each platform job:
 9. Uploads installers, checksums, and SBOMs to a draft GitHub Release.
 10. Stashes the same artifacts on the workflow run for short-term recovery.
 
-Release artifacts are **unsigned** by design — there is no code signing in CI. On Windows, SmartScreen warns until a binary builds reputation; on macOS, Gatekeeper requires `xattr -cr`. The trust path is building from source; optional local self-signing is described in `apps/desktop/scripts/generate-dev-cert.ps1`.
+Release artifacts are **unsigned** by design; macOS builds are not notarized.
+There is no code signing in CI. Follow the
+[download-verification and per-app warning guidance](https://github.com/Azure/ConfigForge/blob/main/INSTALL.md#install-the-desktop-app),
+not a blanket security bypass. Building from reviewed source is an alternative,
+not a safety guarantee; the optional local self-sign helper is described in
+the [packaging guide](https://github.com/Azure/ConfigForge/blob/main/apps/desktop/PACKAGING.md).
 
 ## What `release-mac.yml` runs
 
