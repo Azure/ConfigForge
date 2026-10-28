@@ -25,8 +25,9 @@ security updates, and clearer customer guidance to Apple Silicon Macs.
 
 ## Security
 
-- Ship the reviewed dependency updates, including Electron 42.11.3,
-  DOMPurify 3.4.16, and js-yaml 4.3.2.
+- Ship the dependency updates, including Electron 42.11.18,
+  DOMPurify 3.4.17, and js-yaml 4.3.2. Address the newly reported sanitizer
+  bypasses and Electron certificate mitigations before publication.
   ([#132](https://github.com/Azure/ConfigForge/pull/132),
   [#141](https://github.com/Azure/ConfigForge/pull/141))
 - Include a SHA-256 manifest and CycloneDX software bill of materials.
