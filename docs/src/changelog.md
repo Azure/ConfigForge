@@ -4,6 +4,12 @@ A concise release history for ConfigForge. Newer entries use their release
 tags and state publication status explicitly; older entries summarize the
 foundational work by theme.
 
+## Unreleased
+
+- **Copy-and-paste packaging setup:** Include the DSC prerequisite and readiness
+  checks, explicit export/package paths, and a self-contained elevated Audit
+  step that saves its results. Keep Azure publishing separate and optional.
+
 ## v0.3.104 - 2026-10-28
 
 - **Security maintenance:** Ship the merged dependency updates, including

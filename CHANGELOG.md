@@ -1,5 +1,15 @@
 # Changelog
 
+## [Unreleased]
+
+### Documentation
+
+- Make Machine Configuration setup self-contained: include the platform-specific
+  DSC prerequisites, verify module versions and commands, prepare the export
+  folder first, and restore variables explicitly in the elevated audit session.
+  Keep Azure tools and publishing optional, and reject missing files and
+  accidental package overwrites before continuing.
+
 ## [0.3.104] - 2026-10-28
 
 ### Changed

@@ -15,6 +15,19 @@ The deployment path is:
 ConfigForge exports the compiled MOF. You do not need to author a separate DSC
 configuration.
 
+**For a Windows baseline, follow this path:** [set up PowerShell](#windows-setup-copy-and-paste),
+[export the MOF](#1-export-the-mof-from-configforge),
+[resolve its module version](#2-resolve-the-microsoftosconfig-module-version),
+[create the Audit ZIP](#3-create-the-package), then
+[test it locally](#4-test-the-package-locally). Stop there if you only need a
+tested package. Signing and Azure publishing are separate, optional steps.
+
+Run each code block in order. Keep the **same PowerShell 7 session for setup
+and steps 1-3**; their variables carry forward. Step 4 shows how to reopen an
+elevated session without losing the package path. Do not copy every block on
+this page into one script: the Linux, signing, enforcement, and Azure examples
+are alternatives or optional operations.
+
 > ConfigForge is experimental, community-maintained, not officially supported
 > by Microsoft, and not intended for production use. Test every package and
 > policy on a disposable machine. Azure Machine Configuration's support status
@@ -50,8 +63,9 @@ defines the runtime and toolkit requirements. These are separate components:
 | --- | --- |
 | **PowerShell 7** | Runtime in which you run the packaging commands |
 | **GuestConfiguration** | Toolkit providing `New-GuestConfigurationPackage`, package testing, and policy generation |
+| **PSDesiredStateConfiguration 2.0.7 on Windows** | Desired State Configuration (DSC) tooling required by the Windows authoring environment; Linux uses the separate setup below |
 | **Microsoft.OSConfig PowerShell module 1.4.10 or later** | ConfigForge packaging prerequisite: supplies the OSConfig DSC resource that `New-GuestConfigurationPackage` bundles into the ZIP |
-| **Az modules** | Azure authentication, Storage, policy definitions, and assignments |
+| **Az modules** | Needed for the optional Azure authentication, Storage, policy-definition, and assignment steps, not for the local walkthrough |
 
 **1.4.10 is the Microsoft.OSConfig module version, not a PowerShell runtime
 version or an `oscfg` CLI version.** The module must be installed and visible
@@ -59,38 +73,103 @@ in `$env:PSModulePath` on the machine **creating** the package. Installing the
 CLI with winget does not satisfy this requirement. Neither module is required
 for ordinary ConfigForge authoring.
 
-Install the packaging modules in PowerShell 7 using PowerShellGet:
+### Windows setup: copy and paste
+
+Open **PowerShell 7** (`pwsh`), not Windows PowerShell 5.1 or PowerShell ISE.
+Use a new session so a different DSC version is not already loaded. This
+installs modules for your current user and verifies the commands needed
+below; it does not create Azure resources or apply a baseline.
 
 ```powershell
+$ErrorActionPreference = 'Stop'
+
+if ($PSVersionTable.PSVersion -lt [version]'7.1.3' -or -not $IsWindows) {
+  throw 'Run this Windows setup in PowerShell 7.1.3 or later (pwsh).'
+}
+
+Get-Command Install-Module -ErrorAction Stop | Out-Null
+Get-PSRepository -Name PSGallery -ErrorAction Stop | Out-Null
+
+$LoadedDsc = Get-Module -Name PSDesiredStateConfiguration
+if ($LoadedDsc -and $LoadedDsc.Version -ne [version]'2.0.7') {
+  throw 'A different DSC version is loaded. Open a new PowerShell 7 session and rerun setup.'
+}
+
+Install-Module -Name PSDesiredStateConfiguration -RequiredVersion 2.0.7 -Scope CurrentUser -Repository PSGallery
 Install-Module -Name GuestConfiguration -Scope CurrentUser -Repository PSGallery
 Install-Module -Name Microsoft.OSConfig -MinimumVersion 1.4.10 -Scope CurrentUser -Repository PSGallery
-Import-Module GuestConfiguration
-Get-Command -Module GuestConfiguration
+
+Import-Module -Name PSDesiredStateConfiguration -RequiredVersion 2.0.7 -ErrorAction Stop
+Import-Module -Name GuestConfiguration -ErrorAction Stop
+
+Get-Command -Name New-GuestConfigurationPackage, Get-GuestConfigurationPackageComplianceStatus `
+  -Module GuestConfiguration -ErrorAction Stop
+
+$OSConfigModule = Get-Module -ListAvailable -Name Microsoft.OSConfig |
+  Where-Object { $_.Version -ge [version]'1.4.10' } |
+  Sort-Object Version -Descending |
+  Select-Object -First 1
+
+if (-not $OSConfigModule) {
+  throw 'Microsoft.OSConfig 1.4.10 or later is not visible in this PowerShell 7 session.'
+}
+
+Get-Module -Name PSDesiredStateConfiguration, GuestConfiguration |
+  Select-Object Name, Version, ModuleBase
+$OSConfigModule | Select-Object Name, Version, ModuleBase
 ```
 
 Review any repository trust prompt according to your organization's policy;
 you do not need to mark the whole Gallery trusted. Packaging itself does not
 require elevation. Local package **testing** does.
 
-GuestConfiguration installs required Az dependencies; Microsoft Learn lists
-Azure PowerShell 5.9.0 or later. For the publishing steps below, ensure
-`Az.Accounts`, `Az.Storage`, `Az.Resources`, and `Az.PolicyInsights` are available
-in that session. Follow your organization's approved installation process if
-they are missing.
+**Ready to continue:** the output lists both GuestConfiguration commands,
+DSC **2.0.7**, and Microsoft.OSConfig **1.4.10 or newer**, with no errors.
+`-MinimumVersion` permits a newer OSConfig module; it does not pin 1.4.10.
+An already-installed-module warning is not sufficient proof of readiness:
+check the displayed versions. If setup fails, stop and use
+[Troubleshooting](#troubleshooting); do not continue with partially installed
+prerequisites. No `Import-Module Microsoft.OSConfig` is needed just to package
+its installed DSC resource.
 
-Complete Learn's platform-specific **PSDesiredStateConfiguration** setup as
-part of preparing the environment; it is separate from the Microsoft.OSConfig
-resource module. ConfigForge already exports a compiled MOF, so you can skip
-writing and compiling a separate DSC configuration for this walkthrough.
+### Ubuntu setup: use instead of the Windows block
 
-List qualifying resource-module versions:
+For a **Linux baseline**, use a compatible Ubuntu 20+ packaging/test machine
+and PowerShell **7.2.4+**. Do not use the Windows DSC 2.0.7 setup on Linux.
+Microsoft's Linux authoring instructions use the DSC prerelease below:
 
 ```powershell
+$ErrorActionPreference = 'Stop'
+
+if ($PSVersionTable.PSVersion -lt [version]'7.2.4' -or -not $IsLinux) {
+  throw 'Run this Linux setup in PowerShell 7.2.4 or later on compatible Ubuntu.'
+}
+
+Install-Module -Name PSDesiredStateConfiguration -RequiredVersion 3.0.0-beta1 `
+  -AllowPrerelease -Scope CurrentUser -Repository PSGallery
+Install-Module -Name GuestConfiguration -Scope CurrentUser -Repository PSGallery
+Install-Module -Name Microsoft.OSConfig -MinimumVersion 1.4.10 -Scope CurrentUser -Repository PSGallery
+
+Import-Module -Name PSDesiredStateConfiguration -RequiredVersion 3.0.0 -ErrorAction Stop
+Import-Module -Name GuestConfiguration -ErrorAction Stop
+Get-Command -Name New-GuestConfigurationPackage, Get-GuestConfigurationPackageComplianceStatus `
+  -Module GuestConfiguration -ErrorAction Stop
+
 Get-Module -ListAvailable -Name Microsoft.OSConfig |
   Where-Object { $_.Version -ge [version]'1.4.10' } |
   Sort-Object Version -Descending |
+  Select-Object -First 1 |
   Select-Object Name, Version, ModuleBase
 ```
+
+The DSC prerelease's Gallery version is `3.0.0-beta1`, but its module manifest
+version is `3.0.0`; `Import-Module -RequiredVersion` uses the manifest version.
+Stop if no qualifying Microsoft.OSConfig module is shown. The local packaging
+steps below use paths under your home folder and also work in `pwsh` on Linux.
+Use a Linux MOF and Linux resources; select `Platform = 'Linux'` for the
+optional policy-generation step. Local testing requires root privileges and
+access to the installed modules; see step 4. macOS users must transfer their
+exported MOF to a compatible Windows/Ubuntu machine.
 
 The [1.4.10 Gallery release](https://www.powershellgallery.com/packages/Microsoft.OSConfig/1.4.10)
 is available. The **1.4.10+ minimum is the current ConfigForge packaging
@@ -112,26 +191,37 @@ Target machines need:
 
 ## 1. Export the MOF from ConfigForge
 
-1. Open the baseline in **Baseline Detail**.
-2. Select **Export**.
-3. Select **MOF (`.mof`)**.
-4. Save the file in a versioned working folder.
-
-The examples below use a **Windows baseline on a Windows packaging/test
-machine**. For Linux content, use a compatible Ubuntu environment, Linux
-baseline/resources, an appropriate working directory, and `Platform = 'Linux'`
-when generating the policy. Do not test Windows resources on a Linux host.
+First create the folder so the export destination already exists. The default
+is a folder under your home directory; no write access to the root of `C:\`
+is needed. Change `$PackageName` for your baseline and each new package version.
+Run this in the same session as setup:
 
 ```powershell
-$WorkingDirectory = 'C:\ConfigForge\MachineConfiguration'
-$MofPath = Join-Path $WorkingDirectory 'ContosoSecurityBaseline.mof'
+$ErrorActionPreference = 'Stop'
+$WorkingDirectory = Join-Path (Join-Path $HOME 'ConfigForge') 'MachineConfiguration'
 $PackageName = 'ContosoSecurityBaseline_1_0_0'
+$MofPath = Join-Path $WorkingDirectory "$PackageName.mof"
 
 New-Item -ItemType Directory -Path $WorkingDirectory -Force | Out-Null
-if (-not (Test-Path -LiteralPath $MofPath -PathType Leaf)) {
-  throw "Export the baseline MOF to $MofPath before continuing."
-}
+Write-Output "Save the ConfigForge MOF export to: $MofPath"
 ```
+
+1. Open the baseline in **Baseline Detail**.
+2. Select **Export**, then **MOF (`.mof`)**.
+3. Save the file using the exact path printed above. Transfer it to that path
+   on the packaging machine if ConfigForge is on a different computer.
+4. Confirm the file is present before proceeding:
+
+```powershell
+if (-not (Test-Path -LiteralPath $MofPath -PathType Leaf)) {
+  throw "The exported MOF is missing. Save it to $MofPath before continuing."
+}
+Get-Item -LiteralPath $MofPath
+```
+
+The remaining examples assume a **Windows baseline on a Windows test
+machine**, except where the Linux alternative is shown. Never test Windows
+resources on a Linux host or Linux resources on Windows.
 
 Use a unique package name for every baseline release. Reusing package names or
 content URIs can leave Azure evaluating cached content.
@@ -162,8 +252,7 @@ if (-not $InstalledOSConfig) {
   throw 'Microsoft.OSConfig 1.4.10 or later is required on the packaging machine.'
 }
 
-$ResolvedMofPath = Join-Path $WorkingDirectory `
-  'ContosoSecurityBaseline.resolved.mof'
+$ResolvedMofPath = Join-Path $WorkingDirectory "$PackageName.resolved.mof"
 
 $MofContent = Get-Content -LiteralPath $MofPath -Raw -ErrorAction Stop
 if (-not $MofContent.Contains('ModuleVersion = "0.0.0";')) {
@@ -194,15 +283,29 @@ reproduce and diagnose the package later.
 Create an Audit package with the **GuestConfiguration** cmdlet:
 
 ```powershell
+$ExpectedPackagePath = Join-Path $WorkingDirectory "$PackageName.zip"
+if (Test-Path -LiteralPath $ExpectedPackagePath) {
+  throw 'A ZIP with this name already exists. Choose a new package name/version and rerun steps 1-3.'
+}
+
 $Package = New-GuestConfigurationPackage `
   -Name $PackageName `
   -Configuration $ResolvedMofPath `
   -Type Audit `
-  -Path $WorkingDirectory
+  -Path $WorkingDirectory `
+  -ErrorAction Stop
 
-$PackagePath = $Package.Path
-Get-Item $PackagePath
+if (-not $Package.Path -or -not (Test-Path -LiteralPath $Package.Path -PathType Leaf)) {
+  throw 'Package creation did not return an existing ZIP. Review the packaging error before continuing.'
+}
+$PackagePath = (Resolve-Path -LiteralPath $Package.Path).Path
+Get-Item -LiteralPath $PackagePath
+Get-FileHash -LiteralPath $PackagePath -Algorithm SHA256
 ```
+
+**Expected result:** an existing `ContosoSecurityBaseline_1_0_0.zip` (or your
+chosen package name), its full path, and a SHA-256 hash. Save the path for the
+next step. Creating the package does not apply the baseline or contact Azure.
 
 The source baseline, exact module version, and package name together identify
 what you are testing. Use a new name/version for changed content; do not
@@ -232,12 +335,42 @@ and non-sensitive error details, then investigate rather than modifying the ZIP.
 
 ## 4. Test the package locally
 
-Run local tests from an elevated PowerShell 7 session on Windows or through
-`sudo pwsh` on Linux:
+Test only on a disposable machine matching the baseline's OS and role.
+For Windows, open **PowerShell 7 as Administrator using the same user account**
+used for setup. A new window does **not** inherit `$PackagePath` or other
+variables. Paste this block to import the toolkit and reconstruct the path;
+change `$PackageName` if you changed it in step 1:
 
 ```powershell
-Get-GuestConfigurationPackageComplianceStatus -Path $PackagePath
+$ErrorActionPreference = 'Stop'
+Import-Module -Name GuestConfiguration -ErrorAction Stop
+
+$WorkingDirectory = Join-Path (Join-Path $HOME 'ConfigForge') 'MachineConfiguration'
+$PackageName = 'ContosoSecurityBaseline_1_0_0'
+$PackagePath = Join-Path $WorkingDirectory "$PackageName.zip"
+
+if (-not (Test-Path -LiteralPath $PackagePath -PathType Leaf)) {
+  throw "The Audit ZIP is missing at $PackagePath. Copy it here or use its actual full path."
+}
+
+$AuditResult = Get-GuestConfigurationPackageComplianceStatus -Path $PackagePath -ErrorAction Stop
+if (-not $AuditResult -or -not @($AuditResult.resources).Count) {
+  throw 'The audit returned no resource results. Review the test-agent errors before continuing.'
+}
+$AuditReportPath = Join-Path $WorkingDirectory "$PackageName.audit.json"
+$AuditResult | ConvertTo-Json -Depth 100 |
+  Set-Content -LiteralPath $AuditReportPath -Encoding utf8 -ErrorAction Stop
+$AuditResult | Format-List
+Write-Output "Saved audit results to: $AuditReportPath"
 ```
+
+On a different test machine, install GuestConfiguration in its PowerShell 7
+environment and copy the ZIP there first; the resource module is already
+inside the ZIP. Use that machine's actual file path. On Linux, run a privileged
+`sudo pwsh` session with GuestConfiguration available to root; a module
+installed with `-Scope CurrentUser` by your non-root user is not automatically
+available to root. Set the ZIP path explicitly rather than relying on root's
+different `$HOME`. Do not change global module paths to bypass this distinction.
 
 The first run installs the local Machine Configuration test agent. The result
 should include one resource result for every Test wrapper in the exported
@@ -250,6 +383,12 @@ Inspect unread/error results as well as the total count. A completed command
 alone is not a passing audit. Preserve the report alongside the exact package
 and module version. These instructions are not a live-test record for your
 environment or for every 1.4.10+ module/baseline combination.
+
+**Local walkthrough complete:** you have an Audit ZIP, a SHA-256 hash, and a
+saved per-resource audit report. Noncompliant results can be valid audit
+findings; unread resources, errors, or missing results need investigation.
+Nothing in this walkthrough has intentionally invoked remediation or created
+Azure resources. Continue below only if you want to publish the package.
 
 **Optional enforcement evaluation:** only after reviewing the baseline and
 Audit results, create a separate package with `-Type AuditAndSet`. The next
@@ -277,25 +416,60 @@ validation.
 Run `Protect-GuestConfigurationPackage` before upload and before policy
 generation.
 
-Windows example:
+Windows example: use the thumbprint of your organization's approved
+code-signing certificate. Do not select an arbitrary certificate automatically.
 
 ```powershell
-$Certificate = Get-ChildItem Cert:\LocalMachine\My |
-  Where-Object {
-    $_.EnhancedKeyUsageList.FriendlyName -contains 'Code Signing'
-  } |
-  Select-Object -First 1
+$CertificateThumbprint = '<approved-code-signing-certificate-thumbprint>'
+$Certificate = Get-Item -LiteralPath "Cert:\LocalMachine\My\$CertificateThumbprint" -ErrorAction Stop
+if (-not $Certificate.HasPrivateKey) {
+  throw 'The selected certificate does not have an accessible private key.'
+}
 
 Protect-GuestConfigurationPackage `
   -Path $PackagePath `
   -Certificate $Certificate `
   -Verbose
+
+Get-FileHash -LiteralPath $PackagePath -Algorithm SHA256
 ```
 
 Signed-package enforcement also requires distributing the public certificate
-and configuring target-machine certificate validation.
+and configuring target-machine certificate validation. Use the hash of the
+final signed ZIP rather than the earlier unsigned ZIP.
 
 ## 6. Upload the ZIP to Azure Storage
+
+### Install the Azure publishing tools
+
+Skip this section if you only need a local package. Use the same PowerShell 7
+session for steps 6-10, with `$WorkingDirectory` and `$PackagePath` from above.
+If you reopened PowerShell, restore those variables from the step 4 block
+without running its audit command again.
+
+Install the supported Azure PowerShell bundle explicitly rather than assuming
+GuestConfiguration installed every publishing dependency:
+
+```powershell
+$ErrorActionPreference = 'Stop'
+Install-Module -Name Az -MinimumVersion 5.9.0 -Scope CurrentUser -Repository PSGallery
+Import-Module -Name Az.Accounts, Az.Storage, Az.Resources -ErrorAction Stop
+Import-Module -Name GuestConfiguration -ErrorAction Stop
+Get-Command -Name Connect-AzAccount, Set-AzStorageBlobContent, New-AzPolicyDefinition, New-AzPolicyAssignment `
+  -ErrorAction Stop
+
+if (-not $PackagePath -or -not (Test-Path -LiteralPath $PackagePath -PathType Leaf)) {
+  throw 'Set $PackagePath to the tested Audit ZIP before starting Azure publishing.'
+}
+```
+
+You need permission to read the selected storage account's keys, create/upload
+to its private container, and create policy definitions/assignments at your
+chosen scope. These commands do not grant those permissions. The examples use
+an **existing** storage account and resource groups; create them through your
+approved Azure provisioning process first.
+
+### Upload a new immutable package
 
 `Publish-GuestConfigurationPackage` is not part of GuestConfiguration 4.11.0.
 Upload the ZIP with `Set-AzStorageBlobContent`.
@@ -307,6 +481,11 @@ $SubscriptionId = '<subscription-id>'
 $StorageResourceGroup = '<storage-resource-group>'
 $StorageAccountName = '<storage-account-name>'
 $ContainerName = 'machine-configuration'
+
+if (@($SubscriptionId, $StorageResourceGroup, $StorageAccountName) |
+    Where-Object { [string]::IsNullOrWhiteSpace($_) -or $_ -match '^<.*>$' }) {
+  throw 'Replace the subscription and storage placeholders with your existing Azure resources.'
+}
 
 Connect-AzAccount
 Set-AzContext -SubscriptionId $SubscriptionId
@@ -459,6 +638,12 @@ show NonCompliant while the guest assignment is still Pending.
 | Symptom                                                                            | Resolution                                                                                                            |
 | ---------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------- |
 | `Publish-GuestConfigurationPackage` is not recognized                              | Upload with `Set-AzStorageBlobContent`.                                                                               |
+| `Install-Module` or `PSGallery` is not available                                    | Use PowerShell 7 with PowerShellGet and an approved PSGallery registration. Follow your organization's repository/proxy policy; do not skip failed setup commands. |
+| DSC 2.0.7 cannot import, or another DSC version is already loaded                   | Open a fresh Windows PowerShell **7** (`pwsh`) session and rerun Windows setup. Do not use Windows PowerShell 5.1/ISE or the Linux DSC prerelease. |
+| Setup reports an older module is already installed                                | Check the versions printed by setup. Upgrade Microsoft.OSConfig through your approved module-management process to at least 1.4.10, then reopen PowerShell 7 and rerun setup. Do not treat a warning as a successful upgrade. |
+| `$PackagePath` is empty after opening an elevated window                           | Variables do not cross PowerShell sessions. Use the self-contained step 4 block, with the same package name or the ZIP's actual full path. |
+| An elevated or root session cannot find GuestConfiguration                        | Use the same Windows account as setup, or install the toolkit for the test account. On Linux, root does not automatically see a normal user's CurrentUser modules. |
+| A ZIP already exists with the selected package name                                | Use a new package name/version and rerun steps 1-3. Do not overwrite a package already referenced by a policy. |
 | No qualifying `Microsoft.OSConfig` module is found                                 | Install **1.4.10 or later** in the packaging session's PowerShell 7 module path, then rerun resolution and create a new ZIP. Installing the CLI is not sufficient. |
 | More than one Microsoft.OSConfig version is installed                              | Resolution selects the newest installed version **at least 1.4.10**. Record it and verify that exact version is bundled; older copies do not satisfy the minimum. |
 | Runtime says module version `0.0.0` does not exist                                 | Package the resolved MOF, not the portable exported MOF.                                                              |
