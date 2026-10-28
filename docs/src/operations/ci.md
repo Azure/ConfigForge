@@ -13,7 +13,7 @@ ConfigForge uses GitHub Actions from `.github/workflows/`. The product is an Ele
 
 The Win/Linux Release workflow intentionally ignores hyphen-suffix tags
 (`!v*-*`). macOS Author releases use separate tags such as
-`mac-v0.3.101-author.1`; dispatch the protected `main` workflow definition
+`mac-v0.3.104-author.1`; dispatch the protected `main` workflow definition
 manually and let its checkout step select the immutable macOS tag.
 
 ## What `pr-check.yml` runs
@@ -40,7 +40,7 @@ scenarios. The prior `mac-v0.3.94-author.1` draft release remains unpublished;
 workflow run
 [#30233283418](https://github.com/Azure/ConfigForge/actions/runs/30233283418)
 verified its five assets. The current macOS Author release is
-`mac-v0.3.101-author.1`, published as a prerelease. Use current GitHub checks
+`mac-v0.3.104-author.1`, published as a prerelease. Use current GitHub checks
 and release metadata as the authority for build and asset status.
 
 Caching covers npm, Electron binaries, electron-builder, and Playwright browser downloads. Concurrency cancels stale PR runs on the same branch.
@@ -80,7 +80,7 @@ the immutable macOS tag:
 gh workflow run "Release (macOS author)" \
   --repo Azure/ConfigForge \
   --ref main \
-  -f release_tag=mac-v0.3.101-author.1
+  -f release_tag=mac-v0.3.104-author.1
 ```
 
 The target draft release and tag must already exist. The workflow loads its
@@ -88,16 +88,16 @@ definition from `main`, checks out `release_tag`, verifies that
 `HEAD` resolves to the tag, checks that tagged tree with the dependency-free
 public-asset guard from protected `main`, then builds with
 `electron-builder.author.yml`.
-For `mac-v0.3.101-author.1`, it uses exactly these expected asset names:
+For `mac-v0.3.104-author.1`, it uses exactly these expected asset names:
 
-1. `ConfigForge-Author-0.3.101-author.1-mac-arm64.dmg`
-2. `ConfigForge-Author-0.3.101-author.1-mac-arm64.dmg.blockmap`
+1. `ConfigForge-Author-0.3.104-author.1-mac-arm64.dmg`
+2. `ConfigForge-Author-0.3.104-author.1-mac-arm64.dmg.blockmap`
 3. `latest-mac.yml`
 4. `sbom-macos-author.cdx.json`
 5. `SHA256SUMS-macos-author.txt`
 
 The workflow refuses a published release and never publishes automatically.
-The current `mac-v0.3.101-author.1` release is published only after the five
+The current `mac-v0.3.104-author.1` release is published only after the five
 uploaded assets and their metadata pass validation.
 
 ## Linux runner notes

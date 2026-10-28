@@ -15,21 +15,22 @@ The renderer is built with Vite and routes through a typed IPC bridge (`window.c
 
 ### Current repository snapshot
 
-The following release references describe the current tagged source lines:
+The following release lines were prepared on 2026-10-28. GitHub release
+pages are authoritative for publication and asset status:
 
 | Line | Reference | State |
 |---|---|---|
-| `main` | `v0.3.101` | Current Full-edition Windows/Linux release, published as a prerelease with the enforcement and dependency-security fixes. |
-| `mac-author-build` | `mac-v0.3.101-author.1` | Current author-only macOS release, published as a prerelease with the compatible baseline, authoring, packaging, and security fixes. |
+| `main` | `v0.3.104` | Current Full-edition Windows/Linux release, published as a prerelease with the enforcement and dependency-security fixes. |
+| `mac-author-build` | `mac-v0.3.104-author.1` | Current author-only macOS release, published as a prerelease with the compatible baseline, authoring, packaging, and security fixes. |
 
 On `mac-author-build`, the root package, desktop package, and matching lockfile
-records use `0.3.101-author.1`. This release preserves the author-only
+records use `0.3.104-author.1`. This release preserves the author-only
 capability boundary while porting shared baseline, lossless data, Machine
 Configuration packaging, build compatibility, and dependency-security fixes.
-The package version on `main` is `0.3.101`; do not copy macOS package metadata
+The package version on `main` is `0.3.104`; do not copy macOS package metadata
 to `main`.
 
-The prior macOS Author release is `mac-v0.3.98-author.1`.
+The prior macOS Author release is `mac-v0.3.101-author.1`.
 
 ### Current feature inventory
 
@@ -119,13 +120,13 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
 - The macOS tag must resolve to the exact final validated commit on
   `mac-author-build`. `scripts/ship-mac.ps1` accepts only the `mac-v` form and
   defaults to `Azure/ConfigForge`.
-- The current macOS Author release `mac-v0.3.101-author.1` contains exactly
+- The current macOS Author release `mac-v0.3.104-author.1` contains exactly
   these asset names:
 
   | Asset | Exact name |
   |---|---|
-  | DMG | `ConfigForge-Author-0.3.101-author.1-mac-arm64.dmg` |
-  | Blockmap | `ConfigForge-Author-0.3.101-author.1-mac-arm64.dmg.blockmap` |
+  | DMG | `ConfigForge-Author-0.3.104-author.1-mac-arm64.dmg` |
+  | Blockmap | `ConfigForge-Author-0.3.104-author.1-mac-arm64.dmg.blockmap` |
   | Update metadata | `latest-mac.yml` |
   | CycloneDX SBOM | `sbom-macos-author.cdx.json` |
   | SHA-256 manifest | `SHA256SUMS-macos-author.txt` |
@@ -141,7 +142,7 @@ Cherry-picks from `main` to `mac-author-build` almost always conflict on `packag
   gh workflow run "Release (macOS author)" `
     --repo Azure/ConfigForge `
     --ref main `
-    -f release_tag=mac-v0.3.101-author.1
+    -f release_tag=mac-v0.3.104-author.1
   ```
 
 - `--ref main` selects the reviewed workflow definition, not the source to
@@ -450,7 +451,7 @@ When touching IPC contracts or `packages/core/src/handlers/`, exercise the chann
   Manifest Editor tests, two isolated Playwright scenarios, lint with 0
   errors, the desktop build, and a production audit with 0 vulnerabilities.
 - The prior macOS Author release is `mac-v0.3.98-author.1`.
-- The current macOS Author release is `mac-v0.3.101-author.1`; use current
+- The current macOS Author release is `mac-v0.3.104-author.1`; use current
   GitHub checks and release metadata as the authority for build and asset
   status rather than recording a merge SHA or workflow run here.
 

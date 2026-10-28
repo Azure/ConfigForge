@@ -15,10 +15,10 @@ ConfigForge has two editions:
   and Audit Pack export are available. Device Deploy, Audit, and Revert are
   intentionally omitted.
 
-The current Windows/Linux Full-edition release is `v0.3.103`. The current
-macOS Author release is `mac-v0.3.101-author.1`. Both are published as
-prereleases. The Full-edition package version on `main` is `0.3.103`; the
-macOS Author package version is `0.3.101-author.1`.
+The current Windows/Linux Full-edition release is `v0.3.104`. The current
+macOS Author release is `mac-v0.3.104-author.1`. Both are published as
+prereleases. The Full-edition package version on `main` is `0.3.104`; the
+macOS Author package version is `0.3.104-author.1`.
 
 ConfigForge does **not** bundle the OSConfig CLI. To use the Full edition's Deploy, Audit, or Revert features against a real Windows or Linux machine, install `oscfg` separately from its upstream source.
 
@@ -30,8 +30,8 @@ CLI state so you can switch to device operations after installing the CLI.
 ## Install the desktop app
 
 1. Open the [ConfigForge releases](https://github.com/Azure/ConfigForge/releases)
-   page. Choose **Full v0.3.103** for Windows/Linux x64 or
-   **Author mac-v0.3.101-author.1** for Apple Silicon macOS. Expand **Assets**
+   page. Choose **Full v0.3.104** for Windows/Linux x64 or
+   **Author mac-v0.3.104-author.1** for Apple Silicon macOS. Expand **Assets**
    and download the appropriate installer/archive and published checksum
    manifest. Source-code archives are for contributors, not app installers.
 2. Compare the download's SHA-256 with its entry in the release checksum
@@ -182,7 +182,7 @@ later). The release contains an ARM64-only binary. It is not an x64 or
 universal build and does not support Intel Macs. Rosetta does not provide
 ARM64-on-Intel compatibility.
 
-The current macOS Author release is `mac-v0.3.101-author.1`, published as a
+The current macOS Author release is `mac-v0.3.104-author.1`, published as a
 prerelease after its five assets pass validation. Users can download the
 release or build the tagged source by following the instructions in the
 [Azure/ConfigForge repository](https://github.com/Azure/ConfigForge).
