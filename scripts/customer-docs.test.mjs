@@ -48,7 +48,9 @@ describe('customer documentation contracts', () => {
 
   it('fails before MOF replacement when no qualifying installed module exists', async () => {
     const guide = await read(packagingGuide);
-    const resolution = guide.match(/```powershell\s+(\$InstalledOSConfig[\s\S]*?)```/)?.[1];
+    const resolution = [...guide.matchAll(/```powershell\s+([\s\S]*?)```/g)]
+      .map((match) => match[1])
+      .find((block) => block.includes('$InstalledOSConfig ='));
     expect(resolution).toBeDefined();
     expect(resolution).toContain("Where-Object { $_.Version -ge [version]'1.4.10' }");
     expect(resolution).toContain('Sort-Object Version -Descending');
@@ -63,92 +65,74 @@ describe('customer documentation contracts', () => {
   it('keeps current packages Audit-first without applying the historical helper', async () => {
     const guide = await read(packagingGuide);
     const blocks = [...guide.matchAll(/```powershell\s+([\s\S]*?)```/g)].map((match) => match[1]);
-    const create = blocks.find((block) => block.includes('$Package = New-GuestConfigurationPackage'));
+    const create = blocks.find((block) => block.includes('New-GuestConfigurationPackage'));
     expect(create).toContain('-Type Audit');
     expect(create).not.toContain('AuditAndSet');
+    expect(create).not.toContain('-Force');
     expect(blocks.join('\n')).not.toContain('new-machine-configuration-package.ps1');
     expect(guide).toContain('Do not apply that old patch to 1.4.10+ packages.');
-    expect(guide).toContain('Do not modify the ZIP after this step.');
-    expect(guide).toContain('The policy contains the package hash.');
+    expect(guide).toContain('keep the ZIP and its URI unchanged');
+    expect(guide.replace(/\s+/g, ' ')).toContain('The policy contains the package hash.');
     expect(guide).not.toContain('Set-PSRepository');
   });
 
-  it('provides explicit platform-specific DSC setup and validates Windows readiness', async () => {
+  it('keeps the Windows prerequisites to two module installation commands', async () => {
     const guide = await read(packagingGuide);
-    const windows = guide.split('### Windows setup: copy and paste')[1]
-      .split('### Ubuntu setup: use instead of the Windows block')[0];
-    const linux = guide.split('### Ubuntu setup: use instead of the Windows block')[1]
-      .split('### Azure targets')[0];
+    const prerequisites = guide.split('## Prerequisites')[1]
+      .split('## 1. Export')[0];
+    const blocks = [...prerequisites.matchAll(/```powershell\s+([\s\S]*?)```/g)];
 
-    expect(windows).toContain("$ErrorActionPreference = 'Stop'");
-    expect(windows).toContain("$PSVersionTable.PSVersion -lt [version]'7.1.3'");
-    expect(windows).toContain('-not $IsWindows');
-    expect(windows).toContain('Get-Command Install-Module -ErrorAction Stop');
-    expect(windows).toContain('Get-PSRepository -Name PSGallery -ErrorAction Stop');
-    expect(windows).toContain('Install-Module -Name PSDesiredStateConfiguration -RequiredVersion 2.0.7');
-    expect(windows).toContain('Import-Module -Name PSDesiredStateConfiguration -RequiredVersion 2.0.7');
-    expect(windows).toContain('$LoadedDsc.Version');
-    expect(windows).toContain('Get-Command -Name New-GuestConfigurationPackage, Get-GuestConfigurationPackageComplianceStatus');
-    expect(windows).toMatch(/if \(-not \$OSConfigModule\) \{\s+throw /);
-    expect(windows).not.toContain('3.0.0-beta1');
-    expect(linux).toContain('-RequiredVersion 3.0.0-beta1');
-    expect(linux).toContain('Import-Module -Name PSDesiredStateConfiguration -RequiredVersion 3.0.0 -ErrorAction Stop');
-    expect(linux).not.toContain('Import-Module -Name PSDesiredStateConfiguration -RequiredVersion 3.0.0-beta1');
-    expect(linux).toContain('-AllowPrerelease');
-    expect(linux).toContain('-not $IsLinux');
+    expect(blocks).toHaveLength(1);
+    expect(blocks[0][1].trim().split(/\r?\n/)).toEqual([
+      'Install-Module -Name GuestConfiguration -Scope CurrentUser -Repository PSGallery',
+      'Install-Module -Name Microsoft.OSConfig -MinimumVersion 1.4.10 -Scope CurrentUser -Repository PSGallery',
+    ]);
+    expect(prerequisites.replace(/\s+/g, ' ')).toContain(
+      'module installation is **not required for this Windows packaging path**',
+    );
+    expect(guide).not.toContain('Install-Module -Name PSDesiredStateConfiguration');
+    expect(guide).not.toContain('Import-Module -Name PSDesiredStateConfiguration');
+    expect(prerequisites).toContain('Microsoft Learn authoring guidance');
   });
 
-  it('creates the export folder before asking for the MOF and refuses package overwrite', async () => {
+  it('uses only three packaging steps and preserves the source MOF', async () => {
     const guide = await read(packagingGuide);
-    const exportStep = guide.split('## 1. Export the MOF from ConfigForge')[1]
-      .split('## 2. Resolve')[0];
-    const packageStep = guide.split('## 3. Create the package')[1]
-      .split('## 4. Test')[0];
+    const steps = [...guide.matchAll(/^## \d+\. (.+)$/gm)].map((match) => match[1]);
+    const blocks = [...guide.matchAll(/```powershell\s+([\s\S]*?)```/g)]
+      .map((match) => match[1]);
+    const resolution = blocks.find((block) => block.includes('$InstalledOSConfig ='));
+    const create = blocks.find((block) => block.includes('New-GuestConfigurationPackage'));
 
-    expect(exportStep.indexOf('New-Item -ItemType Directory')).toBeLessThan(
-      exportStep.indexOf('1. Open the baseline'),
-    );
-    expect(exportStep).toContain("Join-Path (Join-Path $HOME 'ConfigForge') 'MachineConfiguration'");
-    expect(exportStep).toContain('Test-Path -LiteralPath $MofPath -PathType Leaf');
-    expect(packageStep.indexOf('Test-Path -LiteralPath $ExpectedPackagePath')).toBeLessThan(
-      packageStep.indexOf('$Package = New-GuestConfigurationPackage'),
-    );
-    expect(packageStep).toContain('Test-Path -LiteralPath $Package.Path -PathType Leaf');
-    expect(packageStep).toContain('Get-FileHash -LiteralPath $PackagePath -Algorithm SHA256');
-    expect(packageStep).not.toContain('-Force');
+    expect(steps).toEqual([
+      'Export the MOF from ConfigForge',
+      'Resolve the Microsoft.OSConfig module version',
+      'Create the package',
+    ]);
+    expect(blocks).toHaveLength(3);
+    expect(resolution).toContain("$ErrorActionPreference = 'Stop'");
+    expect(resolution).toContain("Resolve-Path -LiteralPath '.\\Baseline.mof'");
+    expect(resolution).toContain('$WorkingDirectory = Split-Path -Parent $MofPath');
+    expect(resolution).toContain('Set-Content -LiteralPath $ResolvedMofPath');
+    expect(resolution).not.toContain('Set-Content -LiteralPath $MofPath');
+    expect(create).toContain('Import-Module -Name GuestConfiguration -ErrorAction Stop');
+    expect(create).toContain('-Configuration $ResolvedMofPath');
+    expect(create).toContain('-Path $WorkingDirectory');
+    expect(guide).toContain('**same session**');
   });
 
-  it('reestablishes variables and imports in the elevated audit session', async () => {
+  it('links testing and Azure deployment as optional follow-ups instead of expanding setup', async () => {
     const guide = await read(packagingGuide);
-    const testStep = guide.split('## 4. Test the package locally')[1]
-      .split('**Optional enforcement evaluation:**')[0];
-    const code = testStep.match(/```powershell\s+([\s\S]*?)```/)?.[1];
+    const optional = guide.split('## Optional next steps')[1]
+      .split('## Troubleshooting')[0];
 
-    expect(code).toContain('Import-Module -Name GuestConfiguration -ErrorAction Stop');
-    expect(code).toContain("$PackageName = 'ContosoSecurityBaseline_1_0_0'");
-    expect(code).toContain('$PackagePath = Join-Path $WorkingDirectory "$PackageName.zip"');
-    expect(code.indexOf('Test-Path -LiteralPath $PackagePath')).toBeLessThan(
-      code.indexOf('Get-GuestConfigurationPackageComplianceStatus'),
-    );
-    expect(code).toContain('ConvertTo-Json -Depth 100');
-    expect(code).toContain('-not @($AuditResult.resources).Count');
-    expect(code).toContain('Set-Content -LiteralPath $AuditReportPath');
-    expect(code).not.toContain('Start-GuestConfigurationPackageRemediation');
-    expect(testStep).toContain('same user account');
-    expect(testStep).toContain("different `$HOME`");
-  });
-
-  it('keeps Azure tool installation and resource placeholders in the optional publishing path', async () => {
-    const guide = await read(packagingGuide);
-    const publishing = guide.split('## 6. Upload the ZIP to Azure Storage')[1]
-      .split('## 7. Generate')[0];
-
-    expect(publishing).toContain('Install-Module -Name Az -MinimumVersion 5.9.0');
-    expect(publishing).toContain('Import-Module -Name Az.Accounts, Az.Storage, Az.Resources');
-    expect(publishing.indexOf("throw 'Replace the subscription")).toBeLessThan(
-      publishing.indexOf('Connect-AzAccount\n'),
-    );
-    expect(guide.slice(0, guide.indexOf('## 5. Optional: sign'))).not.toContain('Connect-AzAccount');
-    expect(publishing).toContain('existing');
+    expect(optional).toContain('/3-test-package');
+    expect(optional).toContain('/4-publish-package');
+    expect(optional).toContain('/how-to/create-policy-definition');
+    expect(optional).toContain('/policy/assign-policy-powershell');
+    expect(optional).toContain('Testing requires elevation');
+    expect(optional).not.toContain('```powershell');
+    expect(guide).not.toContain('Connect-AzAccount');
+    expect(guide).not.toContain('Install-Module -Name Az');
+    expect(guide).not.toContain('Start-GuestConfigurationPackageRemediation');
   });
 });

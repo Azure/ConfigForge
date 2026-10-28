@@ -82,11 +82,11 @@ To draft a Linux baseline on Windows or macOS:
 ## Azure Machine Configuration is a separate path
 
 For Azure Policy evaluation, export **MOF** and follow
-[Deploy through Azure Machine Configuration](../user-guide/machine-configuration.md).
+[Create a Machine Configuration package](../user-guide/machine-configuration.md).
 Package creation requires **PowerShell 7**, the **GuestConfiguration** toolkit,
 and the **Microsoft.OSConfig PowerShell module 1.4.10 or later** on the
 packaging machine. Version 1.4.10 refers to the module, not the runtime.
 
-The guide binds the MOF to an exact installed module version, creates an
-Audit-first ZIP, tests it, and then covers hosting and policy assignment.
+The guide binds the MOF to an exact installed module version and creates an
+Audit-first ZIP. Testing, hosting, and policy assignment are optional follow-ups.
 None of those steps is required for authoring or Audit Pack export.

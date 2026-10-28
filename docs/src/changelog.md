@@ -6,9 +6,10 @@ foundational work by theme.
 
 ## Unreleased
 
-- **Copy-and-paste packaging setup:** Include the DSC prerequisite and readiness
-  checks, explicit export/package paths, and a self-contained elevated Audit
-  step that saves its results. Keep Azure publishing separate and optional.
+- **Simpler packaging:** State the two module prerequisites and provide three
+  steps to create an Audit ZIP. No separate DSC-module installation is needed
+  for the Windows precompiled-MOF path. Testing and Azure deployment are linked
+  as optional follow-ups.
 
 ## v0.3.104 - 2026-10-28
 
