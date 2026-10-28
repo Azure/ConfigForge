@@ -4,11 +4,10 @@
 
 ### Documentation
 
-- Make Machine Configuration setup self-contained: include the platform-specific
-  DSC prerequisites, verify module versions and commands, prepare the export
-  folder first, and restore variables explicitly in the elevated audit session.
-  Keep Azure tools and publishing optional, and reject missing files and
-  accidental package overwrites before continuing.
+- Simplify Machine Configuration packaging to two module prerequisites and
+  three steps: export, resolve the resource-module version, and create an Audit
+  ZIP. Remove the separate DSC-module installation from the Windows
+  precompiled-MOF path; link testing and Azure deployment as optional follow-ups.
 
 ## [0.3.104] - 2026-10-28
 
