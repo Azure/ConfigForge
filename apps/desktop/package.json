@@ -1,6 +1,6 @@
 {
   "name": "@configforge/desktop",
-  "version": "0.3.103",
+  "version": "0.3.104",
   "private": true,
   "description": "ConfigForge \u2014 OSConfig Baseline Editing tool",
   "main": "./dist/electron/main.js",
@@ -52,7 +52,7 @@
     "autoprefixer": "^10.5.0",
     "concurrently": "^9.2.5",
     "cross-env": "^7.0.3",
-    "electron": "~42.11.3",
+    "electron": "~42.11.16",
     "electron-builder": "~26.15.3",
     "esbuild": "^0.28.1",
     "eslint": "^8.57.1",
@@ -64,7 +64,7 @@
     "sharp": "0.35.5",
     "tailwindcss": "^3.4.19",
     "typescript": "^5.7.3",
-    "vite": "^6.4.3",
+    "vite": "^6.4.4",
     "wait-on": "^8.0.2"
   }
 }

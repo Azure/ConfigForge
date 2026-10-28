@@ -65,9 +65,9 @@ Review their timestamps, scope, and any unread or unavailable settings.
 | macOS on Apple Silicon (M1 or later) | **Author** | Authoring, Diff, Benchmark Mapping, history, rationale, and Audit Pack export; no device operations |
 
 The current Windows/Linux release is
-[v0.3.103](https://github.com/Azure/ConfigForge/releases/tag/v0.3.103).
+[v0.3.104](https://github.com/Azure/ConfigForge/releases/tag/v0.3.104).
 The current macOS Author release is
-[mac-v0.3.101-author.1](https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.101-author.1).
+[mac-v0.3.104-author.1](https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.104-author.1).
 Both are prereleases and unsigned; macOS is not notarized. Intel Macs and
 universal binaries are not supported. Read the
 [download and installation guidance](./quick-start/install-run.md) first.

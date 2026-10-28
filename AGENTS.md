@@ -15,16 +15,17 @@ The renderer is built with Vite and routes through a typed IPC bridge (`window.c
 
 ### Current repository snapshot
 
-The following release references were verified on 2026-08-06:
+The following release lines were prepared on 2026-10-28. GitHub release
+pages are authoritative for publication and asset status:
 
 | Line | Reference | State |
 |---|---|---|
-| `main` | `v0.3.103` | Current Windows/Linux release. All 12 Windows Server role baselines pass native Azure Audit and ApplyAndAutoCorrect with OSConfig 1.4.3. |
-| `mac-author-build` | `mac-v0.3.101-author.1` | Current author-only macOS release, published as a prerelease with the compatible baseline, authoring, packaging, and security fixes. |
+| `main` | `v0.3.104` | Windows/Linux maintenance release with dependency security and customer-documentation updates. Historical baseline validation is recorded in the changelog. |
+| `mac-author-build` | `mac-v0.3.104-author.1` | Current author-only macOS release, published as a prerelease with the compatible baseline, authoring, packaging, and security fixes. |
 
 On `mac-author-build`, the root package, desktop package, and lockfile records
-use `0.3.101-author.1`. The current macOS Author release is
-`mac-v0.3.101-author.1`. The Full-edition package versions are `0.3.103`; do not copy
+use `0.3.104-author.1`. The current macOS Author release is
+`mac-v0.3.104-author.1`. The Full-edition package versions are `0.3.104`; do not copy
 macOS package metadata to `main`.
 
 ### Current feature inventory
@@ -448,9 +449,9 @@ When touching IPC contracts or `packages/core/src/handlers/`, exercise the chann
   errors, the desktop build, and a production audit with 0 vulnerabilities.
 - Historical `0.3.93-author.1` and `0.3.93-author.2` validation records are
   superseded; their tags/releases no longer exist. Use the current
-  `mac-v0.3.101-author.1` prerelease metadata and current GitHub
+  `mac-v0.3.104-author.1` prerelease metadata and current GitHub
   checks as the authority for macOS Author build and asset status.
-- The current macOS Author release is `mac-v0.3.101-author.1`. Use current
+- The current macOS Author release is `mac-v0.3.104-author.1`. Use current
   GitHub checks and release metadata as the authority for build and asset
   status rather than recording a merge SHA or workflow run here.
 

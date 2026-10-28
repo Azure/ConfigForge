@@ -18,11 +18,11 @@ subscription is needed for authoring.
 
 | Your computer | Download | What you can do |
 | --- | --- | --- |
-| Windows or Linux (x64) | **Full** — [v0.3.103](https://github.com/Azure/ConfigForge/releases/tag/v0.3.103) | Author, validate, compare, and export. Optional local Deploy, Audit, and Revert require the separately installed `oscfg` CLI. |
-| macOS on Apple Silicon (M1 or later) | **Author** — [mac-v0.3.101-author.1](https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.101-author.1) | The same authoring and review workflows, including Audit Pack export; no device operations. ARM64 only—not Intel or universal. |
+| Windows or Linux (x64) | **Full** — [v0.3.104](https://github.com/Azure/ConfigForge/releases/tag/v0.3.104) | Author, validate, compare, and export. Optional local Deploy, Audit, and Revert require the separately installed `oscfg` CLI. |
+| macOS on Apple Silicon (M1 or later) | **Author** — [mac-v0.3.104-author.1](https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.104-author.1) | The same authoring and review workflows, including Audit Pack export; no device operations. ARM64 only—not Intel or universal. |
 
-Both releases are **prereleases**. Full-edition package versions are `0.3.103`;
-the macOS Author package version is `0.3.101-author.1`.
+Both releases are **prereleases**. Full-edition package versions are `0.3.104`;
+the macOS Author package version is `0.3.104-author.1`.
 
 **Downloads are unsigned; macOS builds are also not notarized.** Download only
 from this repository's release page, compare the asset's SHA-256 with the

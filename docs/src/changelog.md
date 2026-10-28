@@ -4,43 +4,20 @@ A concise release history for ConfigForge. Newer entries use their release
 tags and state publication status explicitly; older entries summarize the
 foundational work by theme.
 
-## Unreleased
+## v0.3.104 - 2026-10-28
 
-- **Clearer getting started:** Download the correct Full or Apple Silicon
-  Author edition, save a first baseline without CLI/admin/Azure prerequisites,
-  and choose optional comparison, reporting, device, or packaging workflows.
-  Keep technical references available under contributor navigation and explain
-  unsigned-download risks, Audit Pack vs device Audit, and benchmark coverage.
-- **Machine Configuration prerequisites:** Package with the **Microsoft.OSConfig
-  PowerShell module 1.4.10+**, separate from the PowerShell 7 runtime and
-  GuestConfiguration toolkit. The canonical Audit-first guide rejects missing
-  or older modules before resolving the MOF, keeps exact-version/immutable-ZIP
-  requirements, and excludes the historical 1.4.3 patch from current guidance.
-  The minimum version is not a statement that all upstream issues are fixed.
-- **Dependency security:** Update DOMPurify, Axios, ip-address,
-  every supported brace-expansion and Undici line, and concurrently to
-  patched releases. Also patch sharp, fast-uri, joi, and source-map-js
-  findings uncovered by the full dependency audit.
-  Correct the root shell-quote override so the vulnerable copy is not
-  retained, and add lockfile regression coverage.
-- **Cache and CSS tooling:** Update http-cache-semantics beyond the reported
-  affected range and use a patched CSS selector parser without upgrading
-  Tailwind 3. Cover compiled variant and child-selector compatibility.
-- **CI dependencies:** Refresh the SHA-pinned setup-node and upload-artifact
-  GitHub Actions.
-- **Remaining upstream advisories:** Build-only braces and sprintf-js have
-  no patched releases. Their advisories remain visible without suppression.
-- **SBOM tooling security:** Pin CycloneDX npm 6.0.0 to address
-  `GHSA-q69g-4hcv-6jg4`, with regression coverage for resolved versions.
-- **Build dependency security:** Require patched `@xmldom/xmldom` 0.8.15+
-  within the 0.8 line for Electron packaging tools, with a lockfile guard
-  against reintroducing vulnerable copies.
-- **Electron installation security:** Update to Electron 42.11.3, whose
-  maintained ZIP extractor replaces the vulnerable legacy `extract-zip`
-  dependency.
-- **Build dependency hardening:** Update all supported `brace-expansion`
-  lines and `nanoid` 3.x to patched releases for denial-of-service advisories
-  found by the full dependency audit.
+- **Security maintenance:** Ship the merged dependency updates, including
+  Electron 42.11.18, DOMPurify 3.4.17, and js-yaml 4.3.2. Resolve the new
+  sanitizer and Electron certificate advisories before publishing.
+- **Simpler onboarding:** Start with the correct download and a first saved
+  baseline. Advanced deployment, benchmark, and packaging workflows remain
+  optional; distinguish coverage, device Audit, and Audit Pack reports.
+- **Machine Configuration packages:** Use the Microsoft.OSConfig PowerShell
+  module **1.4.10+** on the packaging machine, separately from PowerShell 7.
+  Keep exact-version binding and Audit-first validation.
+- **Release scope:** Windows/Linux Full and Apple Silicon macOS Author remain
+  separate experimental, unsigned prereleases. The Author edition does not
+  perform device operations.
 
 ## v0.3.103 - 2026-08-09
 
