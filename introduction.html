@@ -1,0 +1,325 @@
+<!DOCTYPE HTML>
+<html lang="en" class="light" dir="ltr">
+    <head>
+        <!-- Book generated using mdBook -->
+        <meta charset="UTF-8">
+        <title>Start here - ConfigForge</title>
+
+
+        <!-- Custom HTML head -->
+        
+        <meta name="description" content="Documentation for ConfigForge — author, validate, deploy, and export OSConfig security baselines.">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="theme-color" content="#ffffff">
+
+        <link rel="icon" href="favicon.svg">
+        <link rel="shortcut icon" href="favicon.png">
+        <link rel="stylesheet" href="css/variables.css">
+        <link rel="stylesheet" href="css/general.css">
+        <link rel="stylesheet" href="css/chrome.css">
+        <link rel="stylesheet" href="css/print.css" media="print">
+
+        <!-- Fonts -->
+        <link rel="stylesheet" href="FontAwesome/css/font-awesome.css">
+        <link rel="stylesheet" href="fonts/fonts.css">
+
+        <!-- Highlight.js Stylesheets -->
+        <link rel="stylesheet" href="highlight.css">
+        <link rel="stylesheet" href="tomorrow-night.css">
+        <link rel="stylesheet" href="ayu-highlight.css">
+
+        <!-- Custom theme stylesheets -->
+        <link rel="stylesheet" href="theme/css/custom.css">
+
+    </head>
+    <body class="sidebar-visible no-js">
+    <div id="body-container">
+        <!-- Provide site root to javascript -->
+        <script>
+            var path_to_root = "";
+            var default_theme = window.matchMedia("(prefers-color-scheme: dark)").matches ? "navy" : "light";
+        </script>
+
+        <!-- Work around some values being stored in localStorage wrapped in quotes -->
+        <script>
+            try {
+                var theme = localStorage.getItem('mdbook-theme');
+                var sidebar = localStorage.getItem('mdbook-sidebar');
+
+                if (theme.startsWith('"') && theme.endsWith('"')) {
+                    localStorage.setItem('mdbook-theme', theme.slice(1, theme.length - 1));
+                }
+
+                if (sidebar.startsWith('"') && sidebar.endsWith('"')) {
+                    localStorage.setItem('mdbook-sidebar', sidebar.slice(1, sidebar.length - 1));
+                }
+            } catch (e) { }
+        </script>
+
+        <!-- Set the theme before any content is loaded, prevents flash -->
+        <script>
+            var theme;
+            try { theme = localStorage.getItem('mdbook-theme'); } catch(e) { }
+            if (theme === null || theme === undefined) { theme = default_theme; }
+            var html = document.querySelector('html');
+            html.classList.remove('light')
+            html.classList.add(theme);
+            var body = document.querySelector('body');
+            body.classList.remove('no-js')
+            body.classList.add('js');
+        </script>
+
+        <input type="checkbox" id="sidebar-toggle-anchor" class="hidden">
+
+        <!-- Hide / unhide sidebar before it is displayed -->
+        <script>
+            var body = document.querySelector('body');
+            var sidebar = null;
+            var sidebar_toggle = document.getElementById("sidebar-toggle-anchor");
+            if (document.body.clientWidth >= 1080) {
+                try { sidebar = localStorage.getItem('mdbook-sidebar'); } catch(e) { }
+                sidebar = sidebar || 'visible';
+            } else {
+                sidebar = 'hidden';
+            }
+            sidebar_toggle.checked = sidebar === 'visible';
+            body.classList.remove('sidebar-visible');
+            body.classList.add("sidebar-" + sidebar);
+        </script>
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+                <ol class="chapter"><li class="chapter-item expanded affix "><a href="introduction.html" class="active">Start here</a></li><li class="chapter-item expanded affix "><li class="part-title">Get started</li><li class="chapter-item expanded "><a href="quick-start/install-run.html"><strong aria-hidden="true">1.</strong> Download, install, and open</a></li><li class="chapter-item expanded "><a href="quick-start/first-manifest.html"><strong aria-hidden="true">2.</strong> Your first baseline</a></li><li class="chapter-item expanded "><a href="quick-start/authoring-vs-deploying.html"><strong aria-hidden="true">3.</strong> Authoring vs device operations</a></li><li class="chapter-item expanded affix "><li class="part-title">Author and review</li><li class="chapter-item expanded "><a href="user-guide/manifest-editor.html"><strong aria-hidden="true">4.</strong> Baseline editor and export</a></li><li class="chapter-item expanded "><a href="user-guide/matrix-diff.html"><strong aria-hidden="true">5.</strong> Compare baselines</a></li><li class="chapter-item expanded "><a href="user-guide/cis-compliance.html"><strong aria-hidden="true">6.</strong> Benchmark Mapping and coverage</a></li><li class="chapter-item expanded "><a href="user-guide/rationale.html"><strong aria-hidden="true">7.</strong> Record why settings changed</a></li><li class="chapter-item expanded "><a href="user-guide/history-snapshots.html"><strong aria-hidden="true">8.</strong> History and snapshots</a></li><li class="chapter-item expanded "><a href="user-guide/audit-pack.html"><strong aria-hidden="true">9.</strong> Export an Audit Pack report</a></li><li class="chapter-item expanded "><a href="user-guide/analysis-provenance.html"><strong aria-hidden="true">10.</strong> Understand analysis provenance</a></li><li class="chapter-item expanded affix "><li class="part-title">Advanced workflows and help</li><li class="chapter-item expanded "><a href="user-guide/machine-configuration.html"><strong aria-hidden="true">11.</strong> Package for Azure Machine Configuration</a></li><li class="chapter-item expanded "><a href="operations/troubleshooting.html"><strong aria-hidden="true">12.</strong> Troubleshooting</a></li><li class="chapter-item expanded "><a href="operations/upstream-bugs.html"><strong aria-hidden="true">13.</strong> Report a reproducible CLI issue</a></li><li class="chapter-item expanded "><a href="reference/glossary.html"><strong aria-hidden="true">14.</strong> Glossary</a></li><li class="chapter-item expanded "><a href="reference/manifest-schema.html"><strong aria-hidden="true">15.</strong> Manifest schema</a></li><li class="chapter-item expanded "><a href="reference/registered-types.html"><strong aria-hidden="true">16.</strong> Registered resource types</a></li><li class="chapter-item expanded affix "><li class="part-title">For contributors</li><li class="chapter-item expanded "><a href="architecture/system-overview.html"><strong aria-hidden="true">17.</strong> Architecture overview</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="architecture/module-map.html"><strong aria-hidden="true">17.1.</strong> Module map</a></li><li class="chapter-item "><a href="architecture/registration-semantics.html"><strong aria-hidden="true">17.2.</strong> Registration semantics</a></li><li class="chapter-item "><a href="architecture/mixed-platform.html"><strong aria-hidden="true">17.3.</strong> Mixed-platform classification</a></li><li class="chapter-item "><a href="architecture/oscfg-cli.html"><strong aria-hidden="true">17.4.</strong> oscfg CLI contract</a></li><li class="chapter-item "><a href="architecture/diagrams.html"><strong aria-hidden="true">17.5.</strong> Diagrams</a></li></ol></li><li class="chapter-item expanded "><a href="api-reference/manifests.html"><strong aria-hidden="true">18.</strong> API: Baselines</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="api-reference/deploy-health.html"><strong aria-hidden="true">18.1.</strong> Deploy and health</a></li><li class="chapter-item "><a href="api-reference/diff.html"><strong aria-hidden="true">18.2.</strong> Diff</a></li><li class="chapter-item "><a href="api-reference/compliance.html"><strong aria-hidden="true">18.3.</strong> Compliance</a></li><li class="chapter-item "><a href="api-reference/history-import-export.html"><strong aria-hidden="true">18.4.</strong> History, import, and export</a></li><li class="chapter-item "><a href="api-reference/audit-pack.html"><strong aria-hidden="true">18.5.</strong> Audit Pack</a></li><li class="chapter-item "><a href="api-reference/rationale.html"><strong aria-hidden="true">18.6.</strong> Rationale</a></li></ol></li><li class="chapter-item expanded "><a href="contributing/agents-md.html"><strong aria-hidden="true">19.</strong> Contributor guide (AGENTS.md)</a><a class="toggle"><div>❱</div></a></li><li><ol class="section"><li class="chapter-item "><a href="contributing/conventions.html"><strong aria-hidden="true">19.1.</strong> Coding conventions</a></li><li class="chapter-item "><a href="contributing/testing.html"><strong aria-hidden="true">19.2.</strong> Testing expectations</a></li><li class="chapter-item "><a href="contributing/adding-oscfg-types.html"><strong aria-hidden="true">19.3.</strong> Adding an oscfg type</a></li><li class="chapter-item "><a href="operations/ci.html"><strong aria-hidden="true">19.4.</strong> CI on Linux and Windows</a></li><li class="chapter-item "><a href="operations/smoke-testing.html"><strong aria-hidden="true">19.5.</strong> Smoke testing on Windows</a></li></ol></li><li class="chapter-item expanded "><li class="spacer"></li><li class="chapter-item expanded affix "><a href="changelog.html">Changelog</a></li></ol>
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle">
+                <div class="sidebar-resize-indicator"></div>
+            </div>
+        </nav>
+
+        <!-- Track and set sidebar scroll position -->
+        <script>
+            var sidebarScrollbox = document.querySelector('#sidebar .sidebar-scrollbox');
+            sidebarScrollbox.addEventListener('click', function(e) {
+                if (e.target.tagName === 'A') {
+                    sessionStorage.setItem('sidebar-scroll', sidebarScrollbox.scrollTop);
+                }
+            }, { passive: true });
+            var sidebarScrollTop = sessionStorage.getItem('sidebar-scroll');
+            sessionStorage.removeItem('sidebar-scroll');
+            if (sidebarScrollTop) {
+                // preserve sidebar scroll position when navigating via links within sidebar
+                sidebarScrollbox.scrollTop = sidebarScrollTop;
+            } else {
+                // scroll sidebar to current active section when navigating via "next/previous chapter" buttons
+                var activeSection = document.querySelector('#sidebar .active');
+                if (activeSection) {
+                    activeSection.scrollIntoView({ block: 'center' });
+                }
+            }
+        </script>
+
+        <div id="page-wrapper" class="page-wrapper">
+
+            <div class="page">
+                                <div id="menu-bar-hover-placeholder"></div>
+                <div id="menu-bar" class="menu-bar sticky">
+                    <div class="left-buttons">
+                        <label id="sidebar-toggle" class="icon-button" for="sidebar-toggle-anchor" title="Toggle Table of Contents" aria-label="Toggle Table of Contents" aria-controls="sidebar">
+                            <i class="fa fa-bars"></i>
+                        </label>
+                        <button id="theme-toggle" class="icon-button" type="button" title="Change theme" aria-label="Change theme" aria-haspopup="true" aria-expanded="false" aria-controls="theme-list">
+                            <i class="fa fa-paint-brush"></i>
+                        </button>
+                        <ul id="theme-list" class="theme-popup" aria-label="Themes" role="menu">
+                            <li role="none"><button role="menuitem" class="theme" id="light">Light</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="rust">Rust</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="coal">Coal</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="navy">Navy</button></li>
+                            <li role="none"><button role="menuitem" class="theme" id="ayu">Ayu</button></li>
+                        </ul>
+                        <button id="search-toggle" class="icon-button" type="button" title="Search. (Shortkey: s)" aria-label="Toggle Searchbar" aria-expanded="false" aria-keyshortcuts="S" aria-controls="searchbar">
+                            <i class="fa fa-search"></i>
+                        </button>
+                    </div>
+
+                    <h1 class="menu-title">ConfigForge</h1>
+
+                    <div class="right-buttons">
+                        <a href="print.html" title="Print this book" aria-label="Print this book">
+                            <i id="print-button" class="fa fa-print"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge" title="Git repository" aria-label="Git repository">
+                            <i id="git-repository-button" class="fa fa-github"></i>
+                        </a>
+                        <a href="https://github.com/Azure/ConfigForge/edit/main/docs/src/introduction.md" title="Suggest an edit" aria-label="Suggest an edit">
+                            <i id="git-edit-button" class="fa fa-edit"></i>
+                        </a>
+
+                    </div>
+                </div>
+
+                <div id="search-wrapper" class="hidden">
+                    <form id="searchbar-outer" class="searchbar-outer">
+                        <input type="search" id="searchbar" name="searchbar" placeholder="Search this book ..." aria-controls="searchresults-outer" aria-describedby="searchresults-header">
+                    </form>
+                    <div id="searchresults-outer" class="searchresults-outer hidden">
+                        <div id="searchresults-header" class="searchresults-header"></div>
+                        <ul id="searchresults">
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Apply ARIA attributes after the sidebar and the sidebar toggle button are added to the DOM -->
+                <script>
+                    document.getElementById('sidebar-toggle').setAttribute('aria-expanded', sidebar === 'visible');
+                    document.getElementById('sidebar').setAttribute('aria-hidden', sidebar !== 'visible');
+                    Array.from(document.querySelectorAll('#sidebar a')).forEach(function(link) {
+                        link.setAttribute('tabIndex', sidebar === 'visible' ? 0 : -1);
+                    });
+                </script>
+
+                <div id="content" class="content">
+                    <main>
+                        <h1 id="introduction"><a class="header" href="#introduction">Introduction</a></h1>
+<h2 id="what-is-configforge"><a class="header" href="#what-is-configforge">What is ConfigForge?</a></h2>
+<p>ConfigForge is a desktop app for creating, reviewing, and sharing OSConfig
+security baselines. Start from a Microsoft template or your own settings,
+compare changes, and export your work before deciding whether to test it on a
+device.</p>
+<blockquote>
+<p><strong>Experimental and community-maintained.</strong> ConfigForge is not an officially
+supported Microsoft product and is <strong>not intended for production use</strong>.
+It is provided as-is for learning and evaluation, at your own risk.</p>
+</blockquote>
+<p><strong>Start here:</strong> <a href="./quick-start/install-run.html">Install the app</a> →
+<a href="./quick-start/first-manifest.html">Create your first baseline</a>.
+You do not need a CLI, administrator access, or an Azure subscription to
+complete this authoring walkthrough.</p>
+<h2 id="what-problem-does-it-solve"><a class="header" href="#what-problem-does-it-solve">What problem does it solve?</a></h2>
+<p>Keep desired settings in one editable baseline rather than reconciling
+separate spreadsheets and handwritten change notes. ConfigForge helps you
+compare drafts, record why values changed, and share a review report.
+It does not certify a baseline or prove that a device is compliant.</p>
+<h3 id="three-terms-to-know"><a class="header" href="#three-terms-to-know">Three terms to know</a></h3>
+<ul>
+<li><strong>Baseline:</strong> your set of desired security settings.</li>
+<li><strong>Manifest:</strong> the YAML or JSON document describing a baseline.</li>
+<li><strong>Register:</strong> save a baseline in My Baselines. Registration does not deploy
+settings or create an Azure resource.</li>
+</ul>
+<p>See the <a href="./reference/glossary.html">glossary</a> when you need more terminology.</p>
+<h2 id="what-does-configforge-do"><a class="header" href="#what-does-configforge-do">What does ConfigForge do?</a></h2>
+<p>Choose the next task you need; the advanced sections are optional.</p>
+<div class="table-wrapper"><table><thead><tr><th>Task</th><th>Start here</th><th>What to expect</th></tr></thead><tbody>
+<tr><td>Create or edit a baseline</td><td><a href="./user-guide/manifest-editor.html">Baseline editor</a></td><td>Code/Visual editing, validation, and YAML/JSON/MOF/CSV export</td></tr>
+<tr><td>Compare drafts</td><td><a href="./user-guide/matrix-diff.html">Diff</a></td><td>Pairwise comparison or a matrix of up to ten baselines</td></tr>
+<tr><td>Review benchmark coverage</td><td><a href="./user-guide/cis-compliance.html">Benchmark Mapping</a></td><td>Matches against your own licensed data; no CIS data is bundled</td></tr>
+<tr><td>Explain changes</td><td><a href="./user-guide/rationale.html">Rationale</a> and <a href="./user-guide/history-snapshots.html">history</a></td><td>Saved change reasons and snapshots</td></tr>
+<tr><td>Share review material</td><td><a href="./user-guide/audit-pack.html">Audit Pack</a></td><td>PDF or Markdown from available saved data; not a new device audit</td></tr>
+<tr><td>Check a local lab device</td><td><a href="./quick-start/authoring-vs-deploying.html">Authoring vs deploying</a></td><td>Optional CLI-based Audit, Deploy, and Revert in the Full edition</td></tr>
+<tr><td>Evaluate through Azure Policy</td><td><a href="./user-guide/machine-configuration.html">Machine Configuration</a></td><td>Separate packaging, testing, hosting, and policy-assignment workflow</td></tr>
+</tbody></table>
+</div>
+<p>The sidebar uses <strong>Dashboard</strong>, <strong>My Baselines</strong>, <strong>Microsoft Baselines</strong>,
+<strong>Export Readiness</strong>, <strong>Diff</strong>, <strong>Benchmark Mapping</strong>, and <strong>Settings</strong>.
+Export Readiness concerns baseline validation; it is not a device-compliance
+result.</p>
+<p><strong>Keep the results distinct:</strong> benchmark coverage identifies matching rules,
+not necessarily matching values. Device Audit checks a machine. Audit Pack
+exports a report and only includes device results when saved results exist.
+Review their timestamps, scope, and any unread or unavailable settings.</p>
+<h2 id="supported-platforms"><a class="header" href="#supported-platforms">Supported platforms</a></h2>
+<div class="table-wrapper"><table><thead><tr><th>Your computer</th><th>Edition</th><th>Start with</th></tr></thead><tbody>
+<tr><td>Windows (x64)</td><td><strong>Full</strong></td><td>Authoring without extra tools; local device operations need <code>oscfg</code> and elevation</td></tr>
+<tr><td>Linux (x64)</td><td><strong>Full</strong></td><td>Authoring; live device operations additionally need a compatible CLI/host and permissions</td></tr>
+<tr><td>macOS on Apple Silicon (M1 or later)</td><td><strong>Author</strong></td><td>Authoring, Diff, Benchmark Mapping, history, rationale, and Audit Pack export; no device operations</td></tr>
+</tbody></table>
+</div>
+<p>The current Windows/Linux release is
+<a href="https://github.com/Azure/ConfigForge/releases/tag/v0.3.104">v0.3.104</a>.
+The current macOS Author release is
+<a href="https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.104-author.1">mac-v0.3.104-author.1</a>.
+Both are prereleases and unsigned; macOS is not notarized. Intel Macs and
+universal binaries are not supported. Read the
+<a href="./quick-start/install-run.html">download and installation guidance</a> first.</p>
+<h2 id="who-is-this-for"><a class="header" href="#who-is-this-for">Who is this for?</a></h2>
+<ul>
+<li><strong>Baseline authors:</strong> begin with <a href="./quick-start/first-manifest.html">Your first baseline</a>.</li>
+<li><strong>Reviewers:</strong> compare drafts and inspect an <a href="./user-guide/audit-pack.html">Audit Pack</a>,
+keeping benchmark coverage separate from device evidence.</li>
+<li><strong>Lab operators:</strong> read <a href="./quick-start/authoring-vs-deploying.html">Authoring vs deploying</a>
+before using device operations.</li>
+<li><strong>Contributors:</strong> the <a href="./architecture/system-overview.html">system overview</a>,
+<a href="./architecture/module-map.html">module map</a>, and <a href="./contributing/agents-md.html">contribution guide</a>
+cover implementation details.</li>
+</ul>
+<h2 id="how-it-fits-in-the-osconfig-ecosystem"><a class="header" href="#how-it-fits-in-the-osconfig-ecosystem">How it fits in the OSConfig ecosystem</a></h2>
+<p>The app authors baselines. For optional local operations, the Full edition
+calls the native <code>oscfg</code> CLI, which is installed separately. The targeted CLI
+is <code>oscfg 1.3.9-preview11</code>; CLI compatibility is separate from package tooling.</p>
+<p>For Azure Machine Configuration, export a MOF and move to a packaging machine
+with <strong>PowerShell 7</strong>, <strong>GuestConfiguration</strong>, and the <strong>Microsoft.OSConfig
+PowerShell module 1.4.10 or later</strong>. Version <strong>1.4.10</strong> refers to the module,
+not the PowerShell runtime. Follow the
+<a href="./user-guide/machine-configuration.html#prerequisites">packaging prerequisites</a>;
+these tools are not required to author in ConfigForge.</p>
+<h2 id="repository"><a class="header" href="#repository">Repository</a></h2>
+<p>Source and documentation live at
+<a href="https://github.com/Azure/ConfigForge">Azure/ConfigForge</a>. The active branches
+are <code>main</code> for Windows/Linux Full and <code>mac-author-build</code> for macOS Author.
+The documentation site's edit link opens the corresponding Markdown source.</p>
+<h2 id="maintainer"><a class="header" href="#maintainer">Maintainer</a></h2>
+<p>Community-maintained by <a href="https://github.com/ABMFST">@ABMFST</a>. Use
+<a href="https://github.com/Azure/ConfigForge/issues">GitHub Issues</a> for reproducible
+bugs and feature discussions. Read the
+<a href="https://github.com/Azure/ConfigForge/blob/main/SUPPORT.md">support boundaries</a>
+and report vulnerabilities privately through
+<a href="https://github.com/Azure/ConfigForge/blob/main/SECURITY.md">SECURITY.md</a>.</p>
+
+                    </main>
+
+                    <nav class="nav-wrapper" aria-label="Page navigation">
+                        <!-- Mobile navigation buttons -->
+
+                            <a rel="next prefetch" href="quick-start/install-run.html" class="mobile-nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                                <i class="fa fa-angle-right"></i>
+                            </a>
+
+                        <div style="clear: both"></div>
+                    </nav>
+                </div>
+            </div>
+
+            <nav class="nav-wide-wrapper" aria-label="Page navigation">
+
+                    <a rel="next prefetch" href="quick-start/install-run.html" class="nav-chapters next" title="Next chapter" aria-label="Next chapter" aria-keyshortcuts="Right">
+                        <i class="fa fa-angle-right"></i>
+                    </a>
+            </nav>
+
+        </div>
+
+
+
+
+        <script>
+            window.playground_copyable = true;
+        </script>
+
+
+        <script src="elasticlunr.min.js"></script>
+        <script src="mark.min.js"></script>
+        <script src="searcher.js"></script>
+
+        <script src="clipboard.min.js"></script>
+        <script src="highlight.js"></script>
+        <script src="book.js"></script>
+
+        <!-- Custom JS scripts -->
+        <script src="mermaid.min.js"></script>
+        <script src="mermaid-init.js"></script>
+
+
+    </div>
+    </body>
+</html>
