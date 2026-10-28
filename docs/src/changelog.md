@@ -3,46 +3,27 @@
 A concise release history for ConfigForge. Newer entries use the
 shipped semver tag; older entries summarize the foundational work by theme.
 
-## Unreleased
+## macOS Author v0.3.104-author.1 - 2026-10-28
 
-- **Clearer getting started:** Download the correct Full or Apple Silicon
-  Author edition, save a first baseline without CLI/admin/Azure prerequisites,
-  and choose optional comparison, reporting, device, or packaging workflows.
-  Keep technical references available under contributor navigation and explain
-  unsigned-download risks, Audit Pack vs device Audit, and benchmark coverage.
-- **Machine Configuration prerequisites:** Package with the **Microsoft.OSConfig
-  PowerShell module 1.4.10+**, separate from the PowerShell 7 runtime and
-  GuestConfiguration toolkit. The canonical Audit-first guide rejects missing
-  or older modules before resolving the MOF, keeps exact-version/immutable-ZIP
-  requirements, and excludes the historical 1.4.3 patch from current guidance.
-  The minimum version is not a statement that all upstream issues are fixed.
-- **Dependency security:** Update DOMPurify, Axios, ip-address,
-  every supported brace-expansion and Undici line, and concurrently to
-  patched releases. Also patch sharp, fast-uri, joi, and source-map-js
-  findings uncovered by the full dependency audit.
-  Correct the root shell-quote override so the vulnerable copy is not
-  retained, and add lockfile regression coverage.
-- **Cache and CSS tooling:** Update http-cache-semantics beyond the reported
-  affected range and use a patched CSS selector parser without upgrading
-  Tailwind 3. Cover compiled variant and child-selector compatibility.
-- **CI dependencies:** Refresh the SHA-pinned setup-node and upload-artifact
-  GitHub Actions.
-- **macOS validation:** Build the author edition and native icons on macOS,
-  and verify that its compiled bridge excludes device-operation APIs.
-- **Remaining upstream advisories:** Build-only braces and sprintf-js have
-  no patched releases. Their advisories remain visible without suppression.
-- **SBOM tooling security:** Pin CycloneDX npm 6.0.0 to address
-  `GHSA-q69g-4hcv-6jg4`, with regression coverage for resolved versions.
-- **Dependency security:** Port patched xmldom, brace-expansion, and nanoid
-  dependencies, and update Electron to 42.11.3 to remove the vulnerable
-  legacy ZIP extractor. The macOS Author version and author-only capability
-  boundary are unchanged.
-- **Security parity:** Include the remaining audited js-yaml, sharp, Vitest,
-  and transitive build-tool fixes already present in the Full edition.
+- **Security maintenance:** Ship the merged dependency updates, including
+  Electron 42.11.18, DOMPurify 3.4.17, and js-yaml 4.3.2. Resolve the new
+  sanitizer and Electron certificate advisories before publishing.
+- **Simpler onboarding:** Start with the correct download and a first saved
+  baseline. Advanced deployment, benchmark, and packaging workflows remain
+  optional; distinguish coverage, device Audit, and Audit Pack reports.
+- **Machine Configuration packages:** Use the Microsoft.OSConfig PowerShell
+  module **1.4.10+** on the packaging machine, separately from PowerShell 7.
+  Keep exact-version binding and Audit-first validation.
+- **Release scope:** Windows/Linux Full and Apple Silicon macOS Author remain
+  separate experimental, unsigned prereleases. The Author edition does not
+  perform device operations.
+
+- **Baseline templates:** Include the reviewed Windows Server 2016-2025
+  repairs for authoring and export, without enabling local device operations.
 
 ## macOS Author v0.3.101-author.1 - 2026-08-07
 
-`mac-v0.3.101-author.1` is the current macOS Author release and is published
+`mac-v0.3.101-author.1` is a prior macOS Author release and is published
 as a prerelease. The author-only capability boundary remains unchanged.
 
 - **Windows Server 2022 baselines:** Repair the Member Server, Domain

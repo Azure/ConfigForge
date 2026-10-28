@@ -136,7 +136,9 @@ describe('public release metadata', () => {
     expect(packageJson.overrides['undici@7']).toBe('^7.29.1');
     expect(packageJson.overrides['postcss-selector-parser']).toBe('^7.1.6');
     expect(packageJson.overrides.dompurify).toBe('$dompurify');
-    expect(packageJson.devDependencies.dompurify).toBe('^3.4.16');
+    expect(packageJson.overrides['monaco-editor'].dompurify).toBe('$dompurify');
+    expect(packageJson.overrides['vite@6']).toBe('^6.4.4');
+    expect(packageJson.devDependencies.dompurify).toBe('^3.4.17');
     expect(lockfile.packages[''].devDependencies.dompurify).toBe(
       packageJson.devDependencies.dompurify,
     );
@@ -156,10 +158,15 @@ describe('public release metadata', () => {
 
   it.each([
     ['axios', { 1: [20, 0] }],
-    ['dompurify', { 3: [4, 16] }],
-    ['fast-uri', { 3: [1, 8] }],
+    ['dompurify', { 3: [4, 17] }],
+    ['follow-redirects', { 1: [16, 1] }],
+    ['vitest', { 4: [1, 12] }],
+    ['@vitest/mocker', { 4: [1, 12] }],
+    ['electron', { 42: [11, 16] }],
+    ['vite', { 6: [4, 4], 7: [3, 7], 8: [3, 3] }],
+    ['fast-uri', { 3: [1, 9] }],
     ['http-cache-semantics', { 4: [3, 0] }],
-    ['ip-address', { 10: [7, 2] }],
+    ['ip-address', { 10: [7, 4] }],
     ['joi', { 18: [2, 9] }],
     ['postcss-selector-parser', { 7: [1, 6] }],
     ['sharp', { 0: [35, 5] }],
@@ -367,8 +374,8 @@ describe('public release metadata', () => {
     expect(contributing).toContain('creates immutable release tags and draft');
     expect(support).toContain('The current repository maintainer is');
     expect(readme).toContain('for ownership, active-branch, review, release, and cherry-pick guidance');
-    expect(security).toContain('v0.3.101');
-    expect(security).toContain('mac-v0.3.101-author.1');
+    expect(security).toContain('v0.3.104');
+    expect(security).toContain('mac-v0.3.104-author.1');
     expect(security).toContain('Microsoft Security Response Center');
     expect(security).toContain('Microsoft OSConfig project');
     expect(support).toContain('best-effort basis');

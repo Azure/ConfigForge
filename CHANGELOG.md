@@ -1,58 +1,39 @@
 # Changelog
 
-## [Unreleased]
+## [0.3.104-author.1] - 2026-10-28
 
-### Documentation
+### Changed
 
-- Lead the README and documentation site with release downloads, edition
-  selection, and a first saved baseline without CLI, admin access, or Azure.
-  Keep advanced packaging and contributor references available without making
-  them prerequisites; clarify unsigned-download risks and report terminology.
-- Require the **Microsoft.OSConfig PowerShell module 1.4.10+** on the machine
-  creating Machine Configuration packages, separately from PowerShell 7 and
-  GuestConfiguration. Centralize Audit-first packaging, reject missing/older
-  modules before MOF version resolution, preserve exact-version binding and
-  immutable ZIP/hash guidance, and label the 1.4.3 patch helper historical.
-  This does not claim that all upstream baseline issues are resolved.
+- Bring the Apple Silicon Author edition to the 0.3.104 release line while
+  keeping device deploy, audit, enforce, revert, and elevation excluded.
+- Simplify installation and first-baseline guidance. Require **Microsoft.OSConfig
+  PowerShell module 1.4.10+** on the separate machine creating Machine
+  Configuration packages; PowerShell 7 is a distinct prerequisite.
+  ([#143](https://github.com/Azure/ConfigForge/pull/143))
+
+### Fixed
+
+- Include the reviewed Windows Server 2016-2025 template repairs for authoring
+  and Machine Configuration export, including effective firewall defaults and
+  non-mutating account-policy checks. These do not enable device operations
+  on macOS. ([#120](https://github.com/Azure/ConfigForge/pull/120))
 
 ### Security
 
-- Update DOMPurify to 3.4.16, Axios to 1.20.0, ip-address to 10.7.2,
-  all supported brace-expansion lines, and both Undici lines for current
-  Dependabot advisories. Guard every resolved copy against regression.
-- Patch additional full-audit findings in sharp, fast-uri, joi, and
-  source-map-js without changing the application's version or framework majors.
-- Update http-cache-semantics to 4.3.0, outside the reported affected range,
-  and override the vulnerable CSS selector parser with 7.1.6+. Preserve
-  Tailwind 3 and cover its generated variants and child selectors in a
-  compatibility regression test.
-- Update concurrently to 9.2.5 and its shell-quote dependency to 1.12.0.
-  Correct the root override that otherwise keeps the vulnerable 1.9.0
-  shell-quote copy despite the parent-package update.
-- Refresh the SHA-pinned setup-node and upload-artifact GitHub Actions.
-- Validate the author build and native icon generation on a hosted macOS
-  runner, including the compiled preload's author-only capability boundary.
-- Keep the unpatched build-only braces (`GHSA-vfj7-8cjw-p6xm`) and
-  sprintf-js (`GHSA-hp3w-g68c-fv3c`) advisories visible. Neither upstream
-  package has a patched release; no advisory is suppressed or dismissed.
-- Upgrade the pinned CycloneDX SBOM generator to 6.0.0 to fix Windows
-  workspace-argument shell injection (`GHSA-q69g-4hcv-6jg4`). Guard the
-  manifest and every lockfile copy against reintroducing a vulnerable release.
-- Port the dependency security fixes from the Full edition without changing
-  the macOS Author version or capability boundary: require xmldom 0.8.15+,
-  brace-expansion 1.1.18 / 2.1.4 / 5.0.9, and nanoid 3.3.18+.
-- Update Electron within 42.x to 42.11.3, replacing the vulnerable legacy
-  `extract-zip` installation dependency with Electron-maintained extraction.
-- Guard every resolved copy and Electron workspace/lockfile consistency
-  against regressions.
-- Bring across the remaining Full-edition dependency fixes identified by
-  the author-branch audit: js-yaml 4.3.2, sharp 0.35.4, Vitest 4.1.11+,
-  and patched Browserslist, fast-uri, Joi, postcss-selector-parser, and
-  baseline-browser-mapping transitive dependencies.
+- Update Electron to 42.11.18 and ship the dependency fixes, including
+  DOMPurify 3.4.17 and js-yaml 4.3.2, with the Author capability boundary
+  preserved. ([#132](https://github.com/Azure/ConfigForge/pull/132),
+  [#141](https://github.com/Azure/ConfigForge/pull/141))
+- Resolve the release-blocking DOMPurify advisories and Electron certificate
+  mitigations. Patch affected Vitest, Vite, redirect, URI, and address-parser
+  dependencies, with regression guards for every resolved copy.
+- Include a SHA-256 manifest and CycloneDX software bill of materials.
+  Development-only advisories remain tracked separately; no clean full-audit
+  claim or advisory suppression is implied.
 
 ## [0.3.101-author.1] - 2026-08-07
 
-> `mac-v0.3.101-author.1` is the current macOS Author release and is
+> `mac-v0.3.101-author.1` is a prior macOS Author release and is
 > published as a prerelease. The author-only capability boundary is unchanged:
 > device deploy, audit, enforce, revert, elevation, health, and audit-results
 > storage remain excluded.

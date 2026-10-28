@@ -6,8 +6,8 @@ Security fixes are evaluated for the current tagged release lines.
 
 | Edition | Current version | Security updates |
 | --- | --- | --- |
-| Full edition for Windows and Linux | `v0.3.101` | Supported published prerelease |
-| macOS Author edition | `mac-v0.3.101-author.1` | Supported published prerelease |
+| Full edition for Windows and Linux | `v0.3.104` | Supported published prerelease |
+| macOS Author edition | `mac-v0.3.104-author.1` | Supported published prerelease |
 | Older versions | Earlier tags | Not supported |
 
 ## Security scope
