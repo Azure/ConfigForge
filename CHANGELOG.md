@@ -14,10 +14,13 @@
 
 ### Security
 
-- Update Electron to 42.11.3 and ship the merged dependency fixes, including
-  DOMPurify 3.4.16 and js-yaml 4.3.2, without changing application workflows.
+- Update Electron to 42.11.18 and ship the dependency fixes, including
+  DOMPurify 3.4.17 and js-yaml 4.3.2, without changing application workflows.
   ([#131](https://github.com/Azure/ConfigForge/pull/131),
   [#140](https://github.com/Azure/ConfigForge/pull/140))
+- Resolve the release-blocking DOMPurify advisories and Electron certificate
+  mitigations. Patch affected Vitest, Vite, redirect, URI, and address-parser
+  dependencies, with regression guards for every resolved copy.
 - Preserve package-integrity and public-asset safeguards. The release includes
   per-platform SHA-256 manifests and CycloneDX software bills of materials.
   Development-only advisories remain tracked separately; no clean full-audit

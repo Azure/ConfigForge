@@ -7,7 +7,8 @@ foundational work by theme.
 ## v0.3.104 - 2026-10-28
 
 - **Security maintenance:** Ship the merged dependency updates, including
-  Electron 42.11.3, DOMPurify 3.4.16, and js-yaml 4.3.2.
+  Electron 42.11.18, DOMPurify 3.4.17, and js-yaml 4.3.2. Resolve the new
+  sanitizer and Electron certificate advisories before publishing.
 - **Simpler onboarding:** Start with the correct download and a first saved
   baseline. Advanced deployment, benchmark, and packaging workflows remain
   optional; distinguish coverage, device Audit, and Audit Pack reports.
