@@ -20,8 +20,8 @@ describe('customer documentation contracts', () => {
     expect(readme).toContain('not intended for');
     expect(readme).toContain('production use');
     expect(readme).toContain('not an officially supported Microsoft product');
-    expect(readme).toContain('https://github.com/Azure/ConfigForge/releases/tag/v0.3.103');
-    expect(readme).toContain('https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.101-author.1');
+    expect(readme).toContain('https://github.com/Azure/ConfigForge/releases/tag/v0.3.104');
+    expect(readme).toContain('https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.104-author.1');
     expect(readme).not.toContain('mac-v0.3.97-author.1');
   });
 

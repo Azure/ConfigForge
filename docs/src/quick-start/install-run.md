@@ -13,8 +13,8 @@ managed computer.
 
 | Your computer | Edition and download | Capabilities |
 | --- | --- | --- |
-| Windows/Linux x64 | [Full v0.3.103](https://github.com/Azure/ConfigForge/releases/tag/v0.3.103) | Authoring and review; optional CLI-based local device operations |
-| macOS, Apple Silicon (M1 or later) | [Author mac-v0.3.101-author.1](https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.101-author.1) | Authoring and review, including Audit Pack export; no device operations |
+| Windows/Linux x64 | [Full v0.3.104](https://github.com/Azure/ConfigForge/releases/tag/v0.3.104) | Authoring and review; optional CLI-based local device operations |
+| macOS, Apple Silicon (M1 or later) | [Author mac-v0.3.104-author.1](https://github.com/Azure/ConfigForge/releases/tag/mac-v0.3.104-author.1) | Authoring and review, including Audit Pack export; no device operations |
 
 Both are prereleases. macOS is ARM64-only: Intel Macs and universal binaries
 are not supported.

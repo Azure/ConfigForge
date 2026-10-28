@@ -1,5 +1,28 @@
 # Changelog
 
+## [0.3.104] - 2026-10-28
+
+### Changed
+
+- Simplify installation and the first-baseline walkthrough. Keep advanced
+  deployment and packaging optional, and distinguish benchmark coverage,
+  device Audit, and exported Audit Packs. ([#142](https://github.com/Azure/ConfigForge/pull/142))
+- Document **Microsoft.OSConfig PowerShell module 1.4.10+** on the machine
+  creating Machine Configuration packages, separately from PowerShell 7.
+  Preserve exact installed-module binding and Audit-first validation.
+  This does not claim that every upstream baseline issue is resolved.
+
+### Security
+
+- Update Electron to 42.11.3 and ship the merged dependency fixes, including
+  DOMPurify 3.4.16 and js-yaml 4.3.2, without changing application workflows.
+  ([#131](https://github.com/Azure/ConfigForge/pull/131),
+  [#140](https://github.com/Azure/ConfigForge/pull/140))
+- Preserve package-integrity and public-asset safeguards. The release includes
+  per-platform SHA-256 manifests and CycloneDX software bills of materials.
+  Development-only advisories remain tracked separately; no clean full-audit
+  claim or advisory suppression is implied.
+
 ## [0.3.103] - 2026-08-09
 
 ### Fixed
@@ -25,55 +48,6 @@
   and User Rights resources instead of reporting them as indeterminate or
   "could not read" solely because the CLI returned `[resource]` rather than
   `resource`.
-
-## [Unreleased]
-
-### Documentation
-
-- Lead the README and documentation site with release downloads, edition
-  selection, and a first saved baseline without CLI, admin access, or Azure.
-  Keep advanced packaging and contributor references available without making
-  them prerequisites; clarify unsigned-download risks and report terminology.
-- Require the **Microsoft.OSConfig PowerShell module 1.4.10+** on the machine
-  creating Machine Configuration packages, separately from PowerShell 7 and
-  GuestConfiguration. Centralize Audit-first packaging, reject missing/older
-  modules before MOF version resolution, preserve exact-version binding and
-  immutable ZIP/hash guidance, and label the 1.4.3 patch helper historical.
-  This does not claim that all upstream baseline issues are resolved.
-
-### Security
-
-- Update DOMPurify to 3.4.16, Axios to 1.20.0, ip-address to 10.7.2,
-  all supported brace-expansion lines, and both Undici lines for current
-  Dependabot advisories. Guard every resolved copy against regression.
-- Patch additional full-audit findings in sharp, fast-uri, joi, and
-  source-map-js without changing the application's version or framework majors.
-- Update http-cache-semantics to 4.3.0, outside the reported affected range,
-  and override the vulnerable CSS selector parser with 7.1.6+. Preserve
-  Tailwind 3 and cover its generated variants and child selectors in a
-  compatibility regression test.
-- Update concurrently to 9.2.5 and its shell-quote dependency to 1.12.0.
-  Correct the root override that otherwise keeps the vulnerable 1.9.0
-  shell-quote copy despite the parent-package update.
-- Refresh the SHA-pinned setup-node and upload-artifact GitHub Actions.
-- Keep the unpatched build-only braces (`GHSA-vfj7-8cjw-p6xm`) and
-  sprintf-js (`GHSA-hp3w-g68c-fv3c`) advisories visible. Neither upstream
-  package has a patched release; no advisory is suppressed or dismissed.
-- Upgrade the pinned CycloneDX SBOM generator to 6.0.0 to fix Windows
-  workspace-argument shell injection (`GHSA-q69g-4hcv-6jg4`). Guard the
-  manifest and every lockfile copy against reintroducing a vulnerable release.
-- Require `@xmldom/xmldom` 0.8.15 or later in the 0.8 line for Electron
-  packaging dependencies. This addresses the XML injection, malformed-input,
-  and quadratic-time parsing advisories affecting the previous 0.8.13 copy.
-  Add a regression guard covering every resolved copy in the lockfile.
-- Update Electron within the 42.x line to 42.11.3. Its installation tooling
-  uses Electron's maintained ZIP extractor instead of the unpatched
-  `extract-zip` package, removing the vulnerable dependency rather than
-  dismissing its symlink-write advisory (`GHSA-7pqw-9j4j-h8q3`).
-- Update the existing `brace-expansion` overrides to 1.1.18, 2.1.4, and
-  5.0.9, and require `nanoid` 3.3.18+ in the 3.x line. These address the
-  unbounded-expansion and zero-size generator denial-of-service advisories
-  found by a full development-and-production dependency audit.
 
 ## [0.3.101] - 2026-08-07
 
