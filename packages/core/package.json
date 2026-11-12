@@ -41,7 +41,7 @@
     }
   },
   "dependencies": {
-    "fast-xml-parser": "^5.8.0",
+    "fast-xml-parser": "^5.12.0",
     "js-yaml": "^4.3.2",
     "pdfkit": "^0.18.0",
     "react": "^18.3.1",
